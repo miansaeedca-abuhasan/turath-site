@@ -876,7 +876,7 @@ function hResume(){
 function hSaveLast(){try{localStorage.hlast=JSON.stringify({h:location.hash,b:book})}catch(e){}}
 async function showKitabs(){
   const ks=await loadToc(),box=$('#list');box.replaceChildren();
-  bar(curBookName(),T('count')(ks.reduce((s,k)=>s+k.count,0)),false);
+  {const bo=BOOKS.find(x=>x.key===book);bar(curBookName(),T('count')(ks.reduce((s,k)=>s+k.count,0)+((book==='jami'||(bo&&bo.kind==='lang'))?6:0)),false);}
   const f=el('input',{type:'search',class:'filter',placeholder:T('hFilter'),'aria-label':T('hFilter'),id:'kfilter'});
   const list=el('div');
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[\u064b-\u0652]/g,''),n=toNum(f.value);
