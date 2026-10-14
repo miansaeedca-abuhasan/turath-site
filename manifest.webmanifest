@@ -1,0 +1,39 @@
+{
+ "id": "./",
+ "name": "تراث خيرالقرون — Turath Khair Al-Quroon",
+ "short_name": "تراث خيرالقرون",
+ "description": "قرآن مجید، کتبِ حدیث، تراجم و تفاسیر — مفت، فی سبیل اللہ",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "orientation": "portrait",
+ "lang": "ur",
+ "dir": "rtl",
+ "background_color": "#f4ecd6",
+ "theme_color": "#0c5c6e",
+ "categories": [
+  "books",
+  "education",
+  "lifestyle"
+ ],
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512-maskable.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}
