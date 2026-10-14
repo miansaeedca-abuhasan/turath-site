@@ -19,14 +19,26 @@ h1{font-size:1.5rem;margin:.2rem 0}h2{font-size:1.15rem;color:var(--accent);marg
 .en{direction:ltr;text-align:left}
 .muted{color:var(--muted);font-size:.9rem}
 a{color:var(--accent)}
+.ar{font-family:"Noto Naskh Arabic","Amiri",serif;line-height:2;direction:rtl;text-align:right}
+.fr{direction:ltr;text-align:left}
+.hi{direction:ltr;text-align:left;font-family:"Noto Serif Devanagari",serif}
+.bn{direction:ltr;text-align:left;font-family:"Noto Serif Bengali",serif}
+.gu{direction:ltr;text-align:left;font-family:"Noto Sans Gujarati","Shruti",system-ui,sans-serif}
+nav.langs{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+nav.langs a{background:var(--card);padding:4px 12px;border-radius:999px;text-decoration:none;box-shadow:0 1px 4px rgba(20,40,70,.08)}
+@font-face{font-family:"Noto Naskh Arabic";src:url("fonts/NotoNaskhArabic.woff") format("woff")}
+@font-face{font-family:"Amiri";src:url("fonts/Amiri-Regular.woff") format("woff")}
+@font-face{font-family:"Noto Serif Devanagari";src:url("fonts/NotoSerifDevanagari.woff") format("woff")}
+@font-face{font-family:"Noto Serif Bengali";src:url("fonts/NotoSerifBengali.woff") format("woff")}
 </style>
 </head>
 <body>
 <main>
 <h1>تراث خيرالقرون — Turath Khair Al-Quroon</h1>
-<p class="muted">آخری تبدیلی / Last updated: 2026-10-10</p>
+<p class="muted">آخری تبدیلی / Last updated: 2026-10-14</p>
+<nav class="langs"><a href="#ur">اردو</a><a href="#ar">العربية</a><a href="#en">English</a><a href="#fr">Français</a><a href="#hi">हिन्दी</a><a href="#bn">বাংলা</a><a href="#gu">ગુજરાતી</a></nav>
 
-<section class="ur">
+<section class="ur" id="ur">
 <h2>پرائیویسی پالیسی</h2>
 <p>«تراث خيرالقرون» ایک مفت، فی سبیل اللہ ایپ ہے جس میں قرآن مجید، کتبِ حدیث، تراجم اور تفاسیر پڑھنے کی سہولت ہے۔</p>
 <p>یہ ایپ آپ سے کوئی ذاتی معلومات نہیں مانگتی اور نہ جمع کرتی ہے۔ نہ اکاؤنٹ بنتا ہے، نہ نام، ای میل یا فون نمبر لیا جاتا ہے۔</p>
@@ -41,7 +53,21 @@ a{color:var(--accent)}
 <p>تراث خيرالقرون سے نقل کردہ علمی مواد کو تجارت کی غرض سے استعمال کرنے اور بیچنے کی اجازت ہرگز نہیں ہے۔ جو ایسا کرے گا وہ کل قیامت کے دن اللہ تعالیٰ کے ہاں جوابدہ ہوگا۔</p>
 </section>
 
-<section class="en">
+<section class="ar" id="ar" lang="ar" dir="rtl">
+<h2>سياسة الخصوصية</h2>
+<p>«تراث خير القرون» تطبيق مجاني غير تجاري، في سبيل الله، لقراءة القرآن الكريم وكتب الحديث والتراجم والتفاسير.</p>
+<p>لا يطلب التطبيق أي معلومات شخصية ولا يجمعها؛ فلا توجد حسابات، ولا يُطلب اسم ولا بريد إلكتروني ولا رقم هاتف.</p>
+<p>العلامات المرجعية وموضع القراءة والإعدادات (الخط واللغة والترجمة) تُحفظ على جهازك أو متصفحك فقط، ولا تُرسل إلينا ولا إلى غيرنا، وتُحذف بمسح بيانات التطبيق.</p>
+<p>لا يحتوي التطبيق على إعلانات ولا تتبّع ولا أنظمة تحليل، ولا يشارك أي بيانات مع أطراف ثالثة.</p>
+<p>عند الاستماع إلى تلاوة القرآن تُجلب الملفات الصوتية من مواقع القرّاء (everyayah.com و mp3quran.net)، ولا يُرسل إليها إلا طلب عادي للملف الصوتي دون أي معلومات شخصية.</p>
+<p>للأسئلة والاقتراحات: <span dir="ltr"><a href="mailto:turathkhairalquroon@gmail.com">turathkhairalquroon@gmail.com</a></span></p>
+</section>
+<section class="ar warn" lang="ar" dir="rtl">
+<h2>شرط استخدام المحتوى العلمي</h2>
+<p>لا يجوز البتة استخدام المحتوى العلمي المنقول من «تراث خير القرون» لأغراض تجارية ولا بيعه، ومن فعل ذلك فهو مسؤول أمام الله تعالى يوم القيامة.</p>
+</section>
+
+<section class="en" id="en">
 <h2>Privacy Policy</h2>
 <p>Turath Khair Al-Quroon is a free, non-commercial app for reading the Qur'an, hadith collections, translations and tafsir.</p>
 <p>The app does not ask for or collect any personal information. There are no accounts, and no name, email or phone number is requested.</p>
@@ -55,6 +81,62 @@ a{color:var(--accent)}
 <h2>Use of the scholarly content</h2>
 <p>The scholarly content copied from Turath Khair Al-Quroon may never be used for commercial purposes or sold. Whoever does so will be answerable before Allah Most High on the Day of Judgement.</p>
 </section>
+<section class="fr" id="fr" lang="fr" dir="ltr">
+<h2>Politique de confidentialité</h2>
+<p>Turath Khair Al-Quroon est une application gratuite et non commerciale pour lire le Coran, les recueils de hadiths, les traductions et les tafsirs.</p>
+<p>L'application ne demande ni ne collecte aucune information personnelle. Il n'y a pas de compte, et aucun nom, e-mail ou numéro de téléphone n'est demandé.</p>
+<p>Vos signets, votre position de lecture et vos réglages (police, langue, traduction) sont enregistrés uniquement sur votre appareil ou navigateur. Ils ne sont jamais envoyés, ni à nous ni à personne, et s'effacent si vous supprimez les données de l'application.</p>
+<p>L'application ne contient ni publicité, ni suivi, ni outil d'analyse, et ne partage aucune donnée avec des tiers.</p>
+<p>Lorsque vous écoutez une récitation du Coran, l'audio provient des sites des récitateurs (everyayah.com et mp3quran.net). Seule une requête ordinaire pour le fichier audio est envoyée, sans aucune information personnelle.</p>
+<p>Questions ou suggestions : <a href="mailto:turathkhairalquroon@gmail.com">turathkhairalquroon@gmail.com</a></p>
+</section>
+<section class="fr warn" lang="fr" dir="ltr">
+<h2>Utilisation du contenu scientifique</h2>
+<p>Le contenu scientifique copié depuis Turath Khair Al-Quroon ne doit jamais être utilisé à des fins commerciales ni vendu. Quiconque le fait en rendra compte devant Allah le Très-Haut au Jour du Jugement.</p>
+</section>
+
+<section class="hi" id="hi" lang="hi" dir="ltr">
+<h2>गोपनीयता नीति</h2>
+<p>«तुरास ख़ैरुल क़ुरून» एक मुफ़्त, फ़ी सबीलिल्लाह ऐप है, जिसमें क़ुरआन मजीद, हदीस की किताबें, अनुवाद और तफ़सीरें पढ़ने की सुविधा है।</p>
+<p>यह ऐप आपसे कोई निजी जानकारी नहीं माँगता और न जमा करता है। न कोई अकाउंट बनता है, न नाम, ईमेल या फ़ोन नंबर लिया जाता है।</p>
+<p>आपके बुकमार्क, पढ़ने की जगह और सेटिंग्स (फ़ॉन्ट, भाषा, अनुवाद) केवल आपके अपने फ़ोन या ब्राउज़र में सुरक्षित रहती हैं। ये हमें या किसी और को नहीं भेजी जातीं, और ऐप का डेटा साफ़ करने से मिट जाती हैं।</p>
+<p>ऐप में कोई विज्ञापन, ट्रैकिंग या एनालिटिक्स नहीं है, और कोई जानकारी किसी तीसरे पक्ष को नहीं दी जाती।</p>
+<p>क़ुरआन की तिलावत सुनने पर ऑडियो फ़ाइलें क़ारियों की वेबसाइटों (everyayah.com और mp3quran.net) से आती हैं। उन तक केवल ऑडियो फ़ाइल की सामान्य माँग जाती है, कोई निजी जानकारी नहीं।</p>
+<p>सवाल या सुझाव के लिए संपर्क: <a href="mailto:turathkhairalquroon@gmail.com">turathkhairalquroon@gmail.com</a></p>
+</section>
+<section class="hi warn" lang="hi" dir="ltr">
+<h2>इल्मी सामग्री के उपयोग की शर्त</h2>
+<p>तुरास ख़ैरुल क़ुरून से ली गई इल्मी सामग्री को व्यापार के लिए इस्तेमाल करने या बेचने की बिल्कुल अनुमति नहीं है। जो ऐसा करेगा वह क़ियामत के दिन अल्लाह तआला के सामने जवाबदेह होगा।</p>
+</section>
+
+<section class="bn" id="bn" lang="bn" dir="ltr">
+<h2>গোপনীয়তা নীতি</h2>
+<p>«তুরাস খাইরুল কুরূন» একটি বিনামূল্যের, ফী সাবীলিল্লাহ অ্যাপ, যেখানে কুরআন মাজীদ, হাদীসের কিতাব, অনুবাদ ও তাফসীর পড়ার সুবিধা রয়েছে।</p>
+<p>এই অ্যাপ আপনার কাছ থেকে কোনো ব্যক্তিগত তথ্য চায় না এবং সংগ্রহও করে না। কোনো অ্যাকাউন্ট নেই, নাম, ইমেইল বা ফোন নম্বরও নেওয়া হয় না।</p>
+<p>আপনার বুকমার্ক, পড়ার স্থান ও সেটিংস (ফন্ট, ভাষা, অনুবাদ) শুধু আপনার নিজের ফোন বা ব্রাউজারে সংরক্ষিত থাকে। এগুলো আমাদের বা অন্য কারো কাছে পাঠানো হয় না, এবং অ্যাপের ডেটা মুছে ফেললে মুছে যায়।</p>
+<p>অ্যাপে কোনো বিজ্ঞাপন, ট্র্যাকিং বা অ্যানালিটিক্স নেই, এবং কোনো তথ্য তৃতীয় পক্ষকে দেওয়া হয় না।</p>
+<p>কুরআন তিলাওয়াত শুনলে অডিও ফাইল কারীদের ওয়েবসাইট (everyayah.com ও mp3quran.net) থেকে আসে। সেখানে শুধু অডিও ফাইলের সাধারণ অনুরোধ যায়, কোনো ব্যক্তিগত তথ্য নয়।</p>
+<p>প্রশ্ন বা পরামর্শের জন্য যোগাযোগ: <a href="mailto:turathkhairalquroon@gmail.com">turathkhairalquroon@gmail.com</a></p>
+</section>
+<section class="bn warn" lang="bn" dir="ltr">
+<h2>ইলমী বিষয়বস্তু ব্যবহারের শর্ত</h2>
+<p>তুরাস খাইরুল কুরূন থেকে নেওয়া ইলমী বিষয়বস্তু ব্যবসায়িক উদ্দেশ্যে ব্যবহার করা বা বিক্রি করার অনুমতি কখনোই নেই। যে এমন করবে, সে কিয়ামতের দিন আল্লাহ তাআলার কাছে জবাবদিহি করবে।</p>
+</section>
+
+<section class="gu" id="gu" lang="gu" dir="ltr">
+<h2>ગોપનીયતા નીતિ</h2>
+<p>«તુરાસ ખૈરુલ કુરૂન» એક મફત, ફી સબીલિલ્લાહ એપ છે, જેમાં કુરઆન મજીદ, હદીસના પુસ્તકો, અનુવાદ અને તફસીર વાંચવાની સુવિધા છે.</p>
+<p>આ એપ તમારી પાસેથી કોઈ વ્યક્તિગત માહિતી માંગતી નથી અને એકત્ર પણ કરતી નથી. કોઈ એકાઉન્ટ નથી, અને નામ, ઇમેઇલ કે ફોન નંબર લેવામાં આવતો નથી.</p>
+<p>તમારા બુકમાર્ક, વાંચનનું સ્થાન અને સેટિંગ્સ (ફોન્ટ, ભાષા, અનુવાદ) ફક્ત તમારા પોતાના ફોન કે બ્રાઉઝરમાં જ સચવાય છે. તે અમને કે બીજા કોઈને મોકલવામાં આવતા નથી, અને એપનો ડેટા સાફ કરવાથી ભૂંસાઈ જાય છે.</p>
+<p>એપમાં કોઈ જાહેરાત, ટ્રેકિંગ કે એનાલિટિક્સ નથી, અને કોઈ માહિતી ત્રીજા પક્ષને આપવામાં આવતી નથી.</p>
+<p>કુરઆનની તિલાવત સાંભળતી વખતે ઓડિયો ફાઇલો કારીઓની વેબસાઇટ (everyayah.com અને mp3quran.net) પરથી આવે છે. ત્યાં ફક્ત ઓડિયો ફાઇલની સામાન્ય વિનંતી જાય છે, કોઈ વ્યક્તિગત માહિતી નહીં.</p>
+<p>પ્રશ્ન કે સૂચન માટે સંપર્ક: <a href="mailto:turathkhairalquroon@gmail.com">turathkhairalquroon@gmail.com</a></p>
+</section>
+<section class="gu warn" lang="gu" dir="ltr">
+<h2>ઇલ્મી સામગ્રીના ઉપયોગની શરત</h2>
+<p>તુરાસ ખૈરુલ કુરૂનમાંથી લીધેલી ઇલ્મી સામગ્રીનો વેપાર માટે ઉપયોગ કરવાની કે તેને વેચવાની બિલકુલ પરવાનગી નથી. જે આવું કરશે તે કયામતના દિવસે અલ્લાહ તઆલા સમક્ષ જવાબદાર થશે.</p>
+</section>
+
 <p class="muted"><a href="./">← تراث خيرالقرون</a></p>
 </main>
 </body>
