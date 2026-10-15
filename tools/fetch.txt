@@ -1,0 +1,11 @@
+# url  ->  file name in raw/   (sources and licenses: see CREDITS.md)
+https://archive.org/metadata/MakkahAzan	meta_MakkahAzan.json
+https://archive.org/metadata/AdzanAroundTheWorld	meta_AdzanAroundTheWorld.json
+https://archive.org/metadata/Mp3CollectionAdzan	meta_Mp3CollectionAdzan.json
+https://archive.org/metadata/adhan.notifications	meta_adhan_notifications.json
+https://archive.org/metadata/LiveRecordingsFromMakkahAndMadinah	meta_LiveRecordings.json
+https://bigsoundbank.com/UPLOAD/mp3/1906.mp3?v=d	bird_1906.mp3
+https://bigsoundbank.com/UPLOAD/mp3/0999.mp3?v=d	bird_0999.mp3
+https://bigsoundbank.com/UPLOAD/mp3/0935.mp3?v=d	bird_0935.mp3
+https://bigsoundbank.com/UPLOAD/mp3/0222.mp3?v=d	bird_0222.mp3
+https://bigsoundbank.com/UPLOAD/mp3/1859.mp3?v=d	bird_1859.mp3
