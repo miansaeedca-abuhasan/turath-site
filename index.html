@@ -432,6 +432,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .wplay{background:var(--card);border:1px solid var(--line);color:var(--accent);border-radius:50%;width:2.8rem;height:2.8rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
 .wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
+.rlink{color:var(--accent,#0b5d4b);text-decoration:underline dotted;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
 details.dirasa{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;background:var(--card,#fff)}
 details.dirasa>summary{cursor:pointer;padding:.6rem .8rem;font:700 1.15rem/1.8 var(--arabic);color:var(--accent,#0b5d4b);list-style:none}
 details.dirasa>summary::before{content:'▸ ';}details.dirasa[open]>summary::before{content:'▾ ';}
@@ -1174,6 +1175,24 @@ if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refb
     out.push(chips,rb);}
 return out;}
 window.refBlock=refBlock;
+/* ---------- takhrij references linked to the books in the app: a tap shows that book's hadith under the paragraph (مقارنة) ---------- */
+const RALIAS=[["ابن أبي عاصم في الآحاد والمثاني", "sh9196"], ["النسائي في عمل اليوم والليلة", "amalyawm"], ["البيهقي في الأسماء والصفات", "sh9270"], ["الطبراني في المعجم الصغير", "sh13068"], ["الطبراني في المعجم الأوسط", "sh28171"], ["أبو نعيم في معرفة الصحابة", "sh10490"], ["الطبراني في مسند الشاميين", "sh13162"], ["البيهقي في القضاء والقدر", "sh13053"], ["البيهقي في دلائل النبوة", "dalail"], ["البخاري في الأدب المفرد", "adab"], ["النسائي في السنن الكبرى", "kubranasai"], ["البيهقي في السنن الكبرى", "kubrabayhaqi"], ["الإمام أحمد في المسند", "ahmad"], ["البزار في كشف الأستار", "sh12862"], ["الإمام أحمد في الزهد", "zuhd"], ["الطبرانيّ في الكبير", "sh21570"], ["البغوي في شرح السنة", "sharhsunna"], ["الطبراني في الدعاء", "sh13016"], ["الضياء في المختارة", "sh10480"], ["الطبراني في الكبير", "sh21570"], ["الطبراني في الأوسط", "sh28171"], ["البيهقي في الدلائل", "dalail"], ["الهيثميّ في المجمع", "majma"], ["الطبراني في الصغير", "sh13068"], ["الترمذي في الشمائل", "shamail"], ["أبو داود الطيالسي", "tayalisi"], ["الهيثمي في المجمع", "majma"], ["النسائي في الكبرى", "kubranasai"], ["عمل اليوم والليلة", "amalyawm"], ["البيهقي في الكبرى", "kubrabayhaqi"], ["الآجري في الشريعة", "sh13035"], ["إسحاق بن راهويه", "sh13159"], ["أحمد في المسند", "ahmad"], ["سعيد بن منصور", "sh13122"], ["أحمد في الزهد", "zuhd"], ["ابن أبي شيبة", "sh9944"], ["الأدب المفرد", "adab"], ["الإمام مالك", "malik"], ["كشف الأستار", "sh12862"], ["الإمام أحمد", "ahmad"], ["ابن راهويه", "sh13159"], ["عبد الرزاق", "abdrazzaq"], ["الدار قطني", "sh9771"], ["ابن خزيمة", "sh9697"], ["ابن السني", "sh13132"], ["ابن الجعد", "ibnjad"], ["الدارقطني", "sh9771"], ["اللالكائي", "sh9200"], ["الترمذيّ", "tirmidhi"], ["أبو داود", "abudawud"], ["أبي داود", "abudawud"], ["ابن حبان", "ibnhibban"], ["النسائيّ", "nasai"], ["ابن ماجه", "ibnmajah"], ["البخاريّ", "bukhari"], ["أبو يعلى", "sh12520"], ["الطيالسي", "tayalisi"], ["الدارمي", "darimi"], ["النسائي", "nasai"], ["البخاري", "bukhari"], ["الترمذي", "tirmidhi"], ["الحميدي", "humaydi"], ["البيهقي", "kubrabayhaqi"], ["الحاكم", "hakim"], ["البزار", "sh12862"], ["مالك", "malik"], ["أحمد", "ahmad"], ["مسلم", "muslim"]];
+const RRE=new RegExp('(?<=^|[\\s،,.:؛(«]|[\\s،(]و|^و|[\\s،(]ف)('+RALIAS.map(a=>a[0].replace(/ /g,'\\s+')).join('|')+')((?:\\s+(?:في|فى)\\s+[^()،.:؛\\d]{1,45}?)?\\s*)\\(([^()]{1,40})\\)','g');
+const RKEY=Object.fromEntries(RALIAS.map(a=>[a[0].replace(/\s+/g,' '),a[1]]));
+const DIG10=t=>t.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
+function refRich(t){const out=[];let last=0;RRE.lastIndex=0;let m;
+  while((m=RRE.exec(t))){const key=RKEY[m[1].replace(/\s+/g,' ')];if(!key||!window.COLL)continue;
+    const inner=DIG10(m[3]);if(/\//.test(inner))continue;
+    const nums=inner.split(/[،,و]/).map(x=>(x.match(/^\s*(\d+)/)||[])[1]).filter(Boolean);if(!nums.length)continue;
+    if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));
+    out.push(m[1]+m[2]+'(');
+    const parts=m[3].split(/([،,])/);parts.forEach(seg=>{const n=(DIG10(seg).match(/^\s*(\d+)/)||[])[1];
+      if(n)out.push(el('a',{class:'rlink',href:'#',title:'مقارنة',on:{click:async e=>{e.preventDefault();const p=e.target.closest('p')||e.target.parentNode;
+        let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+n)){box=el('div',{class:'refbox rinl','data-k':key+n});p.after(box);
+          box.append(el('b',{},(COLL.name(key)||m[1])+' ('+n+')'));if(!await COLL.refBox(key,+n,box))box.append(el('p',{class:'note'},T('nobook')));}
+        else box.remove();}}},seg));else out.push(seg);});
+    out.push(')');last=m.index+m[0].length;}
+  if(last<t.length)out.push(...rich(t.slice(last),'ar'));return out;}
 /* ---------- مفصل دراسة الحديث: the full scholarly study of al-Jami al-Kamil after the takhrij (loaded when opened) ---------- */
 const DRL={};window.TURATH_DR=o=>Object.assign(window.DRDATA=window.DRDATA||{},o);
 function drLoad(num){const f=(window.TURATH_DATA&&TURATH_DATA.drfiles||[]).find(x=>num>=x[0]&&num<=x[1]);if(!f)return Promise.resolve();
@@ -1182,7 +1201,7 @@ function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{}
   det.append(sum,body);let done=false;
   det.addEventListener('toggle',async()=>{if(!det.open||done)return;body.replaceChildren(el('p',{class:'note'},'…'));
     try{await drLoad(d.num);const ps=(window.DRDATA||{})[d.num]||[];done=true;
-      body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...rich(t,'ar'))));
+      body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...refRich(t))));
       if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps,'ar',body)}},icon('listen'),T('listenPart')));}
     catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
   return det;}
@@ -1220,9 +1239,9 @@ async function showHadith(num){
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
-  if(d.dr&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...rich(d.takhrij,'ar'));v.append(t);if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));v.append(drBlock(d));}
+  if(d.dr&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));v.append(drBlock(d));}
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
-  else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(d.takhrij.replace(d.grade?d.grade+':':'','').trim());v.append(t);}
+  else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
   v.append(...refBlock(d));
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
   const kinds=KIND_ORDER.filter(k=>d.content[k]);
