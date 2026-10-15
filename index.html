@@ -265,6 +265,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .bism{text-align:center!important}
 @media (max-width:440px){#xtools:not(:empty)~#lang,#xtools:not(:empty)~#bmbtn,#xtools:not(:empty)~#hsbtn{display:none}}
 .hsr .mt p{margin:.3rem 0}.hsg{margin:.4rem 0;font-size:1.05em}.hsg.ggood b{color:#1b7f3b}.hsg.gbad b{color:#c00000}
+.hslinks{margin-top:.5rem}.hslinks .chip{text-decoration:none}.hslinks .hssharh{color:#1b7f3b;border-color:#1b7f3b}
 .hsmeta{display:flex;flex-wrap:wrap;gap:.2rem 1rem;font-size:.92em}.hsm .cs{opacity:.8}
 :root[data-theme="dark"] .hsg.ggood b{color:#5fd38a}:root[data-theme="dark"] .hsg.gbad b{color:#ff6b6b}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hsg.ggood b{color:#5fd38a}:root:not([data-theme="light"]) .hsg.gbad b{color:#ff6b6b}}
@@ -1535,7 +1536,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     filter: 'سورت کا نام یا نمبر لکھیں', meccan: 'مکی', medinan: 'مدنی', ayahs: n => n + ' آیات', paraN: n => 'پارہ ' + n, rukuN: n => 'رکوع ' + n,
     surahN: n => 'سورت ' + n, selectTr: 'تراجم منتخب کریں', reset: 'ری سیٹ', unavailable: 'ابھی دستیاب نہیں (اوپن سورس ماخذ نہیں ملا)',
     mushaf: 'مصحف موڈ', trMode: 'ترجمہ موڈ', autoscroll: 'آٹو اسکرول', speed: 'اسکرول کی رفتار', arSize: 'عربی کا سائز', trSize: 'ترجمے کا سائز',
-    qfont: 'قرآنی فونٹ', reciter: 'قاری', trAudio: 'ہر آیت کے بعد اردو ترجمہ بھی سنائیں (آڈیو بک)', makkah: 'آئمہ حرم مکی', madinah: 'آئمہ مسجد نبوی', others: 'دیگر قراء',
+    qfont: 'قرآنی فونٹ', reciter: 'قاری', trAudio: 'ہر آیت کے بعد اردو ترجمہ بھی سنائیں (آڈیو بک)', trVoice: 'مترجم تلاوت (ہر آیت کے بعد ترجمہ)', makkah: 'آئمہ حرم مکی', madinah: 'آئمہ مسجد نبوی', others: 'دیگر قراء',
     surahOnly: 'پوری سورت (آیت کی نشاندہی کے بغیر)', go: 'کھولیں', ayahNo: 'آیت نمبر', loading: 'لوڈ ہو رہا ہے…', noRes: 'کچھ نہیں ملا۔',
     qnobm: 'ابھی کوئی آیت محفوظ نہیں۔ آیت کے ساتھ بک مارک کا نشان دبائیں۔', ayahOf: 'آیتِ قرآنی', hadithOf: 'حدیثِ نبوی', openIt: 'کھولیں',
     qsearchPh: 'آیت کا لفظ لکھیں، مثلاً: نحن نقص', searchIn: 'منتخب تراجم اور عربی متن میں', netAudio: 'تلاوت کے لیے انٹرنیٹ چاہیے۔',
@@ -1546,7 +1547,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     filter: 'Filter Surah list by number or name', meccan: 'Meccan', medinan: 'Medinan', ayahs: n => n + ' Verses', paraN: n => 'Parah ' + n, rukuN: n => 'Ruku ' + n,
     surahN: n => 'Surah ' + n, selectTr: 'Select Translations', reset: 'Reset', unavailable: 'not available yet (no open-source copy found)',
     mushaf: 'Mushaf Mode', trMode: 'Translation Mode', autoscroll: 'Auto Scroll', speed: 'Scroll speed', arSize: 'Arabic size', trSize: 'Translation size',
-    qfont: 'Quran font', reciter: 'Reciter', trAudio: 'After each ayah, also read the Urdu translation (audiobook)', makkah: 'Imams of Masjid al-Haram', madinah: 'Imams of Masjid an-Nabawi', others: 'Other reciters',
+    qfont: 'Quran font', reciter: 'Reciter', trAudio: 'After each ayah, also read the Urdu translation (audiobook)', trVoice: 'Recitation with translation (after each ayah)', makkah: 'Imams of Masjid al-Haram', madinah: 'Imams of Masjid an-Nabawi', others: 'Other reciters',
     surahOnly: 'whole surah (no ayah highlight)', go: 'Open', ayahNo: 'Ayah number', loading: 'Loading…', noRes: 'Nothing found.',
     qnobm: 'No ayah bookmarked yet. Tap the bookmark icon next to an ayah.', ayahOf: 'Ayah of the moment', hadithOf: 'Hadith of the moment', openIt: 'Open',
     qsearchPh: 'Type words of an ayah, e.g. نحن نقص', searchIn: 'in the selected translations and the Arabic text', netAudio: 'Recitation needs internet.',
@@ -1659,6 +1660,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- reciters ---------- */
   const EA = 'https://everyayah.com/data/';
+  // recitation with the translation read after each ayah (mutarjam): a recorded voice (everyayah.com), or the device voice
+  const TRV = [{k: '', ur: 'بغیر ترجمہ', en: 'No translation', ar: 'بدون ترجمة'},
+    {k: 'ur_shamshad', ur: 'اردو ترجمہ — آواز: شمشاد علی خان', en: 'Urdu translation — voice: Shamshad Ali Khan', ar: 'الترجمة الأردية — بصوت شمشاد علي خان', f: 'translations/urdu_shamshad_ali_khan_46kbps'},
+    {k: 'en_walk', ur: 'انگریزی ترجمہ (صحیح انٹرنیشنل) — آواز: ابراہیم واک', en: 'English (Sahih International) — voice: Ibrahim Walk', ar: 'الترجمة الإنجليزية (صحيح إنترناشونال) — بصوت إبراهيم ووك', f: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps'},
+    {k: 'tts', ur: 'منتخب اردو ترجمہ — فون کی آواز', en: 'Chosen Urdu translation — device voice', ar: 'الترجمة الأردية المختارة — صوت الجهاز'}];
+  if (I.ar) I.ar.trVoice = 'التلاوة مع الترجمة (بعد كل آية)';
+  const trVoice = () => TRV.find(x => x.k === (QS.trVoice !== undefined ? QS.trVoice : QS.trAudio ? 'tts' : '')) || TRV[0];
+  function trVoiceRow() {
+    const sel = el('select', {'aria-label': T('trVoice')});
+    TRV.forEach(x => sel.append(el('option', {value: x.k}, ui === 'ar' ? x.ar : LTR() ? x.en : x.ur)));
+    sel.value = trVoice().k;
+    sel.addEventListener('change', () => { QS.trVoice = sel.value; QS.trAudio = sel.value === 'tts'; qsave(); });
+    return el('label', {class: 'srow'}, el('span', {}, T('trVoice')), sel);
+  }
   const RECITERS = [
     {k: 'sudais', g: 'makkah', ur: 'عبدالرحمن السدیس', en: 'Abdul Rahman Al-Sudais', f: 'Abdurrahmaan_As-Sudais_64kbps'},
     {k: 'shuraim', g: 'makkah', ur: 'سعود الشریم', en: "Saud Al-Shuraim", f: 'Saood_ash-Shuraym_64kbps'},
@@ -2384,7 +2399,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (res !== 'end') toast(audioMsg(res));
       stopAudio(); PLAYER.hide(); return;
     }
-    const trk = QS.trAudio ? (QS.tr.find(k => k.startsWith('ur')) || 'ur_jalandhari') : null;
+    const tv = trVoice(), trk = tv.k === 'tts' ? (QS.tr.find(k => k.startsWith('ur')) || 'ur_jalandhari') : null;
     if (trk) await need([trk]);
     for (; AU.i < R.verses.length; AU.i++) {
       const [s, a] = R.verses[AU.i];
@@ -2394,6 +2409,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const res = await playUrl(ayahUrl(r, s, a), tk);
       if (tk !== AU.token) return;
       if (res !== 'end') { fail(res); return; }
+      if (tv.f) { const t = await playUrl(EA + tv.f + '/' + pad(s) + pad(a) + '.mp3', tk); if (tk !== AU.token) return; if (t === 'blocked') { fail(t); return; } }
       if (trk) { const ok = await LISTEN.speakAll([{text: verse(trk, s, a), lang: 'ur'}], LISTEN.running); if (tk !== AU.token || ok === false) return; }
     }
     stopAudio(); PLAYER.hide();
@@ -2457,10 +2473,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const sel = el('select', {'aria-label': T('surahs')});
     Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
     const last = lsGet('qlast', null); if (last) sel.value = last.s;
-    const tr = el('input', {type: 'checkbox'}); tr.checked = QS.trAudio; tr.addEventListener('change', () => { QS.trAudio = tr.checked; qsave(); });
     v.append(el('div', {class: 'card'}, el('label', {class: 'srow'}, el('span', {}, T('surahs')), sel,
       el('button', {class: 'btn', type: 'button', on: {click: () => { location.hash = '#/q/s/' + sel.value + '/1/play'; }}}, icon('play'), ' ' + T('recite'))),
-      el('label', {class: 'srow chk'}, tr, el('span', {}, T('trAudio')))));
+      trVoiceRow()));
     v.append(el('div', {class: 'card'}, reciterList()));
     v.append(el('p', {class: 'note'}, T('netAudio')));
   }
@@ -2494,11 +2509,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const fsel = el('select', {'aria-label': T('qfont')});
     Object.entries(FONTS).forEach(([k, f]) => fsel.append(el('option', {value: k}, f[1])));
     fsel.value = QS.font; fsel.addEventListener('change', () => { QS.font = fsel.value; qsave(); });
-    const tr = el('input', {type: 'checkbox'}); tr.checked = QS.trAudio; tr.addEventListener('change', () => { QS.trAudio = tr.checked; qsave(); });
     sheet(T('settings'), [slider(T('arSize'), 'ar', 20, 56, 1), slider(T('trSize'), 'trs', 14, 30, 1), slider(T('speed'), 'speed', SMIN, SMAX, 1),
       el('label', {class: 'srow'}, el('span', {}, T('qfont')), fsel),
       el('label', {class: 'srow'}, el('span', {}, T('reciter')), el('button', {class: 'btn', type: 'button', on: {click: reciterSheet}}, LTR() ? recOf().en : recOf().ur)),
-      el('label', {class: 'srow chk'}, tr, el('span', {}, T('trAudio'))),
+      trVoiceRow(),
       el('label', {class: 'srow'}, el('span', {}, T('ttsSet')), el('button', {class: 'btn', type: 'button', on: {click: () => LISTEN.settings()}}, icon('listen')))]);
   }
 
@@ -2925,16 +2939,26 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function dorarParse(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html'), out = [];
     const clean = t => (t || '').replace(/\s+/g, ' ').trim();
+    // links of dorar.net only (the sharh of the hadith, similar hadith …), opened on their site
+    const linkOf = a => { try { const u = new URL(a.getAttribute('href') || '', 'https://dorar.net/'); return /(^|\.)dorar\.net$/.test(u.hostname) && /^https?:$/.test(u.protocol) ? (u.protocol = 'https:', u.href) : null; } catch (e) { return null; } };
+    const textNoLinks = nd => { if (nd.nodeType === 3) return nd.textContent; if (nd.nodeType !== 1 || nd.tagName === 'A') return ''; return [...nd.childNodes].map(textNoLinks).join(''); };
     doc.querySelectorAll('.hadith').forEach(h => {
-      let info = h.nextElementSibling; while (info && !info.classList.contains('hadith-info') && !info.classList.contains('hadith')) info = info.nextElementSibling;
-      const f = {}; let lab = null;
-      if (info && info.classList.contains('hadith-info')) info.childNodes.forEach(nd => {
-        if (nd.nodeType === 1 && nd.classList.contains('info-subtitle')) { lab = clean(nd.textContent).replace(/:$/, ''); f[lab] = ''; }
-        else if (lab) f[lab] = clean(f[lab] + ' ' + nd.textContent);
-      });
-      out.push({text: clean(h.textContent).replace(/^\d+\s*-\s*/, ''), f});
+      const f = {}, links = [];
+      for (let x = h.nextElementSibling; x && !x.classList.contains('hadith'); x = x.nextElementSibling) {
+        x.querySelectorAll('a[href]').forEach(a => { const u = linkOf(a), t = clean(a.textContent); if (u && t && !links.some(l => l.u === u)) links.push({t, u}); });
+        x.querySelectorAll('[xplain]').forEach(e => { const id = e.getAttribute('xplain'); if (/^\d+$/.test(id) && id !== '0' && !links.some(l => /sharh/.test(l.u))) links.push({t: 'شرح الحديث', u: 'https://dorar.net/hadith/sharh/' + id}); });
+        if (!x.classList.contains('hadith-info')) continue;
+        let lab = null;
+        x.childNodes.forEach(nd => {
+          if (nd.nodeType === 1 && nd.classList.contains('info-subtitle')) { lab = clean(nd.textContent).replace(/:$/, ''); f[lab] = ''; }
+          else if (lab) f[lab] = clean(f[lab] + ' ' + textNoLinks(nd));
+        });
+      }
+      const text = clean(textNoLinks(h)).replace(/^\d+\s*-\s*/, '');
+      if (!links.some(l => /مشابه/.test(l.t)) && text) links.push({t: 'أحاديث مشابهة', u: 'https://dorar.net/hadith/search?q=' + encodeURIComponent(text.replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean).slice(0, 8).join(' '))});
+      out.push({text, f, links});
     });
-    if (!out.length) { const t = clean(doc.body.textContent); if (t) out.push({text: t, f: {}}); }
+    if (!out.length) { const t = clean(doc.body.textContent); if (t) out.push({text: t, f: {}, links: []}); }
     return out;
   }
   const gradeCls = g => /ضعيف|منكر|موضوع|باطل|لا أصل|كذب|شاذ|مرسل|منقطع|لا يصح|لا يثبت/.test(g) ? 'gbad' : /صحيح|حسن|ثابت|جيد|قوي/.test(g) ? 'ggood' : '';
@@ -3007,7 +3031,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           el('div', {class: 'top'}, el('span', {class: 'big'}, fmtN((page - 1) * 15 + i + 1))),
           el('div', {class: 'mt ar', lang: 'ar', dir: 'rtl'}, el('p', {}, x.text)),
           g ? el('p', {class: 'hsg ' + gradeCls(g)}, el('span', {class: 'cs'}, T('hsGrade') + ': '), el('b', {lang: 'ar', dir: 'rtl'}, g)) : '',
-          meta.length ? el('div', {class: 'hsmeta'}, ...meta) : ''));
+          meta.length ? el('div', {class: 'hsmeta'}, ...meta) : '',
+          x.links.length ? el('div', {class: 'chips hslinks'}, ...x.links.map(l => el('a', {class: 'chip' + (/شرح/.test(l.t) ? ' hssharh' : ''), href: l.u, target: '_blank', rel: 'noopener', lang: 'ar', dir: 'rtl'}, l.t))) : ''));
       });
       if (list.length >= 15) { const m = el('button', {class: 'btn more', type: 'button', on: {click: () => { m.remove(); dorarPage(v, page + 1, dsec, tk); }}}, T('more')); dsec.append(m); }
       else dsec.append(link);
