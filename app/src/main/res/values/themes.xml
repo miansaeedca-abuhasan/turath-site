@@ -1,0 +1,6 @@
+<resources>
+    <style name="Theme.Salat" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/white</item>
+    </style>
+    <color name="ic_bg">#0E5560</color>
+</resources>

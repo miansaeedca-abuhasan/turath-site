@@ -1,0 +1,7 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android" android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- a gold crescent and star above a mosque dome and two minarets -->
+    <path android:fillColor="#E0B54A" android:pathData="M60,27a10,10 0,1 0,9 15a8,8 0,1 1,-9 -15z"/>
+    <path android:fillColor="#E0B54A" android:pathData="M70,30l1.2,3.2l3.4,0.1l-2.7,2.1l1,3.3l-2.9,-1.9l-2.9,1.9l1,-3.3l-2.7,-2.1l3.4,-0.1z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M36,80V64c0,-9.5 8,-16 18,-16s18,6.5 18,16v16H61v-8a7,7 0,0 0,-14 0v8z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M27,80V50l3,-5l3,5v30z M75,80V50l3,-5l3,5v30z"/>
+</vector>

@@ -1,0 +1,55 @@
+plugins {
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
+}
+
+android {
+    namespace = "org.turath.salat"
+    compileSdk = 35
+    defaultConfig {
+        applicationId = "org.turath.salat"
+        minSdk = 26
+        targetSdk = 35
+        versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
+        versionName = "1.0." + (System.getenv("VERSION_CODE") ?: "1")
+    }
+    signingConfigs {
+        // a test key for installing the app directly (APK); the Play Store copy is signed with the owner's own key
+        create("test") {
+            storeFile = rootProject.file("tools/test-key.jks")
+            storePassword = "salat-test"
+            keyAlias = "salat"
+            keyPassword = "salat-test"
+        }
+    }
+    buildTypes {
+        getByName("debug") { signingConfig = signingConfigs.getByName("test") }
+        getByName("release") {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("test")
+        }
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+    kotlinOptions { jvmTarget = "17" }
+    buildFeatures { compose = true }
+    androidResources { noCompress += listOf("tsv") }
+}
+
+dependencies {
+    val bom = platform("androidx.compose:compose-bom:2024.12.01")
+    implementation(bom)
+    implementation("androidx.core:core-ktx:1.15.0")
+    implementation("androidx.activity:activity-compose:1.9.3")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.7")
+    testImplementation("junit:junit:4.13.2")
+}
