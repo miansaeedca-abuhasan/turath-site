@@ -5,6 +5,7 @@ import android.location.LocationManager
 import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -124,6 +125,12 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
             Choice(Tr["dstOff"], pr.dst == "off") { pr.dst = "off"; s.changed() }
             HorizontalDivider()
             SwitchRow(Tr["h24"], pr.h24) { pr.h24 = it; s.changed() }
+        }
+        SectionTitle(Tr["weekStart"])
+        Card0 {
+            Row(Modifier.horizontalScroll(rememberScrollState())) {
+                for (v in listOf(1, 6, 7)) FilterChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
+            }
         }
         SectionTitle(Tr["world"])
         Card0 {

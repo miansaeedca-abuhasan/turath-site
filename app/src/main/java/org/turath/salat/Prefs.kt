@@ -69,6 +69,8 @@ class Prefs(ctx: Context) {
     /** "auto" (the country's rules), "on" (+1 hour), "off" */
     var dst: String get() = sp.getString("dst", "auto") ?: "auto"; set(v) = sp.edit().putString("dst", v).apply()
     var hijriAdjust: Int get() = sp.getInt("hadj", 0); set(v) = sp.edit().putInt("hadj", v).apply()
+    /** the first day of the week in the calendar (1 = Monday … 6 = Saturday, 7 = Sunday) */
+    var weekStart: Int get() = sp.getInt("wstart", 1); set(v) = sp.edit().putInt("wstart", v).apply()
     var h24: Boolean get() = sp.getBoolean("h24", false); set(v) = sp.edit().putBoolean("h24", v).apply()
 
     fun adjust(p: P): Int = sp.getInt("adj_" + p.name, 0)

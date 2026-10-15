@@ -75,7 +75,8 @@ object Tr {
         "label" to arrayOf("نام", "الاسم", "Name"), "save" to arrayOf("محفوظ کریں", "حفظ", "Save"),
         "delete" to arrayOf("حذف کریں", "حذف", "Delete"), "cancel" to arrayOf("رہنے دیں", "إلغاء", "Cancel"),
         "sound" to arrayOf("آواز", "الصوت", "Sound"),
-        "daysCal" to arrayOf("ہفتہ،اتوار،پیر،منگل،بدھ،جمعرات،جمعہ", "السبت،الأحد،الاثنين،الثلاثاء،الأربعاء،الخميس،الجمعة", "Sat,Sun,Mon,Tue,Wed,Thu,Fri"),
+        "daysCal" to arrayOf("پیر،منگل،بدھ،جمعرات،جمعہ،ہفتہ،اتوار", "الاثنين،الثلاثاء،الأربعاء،الخميس،الجمعة،السبت،الأحد", "Mon,Tue,Wed,Thu,Fri,Sat,Sun"),
+        "weekStart" to arrayOf("کیلنڈر میں ہفتے کا پہلا دن", "أول أيام الأسبوع في التقويم", "First day of the week in the calendar"),
         "days" to arrayOf("پ،م،ب،ج،جم،ہ،ا", "ن،ث،ر،خ،ج،س،ح", "M,T,W,T,F,S,S"),
         // sounds
         "ADHAN_MAKKAH" to arrayOf("اذان — مسجد الحرام: شیخ علی احمد ملا", "أذان المسجد الحرام: الشيخ علي أحمد ملا", "Adhan — Masjid al-Haram: Shaikh Ali Ahmad Mulla"),
@@ -195,6 +196,9 @@ object Tr {
     }
 
     fun p(p: P) = get(p.name)
+
+    /** full day names from Monday (1) to Sunday (7) */
+    fun dayName(v: Int) = get("daysCal").split(',', '،')[v - 1]
 
     /** name of a sound: an adhan, or a short call with its muezzin, or a bird */
     fun snd(s: Snd): String = when {
