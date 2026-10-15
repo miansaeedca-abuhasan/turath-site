@@ -103,6 +103,10 @@ class Prefs(ctx: Context) {
     var taraweehVib: Boolean get() = sp.getBoolean("tarvib", true); set(v) = sp.edit().putBoolean("tarvib", v).apply()
     var taraweehMinutes: Int get() = sp.getInt("tarmin", 90); set(v) = sp.edit().putInt("tarmin", v.coerceIn(60, 120)).apply()
 
+    // Friday: the phone on vibrate from Dhuhr time for the khutbah and Jumu'ah prayer
+    var jumuahVib: Boolean get() = sp.getBoolean("jumvib", true); set(v) = sp.edit().putBoolean("jumvib", v).apply()
+    var jumuahMinutes: Int get() = sp.getInt("jummin", 60); set(v) = sp.edit().putInt("jummin", v.coerceIn(15, 150)).apply()
+
     /** a fasting day: Ramadan, Monday / Thursday, or an accepted white day (by the hijri date of its daytime) */
     fun fastDay(d: java.time.LocalDate): Boolean {
         val h = Schedule.hijriOf(this, d)

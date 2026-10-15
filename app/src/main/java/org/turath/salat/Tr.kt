@@ -51,6 +51,8 @@ object Tr {
         "fasting" to arrayOf("روزہ", "الصيام", "Fasting"),
         "fastToday" to arrayOf("آج روزہ ہے — افطار", "صائم اليوم — الإفطار", "Fasting today — iftar"),
         // reminders
+        "jumuahVib" to arrayOf("جمعہ: ظہر کے وقت سے فون وائبریشن پر (خطبہ اور نماز)", "الجمعة: الهاتف على الاهتزاز من وقت الظهر (الخطبة والصلاة)", "Friday: phone on vibrate from Dhuhr time (khutbah and prayer)"),
+        "jumuahMin" to arrayOf("جمعہ کی وائبریشن کی مدت (منٹ)", "مدة اهتزاز الجمعة (دقيقة)", "Friday vibrate for (minutes)"),
         "ramadanFast" to arrayOf("رمضان: سحری کا الارم اور افطار کی الٹی گنتی", "رمضان: منبّه السحور والعدّ التنازلي للإفطار", "Ramadan: suhoor alarm and iftar countdown"),
         "ramadanNote" to arrayOf("رمضان کے ہر دن؛ آج کی اسکرین پر سحری ختم ہونے اور افطار تک کی الٹی گنتی", "كل يوم من رمضان؛ عدّ تنازلي لانتهاء السحور وللإفطار في شاشة اليوم", "Every day of Ramadan; countdowns to the end of suhoor and to iftar on the Today screen"),
         "taraweeh" to arrayOf("تراویح کے لیے عشاء سے فون وائبریشن پر", "الهاتف على الاهتزاز من العشاء لصلاة التراويح", "Phone on vibrate from Isha for taraweeh"),

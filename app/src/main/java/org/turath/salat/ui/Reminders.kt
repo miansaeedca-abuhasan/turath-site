@@ -53,6 +53,9 @@ fun RemindersScreen(s: AppState) {
         }
         SectionTitle(Tr["fasting"])
         Card0 {
+            SwitchRow(Tr["jumuahVib"], pr.jumuahVib) { v -> pr.jumuahVib = v; s.changed(); if (v && s.act.needDnd()) s.act.askDnd() }
+            if (pr.jumuahVib) Stepper(Tr["jumuahMin"], pr.jumuahMinutes, 15, 150, 15) { pr.jumuahMinutes = it; s.changed() }
+            HorizontalDivider()
             SwitchRow(Tr["ramadanFast"], pr.ramadan, Tr["ramadanNote"]) { pr.ramadan = it; s.changed() }
             SwitchRow(Tr["taraweeh"], pr.taraweehVib) { v -> pr.taraweehVib = v; s.changed(); if (v && s.act.needDnd()) s.act.askDnd() }
             if (pr.taraweehVib) Stepper(Tr["taraweehMin"], pr.taraweehMinutes, 60, 120, 15) { pr.taraweehMinutes = it; s.changed() }

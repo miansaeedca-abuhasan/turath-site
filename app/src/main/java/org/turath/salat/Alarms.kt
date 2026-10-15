@@ -33,9 +33,11 @@ object Events {
                 val s = pr.sound(p)
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
                 val taraweeh = p == P.ISHA && pr.taraweehVib && ramadanNight
-                if (taraweeh || (pr.vibrateMode && pr.vibrateFor(p))) {
+                val jumuah = p == P.DHUHR && pr.jumuahVib && d.dayOfWeek == DayOfWeek.FRIDAY
+                if (taraweeh || jumuah || (pr.vibrateMode && pr.vibrateFor(p))) {
+                    val mins = when { taraweeh -> maxOf(pr.taraweehMinutes, pr.vibrateMinutes); jumuah -> maxOf(pr.jumuahMinutes, pr.vibrateMinutes); else -> pr.vibrateMinutes }
                     out += Ev(t[p], "vibon", p)
-                    out += Ev(t[p].plusMinutes((if (taraweeh) maxOf(pr.taraweehMinutes, pr.vibrateMinutes) else pr.vibrateMinutes).toLong()), "viboff", p)
+                    out += Ev(t[p].plusMinutes(mins.toLong()), "viboff", p)
                 }
             }
             for (p in listOf(P.ISHRAQ, P.CHASHT, P.TAHAJJUD)) {
