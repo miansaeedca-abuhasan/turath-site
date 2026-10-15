@@ -1,18 +1,9 @@
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-Traceback (most recent call last):
-  File "/home/runner/work/turath-site/turath-site/tools/adhan_words.py", line 12, in <module>
-    sil = subprocess.run(['ffmpeg', '-i', f, '-af', 'silencedetect=noise=-38dB:d=0.8', '-f', 'null', '-'], capture_output=True, text=True).stderr
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/subprocess.py", line 550, in run
-    stdout, stderr = process.communicate(input, timeout=timeout)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/subprocess.py", line 1209, in communicate
-    stdout, stderr = self._communicate(input, endtime, timeout)
-                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/subprocess.py", line 2157, in _communicate
-    stderr = self._translate_newlines(stderr,
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/usr/lib/python3.12/subprocess.py", line 1086, in _translate_newlines
-    data = data.decode(encoding, errors)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeDecodeError: 'utf-8' codec can't decode byte 0xc3 in position 1952: invalid continuation byte
+app/src/main/res/raw/adhan_basit.mp3 39
+app/src/main/res/raw/adhan_daghriri.mp3 43
+app/src/main/res/raw/adhan_daghriri2.mp3 41
+app/src/main/res/raw/adhan_madinah_fajr.mp3 46
+app/src/main/res/raw/adhan_maghribi.mp3 37
+app/src/main/res/raw/adhan_makkah.mp3 56
+app/src/main/res/raw/adhan_makkah_fajr.mp3 59
+app/src/main/res/raw/adhan_nabet.mp3 44
