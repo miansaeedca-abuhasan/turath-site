@@ -35,14 +35,17 @@ object Mosques {
         val key = "mq_%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
-            val q = "[out:json][timeout:25];nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"](around:50000,$lat,$lng);out center tags;"
+            // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
+            val dLat = 0.45; val dLng = 0.45 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
+            val bb = "%.4f,%.4f,%.4f,%.4f".format(Locale.US, lat - dLat, lng - dLng, lat + dLat, lng + dLng)
+            val q = "[out:json][timeout:60];nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);out center tags;"
             // the main Overpass server, then its mirrors
             var s = ""
             // two rounds: a busy server often answers a few seconds later
             for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
-                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = 25_000
+                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 60_000
                     c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
                     c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
                     if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""

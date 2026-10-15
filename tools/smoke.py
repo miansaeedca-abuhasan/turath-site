@@ -2,6 +2,14 @@
 (shots/*.png) plus the crash log, so the build can be checked without a phone."""
 import subprocess, time, re, os, json
 os.makedirs('shots', exist_ok=True)
+# can the map servers be reached from here, and how fast (for the mosque finder)
+q = '[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](43.139,-80.264,44.039,-79.024);out center tags;'
+with open('shots/overpass.txt', 'w') as o:
+    for u in ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']:
+        r = subprocess.run(['curl', '-s', '-o', '/tmp/op.json', '-w', '%{http_code} %{time_total}', '--max-time', '70', '--data-urlencode', 'data=' + q, u], capture_output=True, text=True)
+        n = open('/tmp/op.json').read().count('"type"') if os.path.exists('/tmp/op.json') else 0
+        o.write(f'{u} {r.stdout} elements~{n}\n')
+print(open('shots/overpass.txt').read())
 def sh(*a, inp=None):
     return subprocess.run(['adb', *a], input=inp, capture_output=True).stdout
 def tap_text(t):
@@ -35,7 +43,7 @@ for lang in ['ur', 'ar', 'en']:
     for i, t in enumerate(tabs[lang][1:], 2):
         if tap_text(t): shot(f'{lang}_{i}_{t}')
     mq = {'ur': 'قریبی مساجد', 'ar': 'المساجد القريبة', 'en': 'Mosques nearby'}[lang]
-    if tap_text(mq): time.sleep(35); shot(f'{lang}_7_mosques')
+    if tap_text(mq): time.sleep(45); shot(f'{lang}_7_mosques')
     if lang == 'ur':
         tap_text(tabs[lang][0]); time.sleep(2)
         sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
