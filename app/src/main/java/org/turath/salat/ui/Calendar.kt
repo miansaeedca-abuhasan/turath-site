@@ -61,11 +61,19 @@ fun CalendarScreen(s: AppState) {
             }
             IconButton(onClick = { ym++ }) { Icon(Icons.Outlined.ChevronRight, null) }
         }
-        Row(Modifier.fillMaxWidth()) {
-            for (i in 0 until 7) {
-                val v = (ws - 1 + i) % 7 + 1
-                Text(Tr.dayName(v), Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, maxLines = 1, softWrap = false,
-                    color = if (v == 5) Gold else MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        // full day names; when a name does not fit its column on this phone, the English short names instead
+        BoxWithConstraints(Modifier.fillMaxWidth()) {
+            val tm = androidx.compose.ui.text.rememberTextMeasurer()
+            val style = androidx.compose.ui.text.TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            val cell = with(androidx.compose.ui.platform.LocalDensity.current) { (maxWidth / 7).toPx() }
+            val fits = (1..7).all { tm.measure(Tr.dayName(it), style).size.width <= cell - 4 }
+            val en = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+            Row(Modifier.fillMaxWidth()) {
+                for (i in 0 until 7) {
+                    val v = (ws - 1 + i) % 7 + 1
+                    Text(if (fits) Tr.dayName(v) else en[v - 1], Modifier.weight(1f), style = style, maxLines = 1, softWrap = false,
+                        color = if (v == 5) Gold else MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                }
             }
         }
         val cells = lead + len
