@@ -47,7 +47,7 @@ fun CalendarScreen(s: AppState) {
     val y = ym / 12; val m = ym % 12 + 1
     val len = monthLength(y, m)
     val first = gregOf(s.prefs, y, m, 1) ?: return
-    val lead = first.dayOfWeek.value - 1      // Monday first
+    val lead = (first.dayOfWeek.value + 1) % 7      // the week from Saturday to Friday
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().padding(8.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { ym-- }) { Icon(Icons.Outlined.ChevronLeft, null) }
@@ -61,7 +61,8 @@ fun CalendarScreen(s: AppState) {
             IconButton(onClick = { ym++ }) { Icon(Icons.Outlined.ChevronRight, null) }
         }
         Row(Modifier.fillMaxWidth()) {
-            for (n in Tr["days"].split(',', '،')) Text(n, Modifier.weight(1f), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+            for (n in Tr["daysCal"].split(',', '،')) Text(n, Modifier.weight(1f), fontWeight = FontWeight.Bold, fontSize = 12.sp, maxLines = 1, softWrap = false,
+                color = if (n == Tr["daysCal"].split(',', '،').last()) Gold else MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         }
         val cells = lead + len
         for (row in 0 until (cells + 6) / 7) Row(Modifier.fillMaxWidth()) {

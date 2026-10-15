@@ -75,6 +75,7 @@ object Tr {
         "label" to arrayOf("نام", "الاسم", "Name"), "save" to arrayOf("محفوظ کریں", "حفظ", "Save"),
         "delete" to arrayOf("حذف کریں", "حذف", "Delete"), "cancel" to arrayOf("رہنے دیں", "إلغاء", "Cancel"),
         "sound" to arrayOf("آواز", "الصوت", "Sound"),
+        "daysCal" to arrayOf("ہفتہ،اتوار،پیر،منگل،بدھ،جمعرات،جمعہ", "السبت،الأحد،الاثنين،الثلاثاء،الأربعاء،الخميس،الجمعة", "Sat,Sun,Mon,Tue,Wed,Thu,Fri"),
         "days" to arrayOf("پ،م،ب،ج،جم،ہ،ا", "ن،ث،ر،خ،ج،س،ح", "M,T,W,T,F,S,S"),
         // sounds
         "ADHAN_MAKKAH" to arrayOf("اذان — مسجد الحرام: شیخ علی احمد ملا", "أذان المسجد الحرام: الشيخ علي أحمد ملا", "Adhan — Masjid al-Haram: Shaikh Ali Ahmad Mulla"),
