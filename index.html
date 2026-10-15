@@ -424,6 +424,14 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .qzcertimg{width:100%;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.2)}
 .qzreset{align-self:center}
 .qzref{margin:.2rem 0 0;font-size:.82rem}.qzref a{color:var(--accent)}
+.wbw{text-align:center}.wpos{color:var(--accent);font-size:.95rem;margin:.1rem 0 .3rem}
+.wword{text-align:center!important;font-family:var(--qfont);font-size:calc(var(--qar)*1.7);line-height:1.9;margin:.2rem 0;color:#1f6f73}
+.wmean{font-size:1.25rem;font-weight:600;margin:.2rem 0}.wtl{font-style:italic;margin:.1rem 0}
+.wlem{display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;margin:.6rem 0;background:var(--wash);border-radius:2rem;padding:.3rem .8rem}
+.wlem b{font-family:var(--arabic);font-size:1.25rem;color:#2e7d4f;font-weight:400}
+.wplay{background:var(--card);border:1px solid var(--line);color:var(--accent);border-radius:50%;width:2.8rem;height:2.8rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
+.wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
 </style>
 </head>
 <body>
@@ -1574,6 +1582,26 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'abbad', g: 'others', ur: 'فارس عباد', en: 'Fares Abbad', f: 'Fares_Abbad_64kbps'},
     {k: 'basit', g: 'others', ur: 'عبدالباسط عبدالصمد (مرتل)', en: 'Abdul Basit (Murattal)', f: 'Abdul_Basit_Murattal_64kbps'},
     {k: 'basitm', g: 'others', ur: 'عبدالباسط عبدالصمد (مجود)', en: 'Abdul Basit (Mujawwad)', f: 'Abdul_Basit_Mujawwad_128kbps'},
+    {k: 'juhany', g: 'makkah', ur: 'عبداللہ عواد الجہنی', en: 'Abdullah Awad Al-Juhany', f: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps'},
+    {k: 'akhdar', g: 'madinah', ur: 'ابراہیم الاخضر', en: 'Ibrahim Al-Akhdar', f: 'Ibrahim_Akhdar_32kbps'},
+    {k: 'husary', g: 'others', ur: 'محمود خلیل الحصری', en: 'Mahmoud Khalil Al-Husary', f: 'Husary_128kbps'},
+    {k: 'husarym', g: 'others', ur: 'محمود خلیل الحصری (تعلیمی)', en: 'Al-Husary (teaching)', f: 'Husary_Muallim_128kbps'},
+    {k: 'minshawi', g: 'others', ur: 'محمد صدیق المنشاوی (مرتل)', en: 'Al-Minshawi (Murattal)', f: 'Minshawy_Murattal_128kbps'},
+    {k: 'minshawim', g: 'others', ur: 'محمد صدیق المنشاوی (مجود)', en: 'Al-Minshawi (Mujawwad)', f: 'Minshawy_Mujawwad_192kbps'},
+    {k: 'shatri', g: 'others', ur: 'ابوبکر الشاطری', en: 'Abu Bakr Al-Shatri', f: 'Abu_Bakr_Ash-Shaatree_128kbps'},
+    {k: 'ghamdi', g: 'others', ur: 'سعد الغامدی', en: 'Saad Al-Ghamdi', f: 'Ghamadi_40kbps'},
+    {k: 'ajamy', g: 'others', ur: 'احمد بن علی العجمی', en: 'Ahmed Al-Ajamy', f: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'},
+    {k: 'rifai', g: 'others', ur: 'ہانی الرفاعی', en: 'Hani Ar-Rifai', f: 'Hani_Rifai_192kbps'},
+    {k: 'basfar', g: 'others', ur: 'عبداللہ بصفر', en: 'Abdullah Basfar', f: 'Abdullah_Basfar_192kbps'},
+    {k: 'qahtani', g: 'others', ur: 'خالد القحطانی', en: 'Khalid Al-Qahtani', f: 'Khaalid_Abdullaah_al-Qahtaanee_192kbps'},
+    {k: 'qatami', g: 'others', ur: 'ناصر القطامی', en: 'Nasser Al-Qatami', f: 'Nasser_Alqatami_128kbps'},
+    {k: 'jibreel', g: 'others', ur: 'محمد جبریل', en: 'Muhammad Jibreel', f: 'Muhammad_Jibreel_128kbps'},
+    {k: 'bukhatir', g: 'others', ur: 'صلاح بو خاطر', en: 'Salah Bukhatir', f: 'Salaah_AbdulRahman_Bukhatir_128kbps'},
+    {k: 'tablawi', g: 'others', ur: 'محمد الطبلاوی', en: 'Mohammad Al-Tablawi', f: 'Mohammad_al_Tablaway_128kbps'},
+    {k: 'mustafa', g: 'others', ur: 'مصطفیٰ اسماعیل', en: 'Mustafa Ismail', f: 'Mustafa_Ismail_48kbps'},
+    {k: 'banna', g: 'others', ur: 'محمود علی البنا', en: 'Mahmoud Ali Al-Banna', f: 'Mahmoud_Ali_Al_Banna_32kbps'},
+    {k: 'suesy', g: 'others', ur: 'علی حجاج السویسی', en: 'Ali Hajjaj Al-Suesy', f: 'Ali_Hajjaj_AlSuesy_128kbps'},
+    {k: 'alaqimy', g: 'others', ur: 'اکرم العلاقمی', en: 'Akram Al-Alaqimy', f: 'Akram_AlAlaqimy_128kbps'},
     {k: 'harraz', g: 'others', ur: 'ہشام الہراز (روایت ورش)', en: 'Hisham Al-Harraz (Warsh)', surah: 'https://server16.mp3quran.net/H-Lharraz/Rewayat-Warsh-A-n-Nafi/'}];
   const recOf = () => RECITERS.find(r => r.k === QS.reciter) || RECITERS[0];
   const pad = n => String(n).padStart(3, '0');
@@ -1760,7 +1788,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           const [s, a] = sa(k);
           const sp = el('span', {class: 'mw' + (inR.has(k) ? '' : ' out'), 'data-v': k}, ...tjSlice(k, o, e < 0 ? t.length : e));
           if (last) sp.append(' ', el('span', {class: 'mae'}, ad(a) + (sj.has(s + ':' + a) ? ' ۩' : '')));
-          sp.addEventListener('click', () => { const i = idxOf.get(k); if (i != null) ayahMenu(i); });
+          const wn = wordNo(w);
+          sp.addEventListener('click', () => { const i = idxOf.get(k); if (wbwOn() && wn) wordSheet(s, a, wn, null, i); else if (i != null) ayahMenu(i); });
           ln.append(sp);
           if (!R.nodes.has(s + ',' + a) && inR.has(k)) R.nodes.set(s + ',' + a, sp);
         }
@@ -1770,11 +1799,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         if (x[0] === 'h') return el('div', {class: 'mhead', lang: 'ar'}, el('span', {}, 'سُورَةُ ' + Q.meta.surahs[x[1] - 1][1]));
         if (x[0] === 'b') return el('div', {class: 'mline mbism', lang: 'ar'}, verse('ar_uthmani', 1, 1));
         const ln = el('div', {class: 'mline qcf', lang: 'ar', style: 'font-family:QCF' + p});
-        Q.data.mushaf_v1[p - 1][li].forEach(([k, g]) => g.split(' ').forEach(w => {
-          const sp = el('span', {class: 'mw' + (inR.has(k) ? '' : ' out'), 'data-v': k}, w);
-          sp.addEventListener('click', () => { const i = idxOf.get(k); if (i != null) ayahMenu(i); });
+        const lw = []; for (let w = x[0]; w <= x[1]; w++) if (wordNo(w)) lw.push(w);
+        Q.data.mushaf_v1[p - 1][li].forEach(([k, g]) => { const gw = lw.filter(w => Q.wv[w] === k), toks = g.split(' '), fits = toks.length === gw.length || toks.length === gw.length + 1; toks.forEach((w, j) => {
+          const sp = el('span', {class: 'mw' + (inR.has(k) ? '' : ' out'), 'data-v': k}, w), wn = fits && j < gw.length ? wordNo(gw[j]) : 0;
+          sp.addEventListener('click', () => { const i = idxOf.get(k); if (wbwOn() && wn) { const [s, a] = sa(k); wordSheet(s, a, wn, null, i); } else if (i != null) ayahMenu(i); });
           ln.append(sp);
-        }));
+        }); });
         return ln;
       }));
       const fit = () => document.fonts.ready.then(() => requestAnimationFrame(() => {   
@@ -1804,7 +1834,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     sheet(T('viewMode'), [radio('mode', opts, QS.mode, k => { QS.mode = k; qsave(); tools(); redraw(); }),
       el('p', {class: 'grp'}, T('rasm')), radio('rasm', rs, QS.rasm, k => { QS.rasm = k; if (k === 'indopak') QS.tajweed = false; qsave(); redraw(); }),
       el('label', {class: 'srow chk'}, tj, el('span', {}, T('tajweed'))),
-      el('button', {class: 'btn', type: 'button', on: {click: tajweedLegend}}, T('tjLegend'))]);
+      el('button', {class: 'btn', type: 'button', on: {click: tajweedLegend}}, T('tjLegend')),
+      (() => { const wb = el('input', {type: 'checkbox'}); wb.checked = wbwOn(); wb.addEventListener('change', () => { QS.wbw = wb.checked; qsave(); }); return el('label', {class: 'srow chk'}, wb, el('span', {}, wl('set'))); })()]);
   }
   function closeSheet() { document.querySelectorAll('.sheetbg').forEach(x => x.remove()); }
   async function redraw() { if (!R) return; await need(arKeys().concat(QS.tr)); drawReader(true); }
@@ -1923,11 +1954,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const ar = () => arParts(s, a).concat(sj.has(s + ':' + a) ? [' ۩'] : []);
       if (mushaf) {
         const sp = el('span', {class: 'mv', 'data-i': i}, ...ar(), ' ', ayahNum(a), ' ');
-        sp.addEventListener('click', () => ayahMenu(i));
+        sp.addEventListener('click', e => onArTap(e, sp, s, a, i));
         box.append(sp); R.nodes.set(s + ',' + a, sp);
       } else {
         const c = el('article', {class: 'card ayah', 'data-i': i});
-        c.append(el('p', {class: 'qar', lang: 'ar'}, ...ar(), ' ', ayahNum(a)));
+        const qp = el('p', {class: 'qar', lang: 'ar'}, ...ar(), ' ', ayahNum(a)); qp.addEventListener('click', e => onArTap(e, qp, s, a, i)); c.append(qp);
         c.append(el('div', {class: 'vno'}, el('span', {}, (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)) + '  ·  ' + a + '/' + Q.meta.surahs[s - 1][4])));
         eds.forEach(e => c.append(el('div', {class: 'tbl'}, eds.length > 1 ? el('span', {class: 'trname'}, edLabel(e)) : null, trText(e.key, s, a))));
         c.append(ayahActs(i));
@@ -1966,6 +1997,152 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     sheet((LTR() ? s + ':' + a : ad(s) + ':' + ad(a)) + ' — ' + sName(s),
       [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.85)'}, ...arParts(s, a))].concat(eds.map(e => trText(e.key, s, a))).concat([ayahActs(i)]));
   }
+  /* ---------- word by word: tap a word → its meaning, its grammar and its sound ----------
+     meanings and transliteration: quran.com (fetched when a word is tapped, kept only in memory);
+     grammar, lemma and root: Quranic Arabic Corpus (quran/morph.js, GPL);
+     the sound: Shaykh Mahmoud Khalil al-Husary's recitation, the one word cut out by its timing (quran.com timings). */
+  ICON.speaker = 'M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z';
+  const WAPI = 'https://api.quran.com/api/v4', WQDC = 'https://api.qurancdn.com/api/qdc', W_REC = 6;   // 6 = al-Husary (murattal)
+  const WB = {words: new Map(), clip: new Map(), qdc: new Map(), au: null, stop: 0};
+  const WL = {
+    ur: {play: 'لفظ سنیں', ayah: 'آیت کے اختیارات', lemma: 'اصل لفظ', root: 'مادہ', net: 'لفظ کا معنی دیکھنے کے لیے انٹرنیٹ چاہیے', noAu: 'اس لفظ کی آواز نہیں مل سکی', prev: 'پچھلا لفظ', next: 'اگلا لفظ',
+      set: 'قرآن کے کسی لفظ پر کلک کریں تو اس کا معنی، گرامر اور آواز', credit: 'لفظی معنی: quran.com · گرامر: Quranic Arabic Corpus · آواز: شیخ محمود خلیل الحصری', pron: 'ضمیر', plus: ' + '},
+    ar: {play: 'استمع إلى الكلمة', ayah: 'خيارات الآية', lemma: 'الصيغة', root: 'الجذر', net: 'يلزم الاتصال بالإنترنت لعرض معنى الكلمة', noAu: 'تعذر تشغيل صوت هذه الكلمة', prev: 'الكلمة السابقة', next: 'الكلمة التالية',
+      set: 'عند الضغط على كلمة من القرآن: معناها وإعرابها وصوتها', credit: 'المعاني: quran.com · الصرف: Quranic Arabic Corpus · الصوت: الشيخ محمود خليل الحصري', pron: 'ضمير', plus: ' + '},
+    en: {play: 'Listen to the word', ayah: 'Ayah options', lemma: 'Lemma', root: 'Root', net: 'An internet connection is needed for word meanings', noAu: 'The sound of this word could not be played', prev: 'Previous word', next: 'Next word',
+      set: 'Tap a word of the Quran for its meaning, grammar and sound', credit: 'Word meanings: quran.com · Grammar: Quranic Arabic Corpus · Voice: Shaykh Mahmoud Khalil al-Husary', pron: 'pronoun', plus: ' + '}};
+  WL.fr = Object.assign({}, WL.en, {play: 'Écouter le mot', ayah: 'Options du verset', lemma: 'Lemme', root: 'Racine', prev: 'Mot précédent', next: 'Mot suivant', set: 'Toucher un mot du Coran : sens, grammaire et prononciation', noAu: "Le son de ce mot n'a pas pu être lu", net: 'Une connexion internet est nécessaire pour le sens des mots'});
+  WL.hi = Object.assign({}, WL.en, {play: 'शब्द सुनें', ayah: 'आयत के विकल्प', lemma: 'मूल शब्द', root: 'धातु', prev: 'पिछला शब्द', next: 'अगला शब्द', set: 'क़ुरआन के किसी शब्द पर टैप करें: अर्थ, व्याकरण और आवाज़', noAu: 'इस शब्द की आवाज़ नहीं चल सकी', net: 'शब्द का अर्थ देखने के लिए इंटरनेट चाहिए'});
+  WL.bn = Object.assign({}, WL.en, {play: 'শব্দটি শুনুন', ayah: 'আয়াতের বিকল্প', lemma: 'মূল শব্দ', root: 'ধাতু', prev: 'আগের শব্দ', next: 'পরের শব্দ', set: 'কুরআনের কোনো শব্দে চাপুন: অর্থ, ব্যাকরণ ও উচ্চারণ', noAu: 'এই শব্দের আওয়াজ চালানো যায়নি', net: 'শব্দের অর্থ দেখতে ইন্টারনেট প্রয়োজন'});
+  WL.gu = Object.assign({}, WL.en, {play: 'શબ્દ સાંભળો', ayah: 'આયતના વિકલ્પો', lemma: 'મૂળ શબ્દ', root: 'ધાતુ', prev: 'પાછલો શબ્દ', next: 'આગલો શબ્દ', set: 'કુરઆનના કોઈ શબ્દ પર ટેપ કરો: અર્થ, વ્યાકરણ અને અવાજ', noAu: 'આ શબ્દનો અવાજ ચાલી શક્યો નહીં', net: 'શબ્દનો અર્થ જોવા માટે ઇન્ટરનેટ જરૂરી છે'});
+  const wl = k => (WL[ui] || WL.en)[k];
+  // parts of speech (Quranic Arabic Corpus tags)
+  const POS_AR = {N: 'اسم', PN: 'اسم علم', PRON: 'ضمير', DEM: 'اسم إشارة', REL: 'اسم موصول', T: 'ظرف زمان', LOC: 'ظرف مكان', NV: 'اسم فعل', COND: 'أداة شرط', INTG: 'اسم استفهام',
+    VN: 'مصدر', ACT_PCPL: 'اسم فاعل', PASS_PCPL: 'اسم مفعول', ADJ: 'صفة', VPERF: 'فعل ماض', VIMPF: 'فعل مضارع', VIMPV: 'فعل أمر', V: 'فعل', PASS: 'مبني للمجهول',
+    P: 'حرف جر', EMPH: 'لام التوكيد', IMPV: 'لام الأمر', PRP: 'لام التعليل', CONJ: 'حرف عطف', SUB: 'حرف مصدري', ACC: 'حرف نصب', AMD: 'حرف استدراك', ANS: 'حرف جواب', AVR: 'حرف ردع',
+    CAUS: 'حرف سببية', CERT: 'حرف تحقيق', CIRC: 'حرف حال', COM: 'واو المعية', EQ: 'حرف تسوية', EXH: 'حرف تحضيض', EXL: 'حرف تفصيل', EXP: 'أداة استثناء', FUT: 'حرف استقبال',
+    INC: 'حرف ابتداء', INT: 'حرف تفسير', NEG: 'حرف نفي', PREV: 'حرف كاف', PRO: 'حرف نهي', REM: 'حرف استئنافية', RES: 'أداة حصر', RET: 'حرف إضراب', RSLT: 'حرف واقع في جواب الشرط',
+    SUP: 'حرف زائد', SUR: 'حرف فجاءة', VOC: 'حرف نداء', ATT: 'حرف تنبيه', DIST: 'لام البعد', ADDR: 'حرف خطاب', INL: 'حروف مقطعة'};
+  const POS_UR = {N: 'اسم', PN: 'اسمِ علم (نام)', PRON: 'ضمیر', DEM: 'اسمِ اشارہ', REL: 'اسمِ موصول', T: 'ظرفِ زمان', LOC: 'ظرفِ مکان', NV: 'اسمِ فعل', COND: 'حرفِ شرط', INTG: 'اسمِ استفہام',
+    VN: 'مصدر', ACT_PCPL: 'اسمِ فاعل', PASS_PCPL: 'اسمِ مفعول', ADJ: 'صفت', VPERF: 'فعلِ ماضی', VIMPF: 'فعلِ مضارع', VIMPV: 'فعلِ امر', V: 'فعل', PASS: 'مجہول',
+    P: 'حرفِ جار', CONJ: 'حرفِ عطف', NEG: 'حرفِ نفی', VOC: 'حرفِ ندا', ACC: 'حرفِ نصب', EMPH: 'لامِ تاکید', FUT: 'حرفِ استقبال', INL: 'حروفِ مقطعات'};
+  const POS_EN = {N: 'Noun', PN: 'Proper noun', PRON: 'Pronoun', DEM: 'Demonstrative pronoun', REL: 'Relative pronoun', T: 'Time adverb', LOC: 'Location adverb', NV: 'Verbal noun (ism fiʿl)', COND: 'Conditional particle',
+    INTG: 'Interrogative', VN: 'Verbal noun', ACT_PCPL: 'Active participle', PASS_PCPL: 'Passive participle', ADJ: 'Adjective', VPERF: 'Perfect verb', VIMPF: 'Imperfect verb', VIMPV: 'Imperative verb', V: 'Verb',
+    PASS: 'passive', P: 'Preposition', CONJ: 'Conjunction', NEG: 'Negative particle', VOC: 'Vocative particle', ACC: 'Accusative particle', EMPH: 'Emphatic lām', FUT: 'Future particle', INL: 'Disconnected letters'};
+  function posName(t) {
+    const pass = t.endsWith('-PASS'), b = pass ? t.slice(0, -5) : t, tbl = ui === 'ar' ? POS_AR : ui === 'ur' ? POS_UR : POS_EN;
+    const n = tbl[b] || (ui === 'ar' ? b : (ui === 'ur' ? 'حرف' : 'Particle') + ' (' + (POS_AR[b] || b) + ')');
+    return pass ? n + ' (' + tbl.PASS + ')' : n;
+  }
+  const hasL = t => /[ء-غف-يٱ-ۓ]/.test(t);
+  const arWords = t => (t || '').split(/\s+/).filter(hasL);
+  // the grammar line of word w (1-based) of verse k
+  function morphOf(k, w) {
+    const v = ((Q.data.morph || [])[k] || '').split('\t')[w - 1];
+    if (!v) return null;
+    const [tag, lem, root, pre, suf] = v.split(';');
+    return {tag, lem, root, pre: pre ? pre.split(',') : [], suf};
+  }
+  async function wordData(s, a) {
+    const lang = {ur: 'ur', bn: 'bn', hi: 'hi', fr: 'fr', en: 'en'}[ui] || 'en', key = s + ':' + a + ':' + lang;
+    if (WB.words.has(key)) return WB.words.get(key);
+    const r = await fetch(WAPI + '/verses/by_key/' + s + ':' + a + '?words=true&language=' + lang + '&word_translation_language=' + lang + '&word_fields=text_uthmani');
+    if (!r.ok) throw new Error('words');
+    const j = await r.json(), ws = ((j.verse || {}).words || []).filter(x => x.char_type_name !== 'end');
+    WB.words.set(key, ws); return ws;
+  }
+  // [url, from, to] (seconds) of word w of s:a in al-Husary's recitation
+  const segPick = (segs, w, off) => {
+    const ok = (segs || []).filter(x => Array.isArray(x) && x.length >= 3 && x.slice(-2).every(n => typeof n === 'number'));
+    if (!ok.length) return null;
+    const zero = ok.some(x => x[0] === 0), x = ok.find(x => x[0] + (zero ? 1 : 0) === w) || ok.slice().sort((p, q) => p[p.length - 2] - q[q.length - 2])[w - 1];
+    return x ? [(x[x.length - 2] - off) / 1000, (x[x.length - 1] - off) / 1000] : null;
+  };
+  async function wordClip(s, a, w) {
+    const key = s + ':' + a;
+    if (!WB.clip.has(key)) WB.clip.set(key, (async () => {
+      try {   // one ayah file with its word timings
+        const r = await fetch(WAPI + '/recitations/' + W_REC + '/by_ayah/' + key);
+        if (r.ok) { const f = ((await r.json()).audio_files || [])[0];
+          if (f && f.url && f.segments && f.segments.length) return {url: /^https?:/.test(f.url) ? f.url : 'https://verses.quran.com/' + f.url.replace(/^\/+/, ''), segs: f.segments, off: 0}; }
+      } catch (e) {}
+      // the whole surah file with the timings of each ayah
+      if (!WB.qdc.has(s)) WB.qdc.set(s, fetch(WQDC + '/audio/reciters/' + W_REC + '/audio_files?chapter=' + s + '&segments=true').then(r => r.ok ? r.json() : null).catch(() => null));
+      const j = await WB.qdc.get(s), f = j && (j.audio_files || [])[0];
+      if (!f) return null;
+      const t = (f.verse_timings || f.timestamps || []).find(x => x.verse_key === key);
+      return t && t.segments ? {url: f.audio_url, segs: t.segments, off: 0} : null;
+    })());
+    const c = await WB.clip.get(key);
+    if (!c) return null;
+    const p = segPick(c.segs, w, c.off);
+    return p ? [c.url, p[0], p[1]] : null;
+  }
+  async function playWord(s, a, w, btn) {
+    if (btn) btn.classList.add('on');
+    const done = () => { if (btn) btn.classList.remove('on'); };
+    try {
+      const c = await wordClip(s, a, w);
+      if (!c) { toast(wl('noAu')); done(); return; }
+      const [url, from, to] = c;
+      const au = WB.au || (WB.au = new Audio());
+      au.pause(); clearInterval(WB.stop);
+      if (au.src !== url) { au.src = url; au.preload = 'auto'; }
+      const go = () => { au.currentTime = Math.max(0, from - 0.03); au.play().catch(() => { toast(wl('noAu')); done(); });
+        WB.stop = setInterval(() => { if (au.currentTime >= to + 0.06 || au.paused) { au.pause(); clearInterval(WB.stop); done(); } }, 30); };
+      if (au.readyState >= 1) go(); else au.addEventListener('loadedmetadata', go, {once: true});
+      au.onerror = () => { toast(wl('noAu')); done(); };
+    } catch (e) { toast(wl('noAu')); done(); }
+  }
+  // the sheet of word w (1-based) of s:a; shown = the word as it is written in the chosen script
+  async function wordSheet(s, a, w, shown, i) {
+    const k = vi(s, a), n = arWords((Q.data[AK()] || [])[k]).length;
+    if (w < 1 || w > n) { if (i != null) ayahMenu(i); return; }
+    await need(['morph']);
+    const m = morphOf(k, w);
+    const body = el('div', {class: 'wbw'});
+    const pos = m ? [...m.pre.map(posName), posName(m.tag)].concat(m.suf ? [wl('pron')] : []).join(wl('plus')) : '';
+    const tr = el('div', {class: 'wtr'}, el('span', {class: 'cs'}, T('loading')));
+    const pb = el('button', {class: 'ab wplay', type: 'button', title: wl('play'), 'aria-label': wl('play'), on: {click: () => playWord(s, a, w, pb)}}, icon('speaker'));
+    body.append(el('p', {class: 'wpos'}, pos),
+      el('p', {class: 'qar wword', lang: 'ar', dir: 'rtl'}, shown || arWords(verse(AK(), s, a))[w - 1]),
+      tr,
+      m && m.lem ? el('div', {class: 'wlem'}, el('span', {class: 'cs'}, wl('lemma') + ': '), el('b', {lang: 'ar', dir: 'rtl'}, m.lem),
+        m.root ? el('span', {class: 'cs'}, '  ·  ' + wl('root') + ': ') : null, m.root ? el('b', {lang: 'ar', dir: 'rtl'}, m.root.split('').join(' ')) : null, ' ', pb) : el('div', {class: 'wlem'}, pb),
+      el('div', {class: 'wnav'},
+        el('button', {class: 'btn', type: 'button', disabled: w <= 1, on: {click: () => { closeSheet(); wordSheet(s, a, w - 1, null, i); }}}, (LTR() ? '‹ ' : '› ') + wl('prev')),
+        el('button', {class: 'btn', type: 'button', disabled: w >= n, on: {click: () => { closeSheet(); wordSheet(s, a, w + 1, null, i); }}}, wl('next') + (LTR() ? ' ›' : ' ‹'))),
+      el('p', {class: 'note wcred'}, wl('credit')));
+    const btns = [[T('close'), null]];
+    if (i != null) btns.unshift([wl('ayah'), () => { setTimeout(() => ayahMenu(i), 0); }]);
+    sheet((LTR() ? s + ':' + a + ':' + w : ad(s) + ':' + ad(a) + ':' + ad(w)) + ' — ' + sName(s), body, btns);
+    playWord(s, a, w, pb);
+    try {
+      const ws = await wordData(s, a), x = ws.find(x => x.position === w) || ws[w - 1];
+      const t = x && x.translation && x.translation.text, tl = x && x.transliteration && x.transliteration.text;
+      tr.replaceChildren(t ? el('p', {class: 'wmean', dir: 'auto'}, t) : '', tl ? el('p', {class: 'cs wtl', dir: 'ltr'}, tl) : '');
+    } catch (e) { tr.replaceChildren(el('p', {class: 'cs'}, wl('net'))); }
+  }
+  // which word of root (a verse's Arabic) was tapped: [w (1-based), the word as written] or null
+  function tappedWord(e, root) {
+    let r = null;
+    if (document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(e.clientX, e.clientY); if (p) { r = document.createRange(); r.setStart(p.offsetNode, p.offset); } }
+    else if (document.caretRangeFromPoint) r = document.caretRangeFromPoint(e.clientX, e.clientY);
+    if (!r || !root.contains(r.startContainer)) return null;
+    const pre = document.createRange(); pre.setStart(root, 0); pre.setEnd(r.startContainer, r.startOffset);
+    const before = pre.toString(), toks = before.split(/\s+/);
+    const w = toks.slice(0, -1).filter(hasL).length + 1, all = arWords(root.textContent);
+    return w <= all.length ? [w, all[w - 1]] : null;
+  }
+  const wbwOn = () => QS.wbw !== false;
+  function onArTap(e, root, s, a, i) {
+    if (!wbwOn()) { if (i != null) ayahMenu(i); return; }
+    const t = tappedWord(e, root);
+    if (t) wordSheet(s, a, t[0], t[1], i); else if (i != null) ayahMenu(i);
+  }
+  // the word number in its verse of global word g (pages mode)
+  const wordNo = g => { const k = Q.wv[g], t = Q.data.ar_uthmani[k]; return hasL(t.slice(Q.ws[g]).split(' ')[0]) ? arWords(t.slice(0, Q.ws[g])).length + 1 : 0; };
+
   function firstVisible() {
     if (!R) return 0;
     let best = 0;
