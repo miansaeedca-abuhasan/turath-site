@@ -35,7 +35,7 @@ for lang in ['ur', 'ar', 'en']:
     for i, t in enumerate(tabs[lang][1:], 2):
         if tap_text(t): shot(f'{lang}_{i}_{t}')
     mq = {'ur': 'قریبی مساجد', 'ar': 'المساجد القريبة', 'en': 'Mosques nearby'}[lang]
-    if tap_text(mq): time.sleep(20); shot(f'{lang}_7_mosques')
+    if tap_text(mq): time.sleep(50); shot(f'{lang}_7_mosques')
     if lang == 'ur':
         tap_text(tabs[lang][0]); time.sleep(2)
         sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')

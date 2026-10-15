@@ -35,11 +35,19 @@ object Mosques {
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             val q = "[out:json][timeout:25];nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"](around:${km * 1000},$lat,$lng);out center tags;"
-            val c = URL("https://overpass-api.de/api/interpreter").openConnection() as HttpURLConnection
-            c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 20_000; c.readTimeout = 40_000
-            c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
-            c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
-            val s = c.inputStream.bufferedReader().readText()
+            // the main Overpass server, then its mirrors
+            var s = ""
+            for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
+                s = runCatching {
+                    val c = URL(u).openConnection() as HttpURLConnection
+                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 30_000
+                    c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
+                    c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
+                    if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
+                }.getOrDefault("")
+                if (s.contains("\"elements\"")) break
+            }
+            if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
             pr.sp.edit().putString(key, s).putLong(key + "_t", System.currentTimeMillis()).apply()
             s
         }
