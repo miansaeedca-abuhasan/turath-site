@@ -96,6 +96,13 @@ class Prefs(ctx: Context) {
     }
     fun beedDeclined(key: String) = sp.getStringSet("beedno", emptySet())!!.contains(key)
 
+    // a reminder some minutes before and / or after each prayer (0 = none)
+    fun before(p: P): Int = sp.getInt("pre_" + p.name, 0)
+    fun setBefore(p: P, v: Int) = sp.edit().putInt("pre_" + p.name, v).apply()
+    fun after(p: P): Int = sp.getInt("post_" + p.name, 0)
+    fun setAfter(p: P, v: Int) = sp.edit().putInt("post_" + p.name, v).apply()
+    var prePostSound: Snd get() = runCatching { Snd.valueOf(sp.getString("ppsnd", "") ?: "") }.getOrDefault(Snd.SHORT_HAYYA); set(v) = sp.edit().putString("ppsnd", v.name).apply()
+
     var reminders: List<Reminder>
         get() = sp.getString("rem", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { Reminder.from(a.getJSONObject(it)) } } ?: defaultReminders()
         set(v) = sp.edit().putString("rem", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()

@@ -47,6 +47,8 @@ object Tr {
         "minBeforeMaghrib" to arrayOf("منٹ مغرب سے پہلے", "دقيقة قبل المغرب", "min before Maghrib"),
         "before" to arrayOf("پہلے", "قبل", "before"), "after" to arrayOf("بعد", "بعد", "after"),
         "min" to arrayOf("منٹ", "دقيقة", "min"), "hr" to arrayOf("گھنٹہ", "ساعة", "h"),
+        "prePost" to arrayOf("نمازوں سے پہلے اور بعد یاد دہانی", "تذكير قبل الصلوات وبعدها", "Reminders before and after prayers"),
+        "prePostNote" to arrayOf("ہر نماز کے لیے منٹ چنیں؛ صفر کا مطلب بند ہے", "اختر الدقائق لكل صلاة؛ الصفر يعني إيقافه", "Choose minutes for each prayer; zero means off"),
         "custom" to arrayOf("اپنی یاد دہانیاں", "تنبيهاتي", "My reminders"),
         "newRem" to arrayOf("نئی یاد دہانی", "تنبيه جديد", "New reminder"),
         "label" to arrayOf("نام", "الاسم", "Name"), "save" to arrayOf("محفوظ کریں", "حفظ", "Save"),

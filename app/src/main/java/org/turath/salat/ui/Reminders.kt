@@ -43,6 +43,7 @@ fun RemindersScreen(s: AppState) {
     val pr = s.prefs
     var edit by remember { mutableStateOf<Reminder?>(null) }
     var suhoorSnd by remember { mutableStateOf(false) }
+    var ppSnd by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()) {
         Text(Tr["tRem"], Modifier.padding(16.dp), fontSize = 28.sp, fontWeight = FontWeight.Bold)
         SectionTitle(Tr["fasting"])
@@ -56,6 +57,18 @@ fun RemindersScreen(s: AppState) {
                 Text(Tr["sound"], Modifier.weight(1f)); Text(Tr[pr.suhoorSound.name], color = MaterialTheme.colorScheme.primary)
             }
             Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
+        }
+        SectionTitle(Tr["prePost"])
+        Card0 {
+            Text(Tr["prePostNote"], fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
+            for (p in FIVE) {
+                Text(Tr.p(p), fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+                Stepper(Tr["before"] + " (" + Tr["min"] + ")", pr.before(p), 0, 120, 5) { pr.setBefore(p, it); s.changed() }
+                Stepper(Tr["after"] + " (" + Tr["min"] + ")", pr.after(p), 0, 120, 5) { pr.setAfter(p, it); s.changed() }
+            }
+            Row(Modifier.fillMaxWidth().clickable { ppSnd = true }.padding(vertical = 10.dp)) {
+                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr[pr.prePostSound.name], color = MaterialTheme.colorScheme.primary)
+            }
         }
         SectionTitle(Tr["nafl"])
         Card0 {
@@ -81,6 +94,7 @@ fun RemindersScreen(s: AppState) {
         Spacer(Modifier.height(24.dp))
     }
     edit?.let { r -> ReminderEditor(s, r) { edit = null } }
+    if (ppSnd) SoundPicker(s, Tr["prePost"], pr.prePostSound, SoundService.choices(s.act, false).filter { it != Snd.SILENT }) { v -> if (v != null) { pr.prePostSound = v; s.changed() }; ppSnd = false }
     if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, false).filter { it != Snd.SILENT }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
 }
 

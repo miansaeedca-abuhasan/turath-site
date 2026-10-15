@@ -51,6 +51,11 @@ object Events {
             // the evening before the 13th: ask whether to fast the white days
             if (pr.beed && h.day == 12 && !pr.beedAccepted(key) && !pr.beedDeclined(key))
                 out += Ev(t[P.ISHA].plusMinutes(10), "beedask", text = key)
+            // before / after each prayer
+            for (p in FIVE) {
+                if (pr.before(p) > 0) out += Ev(t[p].minusMinutes(pr.before(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.before(p)) + " " + Tr["min"] + " " + Tr["before"] + " " + Tr.p(p))
+                if (pr.after(p) > 0) out += Ev(t[p].plusMinutes(pr.after(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.after(p)) + " " + Tr["min"] + " " + Tr["after"] + " " + Tr.p(p))
+            }
             // the user's own reminders
             for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1)
                 out += Ev(t[r.base].plusMinutes(r.minutes.toLong()), "custom", r.base, r.sound, r.label, r.id)
