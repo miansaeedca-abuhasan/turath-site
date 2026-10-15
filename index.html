@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ur" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="theme-color" content="#2f7fc0">
@@ -432,6 +432,11 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .wplay{background:var(--card);border:1px solid var(--line);color:var(--accent);border-radius:50%;width:2.8rem;height:2.8rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
 .wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
+details.dirasa{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;background:var(--card,#fff)}
+details.dirasa>summary{cursor:pointer;padding:.6rem .8rem;font:700 1.15rem/1.8 var(--arabic);color:var(--accent,#0b5d4b);list-style:none}
+details.dirasa>summary::before{content:'▸ ';}details.dirasa[open]>summary::before{content:'▾ ';}
+details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
+.drbody{padding:.2rem .9rem .6rem;font:1.08rem/2 var(--arabic);text-align:justify}.drbody p{margin:.45rem 0}.drbody p.q{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -653,7 +658,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js", "data/d2.js", "data/d3.js", "data/d4.js", "data/d5.js", "data/d6.js", "data/d7.js", "data/d8.js"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js", "data/d2.js", "data/d3.js", "data/d4.js", "data/d5.js", "data/d6.js", "data/d7.js", "data/d8.js", "data/d9.js"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -681,9 +686,9 @@ const ICON={
  palette:'M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
  read:'M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z'};
 const icon=n=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','i');s.setAttribute('aria-hidden','true');const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',ICON[n]);s.append(p);return s;};
-let ui='ur',book='jami',BOOKS=[],TOC=null;
-try{ui=localStorage.ui||'ur';book=localStorage.book||'jami'}catch(e){}
-if(!['ur','en','ar','bn','hi','gu','fr'].includes(ui))ui='ur';
+let ui='en',book='jami',BOOKS=[],TOC=null;
+try{ui=localStorage.ui||'en';book=localStorage.book||'jami'}catch(e){}
+if(!['ur','en','ar','bn','hi','gu','fr'].includes(ui))ui='en';
 const T=k=>{const d=I[ui]||I.ur;return d[k]!==undefined?d[k]:I.en[k];};
 const $=s=>document.querySelector(s);
 function el(tag,attrs,...kids){const e=document.createElement(tag);for(const k in attrs||{}){if(k==='on')for(const ev in attrs.on)e.addEventListener(ev,attrs.on[ev]);else if(attrs[k]!==false&&attrs[k]!=null)e.setAttribute(k,attrs[k]);}e.append(...kids.filter(x=>x!=null));return e;}
@@ -898,7 +903,7 @@ async function showKitabs(){
       return a;}));};
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},EN()?'Introduction to al-Jami al-Kamil':'کتاب کا مقدمہ'))):'',list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
@@ -1169,6 +1174,25 @@ if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refb
     out.push(chips,rb);}
 return out;}
 window.refBlock=refBlock;
+/* ---------- مفصل دراسة الحديث: the full scholarly study of al-Jami al-Kamil after the takhrij (loaded when opened) ---------- */
+const DRL={};window.TURATH_DR=o=>Object.assign(window.DRDATA=window.DRDATA||{},o);
+function drLoad(num){const f=(window.TURATH_DATA&&TURATH_DATA.drfiles||[]).find(x=>num>=x[0]&&num<=x[1]);if(!f)return Promise.resolve();
+  return DRL[f[2]]||(DRL[f[2]]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=f[2];s.onload=ok;s.onerror=()=>{delete DRL[f[2]];no();};document.head.append(s);}));}
+function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{},el('span',{class:'ar',lang:'ar'},'مفصل دراسة الحديث'),EN()?el('small',{class:'ltr'},' — Detailed Study of the Hadith'):''),body=el('div',{class:'drbody ar',lang:'ar',dir:'rtl'});
+  det.append(sum,body);let done=false;
+  det.addEventListener('toggle',async()=>{if(!det.open||done)return;body.replaceChildren(el('p',{class:'note'},'…'));
+    try{await drLoad(d.num);const ps=(window.DRDATA||{})[d.num]||[];done=true;
+      body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...rich(t,'ar'))));
+      if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps,'ar',body)}},icon('listen'),T('listenPart')));}
+    catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
+  return det;}
+/* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
+async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
+  v.append(el('p',{class:'note'},'…'));
+  if(!window.MADKHAL)await new Promise(ok=>{window.TURATH_MADKHAL=x=>{window.MADKHAL=x;ok();};const s=document.createElement('script');s.src='data/madkhal.js';s.onerror=ok;document.head.append(s);});
+  const box=el('div',{class:'card drbody ar',lang:'ar',dir:'rtl'});
+  (window.MADKHAL||[]).forEach(([s,t])=>box.append(s.startsWith('Heading')?el('h3',{class:'grp ar'},t):el('p',{},...rich(t,'ar'))));
+  v.replaceChildren(box);}
 /* ---------- full reading page ---------- */
 async function showHadith(num){
   hSaveLast();
@@ -1196,7 +1220,8 @@ async function showHadith(num){
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
-  if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
+  if(d.dr&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...rich(d.takhrij,'ar'));v.append(t);if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));v.append(drBlock(d));}
+  else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(d.takhrij.replace(d.grade?d.grade+':':'','').trim());v.append(t);}
   v.append(...refBlock(d));
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
@@ -1232,6 +1257,7 @@ function route(){
   const h=location.hash,sec=navBar();
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
+  if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),quran=sec==='q'||sec==='home'||td||qz;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hb=h==='#/hb',home=!quran&&!sc&&!hb&&!gs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
