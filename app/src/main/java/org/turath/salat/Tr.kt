@@ -64,13 +64,26 @@ object Tr {
         "ADHAN_BASIT" to arrayOf("اذان — شیخ عبدالباسط عبدالصمد", "أذان الشيخ عبد الباسط عبد الصمد", "Adhan — Shaikh Abdul Basit Abdus Samad"),
         "ADHAN_NABET" to arrayOf("اذان — شیخ صالح النبت", "أذان الشيخ صالح النبت", "Adhan — Shaikh Saleh al-Nabet"),
         "ADHAN_MAGHRIBI" to arrayOf("اذان — شیخ نور الدین حمزہ المغربی", "أذان الشيخ نور الدين حمزة المغربي", "Adhan — Shaikh Nur ad-Din Hamza al-Maghribi"),
-        "SHORT_HAYYA" to arrayOf("مختصر: حی علی الصلاۃ", "مختصر: حيّ على الصلاة", "Short: Hayya ala as-salah"),
-        "SHORT_SHAHADA" to arrayOf("مختصر: اشہد ان لا الٰہ الا اللہ", "مختصر: أشهد أن لا إله إلا الله", "Short: Ash-hadu an la ilaha illallah"),
-        "SHORT_TAKBIR" to arrayOf("مختصر: اللہ اکبر، اللہ اکبر", "مختصر: الله أكبر، الله أكبر", "Short: Allahu akbar, Allahu akbar"),
-        "TAKBIRAT" to arrayOf("تکبیرات — مسجد الحرام", "تكبيرات المسجد الحرام", "Takbirat — Masjid al-Haram"),
-        "BIRDS1" to arrayOf("پرندوں کی چہچہاہٹ 1", "زقزقة العصافير 1", "Birdsong 1"),
-        "BIRDS2" to arrayOf("پرندوں کی چہچہاہٹ 2", "زقزقة العصافير 2", "Birdsong 2"),
-        "BIRDS3" to arrayOf("پرندوں کی چہچہاہٹ 3", "زقزقة العصافير 3", "Birdsong 3"),
+        // short calls and the muezzins
+        "khayr" to arrayOf("«الصلاة خير من النوم»", "«الصلاة خير من النوم»", "«As-salatu khairun min an-nawm»"),
+        "hayya" to arrayOf("«حي على الصلاة»", "«حيّ على الصلاة»", "«Hayya ala as-salah»"),
+        "shahada" to arrayOf("«أشهد أن لا إله إلا الله»", "«أشهد أن لا إله إلا الله»", "«Ash-hadu an la ilaha illallah»"),
+        "takbir" to arrayOf("«الله أكبر، الله أكبر»", "«الله أكبر، الله أكبر»", "«Allahu akbar, Allahu akbar»"),
+        "takbirat" to arrayOf("تکبیرات", "التكبيرات", "Takbirat"),
+        "MULLA" to arrayOf("شیخ علی احمد ملا (مکہ)", "الشيخ علي أحمد ملا (مكة)", "Shaikh Ali Ahmad Mulla (Makkah)"),
+        "DAGHRIRI" to arrayOf("شیخ حمد الدغریری (مکہ)", "الشيخ حمد الدغريري (مكة)", "Shaikh Hamad al-Daghriri (Makkah)"),
+        "BUKHARI" to arrayOf("شیخ عصام بخاری (مدینہ)", "الشيخ عصام بخاري (المدينة)", "Shaikh Essam Bukhari (Madinah)"),
+        "NABET" to arrayOf("شیخ صالح النبت", "الشيخ صالح النبت", "Shaikh Saleh al-Nabet"),
+        "MAGHRIBI" to arrayOf("شیخ نور الدین حمزہ المغربی", "الشيخ نور الدين حمزة المغربي", "Shaikh Nur ad-Din Hamza al-Maghribi"),
+        "BASIT" to arrayOf("شیخ عبدالباسط عبدالصمد", "الشيخ عبد الباسط عبد الصمد", "Shaikh Abdul Basit Abdus Samad"),
+        // birdsong
+        "BIRDS1" to arrayOf("صبح کے پرندے", "عصافير الصباح", "Morning birds"),
+        "NIGHTINGALE" to arrayOf("بلبل (نائٹنگیل)", "العندليب", "Nightingale"),
+        "BLACKBIRD" to arrayOf("کالی چڑیا (بلیک برڈ)", "الشحرور", "Blackbird"),
+        "ROBIN" to arrayOf("رابن", "أبو الحناء", "Robin"),
+        "SKYLARK" to arrayOf("چنڈول (اسکائی لارک)", "القبّرة", "Skylark"),
+        "WREN" to arrayOf("ممولا (رین)", "النمنمة", "Wren"),
+        "CHORUS" to arrayOf("سحر کے وقت پرندوں کا نغمہ", "تغريد الطيور عند الفجر", "Dawn chorus"),
         "TONE" to arrayOf("فون کا الارم", "منبّه الهاتف", "Phone alarm tone"),
         "NOTIFY" to arrayOf("اطلاع کی آواز", "صوت الإشعار", "Notification sound"),
         "SILENT" to arrayOf("خاموش", "صامت", "Silent"),
@@ -160,6 +173,12 @@ object Tr {
     }
 
     fun p(p: P) = get(p.name)
+
+    /** name of a sound: an adhan, or a short call with its muezzin, or a bird */
+    fun snd(s: Snd): String = when {
+        s.phrase != null -> get(s.phrase) + " — " + get(s.mu!!.name)
+        else -> get(s.name)
+    }
     fun hijriMonth(m: Int) = MONTHS_H[lang]!![m - 1]
     fun hijri(h: Hijri) = num(h.day) + " " + hijriMonth(h.month) + " " + num(h.year) + when (lang) { "en" -> " AH"; "ar" -> " هـ"; else -> " ھ" }
 

@@ -11,17 +11,29 @@ enum class P { FAJR, SUNRISE, ISHRAQ, CHASHT, ZAWAL, DHUHR, ASR, MAGHRIB, ISHA, 
 val FIVE = listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
 
 /** sound for an alarm or reminder; a sound file missing from the app falls back to the phone's alarm tone */
-enum class Snd(val raw: String?) {
+/** muezzins whose recordings the app has */
+enum class Mu { MULLA, DAGHRIRI, BUKHARI, NABET, MAGHRIBI, BASIT }
+
+enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null) {
     // adhans (a «_fajr» file of the same name is used for Fajr when the app has one)
-    ADHAN_MAKKAH("adhan_makkah"), ADHAN_DAGHRIRI("adhan_daghriri"), ADHAN_DAGHRIRI2("adhan_daghriri2"),
-    ADHAN_MADINAH("adhan_madinah"), ADHAN_AQSA("adhan_aqsa"),
-    ADHAN_BASIT("adhan_basit"), ADHAN_NABET("adhan_nabet"), ADHAN_MAGHRIBI("adhan_maghribi"),
-    // short calls for alarms and reminders (cut from Shaikh Ali Ahmad Mulla's adhan), the takbirat of Makkah
-    SHORT_HAYYA("short_hayya"), SHORT_SHAHADA("short_shahada"), SHORT_TAKBIR("short_takbir"), TAKBIRAT("takbirat_makkah"),
-    BIRDS1("birds1"), BIRDS2("birds2"), BIRDS3("birds3"),
+    ADHAN_MAKKAH("adhan_makkah", Mu.MULLA), ADHAN_DAGHRIRI("adhan_daghriri", Mu.DAGHRIRI), ADHAN_DAGHRIRI2("adhan_daghriri2", Mu.DAGHRIRI),
+    ADHAN_MADINAH("adhan_madinah", Mu.BUKHARI), ADHAN_AQSA("adhan_aqsa"),
+    ADHAN_BASIT("adhan_basit", Mu.BASIT), ADHAN_NABET("adhan_nabet", Mu.NABET), ADHAN_MAGHRIBI("adhan_maghribi", Mu.MAGHRIBI),
+    // short calls for alarms and reminders, cut from the adhans: «الصلاة خير من النوم», «حي على الصلاة», «أشهد أن لا إله إلا الله», «الله أكبر»
+    KHAYR_MULLA("short_khayr_mulla", Mu.MULLA, "khayr"), KHAYR_BUKHARI("short_khayr_bukhari", Mu.BUKHARI, "khayr"),
+    SHORT_HAYYA("short_hayya", Mu.MULLA, "hayya"), HAYYA_DAGHRIRI("short_hayya_daghriri", Mu.DAGHRIRI, "hayya"), HAYYA_BUKHARI("short_hayya_bukhari", Mu.BUKHARI, "hayya"),
+    HAYYA_NABET("short_hayya_nabet", Mu.NABET, "hayya"), HAYYA_MAGHRIBI("short_hayya_maghribi", Mu.MAGHRIBI, "hayya"), HAYYA_BASIT("short_hayya_basit", Mu.BASIT, "hayya"),
+    SHORT_SHAHADA("short_shahada", Mu.MULLA, "shahada"), SHAHADA_DAGHRIRI("short_shahada_daghriri", Mu.DAGHRIRI, "shahada"), SHAHADA_BUKHARI("short_shahada_bukhari", Mu.BUKHARI, "shahada"),
+    SHAHADA_NABET("short_shahada_nabet", Mu.NABET, "shahada"), SHAHADA_MAGHRIBI("short_shahada_maghribi", Mu.MAGHRIBI, "shahada"), SHAHADA_BASIT("short_shahada_basit", Mu.BASIT, "shahada"),
+    SHORT_TAKBIR("short_takbir", Mu.MULLA, "takbir"), TAKBIRAT("takbirat_makkah", Mu.MULLA, "takbirat"),
+    // birdsong
+    BIRDS1("birds1"), NIGHTINGALE("birds_nightingale"), BLACKBIRD("birds_blackbird"), ROBIN("birds_robin"), SKYLARK("birds_skylark"),
+    WREN("birds_wren"), CHORUS("birds_chorus"),
     TONE(null), NOTIFY(null), SILENT(null);
 
     val adhan get() = name.startsWith("ADHAN")
+    val bird get() = raw?.startsWith("birds") == true
+    val short get() = phrase != null
 }
 
 /** a reminder like «35 min before Fajr on Tuesday and Wednesday» */
@@ -72,7 +84,8 @@ class Prefs(ctx: Context) {
     fun setSound(p: P, s: Snd) = sp.edit().putString("snd_" + p.name, s.name).apply()
     private fun defaultSound(p: P) = when (p) {
         P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA -> Snd.ADHAN_MAKKAH
-        P.ISHRAQ, P.CHASHT -> Snd.BIRDS1
+        P.ISHRAQ -> Snd.NIGHTINGALE
+        P.CHASHT -> Snd.BLACKBIRD
         else -> Snd.SILENT
     }
 
@@ -108,7 +121,7 @@ class Prefs(ctx: Context) {
         set(v) = sp.edit().putString("rem", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
     private fun defaultReminders() = listOf(
-        Reminder(1, "تہجد", P.FAJR, -60, 127, Snd.BIRDS2, false),
+        Reminder(1, "تہجد", P.FAJR, -60, 127, Snd.CHORUS, false),
         Reminder(2, "جمعہ کی تیاری", P.DHUHR, -45, 1 shl 4, Snd.NOTIFY, false),
     )
 

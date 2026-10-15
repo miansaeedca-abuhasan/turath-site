@@ -54,7 +54,7 @@ fun RemindersScreen(s: AppState) {
             HorizontalDivider()
             Stepper(Tr["suhoor"] + " — " + Tr["minBeforeFajr"], pr.suhoorBefore, 10, 120) { pr.suhoorBefore = it; s.changed() }
             Row(Modifier.fillMaxWidth().clickable { suhoorSnd = true }.padding(vertical = 8.dp)) {
-                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr[pr.suhoorSound.name], color = MaterialTheme.colorScheme.primary)
+                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(pr.suhoorSound), color = MaterialTheme.colorScheme.primary)
             }
             Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
         }
@@ -67,14 +67,14 @@ fun RemindersScreen(s: AppState) {
                 Stepper(Tr["after"] + " (" + Tr["min"] + ")", pr.after(p), 0, 120, 5) { pr.setAfter(p, it); s.changed() }
             }
             Row(Modifier.fillMaxWidth().clickable { ppSnd = true }.padding(vertical = 10.dp)) {
-                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr[pr.prePostSound.name], color = MaterialTheme.colorScheme.primary)
+                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(pr.prePostSound), color = MaterialTheme.colorScheme.primary)
             }
         }
         SectionTitle(Tr["nafl"])
         Card0 {
             for (p in listOf(P.TAHAJJUD, P.ISHRAQ, P.CHASHT)) {
                 val on = pr.sound(p) != Snd.SILENT
-                SwitchRow(Tr.p(p), on, if (on) Tr[pr.sound(p).name] else "") { pr.setSound(p, if (it) (if (p == P.TAHAJJUD) Snd.BIRDS2 else Snd.BIRDS1) else Snd.SILENT); s.changed() }
+                SwitchRow(Tr.p(p), on, if (on) Tr.snd(pr.sound(p)) else "") { pr.setSound(p, if (it) (if (p == P.TAHAJJUD) Snd.CHORUS else Snd.NIGHTINGALE) else Snd.SILENT); s.changed() }
             }
         }
         Row(Modifier.fillMaxWidth().padding(end = 8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -131,7 +131,7 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                         FilterChip(r.base == p, { r = r.copy(base = p) }, { Text(Tr.p(p)) }); Spacer(Modifier.width(6.dp))
                     }
                 }
-                Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp)) { Text(Tr["sound"], Modifier.weight(1f)); Text(Tr[r.sound.name], color = MaterialTheme.colorScheme.primary) }
+                Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp)) { Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(r.sound), color = MaterialTheme.colorScheme.primary) }
             }
         },
         confirmButton = { TextButton(onClick = {

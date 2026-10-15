@@ -235,7 +235,8 @@ class SoundService : Service() {
 
         /** sounds that can be chosen: an adhan only when its recording is in the app */
         fun choices(ctx: Context, fajr: Boolean, adhans: Boolean = true) =
-            Snd.entries.filter { (!it.adhan || (adhans && rawId(ctx, it, fajr) != 0)) && !(it.name.startsWith("BIRDS") && it != Snd.BIRDS1 && rawId(ctx, it) == 0) }
+            Snd.entries.filter { it.raw == null && it != Snd.SILENT || it == Snd.SILENT || (if (it.adhan) adhans && rawId(ctx, it, fajr) != 0 else rawId(ctx, it) != 0) }
+                .sortedBy { when { it.adhan -> 0; it.short -> 1; it.bird -> 2; else -> 3 } }
 
         /** the sound file of the app, or null when that sound is not (yet) in the app */
         fun uri(ctx: Context, s: Snd, fajr: Boolean = false): Uri? {
@@ -243,7 +244,7 @@ class SoundService : Service() {
             return when {
                 id != 0 -> Uri.parse("android.resource://${ctx.packageName}/$id")
                 s == Snd.SILENT -> null
-                s == Snd.NOTIFY || s.name.startsWith("BIRDS") -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                s == Snd.NOTIFY || s.bird -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                 else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
             }
         }

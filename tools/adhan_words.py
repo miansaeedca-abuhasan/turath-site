@@ -9,8 +9,9 @@ for f in sorted(glob.glob('app/src/main/res/raw/adhan_*.mp3')):
     pcm = subprocess.run(['ffmpeg', '-v', 'error', '-i', f, '-ac', '1', '-ar', '16000', '-f', 'f32le', '-'], capture_output=True).stdout
     segs, _ = m.transcribe(np.frombuffer(pcm, dtype=np.float32), language='ar', word_timestamps=True, vad_filter=False, beam_size=5)
     words = [(round(w.start, 2), round(w.end, 2), w.word) for s in segs for w in (s.words or [])]
-    sil = subprocess.run(['ffmpeg', '-i', f, '-af', 'silencedetect=noise=-38dB:d=0.8', '-f', 'null', '-'], capture_output=True, text=True).stderr
+    sil = subprocess.run(['ffmpeg', '-i', f, '-af', 'silencedetect=noise=-38dB:d=0.8', '-f', 'null', '-'], capture_output=True).stderr.decode('utf-8', 'replace')
     pauses = [float(x) for x in re.findall(r'silence_(?:start|end): ([0-9.]+)', sil)]
     res[f.split('/')[-1]] = {'words': words, 'pauses': pauses}
-    print(f, len(words))
+    print(f, len(words), flush=True)
+    json.dump(res, open('tools/adhan_words.json', 'w'), ensure_ascii=False, indent=0)
 json.dump(res, open('tools/adhan_words.json', 'w'), ensure_ascii=False, indent=0)

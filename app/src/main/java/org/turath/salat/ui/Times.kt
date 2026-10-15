@@ -54,7 +54,7 @@ fun TimesScreen(s: AppState) {
                         }
                         val snd = s.prefs.sound(p)
                         IconButton(onClick = { pick = p }) {
-                            Icon(when { snd == Snd.SILENT -> Icons.AutoMirrored.Outlined.VolumeOff; snd.name.startsWith("BIRDS") -> Icons.Outlined.Park; else -> Icons.AutoMirrored.Outlined.VolumeUp },
+                            Icon(when { snd == Snd.SILENT -> Icons.AutoMirrored.Outlined.VolumeOff; snd.bird -> Icons.Outlined.Park; else -> Icons.AutoMirrored.Outlined.VolumeUp },
                                 null, tint = if (snd == Snd.SILENT) Color.Gray else MaterialTheme.colorScheme.primary)
                         }
                     } else Spacer(Modifier.width(48.dp))
@@ -79,10 +79,10 @@ fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, fajr: Boo
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 for (x in list) Row(Modifier.fillMaxWidth().clickable { sel = x }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                     RadioButton(selected = sel == x, onClick = { sel = x })
-                    Text(Tr[x.name], Modifier.weight(1f))
+                    Text(Tr.snd(x), Modifier.weight(1f))
                     if (x != Snd.SILENT) IconButton(onClick = {
                         if (playing) ctx.stopService(android.content.Intent(ctx, SoundService::class.java))
-                        else SoundService.start(ctx, x, Tr[x.name], "", false, fajr)
+                        else SoundService.start(ctx, x, Tr.snd(x), "", false, fajr)
                         playing = !playing
                     }) { Icon(Icons.Outlined.PlayCircle, Tr["test"]) }
                 }
