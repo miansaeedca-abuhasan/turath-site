@@ -18,7 +18,7 @@ object Tr {
         // tabs
         "tHome" to arrayOf("آج", "اليوم", "Today"), "tTimes" to arrayOf("اوقات", "المواقيت", "Times"),
         "tRem" to arrayOf("یاد دہانی", "التنبيهات", "Reminders"), "tCal" to arrayOf("کیلنڈر", "التقويم", "Calendar"),
-        "tQiblaM" to arrayOf("قبلہ و مساجد", "القبلة والمساجد", "Qibla & mosques"),
+        "tQiblaM" to arrayOf("قبلہ و مساجد", "القبلة والمساجد", "Qibla"),
         "mosques" to arrayOf("قریبی مساجد", "المساجد القريبة", "Mosques nearby"),
         "radius" to arrayOf("دائرہ", "النطاق", "Radius"),
         "mosqueTap" to arrayOf("مسجد پر دبائیں تو اس کا نام اور پتہ کاپی ہو جائے گا؛ دیر تک دبانے سے اسے فہرست سے ہٹا سکتے ہیں", "اضغط على المسجد لنسخ اسمه وعنوانه؛ اضغط مطوّلًا لإخفائه من القائمة", "Tap a mosque to copy its name and address; long-press to hide it from the list"),
