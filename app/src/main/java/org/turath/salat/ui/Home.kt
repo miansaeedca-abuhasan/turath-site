@@ -59,6 +59,14 @@ fun HomeScreen(s: AppState, openSettings: () -> Unit) {
             Spacer(Modifier.height(10.dp))
             Dial(s, today, now, st)
         }
+        // permissions the adhan needs (after the first start, until they are given)
+        if (s.act.needNotifications() || s.act.needExact()) Card0 {
+            Text(Tr["permNotif"], fontWeight = FontWeight.Bold)
+            Row {
+                if (s.act.needNotifications()) TextButton(onClick = { s.act.onPermResult = { s.changed() }; s.act.askNotifications() }) { Text(Tr["allow"]) }
+                if (s.act.needExact()) TextButton(onClick = { s.act.askExact() }) { Text(Tr["permAlarm"]) }
+            }
+        }
         if (forb != null) Banner(Icons.Filled.Block, Tr["forbidden"], Tr["forbiddenUntil"] + " " + s.fmt(forb.second), Color(0xFFB3261E))
         else if (st.current == P.ASR && now.isAfter(today[P.ASR].plusMinutes(1)) && now.isBefore(today[P.MAGHRIB].minusMinutes(15)))
             Banner(Icons.Outlined.Info, Tr["afterAsr"], "", Color(0xFF8D6E00))

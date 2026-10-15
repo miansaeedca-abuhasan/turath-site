@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     fun hasLocation() = checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 
     var onPermResult: (() -> Unit)? = null
-    override fun onRequestPermissionsResult(code: Int, perms: Array<out String>, res: IntArray) {
+    override fun onRequestPermissionsResult(code: Int, perms: Array<String>, res: IntArray) {
         super.onRequestPermissionsResult(code, perms, res); onPermResult?.invoke()
     }
 }
