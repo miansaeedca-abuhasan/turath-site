@@ -1,0 +1,16 @@
+short_hayya.mp3	حي على الصلاة
+short_hayya_basit.mp3	حي على الصلاة
+short_hayya_bukhari.mp3	أليا
+short_hayya_daghriri.mp3	حي على الصلاة
+short_hayya_maghribi.mp3	حي على الصلاة
+short_hayya_nabet.mp3	حي على الصلاة
+short_khayr_bukhari.mp3	الصلاة خير من النوم
+short_khayr_mulla.mp3	الصلاة خير من النوم
+short_shahada.mp3	أشهد أن لا إله إلا الله
+short_shahada_basit.mp3	أشهد أن لا إله إلا الله
+short_shahada_bukhari.mp3	شرى الله إلا الله المرم
+short_shahada_daghriri.mp3	أشهد أن لا إله إلا الله
+short_shahada_maghribi.mp3	أشهد أن لا إله إلا الله
+short_shahada_nabet.mp3	أشهد أن لا إله إلا الله
+short_takbir.mp3	الله أكبر الله أكبر
+adhan_daghriri2.mp3	الله أكبر أشهد أن لا إله إلا الله حي على الصلاة أشهد أن لا إله إلا الله أشهد أن محمد رسول الله حي على الصلاة حي على الفلاح الله أكبر الله أكبر لا إله إلا الله
