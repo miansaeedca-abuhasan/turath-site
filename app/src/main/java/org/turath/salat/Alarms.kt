@@ -26,12 +26,16 @@ object Events {
         for (i in 0..days) {
             val d = start.plusDays(i.toLong())
             val t = Schedule.day(pr, place, d)
+            val h0 = Schedule.hijriOf(pr, d)
+            // in Ramadan the night after this day's maghrib is Ramadan when the next day is (taraweeh after Isha)
+            val ramadanNight = Schedule.hijriOf(pr, d.plusDays(1)).month == 9
             for (p in FIVE) {
                 val s = pr.sound(p)
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
-                if (pr.vibrateMode && pr.vibrateFor(p)) {
+                val taraweeh = p == P.ISHA && pr.taraweehVib && ramadanNight
+                if (taraweeh || (pr.vibrateMode && pr.vibrateFor(p))) {
                     out += Ev(t[p], "vibon", p)
-                    out += Ev(t[p].plusMinutes(pr.vibrateMinutes.toLong()), "viboff", p)
+                    out += Ev(t[p].plusMinutes((if (taraweeh) maxOf(pr.taraweehMinutes, pr.vibrateMinutes) else pr.vibrateMinutes).toLong()), "viboff", p)
                 }
             }
             for (p in listOf(P.ISHRAQ, P.CHASHT, P.TAHAJJUD)) {
@@ -42,9 +46,7 @@ object Events {
             val h = Schedule.hijriOf(pr, d)
             val key = "${h.year}-${h.month}"
             val dow = d.dayOfWeek
-            val monThu = pr.monThu && (dow == DayOfWeek.MONDAY || dow == DayOfWeek.THURSDAY)
-            val beedDay = pr.beed && h.day in 13..15 && pr.beedAccepted(key)
-            if (monThu || beedDay) {
+            if (pr.fastDay(d)) {
                 out += Ev(t[P.FAJR].minusMinutes(pr.suhoorBefore.toLong()), "suhoor", P.FAJR, pr.suhoorSound)
                 out += Ev(t[P.MAGHRIB].minusMinutes(pr.iftarBefore.toLong()), "iftar", P.MAGHRIB, Snd.NOTIFY, extra = t[P.MAGHRIB].toInstant().toEpochMilli())
             }

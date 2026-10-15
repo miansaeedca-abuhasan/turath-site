@@ -167,21 +167,27 @@ private fun Banner(icon: androidx.compose.ui.graphics.vector.ImageVector, title:
     }
 }
 
-/** on a fasting day (Monday / Thursday, or an accepted white day): a countdown to iftar with its du'a */
+/** on a fasting day (Ramadan, Monday / Thursday, an accepted white day): before Fajr a countdown to the end of suhoor,
+ *  during the day a countdown to iftar with its du'a */
 @Composable
 private fun FastingCard(s: AppState, t: DayTimes, now: ZonedDateTime) {
     val pr = s.prefs
-    val d = t.date
-    val h = Schedule.hijriOf(pr, d)
-    val fast = (pr.monThu && (d.dayOfWeek == java.time.DayOfWeek.MONDAY || d.dayOfWeek == java.time.DayOfWeek.THURSDAY)) ||
-        (pr.beed && h.day in 13..15 && pr.beedAccepted("${h.year}-${h.month}"))
-    if (!fast || now.isBefore(t[P.FAJR].minusHours(2)) || now.isAfter(t[P.MAGHRIB])) return
-    Card(Modifier.fillMaxWidth().padding(12.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFF1F4E3D))) {
-        Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(Tr["fastToday"] + " " + s.fmt(t[P.MAGHRIB]), color = Color.White, fontWeight = FontWeight.Bold)
-            Text("− " + hms(Duration.between(now, t[P.MAGHRIB]).seconds), color = Gold, fontSize = 28.sp, fontFamily = FontFamily.Monospace)
-            Text(Tr["iftarDua"], color = Color.White, fontSize = 18.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 6.dp))
-            Text(Tr["iftarDuaSrc"], color = Color.White.copy(alpha = .7f), fontSize = 12.sp)
+    if (!pr.fastDay(t.date) || now.isAfter(t[P.MAGHRIB])) return
+    val suhoor = now.isBefore(t[P.FAJR])
+    val h = Schedule.hijriOf(pr, t.date)
+    Card(Modifier.fillMaxWidth().padding(12.dp), colors = CardDefaults.cardColors(containerColor = if (suhoor) Color(0xFF1D2F5C) else Color(0xFF1F4E3D))) {
+        Column(Modifier.padding(16.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            if (h.month == 9) Text(Tr["ramadan"] + " " + Tr.num(h.day), color = Gold, fontWeight = FontWeight.Bold)
+            if (suhoor) {
+                Text(Tr["suhoorEnds"] + " " + s.fmt(t[P.FAJR]), color = Color.White, fontWeight = FontWeight.Bold)
+                Text("− " + hms(Duration.between(now, t[P.FAJR]).seconds), color = Gold, fontSize = 30.sp, fontFamily = FontFamily.Monospace)
+                Text(Tr["fastToday"] + " " + s.fmt(t[P.MAGHRIB]), color = Color.White.copy(alpha = .75f), fontSize = 13.sp)
+            } else {
+                Text(Tr["fastToday"] + " " + s.fmt(t[P.MAGHRIB]), color = Color.White, fontWeight = FontWeight.Bold)
+                Text("− " + hms(Duration.between(now, t[P.MAGHRIB]).seconds), color = Gold, fontSize = 30.sp, fontFamily = FontFamily.Monospace)
+                Text(Tr["iftarDua"], color = Color.White, fontSize = 18.sp, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 6.dp))
+                Text(Tr["iftarDuaSrc"], color = Color.White.copy(alpha = .7f), fontSize = 12.sp)
+            }
         }
     }
 }

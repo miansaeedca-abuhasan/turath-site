@@ -98,6 +98,19 @@ class Prefs(ctx: Context) {
     // fasting: Monday / Thursday, and the white days (13–15)
     var monThu: Boolean get() = sp.getBoolean("monthu", false); set(v) = sp.edit().putBoolean("monthu", v).apply()
     var beed: Boolean get() = sp.getBoolean("beed", false); set(v) = sp.edit().putBoolean("beed", v).apply()
+    // Ramadan: suhoor alarm and iftar reminder every day; the phone on vibrate after Isha for the taraweeh
+    var ramadan: Boolean get() = sp.getBoolean("ramadan", true); set(v) = sp.edit().putBoolean("ramadan", v).apply()
+    var taraweehVib: Boolean get() = sp.getBoolean("tarvib", true); set(v) = sp.edit().putBoolean("tarvib", v).apply()
+    var taraweehMinutes: Int get() = sp.getInt("tarmin", 90); set(v) = sp.edit().putInt("tarmin", v.coerceIn(60, 120)).apply()
+
+    /** a fasting day: Ramadan, Monday / Thursday, or an accepted white day (by the hijri date of its daytime) */
+    fun fastDay(d: java.time.LocalDate): Boolean {
+        val h = Schedule.hijriOf(this, d)
+        return (ramadan && h.month == 9) ||
+            (monThu && (d.dayOfWeek == java.time.DayOfWeek.MONDAY || d.dayOfWeek == java.time.DayOfWeek.THURSDAY)) ||
+            (beed && h.day in 13..15 && beedAccepted("${h.year}-${h.month}"))
+    }
+
     var suhoorBefore: Int get() = sp.getInt("suhoor", 45); set(v) = sp.edit().putInt("suhoor", v).apply()
     var iftarBefore: Int get() = sp.getInt("iftar", 15); set(v) = sp.edit().putInt("iftar", v).apply()
     var suhoorSound: Snd get() = runCatching { Snd.valueOf(sp.getString("suhoorsnd", "") ?: "") }.getOrDefault(Snd.SHORT_HAYYA); set(v) = sp.edit().putString("suhoorsnd", v.name).apply()

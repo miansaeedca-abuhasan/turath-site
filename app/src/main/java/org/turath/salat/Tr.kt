@@ -51,6 +51,10 @@ object Tr {
         "fasting" to arrayOf("روزہ", "الصيام", "Fasting"),
         "fastToday" to arrayOf("آج روزہ ہے — افطار", "صائم اليوم — الإفطار", "Fasting today — iftar"),
         // reminders
+        "ramadanFast" to arrayOf("رمضان: سحری کا الارم اور افطار کی الٹی گنتی", "رمضان: منبّه السحور والعدّ التنازلي للإفطار", "Ramadan: suhoor alarm and iftar countdown"),
+        "ramadanNote" to arrayOf("رمضان کے ہر دن؛ آج کی اسکرین پر سحری ختم ہونے اور افطار تک کی الٹی گنتی", "كل يوم من رمضان؛ عدّ تنازلي لانتهاء السحور وللإفطار في شاشة اليوم", "Every day of Ramadan; countdowns to the end of suhoor and to iftar on the Today screen"),
+        "taraweeh" to arrayOf("تراویح کے لیے عشاء سے فون وائبریشن پر", "الهاتف على الاهتزاز من العشاء لصلاة التراويح", "Phone on vibrate from Isha for taraweeh"),
+        "taraweehMin" to arrayOf("وائبریشن کی مدت (منٹ، 60 سے 120)", "مدة الاهتزاز (دقيقة، من 60 إلى 120)", "Vibrate for (minutes, 60 to 120)"),
         "monThu" to arrayOf("پیر اور جمعرات کے روزے", "صيام الاثنين والخميس", "Monday and Thursday fasts"),
         "beed" to arrayOf("ایامِ بیض کے روزے (13، 14، 15)", "صيام الأيام البيض (13، 14، 15)", "The white days' fasts (13th, 14th, 15th)"),
         "beedNote" to arrayOf("ہر مہینے 12 تاریخ کی رات پوچھا جائے گا؛ قبول کرنے پر سحری کا الارم اور افطار کی یاد دہانی لگ جائے گی۔",
