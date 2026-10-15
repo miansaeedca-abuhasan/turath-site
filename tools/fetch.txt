@@ -12,7 +12,6 @@ https://bigsoundbank.com/UPLOAD/mp3/1906.mp3?v=m	bird_1906.mp3
 https://bigsoundbank.com/UPLOAD/mp3/0935.mp3?v=m	bird_0935.mp3
 https://bigsoundbank.com/UPLOAD/mp3/0222.mp3?v=m	bird_0222.mp3
 https://bigsoundbank.com/UPLOAD/mp3/1859.mp3?v=m	bird_1859.mp3
-https://bigsoundbank.com/UPLOAD/mp3/1906.mp3	bird_1906b.mp3
 https://bigsoundbank.com/reveil-des-oiseaux-4-s1906.html	page_1906.html
 https://bigsoundbank.com/sound-0935-reveil-des-oiseaux-2.html	page_0935.html
 https://bigsoundbank.com/search?q=oiseau	page_search_oiseau.html
