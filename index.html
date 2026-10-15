@@ -921,7 +921,7 @@ async function showKitabs(){
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
 Object.assign(I.ur,{hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
 Object.assign(I.en,{hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
-const HB_AR={jami:'الجامع الكامل',tuhfa:'تحفة المتقين'};
+const HB_AR={jami:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
 async function hbCounts(){if(HBC)return HBC;HBC={};
   for(const b of BOOKS){if(b.kind==='external'||b.kind==='lang')continue;try{HBC[b.key]=(await api('list?limit=1&book='+encodeURIComponent(b.key))).total;}catch(e){}}
@@ -937,7 +937,7 @@ async function showBookList(){
   const LN={bn:['بنگلہ','Bangla']};
   // books taken from al-Jami al-Kamil (تحفۃ المتقین، فضائل صحابہ، سیرت ...) have their own buttons: not in this list
   const SUBJ=new Set(['tuhfa','fazail','seerah']);
-  BOOKS.filter(b=>b.kind!=='external'&&b.kind!=='lang'&&!SUBJ.has(b.key)).forEach(b=>{const L=b.kind==='lang'&&LN[b.lang];rows.push({au:['jami','الجامع الكامل','الجامع الکامل اور اس سے ماخوذ کتب','Al-Jami al-Kamil',0],en:L?'Al-Jame Al-Kamil ('+L[1]+')':(b.name_en||b.name),ur:L?'الجامع الکامل ('+L[0]+')':b.name,ar:HB_AR[b.kind==='lang'?'jami':b.key]||b.name,n:cnt[b.key],
+  BOOKS.filter(b=>b.kind!=='external'&&b.kind!=='lang'&&!SUBJ.has(b.key)).forEach(b=>{const L=b.kind==='lang'&&LN[b.lang];rows.push({au:['jami','الجامع الكامل في الحديث الصحيح الشامل','الجامع الکامل اور اس سے ماخوذ کتب','Al-Jami al-Kamil',0],en:L?'Al-Jame Al-Kamil ('+L[1]+')':(b.name_en||b.name),ur:L?'الجامع الکامل ('+L[0]+')':b.name,ar:HB_AR[b.kind==='lang'?'jami':b.key]||b.name,n:cnt[b.key],
     open:()=>hbOpen(b.key),resume:()=>hbOpen(b.key,hbLast(b.key)||(b.key==='tuhfa'?'#/b':'#/c/1/0'))});});
   colls.filter(c=>!SUBJ.has(c.key)).forEach(c=>rows.push({key:c.key,sub:c.sub?(c.sub[ui]||c.sub.ur):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
   rows.forEach((r,i)=>r.no=i+1);
@@ -3135,7 +3135,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     cmpExt: 'هذا الكتاب في الرابط الآخر للتطبيق', cmpMy: 'قائمة مقارنتي', cmpOpen: 'افتح', cmpCount: n => n + ' حديثًا',
     // app settings
     navQuran: 'القرآن', urduFont: 'خط الأردية', appSet: 'إعدادات التطبيق', uiLang: 'لغة التطبيق', themeColor: 'لون التطبيق', dayNight: 'النهار والليل', modeLight: 'نهاري', modeDark: 'ليلي', modeAuto: 'تلقائي (حسب الهاتف)',
-    privacy: 'سياسة الخصوصية', free: 'مجاني — في سبيل الله', hours: 'ساعة', mins: 'دقيقة', jamiName: 'الجامع الكامل', tuhfaName: 'شرح تحفة المتقين'
+    privacy: 'سياسة الخصوصية', free: 'مجاني — في سبيل الله', hours: 'ساعة', mins: 'دقيقة', jamiName: 'الجامع الكامل في الحديث الصحيح الشامل', tuhfaName: 'شرح تحفة المتقين'
   };
   I.bn = {
     kSearch: 'এই বইয়ে: হাদীস নম্বর বা অধ্যায়ের নাম', notInKitab: 'এই হাদীস অন্য বইয়ে আছে — খুলতে চাপুন', mAll: 'সব শব্দ', mExact: 'হুবহু বাক্য', mSimilar: 'কাছাকাছি',
