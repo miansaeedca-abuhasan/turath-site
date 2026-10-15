@@ -915,7 +915,7 @@ async function showKitabs(){
       return a;}));};
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},EN()?'Introduction to al-Jami al-Kamil':'کتاب کا مقدمہ'))):'',list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'আল-জামি আল-কামিলের ভূমিকা',hi:'अल-जामिउल कामिल की भूमिका',gu:'અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to al-Jami al-Kamil'))):'',list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
