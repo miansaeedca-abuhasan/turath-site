@@ -6,9 +6,9 @@ def sh(*a, inp=None):
     return subprocess.run(['adb', *a], input=inp, capture_output=True).stdout
 def tap_text(t):
     sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
-    m = re.search(r'text="' + re.escape(t) + r'"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', x)
-    if not m: print('not found', t); return False
-    a, b, c, d = map(int, m.groups()); sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); return True
+    ms = list(re.finditer(r'text="' + re.escape(t) + r'"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', x))
+    if not ms: print('not found', t); return False
+    a, b, c, d = max((tuple(map(int, m.groups())) for m in ms), key=lambda q: q[1])   # the lowest one: the bottom bar; sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); return True
 def shot(name):
     time.sleep(3); open(f'shots/{name}.png', 'wb').write(sh('exec-out', 'screencap', '-p'))
 apk = 'app/build/outputs/apk/debug/app-debug.apk'

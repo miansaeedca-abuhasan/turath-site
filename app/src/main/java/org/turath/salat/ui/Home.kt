@@ -113,9 +113,9 @@ private fun Dial(s: AppState, t: DayTimes, now: ZonedDateTime, st: Schedule.Stat
         Triple(t[P.FAJR], t[P.SUNRISE], Color(0xFF7FA6E8)), Triple(t[P.SUNRISE], t[P.DHUHR], Color(0xFFF5D06F)),
         Triple(t[P.DHUHR], t[P.ASR], Color(0xFFFFB74D)), Triple(t[P.ASR], t[P.MAGHRIB], Color(0xFFF08A5D)),
         Triple(t[P.MAGHRIB], t[P.ISHA], Color(0xFFB07CD8)), Triple(t[P.ISHA], t[P.FAJR].plusDays(1), Color(0xFF3B4C7A)))
-    Box(Modifier.size(300.dp), contentAlignment = Alignment.Center) {
+    Box(Modifier.size(320.dp), contentAlignment = Alignment.Center) {
         Canvas(Modifier.fillMaxSize()) {
-            val r = size.minDimension / 2 - 34.dp.toPx()
+            val r = size.minDimension / 2 - 46.dp.toPx()
             val c = Offset(size.width / 2, size.height / 2)
             val tl = Offset(c.x - r, c.y - r); val sz = Size(2 * r, 2 * r)
             drawCircle(Color.White.copy(alpha = .08f), r + 14.dp.toPx(), c)
@@ -133,7 +133,9 @@ private fun Dial(s: AppState, t: DayTimes, now: ZonedDateTime, st: Schedule.Stat
             for (p in labels) {
                 val a = Math.toRadians(ang(t[p]).toDouble())
                 drawCircle(Color.White, 3.dp.toPx(), Offset(c.x + r * cos(a).toFloat(), c.y + r * sin(a).toFloat()))
-                val lr = r - 22.dp.toPx()
+                // names outside the ring, clear of the count in the middle
+                val lr = r + 25.dp.toPx()
+                paint.setShadowLayer(4f, 0f, 1f, android.graphics.Color.argb(140, 0, 0, 0))
                 drawContext.canvas.nativeCanvas.drawText(Tr.p(p).substringBefore(" ("), c.x + lr * cos(a).toFloat(), c.y + lr * sin(a).toFloat() + 4.dp.toPx(), paint)
             }
             // the sun (by day) or the moon (by night) at the time now
@@ -144,9 +146,11 @@ private fun Dial(s: AppState, t: DayTimes, now: ZonedDateTime, st: Schedule.Stat
             drawCircle(if (day) Color(0xFFFFD54F) else Color(0xFFE8EEF7), 9.dp.toPx(), p)
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(Tr.p(cd.prayer).substringBefore(" ("), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold)
+            Text(Tr.p(cd.prayer).substringBefore(" ("), color = Color.White, fontSize = 30.sp, fontWeight = FontWeight.Bold,
+                style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color.Black.copy(alpha = .45f), Offset(0f, 2f), 6f)))
             Text(s.fmt(if (cd.up) st.currentAt!! else st.nextAt), color = Color.White.copy(alpha = .8f), fontSize = 16.sp)
-            Text(cd.text, color = if (cd.up) Gold else Color.White, fontSize = 30.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Medium)
+            Text(cd.text, color = Color.White, fontSize = 30.sp, fontFamily = FontFamily.Monospace, fontWeight = FontWeight.Bold,
+                style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color.Black.copy(alpha = .45f), Offset(0f, 2f), 6f)))
             Text(if (cd.up) Tr["since"] else Tr["until"], color = Color.White.copy(alpha = .7f), fontSize = 12.sp)
         }
     }
