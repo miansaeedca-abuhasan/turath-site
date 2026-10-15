@@ -1585,6 +1585,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const sajdaSet = () => new Set(Q.meta.sajda.map(x => x[0] + ':' + x[1]));
 
   /* ---------- Home screen ---------- */
+  // the visitor count (one count per device per day; only a total is kept — see functions/api/visits.js)
+  async function visitCount(box) {
+    const VL = {ur: 'زائرین', ar: 'الزوار', en: 'Visitors', fr: 'Visiteurs', hi: 'आगंतुक', bn: 'দর্শনার্থী', gu: 'મુલાકાતીઓ'};
+    try {
+      const d = new Date().toISOString().slice(0, 10); let k = null; try { k = localStorage.vday; } catch (e) {}
+      const post = k !== d, r = await fetch('api/visits', {method: post ? 'POST' : 'GET', cache: 'no-store'});
+      if (!r.ok) return; const j = await r.json();
+      if (post) try { localStorage.vday = d; } catch (e) {}
+      if (j.n) box.replaceChildren(' · ', (VL[ui] || VL.en) + ': ' + Number(j.n).toLocaleString(ui === 'ar' ? 'ar' : 'en-US'));
+    } catch (e) {}
+  }
   async function showHome() {
     bar(T('brand'), '', false);
     const v = qv(); v.replaceChildren();
@@ -1602,7 +1613,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const last = lsGet('qlast', null);
     if (last) v.append(el('a', {class: 'resume', href: '#/q/s/' + last.s + '/' + last.a}, icon('history'), T('resume')));
     v.append(el('div', {id: 'today'}));
-    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', T('free')));
+    const vis = el('span', {class: 'visits'});
+    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', T('free'), vis));
+    visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
   }
   // today's ayah (the same ayah all day): Arabic, and the translation in the interface language (none for Arabic)
