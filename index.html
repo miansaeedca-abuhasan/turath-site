@@ -433,7 +433,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
 .wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
 .rlink{color:var(--accent,#0b5d4b);text-decoration:underline dotted;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
-.red{color:#c00000}.saw{color:#c00000}html[data-theme=dark] .red,html[data-theme=dark] .saw{color:#ff6b6b}
+.red{color:#c00000}.rlink.red{color:#c00000;text-decoration-color:#c00000}.chip.lafz{border:1.5px solid #c00000;color:#c00000;font-weight:700}.lafznote{font-size:.85rem;color:#c00000;margin:.1rem 0 .4rem}.saw{color:#c00000}html[data-theme=dark] .red,html[data-theme=dark] .saw{color:#ff6b6b}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .red,:root:not([data-theme=light]) .saw{color:#ff6b6b}}
 #view p.bc,#view .hd,#view h3.grp{font-weight:700;color:var(--accent,#0b5d4b)}#view p.ar.bc{font-size:1.2rem;line-height:1.9}
 .drbody h3,.drbody h3.grp{font:700 1.3rem/1.9 var(--arabic);color:var(--accent,#0b5d4b);margin:1.1rem 0 .4rem;border-bottom:1px solid var(--line,#d9d2c3);padding-bottom:.2rem}
@@ -1178,7 +1178,8 @@ if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
     d.refs.forEach(r=>{const nm=ui==='en'&&EN_BOOK[r.key]?EN_BOOK[r.key]:(r.n&&COLL.name(r.key))||r.label;
       const inColl=COLL.has(r.key);
-      chips.append(el('button',{class:'chip'+(r.available||inColl?' on':''),type:'button',on:{click:async()=>{
+      const lz=lafzRefs(d.takhrij).has(r.key+'|'+r.number);
+      chips.append(el('button',{class:'chip'+(r.available||inColl?' on':'')+(lz?' lafz':''),title:lz?LAFZ_NOTE():null,type:'button',on:{click:async()=>{
       rb.hidden=false;rb.replaceChildren(el('b',{},nm+' ('+r.number+')'));
       if(inColl&&await COLL.refBox(r.key,r.number,rb,r.n))return;
       if(r.available){const x=await api('ref?book='+encodeURIComponent(r.key)+'&num='+r.number);rb.append(el('p',{class:'ar'},x.matn||''),el('a',{href:'#/x/'+encodeURIComponent(r.key)+'/'+r.number},T('open')));}
@@ -1204,6 +1205,9 @@ function refRich(t){const out=[];let last=0;RRE.lastIndex=0;let m;
         else box.remove();}}},seg));else out.push(seg);});
     out.push(')');last=m.index+m[0].length;}
   if(last<t.length)out.push(...rich(t.slice(last),'ar'));return out;}
+const LAFZ_NOTE=()=>({ur:'سرخ حوالہ: حدیث کے یہ الفاظ اسی کتاب کے ہیں۔',ar:'الرقم الأحمر: اللفظ لهذا الكتاب.',bn:'লাল সূত্র: হাদীসের শব্দগুলো এই গ্রন্থের।',hi:'लाल संदर्भ: हदीस के ये शब्द इसी किताब के हैं।',gu:'લાલ સંદર્ભ: હદીસના આ શબ્દો આ જ પુસ્તકના છે.',fr:'Référence en rouge : la formulation du hadith est celle de ce livre.'})[ui]||'Red reference: the wording of the hadith is that of this book.';
+function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;while((m=RRE.exec(t))){if(m[3]!=='\ue000')continue;const key=RKEY[m[1].replace(/\s+/g,' ')];
+  DIG10(m[4]).split(/[،,]/).forEach(x=>{const n=(x.match(/^\s*(\d+)/)||[])[1];if(key&&n)out.add(key+'|'+n);});}return out;}
 /* ---------- salawat in red everywhere; ﷺ written out in full ---------- */
 (()=>{const DV=w=>[...w].map(c=>c==='ا'?'[اٱ]?':c==='ى'?'[ىیيا]':c==='ي'?'[يی]':c==='ه'?'[هہ]':c).join('[\u064B-\u0652\u0670\u0640]*')+'[\u064B-\u0652\u0670\u0640]*';
   const SAWRE=new RegExp('ﷺ|'+DV('صلى')+'\\s+'+DV('الله')+'\\s+'+DV('عليه')+'\\s+(?:'+DV('وآله')+'\\s+|'+DV('و')+'\\s*'+DV('آله')+'\\s+)?'+DV('وسلم'),'g');
@@ -1268,7 +1272,7 @@ async function showHadith(num){
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
-  if(d.dr&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));v.append(drBlock(d));}
+  if((d.dr||d.full)&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);if(/\ue000\(/.test(d.takhrij))v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr)v.append(drBlock(d));}
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
   v.append(...refBlock(d));
