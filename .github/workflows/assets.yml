@@ -1,0 +1,22 @@
+# Birdsong from Wikimedia Commons, and where each phrase of the adhans is (to cut alarm calls); commits the results
+name: salat-assets
+on:
+  push:
+    branches: [salah-app]
+    paths: ['tools/assets_trigger.txt']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: sudo apt-get install -y -qq ffmpeg >/dev/null && pip install -q faster-whisper
+      - run: python3 tools/birds.py
+      - run: python3 tools/adhan_words.py
+      - name: commit
+        run: |
+          git config user.name "assets-bot"; git config user.email "assets-bot@users.noreply.github.com"
+          git add app/src/main/res/raw tools/birds_credits.json tools/adhan_words.json
+          git commit -qm "birdsong and adhan phrase times" && git push
