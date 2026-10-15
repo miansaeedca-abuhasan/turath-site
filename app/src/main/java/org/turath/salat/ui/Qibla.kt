@@ -34,6 +34,18 @@ fun qiblaBearing(lat: Double, lng: Double): Double {
 
 @Composable
 fun QiblaScreen(s: AppState) {
+    var tab by remember { mutableIntStateOf(0) }
+    Column(Modifier.fillMaxSize().statusBarsPadding()) {
+        TabRow(selectedTabIndex = tab) {
+            Tab(tab == 0, { tab = 0 }, text = { Text(Tr["tQibla"], fontSize = 16.sp) })
+            Tab(tab == 1, { tab = 1 }, text = { Text(Tr["mosques"], fontSize = 16.sp) })
+        }
+        if (tab == 0) QiblaCompass(s) else MosqueFinder(s)
+    }
+}
+
+@Composable
+fun QiblaCompass(s: AppState) {
     val place = s.prefs.place ?: return
     val ctx = s.act
     val q = qiblaBearing(place.lat, place.lng)
@@ -71,8 +83,7 @@ fun QiblaScreen(s: AppState) {
         if (on && !wasOn) (ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)?.vibrate(VibrationEffect.createOneShot(60, VibrationEffect.DEFAULT_AMPLITUDE))
         wasOn = on
     }
-    Column(Modifier.fillMaxSize().statusBarsPadding().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(Tr["tQibla"], fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth())
+    Column(Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(Tr["qiblaDeg"] + ": " + Tr.num("%.1f°".format(q)) + " " + Tr["fromNorth"], fontSize = 16.sp)
         Text(Tr["distance"] + ": " + Tr.num("%,d".format(Cities.dist(place.lat, place.lng, 21.422487, 39.826206).roundToInt())) + " " + Tr["km"],
             fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))

@@ -198,7 +198,7 @@ class AlarmReceiver : BroadcastReceiver() {
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, i: Intent) {
         Prefs(ctx).sp.edit().putLong("lastDone", System.currentTimeMillis()).apply()
-        Alarms.channels(ctx); Alarms.schedule(ctx)
+        Alarms.channels(ctx); Alarms.schedule(ctx); Durood.start(ctx)
     }
 }
 

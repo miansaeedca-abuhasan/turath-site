@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         Thread { Alarms.schedule(this) }.start()
+        Durood.start(this)
     }
 
     // permissions the alarms need (asked from the settings screen and after choosing the city)

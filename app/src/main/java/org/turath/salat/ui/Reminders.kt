@@ -46,6 +46,11 @@ fun RemindersScreen(s: AppState) {
     var ppSnd by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()) {
         Text(Tr["tRem"], Modifier.padding(16.dp), fontSize = 28.sp, fontWeight = FontWeight.Bold)
+        SectionTitle(Tr["durood"])
+        Card0 {
+            SwitchRow(Tr["durood"], Durood.on(pr), Tr["duroodNote"]) { pr.sp.edit().putBoolean("durood", it).apply(); Durood.start(s.act); s.changed() }
+            if (Durood.on(pr)) Stepper(Tr["duroodGap"], Durood.gapMinutes(pr), 0, 120, 5) { pr.sp.edit().putInt("duroodGap", it).apply(); s.changed() }
+        }
         SectionTitle(Tr["fasting"])
         Card0 {
             SwitchRow(Tr["monThu"], pr.monThu) { pr.monThu = it; s.changed() }

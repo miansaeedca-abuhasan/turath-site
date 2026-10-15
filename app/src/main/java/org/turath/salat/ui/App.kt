@@ -67,12 +67,12 @@ fun App(act: MainActivity) {
     }
 }
 
-private data class Tab(val key: String, val icon: ImageVector)
+private data class NavTab(val key: String, val icon: ImageVector)
 
 @Composable
 fun Main(s: AppState) {
-    val tabs = listOf(Tab("tHome", Icons.Outlined.WbTwilight), Tab("tTimes", Icons.Outlined.FormatListBulleted),
-        Tab("tRem", Icons.Outlined.Alarm), Tab("tCal", Icons.Outlined.CalendarMonth), Tab("tQibla", Icons.Outlined.Explore))
+    val tabs = listOf(NavTab("tHome", Icons.Outlined.WbTwilight), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
+        Tab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQiblaM", Icons.Outlined.Explore))
     if (s.settings) { SettingsScreen(s) { s.settings = false; s.sub = "" }; return }
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,

@@ -15,7 +15,7 @@ def shot(name):
 apk = 'app/build/outputs/apk/debug/app-debug.apk'
 print(sh('install', '-r', '-g', apk).decode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6); shot('00_first_start')
-tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla']}
+tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ و مساجد'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة والمساجد'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla & mosques']}
 place = json.dumps({"n": "Mississauga", "c": "CA", "lat": 43.589, "lng": -79.644, "tz": "America/Toronto"}).replace('"', '&quot;')
 for lang in ['ur', 'ar', 'en']:
     sh('shell', 'am', 'force-stop', 'org.turath.salat')
@@ -26,6 +26,8 @@ for lang in ['ur', 'ar', 'en']:
     sh('shell', 'input', 'swipe', '540', '1800', '540', '500', '400'); shot(f'{lang}_1b_home_scrolled')
     for i, t in enumerate(tabs[lang][1:], 2):
         if tap_text(t): shot(f'{lang}_{i}_{t}')
+    mq = {'ur': 'قریبی مساجد', 'ar': 'المساجد القريبة', 'en': 'Mosques nearby'}[lang]
+    if tap_text(mq): time.sleep(20); shot(f'{lang}_7_mosques')
     if lang == 'ur':
         tap_text(tabs[lang][0]); time.sleep(2)
         sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
