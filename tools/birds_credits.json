@@ -1,0 +1,58 @@
+{
+ "nightingale": {
+  "title": "File:Luscinia megarhynchos - Common Nightingale XC416395.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Luscinia_megarhynchos_-_Common_Nightingale_XC416395.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "Phoenicurus ochruros",
+  "from_second": 33,
+  "seconds": 25
+ },
+ "blackbird": {
+  "title": "File:Turdus merula - Common Blackbird XC561032.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Turdus_merula_-_Common_Blackbird_XC561032.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "Olivier Grimm",
+  "from_second": 2,
+  "seconds": 25
+ },
+ "robin": {
+  "title": "File:Erithacus rubecula - European Robin XC124862.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Erithacus_rubecula_-_European_Robin_XC124862.ogg",
+  "licence": "CC BY-SA 3.0",
+  "author": "Dan Stowell",
+  "from_second": 70,
+  "seconds": 25
+ },
+ "skylark": {
+  "title": "File:Alauda arvensis - Eurasian Skylark XC482777.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Alauda_arvensis_-_Eurasian_Skylark_XC482777.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "Pascal Christe",
+  "from_second": 44,
+  "seconds": 25
+ },
+ "dove": {
+  "title": "File:Clamator glandarius, bedelroep, Hartbeesfontein, b.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Clamator_glandarius,_bedelroep,_Hartbeesfontein,_b.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "JMK",
+  "from_second": 0,
+  "seconds": 14
+ },
+ "wren": {
+  "title": "File:Troglodytes troglodytes - Eurasian Wren XC425718.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Troglodytes_troglodytes_-_Eurasian_Wren_XC425718.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "Borja",
+  "from_second": 119,
+  "seconds": 25
+ },
+ "chorus": {
+  "title": "File:0426AM Dawn Chorus 07-May-2023.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:0426AM_Dawn_Chorus_07-May-2023.ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "Alexander Wendt",
+  "from_second": 3804,
+  "seconds": 25
+ }
+}
