@@ -81,7 +81,7 @@ fun RemindersScreen(s: AppState) {
         Spacer(Modifier.height(24.dp))
     }
     edit?.let { r -> ReminderEditor(s, r) { edit = null } }
-    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, Snd.entries.filter { it != Snd.SILENT }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
+    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, false).filter { it != Snd.SILENT }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
 }
 
 private fun minText(m: Int): String { val a = kotlin.math.abs(m); return if (a >= 60) "${a / 60} ${Tr["hr"]} ${a % 60} ${Tr["min"]}" else "$a ${Tr["min"]}" }
@@ -129,7 +129,7 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
             if (exists) TextButton(onClick = { s.prefs.reminders = s.prefs.reminders.filter { it.id != r0.id }; s.changed(); close() }) { Text(Tr["delete"], color = Color(0xFFB3261E)) }
             TextButton(onClick = close) { Text(Tr["cancel"]) }
         } })
-    if (snd) SoundPicker(s, Tr["sound"], r.sound, Snd.entries) { v -> if (v != null) r = r.copy(sound = v); snd = false }
+    if (snd) SoundPicker(s, Tr["sound"], r.sound, SoundService.choices(s.act, false)) { v -> if (v != null) r = r.copy(sound = v); snd = false }
 }
 
 @Composable

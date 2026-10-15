@@ -64,12 +64,12 @@ fun TimesScreen(s: AppState) {
         }
         Text(Tr["hijriChange"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
     }
-    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), if (p in FIVE) Snd.entries else Snd.entries.filter { !it.name.startsWith("ADHAN") }) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
+    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, p == P.FAJR, p in FIVE), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
 }
 
 /** choose a sound (each can be heard first) */
 @Composable
-fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, done: (Snd?) -> Unit) {
+fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, fajr: Boolean = false, done: (Snd?) -> Unit) {
     var sel by remember { mutableStateOf(cur) }
     var playing by remember { mutableStateOf(false) }
     val ctx = s.act
@@ -82,7 +82,7 @@ fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, done: (Sn
                     Text(Tr[x.name], Modifier.weight(1f))
                     if (x != Snd.SILENT) IconButton(onClick = {
                         if (playing) ctx.stopService(android.content.Intent(ctx, SoundService::class.java))
-                        else SoundService.start(ctx, x, Tr[x.name], "", false)
+                        else SoundService.start(ctx, x, Tr[x.name], "", false, fajr)
                         playing = !playing
                     }) { Icon(Icons.Outlined.PlayCircle, Tr["test"]) }
                 }

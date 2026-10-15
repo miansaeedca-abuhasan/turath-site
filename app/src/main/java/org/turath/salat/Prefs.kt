@@ -12,10 +12,16 @@ val FIVE = listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
 
 /** sound for an alarm or reminder; a sound file missing from the app falls back to the phone's alarm tone */
 enum class Snd(val raw: String?) {
-    ADHAN_MAKKAH("adhan_makkah"), ADHAN_MADINAH("adhan_madinah"), ADHAN_AQSA("adhan_aqsa"),
-    SHORT_HAYYA("short_hayya"), SHORT_SHAHADA("short_shahada"), SHORT_TAKBIR("short_takbir"),
+    // adhans (a «_fajr» file of the same name is used for Fajr when the app has one)
+    ADHAN_MAKKAH("adhan_makkah"), ADHAN_DAGHRIRI("adhan_daghriri"), ADHAN_DAGHRIRI2("adhan_daghriri2"),
+    ADHAN_MADINAH("adhan_madinah"), ADHAN_AQSA("adhan_aqsa"),
+    ADHAN_BASIT("adhan_basit"), ADHAN_NABET("adhan_nabet"), ADHAN_MAGHRIBI("adhan_maghribi"),
+    // short calls for alarms and reminders (cut from Shaikh Ali Ahmad Mulla's adhan), the takbirat of Makkah
+    SHORT_HAYYA("short_hayya"), SHORT_SHAHADA("short_shahada"), SHORT_TAKBIR("short_takbir"), TAKBIRAT("takbirat_makkah"),
     BIRDS1("birds1"), BIRDS2("birds2"), BIRDS3("birds3"),
-    TONE(null), NOTIFY(null), SILENT(null)
+    TONE(null), NOTIFY(null), SILENT(null);
+
+    val adhan get() = name.startsWith("ADHAN")
 }
 
 /** a reminder like «35 min before Fajr on Tuesday and Wednesday» */

@@ -127,7 +127,7 @@ object Alarms {
                     "suhoor" -> if (place != null) Tr["suhoorEnds"] + " " + fmt(pr, Schedule.day(pr, place, e.at.toLocalDate().let { if (e.at.hour >= 12) it.plusDays(1) else it })[P.FAJR]) else ""
                     else -> place?.name ?: ""
                 }
-                if (playSound) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor")
+                if (playSound) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", e.p == P.FAJR && e.kind == "prayer")
                 else {
                     val ch = if (e.snd == Snd.NOTIFY) CH_REM else CH_ADHAN
                     nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat)
@@ -216,14 +216,25 @@ class SoundService : Service() {
     private var until = 0L
 
     companion object {
-        fun start(ctx: Context, s: Snd, title: String, body: String, alarm: Boolean) {
-            val i = Intent(ctx, SoundService::class.java).putExtra("snd", s.name).putExtra("title", title).putExtra("body", body).putExtra("alarm", alarm)
+        fun start(ctx: Context, s: Snd, title: String, body: String, alarm: Boolean, fajr: Boolean = false) {
+            val i = Intent(ctx, SoundService::class.java).putExtra("snd", s.name).putExtra("title", title).putExtra("body", body).putExtra("alarm", alarm).putExtra("fajr", fajr)
             ctx.startForegroundService(i)
         }
 
+        /** the app's own file for a sound (its Fajr version for Fajr), 0 when the app does not have it */
+        fun rawId(ctx: Context, s: Snd, fajr: Boolean = false): Int {
+            val r = s.raw ?: return 0
+            if (fajr) ctx.resources.getIdentifier(r + "_fajr", "raw", ctx.packageName).let { if (it != 0) return it }
+            return ctx.resources.getIdentifier(r, "raw", ctx.packageName)
+        }
+
+        /** sounds that can be chosen: an adhan only when its recording is in the app */
+        fun choices(ctx: Context, fajr: Boolean, adhans: Boolean = true) =
+            Snd.entries.filter { (!it.adhan || (adhans && rawId(ctx, it, fajr) != 0)) && !(it.name.startsWith("BIRDS") && it != Snd.BIRDS1 && rawId(ctx, it) == 0) }
+
         /** the sound file of the app, or null when that sound is not (yet) in the app */
-        fun uri(ctx: Context, s: Snd): Uri? {
-            val id = s.raw?.let { ctx.resources.getIdentifier(it, "raw", ctx.packageName) } ?: 0
+        fun uri(ctx: Context, s: Snd, fajr: Boolean = false): Uri? {
+            val id = rawId(ctx, s, fajr)
             return when {
                 id != 0 -> Uri.parse("android.resource://${ctx.packageName}/$id")
                 s == Snd.SILENT -> null
@@ -249,15 +260,15 @@ class SoundService : Service() {
             .build()
         if (Build.VERSION.SDK_INT >= 29) startForeground(77, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK) else startForeground(77, n)
         val s = runCatching { Snd.valueOf(i.getStringExtra("snd") ?: "") }.getOrDefault(Snd.TONE)
-        play(s, alarm)
+        play(s, alarm, i.getBooleanExtra("fajr", false))
         return START_NOT_STICKY
     }
 
-    private fun play(s: Snd, alarm: Boolean) {
+    private fun play(s: Snd, alarm: Boolean, fajr: Boolean) {
         mp?.release(); mp = null
-        val u = uri(this, s) ?: run { stopSelf(); return }
+        val u = uri(this, s, fajr) ?: run { stopSelf(); return }
         // the suhoor alarm repeats for up to 3 minutes; the phone's own tone at most 40 seconds; an adhan plays once
-        val own = s.raw?.let { resources.getIdentifier(it, "raw", packageName) } ?: 0
+        val own = rawId(this, s, fajr)
         until = System.currentTimeMillis() + when { alarm -> 180_000L; own == 0 -> 40_000L; else -> 600_000L }
         try {
             mp = MediaPlayer().apply {
