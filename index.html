@@ -649,11 +649,11 @@ window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["dat
 </script>
 <script>
 const I={
-ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفیٰ) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب اور حصن المسلم شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفیٰ) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'متفق علیہ',s:'صحیح',h:'حسن',d:'ضعیف'},
  kind:{translation:'ترجمہ',intro_kitab:'کتاب کا تعارف',intro_majmu:'مجموعے کا تعارف',intro:'باب کا تعارف',sharh:'شرح',alfaz:'شرح الفاظِ حدیث',buhuth:'بحث الحدیث',duroos:'فوائد و دروس',extra:'اضافی معلومات'},
  field:{matn:'متن',sanad:'سند',chapter:'باب',takhrij:'تخریج',translation:'ترجمہ',sharh:'شرح',alfaz:'الفاظ',buhuth:'بحث',duroos:'دروس',extra:'اضافی',number:'نمبر',semantic:'مفہوم',ref:'حوالہ',intro:'تعارف',intro_kitab:'تعارف',intro_majmu:'تعارف'}},
-en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators and Hisn al-Muslim are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'Agreed upon',s:'Sahih',h:'Hasan',d:"Da'if"},
  kind:{translation:'Translation',intro_kitab:'Book Introduction',intro_majmu:'Collection Introduction',intro:'Chapter Introduction',sharh:'Commentary',alfaz:'Word Commentary',buhuth:'Discussion of the Hadith',duroos:'Lessons',extra:'Additional Notes'},
  field:{matn:'Text',sanad:'Isnad',chapter:'Chapter',takhrij:'Takhrij',translation:'Translation',sharh:'Commentary',alfaz:'Words',buhuth:'Discussion',duroos:'Lessons',extra:'Notes',number:'Number',semantic:'Meaning',ref:'Reference',intro:'Intro',intro_kitab:'Intro',intro_majmu:'Intro'}}};
@@ -2817,7 +2817,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     results: 'عدد النتائج', shownFirst: n => '(عُرض أول ' + n + ' — زد الكلمات لتضييق البحث)', readMode: 'وضع القراءة (كالمصحف)', cardMode: 'وضع البطاقات',
     showSanad: 'إظهار الإسناد', showTr: 'إظهار الترجمة', brand: 'تراث خير القرون', navFazail: 'فضائل الصحابة', death: y => '(ت ' + y + 'هـ)', arOnly: 'عربي فقط',
     totAll: n => 'مجموع الأحاديث: ' + n, totParts: (j, o, b) => 'الجامع الكامل ' + j + ' + ' + o + ' في ' + b + ' كتابًا آخر',
-    totNote: 'الجامع الكامل والكتب المأخوذة منه (البنغالية، التحفة، فضائل الصحابة، صحيح السيرة) تُحسب مرة واحدة، ولا تُحسب كتب الرجال وحصن المسلم.',
+    totNote: 'الجامع الكامل والكتب المأخوذة منه (البنغالية، التحفة، فضائل الصحابة، صحيح السيرة) تُحسب مرة واحدة، ولا تُحسب كتب الرجال.',
     ph: 'اكتب كلمات، مثل: رحمة & عذاب — أو رقم الحديث', phIn: b => 'في هذا الكتاب (' + b + '): كلمات أو رقم الحديث', count: n => n + ' حديثًا',
     none: 'لا نتائج. جرّب كلمات أقل أو مختلفة.', nf: 'لم يُعثر على الحديث.', hadith: n => 'حديث رقم ' + n, range: (a, b) => 'رقم الحديث: ' + (a === b ? a : a + '–' + b),
     hide: 'إخفاء الإسناد', show: 'إظهار الإسناد', more: 'المزيد', open: 'افتح الحديث كاملًا', nobook: 'لم يُضف هذا الكتاب إلى التطبيق بعد.',
@@ -2878,7 +2878,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     results: 'ফলাফল', shownFirst: n => '(প্রথম ' + n + 'টি দেখানো হলো — শব্দ বাড়িয়ে খোঁজ সীমিত করুন)', readMode: 'পড়ার মোড (মুসহাফের মতো)', cardMode: 'কার্ড মোড',
     showSanad: 'সনদ দেখান', showTr: 'অনুবাদ দেখান', brand: 'তুরাস খাইরুল কুরূন', navFazail: 'সাহাবা', death: y => '(মৃ. ' + y + ' হি.)', arOnly: 'শুধু আরবি',
     totAll: n => 'মোট হাদীস: ' + n, totParts: (j, o, b) => 'আল-জামি আল-কামিল ' + j + ' + অন্য ' + b + 'টি বইয়ে ' + o,
-    totNote: 'আল-জামি আল-কামিল ও তা থেকে নেওয়া বইগুলো (বাংলা, তুহফা, ফাযায়েলে সাহাবা, সহীহ সীরাত) একবারই গণনা করা হয়েছে। রিজালের বই ও হিসনুল মুসলিম গণনায় নেই।',
+    totNote: 'আল-জামি আল-কামিল ও তা থেকে নেওয়া বইগুলো (বাংলা, তুহফা, ফাযায়েলে সাহাবা, সহীহ সীরাত) একবারই গণনা করা হয়েছে। রিজালের বই গণনায় নেই।',
     ph: 'শব্দ লিখুন, যেমন: রহমত & আযাব — অথবা হাদীস নম্বর', phIn: b => 'এই বইয়ে (' + b + '): শব্দ বা হাদীস নম্বর', count: n => n + 'টি হাদীস',
     none: 'কিছু পাওয়া যায়নি। কম বা ভিন্ন শব্দ দিয়ে চেষ্টা করুন।', nf: 'হাদীস পাওয়া যায়নি।', hadith: n => 'হাদীস নং ' + n, range: (a, b) => 'হাদীস নং: ' + (a === b ? a : a + '–' + b),
     hide: 'সনদ লুকান', show: 'সনদ দেখান', more: 'আরও দেখুন', open: 'পূর্ণ হাদীস খুলুন', nobook: 'এই বই এখনো অ্যাপে যোগ করা হয়নি।',
@@ -2983,7 +2983,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   window.DAILY = d => { DLY = d; };
   const need = () => DLY ? Promise.resolve() : (loading = loading || new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'daily.js'; s.onload = ok; s.onerror = no; document.head.append(s); }));
   const dayNo = (dt = new Date()) => Math.floor(Date.UTC(dt.getFullYear(), dt.getMonth(), dt.getDate()) / 864e5);
-  const isMorning = (dt = new Date()) => { const h = dt.getHours(); return h >= 3 && h < 14; };
   const rtl = l => l === 'ur' || l === 'ar';
   const trOfH = h => ui === 'ar' ? '' : (h[ui] || '');
   const who = x => x.kind === 'n' ? T('prophet') : (x.who[ui] || x.who.en);
@@ -3021,6 +3020,95 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return {tr, ar: h.matn.join(' '), lang: ui !== 'ar' && !trs[ui] ? 'en' : ui, ref: T('srcJami') + ' ' + NUM(h.num), href: '#/h/' + h.num};
   }
 
+  /* ---------- the times of the morning / evening adhkar, from the sun at the user's place ----------
+     morning: from Fajr until Dhuhr; evening: from Asr through the night until Fajr.
+     The place: the phone's location if the user allowed it once (kept only on the phone), otherwise
+     the main city of the phone's time zone; with neither, the clock hours (3:00 / 14:00). */
+  const TZC = {'America/Toronto':[43.65,-79.38],'America/New_York':[40.71,-74.01],'America/Chicago':[41.88,-87.63],'America/Denver':[39.74,-104.99],
+    'America/Los_Angeles':[34.05,-118.24],'America/Vancouver':[49.28,-123.12],'America/Edmonton':[53.55,-113.49],'America/Winnipeg':[49.9,-97.14],
+    'America/Halifax':[44.65,-63.57],'America/Regina':[50.45,-104.61],'America/Phoenix':[33.45,-112.07],'America/Mexico_City':[19.43,-99.13],'America/Sao_Paulo':[-23.55,-46.63],
+    'Asia/Karachi':[31.52,74.36],'Asia/Kolkata':[28.61,77.21],'Asia/Calcutta':[28.61,77.21],'Asia/Dhaka':[23.81,90.41],'Asia/Kathmandu':[27.72,85.32],'Asia/Colombo':[6.93,79.86],
+    'Asia/Riyadh':[24.71,46.68],'Asia/Dubai':[25.2,55.27],'Asia/Qatar':[25.29,51.53],'Asia/Kuwait':[29.38,47.99],'Asia/Bahrain':[26.23,50.59],'Asia/Muscat':[23.59,58.41],
+    'Asia/Aden':[15.37,44.19],'Asia/Baghdad':[33.31,44.36],'Asia/Tehran':[35.69,51.39],'Asia/Kabul':[34.56,69.21],'Asia/Amman':[31.95,35.93],'Asia/Damascus':[33.51,36.29],
+    'Asia/Beirut':[33.89,35.5],'Asia/Jerusalem':[31.77,35.21],'Asia/Gaza':[31.5,34.47],'Europe/Istanbul':[41.01,28.98],'Africa/Cairo':[30.04,31.24],'Asia/Kuala_Lumpur':[3.14,101.69],
+    'Asia/Jakarta':[-6.21,106.85],'Asia/Singapore':[1.35,103.82],'Asia/Tashkent':[41.3,69.24],'Asia/Almaty':[43.24,76.89],'Asia/Shanghai':[39.9,116.4],'Asia/Tokyo':[35.68,139.69],
+    'Asia/Yangon':[16.87,96.2],'Asia/Rangoon':[16.87,96.2],'Asia/Manila':[14.6,120.98],'Indian/Maldives':[4.18,73.51],
+    'Europe/London':[51.51,-0.13],'Europe/Dublin':[53.35,-6.26],'Europe/Paris':[48.86,2.35],'Europe/Brussels':[50.85,4.35],'Europe/Amsterdam':[52.37,4.9],'Europe/Berlin':[52.52,13.4],
+    'Europe/Madrid':[40.42,-3.7],'Europe/Rome':[41.9,12.5],'Europe/Oslo':[59.91,10.75],'Europe/Stockholm':[59.33,18.07],'Europe/Copenhagen':[55.68,12.57],'Europe/Moscow':[55.76,37.62],
+    'Africa/Casablanca':[33.57,-7.59],'Africa/Algiers':[36.75,3.06],'Africa/Tunis':[36.81,10.18],'Africa/Lagos':[6.52,3.38],'Africa/Nairobi':[-1.29,36.82],'Africa/Johannesburg':[-26.2,28.05],
+    'Africa/Khartoum':[15.5,32.56],'Africa/Mogadishu':[2.05,45.32],'Africa/Addis_Ababa':[9.03,38.74],'Australia/Sydney':[-33.87,151.21],'Australia/Melbourne':[-37.81,144.96],'Australia/Perth':[-31.95,115.86],
+    'Pacific/Auckland':[-36.85,174.76]};
+  const PT = {
+    ur: {fajr: 'فجر', dhuhr: 'ظہر', asr: 'عصر', maghrib: 'مغرب', from: (n, t) => n + ' (' + t + ') سے', locBtn: 'اپنے مقام کے مطابق درست وقت', locOk: 'اذکار کے اوقات اب آپ کے مقام کے مطابق ہیں', locNo: 'مقام نہیں مل سکا — اوقات اندازے سے رہیں گے',
+      locTitle: 'صبح و شام کے اذکار کے اوقات', locGps: 'آپ کے مقام کے مطابق', locTz: z => 'اندازاً، فون کے وقت کے علاقے (' + z + ') کے مطابق', locClock: 'گھڑی کے حساب سے (صبح 3 سے دوپہر 2 بجے تک صبح کے اذکار)', locOff: 'مقام ہٹا دیں',
+      locNote: 'صبح کے اذکار فجر سے ظہر تک، اور شام کے اذکار عصر سے رات تک۔ آپ کا مقام صرف آپ کے فون میں رہتا ہے، کہیں بھیجا نہیں جاتا۔'},
+    ar: {fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', from: (n, t) => 'من ' + n + ' (' + t + ')', locBtn: 'الوقت الدقيق حسب موقعي', locOk: 'أوقات الأذكار الآن حسب موقعك', locNo: 'تعذر تحديد الموقع — تبقى الأوقات تقريبية',
+      locTitle: 'أوقات أذكار الصباح والمساء', locGps: 'حسب موقعك', locTz: z => 'تقريبية، حسب منطقة توقيت الهاتف (' + z + ')', locClock: 'حسب الساعة (أذكار الصباح من 3 إلى 2 ظهرًا)', locOff: 'إزالة الموقع',
+      locNote: 'أذكار الصباح من الفجر إلى الظهر، وأذكار المساء من العصر إلى الليل. يبقى موقعك في هاتفك فقط ولا يُرسل إلى أي جهة.'},
+    en: {fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', from: (n, t) => 'from ' + n + ' (' + t + ')', locBtn: 'Exact times for my location', locOk: 'Adhkar times now follow your location', locNo: 'Location not available — times stay approximate',
+      locTitle: 'Times of the morning and evening adhkar', locGps: 'By your location', locTz: z => 'Approximate, by the phone time zone (' + z + ')', locClock: 'By the clock (morning adhkar 3:00 to 14:00)', locOff: 'Remove location',
+      locNote: 'Morning adhkar from Fajr until Dhuhr; evening adhkar from Asr into the night. Your location stays only on your phone and is never sent anywhere.'},
+    fr: {fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', from: (n, t) => 'à partir de ' + n + ' (' + t + ')', locBtn: 'Heures exactes selon ma position', locOk: 'Les heures des invocations suivent maintenant votre position', locNo: 'Position indisponible — les heures restent approximatives',
+      locTitle: 'Heures des invocations du matin et du soir', locGps: 'Selon votre position', locTz: z => 'Approximatif, selon le fuseau horaire du téléphone (' + z + ')', locClock: "Selon l'horloge (matin de 3h à 14h)", locOff: 'Supprimer la position',
+      locNote: "Invocations du matin de Fajr jusqu'à Dhuhr ; du soir de Asr jusqu'à la nuit. Votre position reste uniquement sur votre téléphone."},
+    hi: {fajr: 'फ़ज्र', dhuhr: 'ज़ुहर', asr: 'अस्र', maghrib: 'मग़रिब', from: (n, t) => n + ' (' + t + ') से', locBtn: 'मेरे स्थान के अनुसार सही समय', locOk: 'अज़कार का समय अब आपके स्थान के अनुसार है', locNo: 'स्थान नहीं मिला — समय अनुमान से रहेगा',
+      locTitle: 'सुबह-शाम के अज़कार का समय', locGps: 'आपके स्थान के अनुसार', locTz: z => 'अनुमानित, फ़ोन के समय क्षेत्र (' + z + ') के अनुसार', locClock: 'घड़ी के अनुसार (सुबह 3 से दोपहर 2 बजे तक सुबह के अज़कार)', locOff: 'स्थान हटाएँ',
+      locNote: 'सुबह के अज़कार फ़ज्र से ज़ुहर तक, शाम के अज़कार अस्र से रात तक। आपका स्थान केवल आपके फ़ोन में रहता है।'},
+    bn: {fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', from: (n, t) => n + ' (' + t + ') থেকে', locBtn: 'আমার অবস্থান অনুযায়ী সঠিক সময়', locOk: 'যিকিরের সময় এখন আপনার অবস্থান অনুযায়ী', locNo: 'অবস্থান পাওয়া যায়নি — সময় আনুমানিক থাকবে',
+      locTitle: 'সকাল-সন্ধ্যার যিকিরের সময়', locGps: 'আপনার অবস্থান অনুযায়ী', locTz: z => 'আনুমানিক, ফোনের সময় অঞ্চল (' + z + ') অনুযায়ী', locClock: 'ঘড়ি অনুযায়ী (ভোর ৩টা থেকে দুপুর ২টা সকালের যিকির)', locOff: 'অবস্থান মুছুন',
+      locNote: 'সকালের যিকির ফজর থেকে যোহর পর্যন্ত, সন্ধ্যার যিকির আসর থেকে রাত পর্যন্ত। আপনার অবস্থান শুধু আপনার ফোনেই থাকে।'},
+    gu: {fajr: 'ફજર', dhuhr: 'ઝુહર', asr: 'અસર', maghrib: 'મગરિબ', from: (n, t) => n + ' (' + t + ') થી', locBtn: 'મારા સ્થાન મુજબ સાચો સમય', locOk: 'અઝકારનો સમય હવે તમારા સ્થાન મુજબ છે', locNo: 'સ્થાન મળ્યું નહીં — સમય અંદાજે રહેશે',
+      locTitle: 'સવાર-સાંજના અઝકારનો સમય', locGps: 'તમારા સ્થાન મુજબ', locTz: z => 'અંદાજે, ફોનના સમય વિસ્તાર (' + z + ') મુજબ', locClock: 'ઘડિયાળ મુજબ (સવારે 3 થી બપોરે 2 સુધી સવારના અઝકાર)', locOff: 'સ્થાન દૂર કરો',
+      locNote: 'સવારના અઝકાર ફજરથી ઝુહર સુધી, સાંજના અઝકાર અસરથી રાત સુધી. તમારું સ્થાન ફક્ત તમારા ફોનમાં જ રહે છે.'}};
+  const P = k => (PT[ui] || PT.en)[k];
+  const TZ = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } };
+  const gpsLoc = () => { try { const x = JSON.parse(localStorage.adhkarLoc || 'null'); return x && isFinite(x[0]) && isFinite(x[1]) ? x : null; } catch (e) { return null; } };
+  const place = () => { const g = gpsLoc(); if (g) return {ll: g, src: 'gps'}; const z = TZ(); return TZC[z] ? {ll: TZC[z], src: 'tz', z: z.split('/').pop().replace(/_/g, ' ')} : {ll: null, src: 'clock'}; };
+  // Fajr 18°, Asr at a shadow of one length; the result: hours of the local clock of that day
+  function sunTimes(dt, lat, lng) {
+    const r = Math.PI / 180, sin = d => Math.sin(d * r), cos = d => Math.cos(d * r), tan = d => Math.tan(d * r),
+      asin = x => Math.asin(x) / r, acos = x => Math.acos(x) / r, atan2 = (y, x) => Math.atan2(y, x) / r, fix = (a, b) => ((a % b) + b) % b;
+    const y = dt.getFullYear(), m = dt.getMonth() + 1, d = dt.getDate();
+    const jd = 367 * y - Math.floor(7 * (y + Math.floor((m + 9) / 12)) / 4) + Math.floor(275 * m / 9) + d + 1721013.5 + 0.5 - lng / 360;
+    const D = jd - 2451545, g = fix(357.529 + 0.98560028 * D, 360), q = fix(280.459 + 0.98564736 * D, 360), L = fix(q + 1.915 * sin(g) + 0.02 * sin(2 * g), 360);
+    const e = 23.439 - 0.00000036 * D, RA = fix(atan2(cos(e) * sin(L), cos(L)) / 15, 24), dec = asin(sin(e) * sin(L)), eqt = q / 15 - RA;
+    const noon = new Date(y, m - 1, d, 12), tz = -noon.getTimezoneOffset() / 60;
+    const dhuhr = 12 + tz - lng / 15 - eqt;
+    const T = a => acos((-sin(a) - sin(dec) * sin(lat)) / (cos(dec) * cos(lat))) / 15;
+    const A = acos((sin(Math.atan(1 / (1 + tan(Math.abs(lat - dec)))) / r) - sin(dec) * sin(lat)) / (cos(dec) * cos(lat))) / 15;
+    const rise = dhuhr - T(0.833), set = dhuhr + T(0.833);
+    let fajr = dhuhr - T(18); if (!isFinite(fajr)) fajr = isFinite(rise) ? rise - 1.5 : 3;   // far north in summer: no full night
+    return {fajr, rise, dhuhr, asr: isFinite(A) ? dhuhr + A : dhuhr + 3, maghrib: isFinite(set) ? set : dhuhr + 6};
+  }
+  // which adhkar now: {m: true|false, gap: before Asr, t: today's times (or null)}
+  function adhkarNow(now = new Date()) {
+    const p = place();
+    if (!p.ll) { const h = now.getHours(); return {m: h >= 3 && h < 14, gap: false, t: null, p}; }
+    const t = sunTimes(now, p.ll[0], p.ll[1]), h = now.getHours() + now.getMinutes() / 60;
+    if (h >= t.fajr && h < t.dhuhr) return {m: true, gap: false, t, p};
+    return {m: false, gap: h >= t.dhuhr && h < t.asr, t, p};
+  }
+  const hm = (dt, hrs) => { const x = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate()); x.setMinutes(Math.round(hrs * 60));
+    try { return x.toLocaleTimeString({ur: 'ur-PK', ar: 'ar', bn: 'bn-BD', hi: 'hi-IN', gu: 'gu-IN', fr: 'fr-FR'}[ui] || 'en-US', {hour: 'numeric', minute: '2-digit'}).replace(/^/, '\u2066') + '\u2069'; } catch (e) { return x.toTimeString().slice(0, 5); } };
+  const timesLine = (a, now = new Date()) => !a.t ? '' : a.gap ? P('from')(P('asr'), hm(now, a.t.asr))
+    : a.m ? P('fajr') + ' ' + hm(now, a.t.fajr) + ' — ' + P('dhuhr') + ' ' + hm(now, a.t.dhuhr)
+    : P('asr') + ' ' + hm(now, a.t.asr) + ' — ' + P('maghrib') + ' ' + hm(now, a.t.maghrib);
+  function askLocation(done) {
+    if (!navigator.geolocation) { toast(P('locNo')); return; }
+    navigator.geolocation.getCurrentPosition(pos => {
+      try { localStorage.adhkarLoc = JSON.stringify([+pos.coords.latitude.toFixed(2), +pos.coords.longitude.toFixed(2)]); } catch (e) {}
+      toast(P('locOk')); if (NS() && 'caches' in window) buildQueue().catch(() => {}); if (done) done();
+    }, () => toast(P('locNo')), {enableHighAccuracy: false, timeout: 15000, maximumAge: 864e5});
+  }
+  function locBlock(redraw) {
+    const p = place(), st = p.src === 'gps' ? P('locGps') : p.src === 'tz' ? P('locTz')(p.z) : P('locClock');
+    const b = el('div', {class: 'locbox'}, el('p', {class: 'grp'}, P('locTitle')), el('p', {class: 'note'}, st + ' — ' + P('locNote')));
+    const a = adhkarNow(); if (a.t) b.append(el('p', {class: 'cs'}, P('fajr') + ' ' + hm(new Date(), a.t.fajr) + ' · ' + P('dhuhr') + ' ' + hm(new Date(), a.t.dhuhr) + ' · ' + P('asr') + ' ' + hm(new Date(), a.t.asr) + ' · ' + P('maghrib') + ' ' + hm(new Date(), a.t.maghrib)));
+    b.append(el('button', {class: 'btn', type: 'button', on: {click: () => askLocation(redraw)}}, '📍 ', P('locBtn')));
+    if (p.src === 'gps') b.append(' ', el('button', {class: 'btn', type: 'button', on: {click: () => { try { localStorage.removeItem('adhkarLoc'); } catch (e) {} if (redraw) redraw(); }}}, P('locOff')));
+    return b;
+  }
+
   /* ---------- Home cards ---------- */
   const card = (ic, title, body, href, extra) => el('a', {class: 'card moment tcard', href},
     el('h3', {class: 'mh'}, icon(ic), title), ...body, extra || null, el('span', {class: 'tmore'}, T('tMore'), ' ', icon(LTR() ? 'next' : 'prev')));
@@ -3028,14 +3116,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const clip = (t, n) => t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + ' …' : t;
   async function homeCards(box) {
     if (!box) return;
-    const dn = dayNo(), m = isMorning();
+    const dn = dayNo(), an = adhkarNow(), m = an.m;
     box.replaceChildren(el('p', {class: 'note'}, T('loading')));
     try { await need(); } catch (e) { box.replaceChildren(); return; }
     const out = [];
     // adhkar of this time of day
     const ak = m ? 'morning' : 'evening', first = DLY.hadith[DLY[ak][0]];
     out.push(card(m ? 'sun' : 'moon', T(m ? 'tMorning' : 'tEvening'), [ui === 'ar' ? trP(clip(first.ar, 160), 'ar', 'mar') : trP(clip(trOfH(first), 180), ui)], '#/t/adhkar/' + (m ? 'm' : 'e'),
-      el('span', {class: 'cs'}, NUM(DLY[ak].length) + ' — ' + T('adhkarNote'))));
+      el('span', {class: 'cs'}, (an.t ? timesLine(an) + ' — ' : '') + NUM(DLY[ak].length) + ' — ' + T('adhkarNote'))));
     // advice
     const x = nasihaOf(dn), xt = x.kind === 'n' ? DLY.hadith[x.n] : x;
     out.push(card('quote', T('tNasiha'), [el('p', {class: 'cs'}, kindName(x.kind) + ' — ' + who(x)), ui === 'ar' ? trP(clip(xt.ar, 220), 'ar', 'mar') : trP(clip(trOfH(xt), 260), ui)], '#/t/nasiha/' + (order()[dn % DLY.nasaih.length])));
@@ -3064,7 +3152,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(T(m ? 'tMorning' : 'tEvening'), T('srcJami'), true);
     const v = $('#qv'); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
     await need();
-    v.replaceChildren(el('p', {class: 'note'}, T('adhkarNote')),
+    v.replaceChildren(el('p', {class: 'note'}, T('adhkarNote')), locBlock(() => showAdhkar(which)),
       el('a', {class: 'btn lbtn', href: '#/t/adhkar/' + (m ? 'e' : 'm'), style: 'margin:.2rem 0 .6rem'}, icon(m ? 'moon' : 'sun'), ' ', T('otherAdhkar')(m ? 'm' : 'e')),
       ...DLY[m ? 'morning' : 'evening'].map(n => hadithBox(DLY.hadith[n])));
   }
@@ -3115,7 +3203,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (a) morning.push(mk('ayah', T('tAyah') + ' — ' + a.ref, ui === 'ar' || !a.tr ? a.ar : a.tr, a.href));
       const evening = [mk('adhkar', T('tEvening'), txt(DLY.hadith[DLY.evening[(dn % 5)]]), '#/t/adhkar/e'), mk('nasiha', T('tNasiha') + ' — ' + who(x), txt(xt), '#/t/nasiha/' + order()[dn % DLY.nasaih.length])];
       if (h) evening.push(mk('hadith', T('tHadith') + ' — ' + h.ref, ui === 'ar' || !h.tr ? h.ar : h.tr, h.href));
-      q[dateKey(dt)] = {m: morning, e: evening};
+      const p = place(), st = p.ll ? sunTimes(dt, p.ll[0], p.ll[1]) : null;
+      q[dateKey(dt)] = {m: morning, e: evening, w: st ? {m: [st.fajr, st.dhuhr], e: [st.asr, Math.min(st.maghrib + 2.5, 23.5)]} : null};
     }
     const c = await caches.open(QKEY); await c.put('queue', new Response(JSON.stringify(q), {headers: {'Content-Type': 'application/json'}}));
   }
@@ -3140,7 +3229,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const chk = el('input', {type: 'checkbox'}); chk.checked = NS();
     chk.addEventListener('change', async () => { const ok = await enableNotif(chk.checked); if (!ok) chk.checked = false; toast(T(chk.checked ? 'notifOn' : 'notifOff')); });
     return [el('p', {class: 'grp'}, T('notif')), el('label', {class: 'srow chk'}, chk, el('span', {}, T('notifDesc'))),
-      el('button', {class: 'btn', type: 'button', on: {click: testNotif}}, T('notifTest')), el('p', {class: 'note'}, T('notifLimit'))];
+      el('button', {class: 'btn', type: 'button', on: {click: testNotif}}, T('notifTest')), el('p', {class: 'note'}, T('notifLimit')),
+      (() => { const w = el('div'); const draw = () => w.replaceChildren(locBlock(draw)); draw(); return w; })()];
   }
   // keep the queue fresh (and in the current language) whenever the app is opened
   addEventListener('load', () => { if (NS() && 'caches' in window) setTimeout(() => buildQueue().catch(() => {}), 4000); });
