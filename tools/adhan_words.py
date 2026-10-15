@@ -5,7 +5,9 @@ from faster_whisper import WhisperModel
 m = WhisperModel('small', device='cpu', compute_type='int8')
 res = {}
 for f in sorted(glob.glob('app/src/main/res/raw/adhan_*.mp3')):
-    segs, _ = m.transcribe(f, language='ar', word_timestamps=True, vad_filter=False, beam_size=5)
+    import numpy as np
+    pcm = subprocess.run(['ffmpeg', '-v', 'error', '-i', f, '-ac', '1', '-ar', '16000', '-f', 'f32le', '-'], capture_output=True).stdout
+    segs, _ = m.transcribe(np.frombuffer(pcm, dtype=np.float32), language='ar', word_timestamps=True, vad_filter=False, beam_size=5)
     words = [(round(w.start, 2), round(w.end, 2), w.word) for s in segs for w in (s.words or [])]
     sil = subprocess.run(['ffmpeg', '-i', f, '-af', 'silencedetect=noise=-38dB:d=0.8', '-f', 'null', '-'], capture_output=True, text=True).stderr
     pauses = [float(x) for x in re.findall(r'silence_(?:start|end): ([0-9.]+)', sil)]
