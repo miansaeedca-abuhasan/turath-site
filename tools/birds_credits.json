@@ -112,19 +112,27 @@
   "seconds": 25
  },
  "canary2": {
-  "title": "File:Himno de las Canarias (Instrumental).ogg",
-  "page": "https://commons.wikimedia.org/wiki/File:Himno_de_las_Canarias_(Instrumental).ogg",
-  "licence": "CC0",
-  "author": "Parlamento de Canarias",
-  "from_second": 72,
+  "title": "File:Serinus canaria forma domestica - audio 01 ies.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Serinus_canaria_forma_domestica_-_audio_01_ies.ogg",
+  "licence": "CC BY-SA 3.0",
+  "author": "Frank Vincentz",
+  "from_second": 2007,
   "seconds": 25
  },
  "canary3": {
-  "title": "File:Courant des Canaries.oga",
-  "page": "https://commons.wikimedia.org/wiki/File:Courant_des_Canaries.oga",
-  "licence": "CC BY 3.0",
-  "author": "Michel",
-  "from_second": 2,
+  "title": "File:Serinus canaria forma domestica - audio 01 ies.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Serinus_canaria_forma_domestica_-_audio_01_ies.ogg",
+  "licence": "CC BY-SA 3.0",
+  "author": "Frank Vincentz",
+  "from_second": 256,
   "seconds": 25
+ },
+ "canary4": {
+  "title": "File:Canari hartz 2.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Canari_hartz_2.ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "Commons",
+  "from_second": 0,
+  "seconds": 11
  }
 }

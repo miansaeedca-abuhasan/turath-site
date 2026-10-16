@@ -1,29 +1,4 @@
-19 candidates
-  File:Serinus canaria forma domestica - audio 01 ies.ogg CC BY-SA 3.0 47434552
-  File:Himno de las Canarias (Instrumental).ogg CC0 3467452
-  File:Courant des Canaries.oga CC BY 3.0 600304
-  File:Canari hartz 2.ogg CC BY-SA 4.0 178574
-  File:De-Kanarienvogel.ogg CC BY-SA 4.0 27237
-  File:De-Harzer Rotviehes.ogg CC BY-SA 4.0 25152
-  File:De-Harzer Rotviehs.ogg CC BY-SA 4.0 24661
-  File:Pronunciation of Las Palmas de Gran Canaria in Spanish.ogg CC0 23934
-  File:De-Harzer Rollern.ogg CC BY-SA 4.0 22389
-  File:De-Harzer Rotvieh.ogg CC BY-SA 4.0 21960
-  File:De-Harzer Rollers.ogg CC BY-SA 4.0 21155
-  File:Pronunciation of Gran Canaria in Spanish.ogg CC0 20514
-  File:De-Harzer Roller.ogg CC BY-SA 4.0 20249
-  File:De-Harzers.ogg CC BY-SA 4.0 19428
-  File:Pronunciation of Canarias in Spanish.ogg CC0 19359
-  File:Nl-Canariërs.ogg CC BY-SA 3.0 17394
-  File:Nl-Canariër.ogg CC BY-SA 3.0 15173
-  File:De-Harzer.ogg CC BY-SA 4.0 14308
-  File:De-Harzer Roller.oga CC0 13901
-ok canary File:Serinus canaria forma domestica - audio 01 ies.ogg CC BY-SA 3.0 Frank Vincentz
-ok canary2 File:Himno de las Canarias (Instrumental).ogg CC0 Parlamento de Canarias
-ok canary3 File:Courant des Canaries.oga CC BY 3.0 Michel
-fail File:De-Harzers.ogg HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
-fail File:Pronunciation of Canarias in Spanish.ogg HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
-fail File:Nl-Canariërs.ogg HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
-fail File:Nl-Canariër.ogg HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
-fail File:De-Harzer.ogg HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
-fail File:De-Harzer Roller.oga HTTP Error 429: Your bot is making too many requests. Please reduce your request rate or contact bot-traffic@wikimedia.org (f263c81)
+ok canary 177
+ok canary2 2007
+ok canary3 256
+ok canary4 11.592
