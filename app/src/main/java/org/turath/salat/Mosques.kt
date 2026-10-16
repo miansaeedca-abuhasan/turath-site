@@ -44,14 +44,14 @@ object Mosques {
             // the site first (it keeps the answer a week), then the main Overpass server and its mirrors
             var s = runCatching {
                 val c = URL("https://turathkhairalquroon.com/api/mosques?bb=$bb").openConnection() as HttpURLConnection
-                c.connectTimeout = 10_000; c.readTimeout = 70_000
+                c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
             }.getOrDefault("")
-            if (!s.contains("\"elements\"")) for (u in listOf("https://overpass.kumi.systems/api/interpreter", "https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter")) {
+            if (!s.contains("\"elements\"")) for (u in listOf("https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass-api.de/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
-                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 60_000
+                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 40_000
                     c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
                     c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
                     if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
