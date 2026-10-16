@@ -56,7 +56,14 @@ for lang in ['ur', 'ar', 'en']:
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(8)
     shot(f'{lang}_1_home')
     for i, t in enumerate(tabs[lang][1:5], 2):
-        if tap_text(t): shot(f'{lang}_{i}_{t}')
+        if tap_text(t):
+            if i == 5:
+                # turn the (emulated) compass round, so the qibla is found and lost again
+                for k in range(24):
+                    a = k * 15 * 3.14159 / 180
+                    subprocess.run(['adb', 'emu', 'sensor', 'set', 'magnetic-field', f'{30*__import__("math").sin(a):.2f}:{30*__import__("math").cos(a):.2f}:-40'], capture_output=True)
+                    time.sleep(0.4)
+            shot(f'{lang}_{i}_{t}')
     cam = {'ur': 'کیمرہ', 'ar': 'الكاميرا', 'en': 'Camera'}[lang]
     if tap_text(cam): time.sleep(4); shot(f'{lang}_6_camera')
     tap_text(tabs[lang][0]); time.sleep(1)

@@ -2,4 +2,4 @@
     android:minWidth="250dp" android:minHeight="250dp" android:targetCellWidth="4" android:targetCellHeight="4"
     android:minResizeWidth="200dp" android:minResizeHeight="180dp"
     android:updatePeriodMillis="1800000" android:initialLayout="@layout/widget_cal" android:previewLayout="@layout/widget_cal" android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen" />
+    android:widgetCategory="home_screen" android:configure="org.turath.salat.WidgetSettings" android:widgetFeatures="reconfigurable|configuration_optional" />

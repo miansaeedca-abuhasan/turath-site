@@ -38,7 +38,7 @@ class AppState(val act: MainActivity) {
     var tab by mutableIntStateOf(0)
     var page by mutableStateOf("")        // a page opened from the menu ("settings", "widgets" …), "" = the tabs
     var sub by mutableStateOf("")         // a sub-page of a page ("city" …)
-    fun changed() { version++; Thread { Alarms.schedule(act) }.start() }
+    fun changed() { version++; Thread { runCatching { Alarms.schedule(act) } }.start() }
     fun fmt(t: ZonedDateTime) = Alarms.fmt(prefs, t)
 }
 
@@ -65,6 +65,7 @@ fun App(act: MainActivity) {
     val s = remember { AppState(act) }
     Tr.lang = s.prefs.lang.ifEmpty { "en" }
     LaunchedEffect(Unit) { while (true) { s.now = ZonedDateTime.now(); delay(1000) } }
+    LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
     val scheme = if (dark) darkColorScheme(primary = Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
         surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED))
@@ -146,6 +147,10 @@ fun Main(s: AppState) {
                     }
                 }
                 // the menu button (top corner, as in the other screens)
+                // the prayer times of other cities (Makkah, Madinah, al-Quds …) from the Today screen
+                if (s.tab == 0) IconButton(onClick = { s.page = "world"; s.sub = "" }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopEnd)) {
+                    Icon(Icons.Outlined.Public, Tr["world"])
+                }
                 if (s.tab != 4) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {
                     Icon(Icons.Outlined.Menu, Tr["menu"])
                 }

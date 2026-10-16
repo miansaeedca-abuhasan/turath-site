@@ -334,6 +334,13 @@ object Tr {
         "crashTitle" to arrayOf("ایپ پچھلی بار بند ہو گئی تھی", "توقف التطبيق في المرة السابقة", "The app stopped last time"),
         "crashText" to arrayOf("خرابی کی رپورٹ ای میل سے بھیج دیں تاکہ اسے ٹھیک کیا جا سکے۔ اس میں صرف خرابی کی تکنیکی تفصیل ہے۔", "أرسل تقرير الخطأ بالبريد لإصلاحه. فيه التفاصيل الفنية للخطأ فقط.", "Send the error report by email so it can be fixed. It has only the technical details of the error."),
         "crashSend" to arrayOf("رپورٹ بھیجیں", "أرسل التقرير", "Send the report"),
+        "wBackground" to arrayOf("پس منظر", "الخلفية", "Background"),
+        "wDark" to arrayOf("سیاہ", "داكنة", "Dark"),
+        "wLight" to arrayOf("سفید", "فاتحة", "Light"),
+        "tkFriday" to arrayOf("جمعہ: نبی صلی اللہ علیہ وسلم پر کثرت سے درود بھیجیں · سورۂ کہف کی تلاوت", "الجمعة: أكثروا من الصلاة على النبي صلى الله عليه وسلم · قراءة سورة الكهف", "Friday: send much salawat on the Prophet · recite Surah al-Kahf"),
+        "tkAzkarM" to arrayOf("فجر کے بعد سے طلوعِ آفتاب تک", "من الفجر إلى الشروق", "from Fajr to sunrise"),
+        "tkAzkarE" to arrayOf("عصر کے بعد سے مغرب تک", "من العصر إلى المغرب", "from Asr to Maghrib"),
+        "mosqueTapShort" to arrayOf("دبائیں: کاپی · دیر تک: ہٹائیں", "اضغط: نسخ · مطوّلًا: إخفاء", "Tap: copy · long-press: hide"),
         "prayerTime" to arrayOf("نماز کا وقت ہو گیا", "حان وقت الصلاة", "It is time for prayer"),
     )
 

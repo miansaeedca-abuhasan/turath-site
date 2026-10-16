@@ -36,14 +36,19 @@ class MainActivity : ComponentActivity() {
         super.onCreate(b)
         enableEdgeToEdge()
         Alarms.channels(this)
+        tabRequest = intent?.getIntExtra("tab", -1) ?: -1
         setContent { App(this) }
     }
 
+    /** a tab asked for from a widget (☰ of the calendar widget opens the calendar) */
+    var tabRequest by mutableIntStateOf(-1)
+    override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); tabRequest = i.getIntExtra("tab", -1) }
+
     override fun onResume() {
         super.onResume()
-        Thread { Alarms.schedule(this) }.start()
+        Thread { runCatching { Alarms.schedule(this) } }.start()
         volumeControlStream = Audio.stream(Prefs(this))
-        Durood.start(this)
+        runCatching { Durood.start(this) }
     }
 
     // permissions the alarms need (asked from the settings screen and after choosing the city)

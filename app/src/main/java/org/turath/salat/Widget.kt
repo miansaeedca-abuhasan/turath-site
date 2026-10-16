@@ -34,6 +34,21 @@ class Widget : AppWidgetProvider() {
             runCatching { nextNote(ctx) }
         }
 
+        fun settingsIntent(ctx: Context, code: Int): PendingIntent = PendingIntent.getActivity(ctx, code, Intent(ctx, WidgetSettings::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+
+        /** the moving line under the times: the nafl times, the adhkar, Friday's salawat, today's special day */
+        fun ticker(pr: Prefs, place: Place, now: ZonedDateTime, t: DayTimes): String {
+            val l = mutableListOf<String>()
+            val h = Schedule.hijriNow(pr, place, now)
+            org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + it }
+            for (e in pr.events) if (e.on && e.on(now.toLocalDate(), h)) l += "• " + e.label.ifEmpty { Tr["event"] }
+            if (now.dayOfWeek == java.time.DayOfWeek.FRIDAY) l += Tr["tkFriday"]
+            listOf(P.TAHAJJUD, P.ISHRAQ, P.CHASHT).forEach { l += Tr.p(it).substringBefore(" (") + " " + Alarms.fmt(pr, t[it]) }
+            l += if (now.isBefore(t[P.DHUHR])) Tr["azkarM"] + ": " + Tr["tkAzkarM"] else Tr["azkarE"] + ": " + Tr["tkAzkarE"]
+            return l.joinToString("     ◆     ")
+        }
+
         /** the always-there notification: the next prayer with a live count (when the user wants it) */
         fun nextNote(ctx: Context) {
             val nm = ctx.getSystemService(android.app.NotificationManager::class.java)
@@ -103,6 +118,10 @@ class Widget : AppWidgetProvider() {
                 v.setTextColor(R.id.date, dim); v.setTextColor(R.id.date2, dim)
             }
             v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
+            if (full) {
+                v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
+                v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
+            }
             mgr.updateAppWidget(ids, v)
         }
     }
@@ -169,15 +188,30 @@ class WidgetCal : AppWidgetProvider() {
                     val g = first.plusDays((d - 1).toLong())
                     val today = pr.sp.getInt("wcalOff", 0) == 0 && d == nowH.day
                     val sp = special(m, d)
+                    val friday = g.dayOfWeek == java.time.DayOfWeek.FRIDAY
+                    // the user's own events: their colour and the first words of the first one
+                    val ev = pr.events.filter { it.on && it.on(g, Hijri(y, m, d)) }
                     c.setTextViewText(R.id.h, Tr.num(d)); c.setTextViewText(R.id.g, Tr.num(g.dayOfMonth))
-                    c.setTextColor(R.id.h, if (today) Color.BLACK else ink); c.setTextColor(R.id.g, if (today) Color.parseColor("#99000000") else dim)
-                    c.setInt(R.id.cell, "setBackgroundResource", when { today -> R.drawable.wcal_today; sp -> R.drawable.wcal_special; else -> R.drawable.wcal_none })
+                    c.setTextColor(R.id.h, when { today -> Color.BLACK; friday -> Color.parseColor("#3DBE6F"); else -> ink })
+                    c.setTextColor(R.id.g, if (today) Color.parseColor("#99000000") else dim)
+                    if (ev.isNotEmpty()) {
+                        c.setViewVisibility(R.id.e, android.view.View.VISIBLE)
+                        c.setTextViewText(R.id.e, ev[0].label.ifEmpty { Tr["event"] }.take(8))
+                        c.setTextColor(R.id.e, if (today) Color.BLACK else Color.WHITE)
+                    }
+                    c.setInt(R.id.cell, "setBackgroundResource", when { today -> R.drawable.wcal_today; ev.isNotEmpty() -> R.drawable.wcal_event; sp -> R.drawable.wcal_special
+                        friday -> R.drawable.wcal_friday; else -> R.drawable.wcal_none })
                 }
                 v.addView(ROWS[row], c)
             }
             v.setOnClickPendingIntent(R.id.prev, act(ctx, "org.turath.salat.CAL_PREV", 41))
             v.setOnClickPendingIntent(R.id.next, act(ctx, "org.turath.salat.CAL_NEXT", 42))
             v.setOnClickPendingIntent(R.id.title, act(ctx, "org.turath.salat.CAL_TODAY", 43))
+            // ☰ opens the calendar in the app (to add an event); ⚙ the widget's look
+            v.setOnClickPendingIntent(R.id.menu, PendingIntent.getActivity(ctx, 44, Intent(ctx, MainActivity::class.java).putExtra("tab", 3).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            v.setOnClickPendingIntent(R.id.gear, Widget.settingsIntent(ctx, 45))
+            v.setTextColor(R.id.menu, ink)
             mgr.updateAppWidget(ids, v)
         }
 

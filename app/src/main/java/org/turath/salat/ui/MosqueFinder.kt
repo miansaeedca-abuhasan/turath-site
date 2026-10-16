@@ -51,15 +51,15 @@ fun MosqueFinder(s: AppState) {
         if (list == null) err = true
     }
     Column(Modifier.fillMaxSize()) {
-        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(if (live) Icons.Outlined.MyLocation else Icons.Outlined.LocationCity, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-            Text("  " + (if (live) Tr["aroundYou"] else Tr["aroundCity"] + " " + place.name), Modifier.weight(1f), fontSize = 13.sp)
-            if (!live) TextButton(onClick = { ctx.onPermResult = { asked++ }; if (ctx.hasLocation()) asked++ else ctx.askLocation() }) { Text(Tr["useGps"]) }
+        // one short line: where the search is around, and Google Maps as an icon
+        Row(Modifier.fillMaxWidth().padding(start = 16.dp, end = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(if (live) Icons.Outlined.MyLocation else Icons.Outlined.LocationCity, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(16.dp))
+            Text(" " + (if (live) Tr["aroundYou"] else Tr["aroundCity"] + " " + place.name), Modifier.weight(1f), fontSize = 12.sp, maxLines = 1)
+            if (!live) TextButton(onClick = { ctx.onPermResult = { asked++ }; if (ctx.hasLocation()) asked++ else ctx.askLocation() }) { Text(Tr["useGps"], fontSize = 12.sp) }
+            IconButton(onClick = {
+                runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${center?.first ?: place.lat},${center?.second ?: place.lng}?q=" + Uri.encode("mosque")))) }
+            }) { Icon(Icons.Outlined.Map, Tr["gmapsNearby"], tint = Color(0xFF34A853)) }
         }
-        // Google Maps (its own search of mosques around; the filter below does not apply there)
-        OutlinedButton(onClick = {
-            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${center?.first ?: place.lat},${center?.second ?: place.lng}?q=" + Uri.encode("mosque")))) }
-        }, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) { Icon(Icons.Outlined.Map, null); Text("  " + Tr["gmapsNearby"]) }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(Tr["radius"] + ": ", fontSize = 14.sp)
             for (k in listOf(3, 5, 10, 15, 25, 50)) {
@@ -67,7 +67,8 @@ fun MosqueFinder(s: AppState) {
                 Spacer(Modifier.width(6.dp))
             }
         }
-        Text(Tr["mosqueTap"], Modifier.padding(horizontal = 16.dp, vertical = 4.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
+        Text((list?.let { Tr.num(it.size) + " " + Tr["mosquesFound"] + " · " } ?: "") + Tr["mosqueTapShort"], Modifier.padding(horizontal = 16.dp, vertical = 2.dp), fontSize = 11.sp,
+            color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f), maxLines = 1)
         when {
             err -> Column(Modifier.padding(16.dp)) {
                 Text(Tr["mosqueErr"], color = Color(0xFFB3261E))
@@ -76,7 +77,6 @@ fun MosqueFinder(s: AppState) {
             list == null -> Box(Modifier.fillMaxWidth().padding(30.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
             list!!.isEmpty() -> Text(Tr["mosqueNone"], Modifier.padding(16.dp))
             else -> {
-                Text(Tr.num(list!!.size) + " " + Tr["mosquesFound"], Modifier.padding(horizontal = 16.dp), fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
                 LazyColumn(Modifier.fillMaxSize()) {
                     items(list!!, key = { it.id }) { m ->
                         var addr by remember(m.id) { mutableStateOf(m.address) }

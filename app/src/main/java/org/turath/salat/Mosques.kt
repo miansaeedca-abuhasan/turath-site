@@ -36,7 +36,7 @@ object Mosques {
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
-        val key = "mq2_%.3f_%.3f".format(lat, lng)
+        val key = "mq3_%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
@@ -44,10 +44,12 @@ object Mosques {
             val cLat = Math.round(lat * 20) / 20.0; val cLng = Math.round(lng * 20) / 20.0
             val dLat = 0.5; val dLng = 0.5 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
             val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
-            val q = "[out:json][timeout:60];nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);out center tags;"
+            // mosques and musallas, and Islamic centres (often mapped as a community centre, an office of the religion or only by their name)
+            val q = "[out:json][timeout:60];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
+                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"name\"~\"islamic|masjid|mosque|musall|muslim\",i][\"amenity\"]($bb););out center tags;"
             // the site first (it keeps the answer a week), then the main Overpass server and its mirrors
             var s = runCatching {
-                val c = URL("https://turathkhairalquroon.com/api/mosques?bb=$bb").openConnection() as HttpURLConnection
+                val c = URL("https://turathkhairalquroon.com/api/mosques?v=3&bb=$bb").openConnection() as HttpURLConnection
                 c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
@@ -81,6 +83,11 @@ object Mosques {
             val text = listOf("name", "name:en", "name:ar", "name:ur", "official_name", "alt_name", "operator", "description", "website")
                 .joinToString(" ") { t.optString(it) }
             if (NAME.containsMatchIn(text)) continue
+            // only places to pray: mosques, musallas, Islamic centres (not a Muslim graveyard, school, shop …)
+            val am = t.optString("amenity")
+            val isPlace = am == "place_of_worship" || am in setOf("community_centre", "social_centre", "social_facility") || t.optString("building") == "mosque" ||
+                t.has("office") || Regex("masjid|mosque|musall|islamic cent|مسجد|جامع|مصلى", RegexOption.IGNORE_CASE).containsMatchIn(t.optString("name"))
+            if (!isPlace) continue
             val la = if (e.has("lat")) e.getDouble("lat") else e.optJSONObject("center")?.optDouble("lat") ?: continue
             val lo = if (e.has("lon")) e.getDouble("lon") else e.optJSONObject("center")?.optDouble("lon") ?: continue
             val lang = Tr.lang

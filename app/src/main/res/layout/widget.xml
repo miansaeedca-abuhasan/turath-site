@@ -5,6 +5,7 @@
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content">
             <TextView android:id="@+id/city" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#E0B54A" android:textSize="12sp" android:maxLines="1" android:text="Makkah" />
             <TextView android:id="@+id/date" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="11sp" android:maxLines="1"  android:text="" />
+            <TextView android:id="@+id/gear" android:layout_width="26dp" android:layout_height="20dp" android:gravity="center" android:textColor="#AAFFFFFF" android:textSize="14sp" android:text="⚙" />
         </LinearLayout>
         <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center_vertical">
             <TextView android:id="@+id/prayer" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="30sp" android:textStyle="bold" android:maxLines="1" android:text="Asr" />
@@ -37,6 +38,12 @@
                 <TextView android:id="@+id/w5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
             </LinearLayout>
         </LinearLayout>
+        <TextView android:id="@+id/ticker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+            android:singleLine="true" android:ellipsize="marquee" android:marqueeRepeatLimit="marquee_forever" android:scrollHorizontally="true"
+            android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true"
+            android:textColor="#E0B54A" android:textSize="12sp" android:text="">
+            <requestFocus android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true" />
+        </TextView>
         <TextView android:id="@+id/date2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#AAFFFFFF" android:textSize="11sp" android:maxLines="1" android:layout_gravity="center_horizontal" android:text="" />
     </LinearLayout>
 </FrameLayout>
