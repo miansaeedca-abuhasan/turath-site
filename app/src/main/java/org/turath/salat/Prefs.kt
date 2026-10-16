@@ -34,7 +34,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     // birdsong
     BIRDS1("birds1"), NIGHTINGALE("birds_nightingale"), BLACKBIRD("birds_blackbird"), ROBIN("birds_robin"), SKYLARK("birds_skylark"),
     WREN("birds_wren"), CHORUS("birds_chorus"),
-    CANARY("birds_canary"), CANARY2("birds_canary2"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
+    CANARY("birds_canary"), CANARY2("birds_canary2"), CANARY3("birds_canary3"), CANARY4("birds_canary4"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
     BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
     TONE(null), NOTIFY(null), SILENT(null);
 
