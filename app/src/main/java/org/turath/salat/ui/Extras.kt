@@ -189,7 +189,6 @@ fun AboutPage(s: AppState, back: () -> Unit) {
             Text("• GeoNames (geonames.org) — CC BY 4.0: cities, coordinates, time zones.\n" +
                 "• Prayer-time formulas: PrayTimes.org method (sun declination and equation of time).\n" +
                 "• Hijri calendar: Umm al-Qura (Java HijrahDate).\n" +
-                "• Mosques: OpenStreetMap (© OpenStreetMap contributors, ODbL).\n" +
                 "• Adhan recordings: Shaikh Ali Ahmad Mulla, Shaikh Hamad al-Daghriri (Masjid al-Haram), Shaikh Essam Bukhari (Masjid an-Nabawi), Shaikh Abdul Basit Abdus Samad, Shaikh Saleh al-Nabet, Shaikh Nur ad-Din Hamza al-Maghribi — from the collection of Turath Khair al-Quroon.\n" +
                 "• Birdsong (Wikimedia Commons / xeno-canto, shortened): Nightingale — Phoenicurus ochruros (XC416395), Blackbird — Olivier Grimm (XC561032), Wren — Borja (XC425718), Dawn chorus — Alexander Wendt: CC BY-SA 4.0; Robin — Dan Stowell (XC124862): CC BY-SA 3.0; Morning birds — BigSoundBank: CC0; Canaries 1–10: a recording supplied by the app\u0027s owner, cut into ten calls; Siskin, Woodlark, Sedge Warbler (W1CDR, Wikimedia Commons), Blackcap and Golden Oriole (DM550, Slovakia), Red-whiskered bulbul: CC BY-SA 4.0; Song Thrush (near Basel): CC BY-SA 3.0.",
                 fontSize = 12.sp)

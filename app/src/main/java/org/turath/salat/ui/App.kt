@@ -126,7 +126,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 @Composable
 fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
-        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosque", Icons.Outlined.Mosque))
+        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
         Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -161,11 +161,7 @@ fun Main(s: AppState) {
                     1 -> TimesScreen(s)
                     2 -> RemindersScreen(s)
                     3 -> CalendarScreen(s)
-                    4 -> QiblaScreen(s)
-                    else -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
-                        Text(Tr["mosques"], Modifier.padding(start = 52.dp, top = 8.dp, bottom = 6.dp), fontSize = 26.sp, fontWeight = FontWeight.Bold)
-                        MosqueFinder(s)
-                    }
+                    else -> QiblaScreen(s)
                 }
                 // the menu button (top corner, as in the other screens)
                 // the prayer times of other cities (Makkah, Madinah, al-Quds …) from the Today screen
@@ -199,7 +195,6 @@ private fun Menu(s: AppState, open: (String) -> Unit) {
         item("settings", Icons.Outlined.Settings, Tr["settings"])
         item("look", Icons.Outlined.Palette, Tr["look"])
         HorizontalDivider(Modifier.padding(vertical = 6.dp))
-        item("mosques", Icons.Outlined.Mosque, Tr["mosques"])
         item("world", Icons.Outlined.Public, Tr["world"])
         item("fasting", Icons.Outlined.NightsStay, Tr["fastingMenu"])
         item("durood", Icons.Outlined.FavoriteBorder, Tr["duroodMenu"])
@@ -217,7 +212,6 @@ private fun Page(s: AppState, back: () -> Unit) {
         "language" -> LanguagePage(s, back)
         "settings" -> SettingsScreen(s, back)
         "look" -> LookPage(s, back)
-        "mosques" -> Column(Modifier.fillMaxSize()) { TopBar(Tr["mosques"], back); MosqueFinder(s) }
         "world" -> WorldPage(s, back)
         "fasting" -> FastingPage(s, back)
         "durood" -> DuroodPage(s, back)
