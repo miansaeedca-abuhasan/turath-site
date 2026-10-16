@@ -91,7 +91,7 @@ data class Place(val name: String, val country: String, val lat: Double, val lng
 class Prefs(ctx: Context) {
     val sp: SharedPreferences = ctx.getSharedPreferences("salat", Context.MODE_PRIVATE)
 
-    var lang: String get() = sp.getString("lang", "") ?: ""; set(v) = sp.edit().putString("lang", v).apply()
+    var lang: String get() = (sp.getString("lang", "") ?: "").ifEmpty { "en" }; set(v) = sp.edit().putString("lang", v).apply()
     var place: Place?
         get() = sp.getString("place", null)?.let { val o = JSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) }
         set(v) = sp.edit().putString("place", v?.let { JSONObject().put("n", it.name).put("c", it.country).put("lat", it.lat).put("lng", it.lng).put("tz", it.tz).toString() }).apply()
@@ -133,9 +133,11 @@ class Prefs(ctx: Context) {
     fun sound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("snd_" + p.name, null) ?: "") }.getOrElse { defaultSound(p) }
     fun setSound(p: P, s: Snd) { sp.edit().putString("snd_" + p.name, s.name).apply(); if (s.raw != null) sp.edit().putString("lastsnd_" + p.name, s.name).apply() }
     /** the last real sound chosen for a prayer (to go back to it from «notification only» / «silent») */
-    fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p in FIVE) Snd.ADHAN_MAKKAH else Snd.NIGHTINGALE }
+    fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p == P.MAGHRIB) Snd.ADHAN_DAGHRIRI else if (p in FIVE) Snd.ADHAN_MAKKAH else Snd.NIGHTINGALE }
     private fun defaultSound(p: P) = when (p) {
-        P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA -> Snd.ADHAN_MAKKAH
+        // Shaikh Ali Ahmad Mulla (Makkah) for all, Shaikh Hamad al-Daghriri for Maghrib
+        P.MAGHRIB -> Snd.ADHAN_DAGHRIRI
+        P.FAJR, P.DHUHR, P.ASR, P.ISHA -> Snd.ADHAN_MAKKAH
         P.ISHRAQ -> Snd.NIGHTINGALE
         P.CHASHT -> Snd.BLACKBIRD
         else -> Snd.SILENT

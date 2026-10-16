@@ -39,7 +39,7 @@ class Widget : AppWidgetProvider() {
             val nm = ctx.getSystemService(android.app.NotificationManager::class.java)
             val pr = Prefs(ctx); val place = pr.place
             if (!pr.persistent || place == null) { nm.cancel(4100); return }
-            Tr.lang = pr.lang.ifEmpty { "ur" }
+            Tr.lang = pr.lang.ifEmpty { "en" }
             val now = ZonedDateTime.now(Schedule.zone(place))
             val st = Schedule.state(pr, place, now)
             val t = Schedule.day(pr, place, now.toLocalDate())
@@ -66,7 +66,7 @@ class Widget : AppWidgetProvider() {
             val ids = mgr.getAppWidgetIds(ComponentName(ctx, cls))
             if (ids.isEmpty()) return
             val pr = Prefs(ctx); val place = pr.place ?: return
-            Tr.lang = pr.lang.ifEmpty { "ur" }
+            Tr.lang = pr.lang.ifEmpty { "en" }
             val now = ZonedDateTime.now(Schedule.zone(place))
             val t = Schedule.day(pr, place, now.toLocalDate())
             val st = Schedule.state(pr, place, now)
@@ -139,7 +139,7 @@ class WidgetCal : AppWidgetProvider() {
             val ids = mgr.getAppWidgetIds(ComponentName(ctx, WidgetCal::class.java))
             if (ids.isEmpty()) return
             val pr = Prefs(ctx); val place = pr.place ?: return
-            Tr.lang = pr.lang.ifEmpty { "ur" }
+            Tr.lang = pr.lang.ifEmpty { "en" }
             val nowH = Schedule.hijriNow(pr, place, ZonedDateTime.now(Schedule.zone(place)))
             var ym = nowH.year * 12 + nowH.month - 1 + pr.sp.getInt("wcalOff", 0)
             val y = ym / 12; val m = ym % 12 + 1

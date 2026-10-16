@@ -2,7 +2,7 @@ package org.turath.salat
 
 /** the app's words in Urdu, Arabic and English (no Urdu in the Arabic or English screens) */
 object Tr {
-    var lang = "ur"
+    var lang = "en"
     val rtl get() = lang != "en"
 
     private val W: Map<String, Array<String>> = mapOf(

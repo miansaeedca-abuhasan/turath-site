@@ -19,7 +19,7 @@ object Events {
     /** everything due from `from` over the next days, in order */
     fun list(ctx: Context, from: ZonedDateTime, days: Int = 3): List<Ev> {
         val pr = Prefs(ctx); val place = pr.place ?: return emptyList()
-        Tr.lang = pr.lang.ifEmpty { "ur" }
+        Tr.lang = pr.lang.ifEmpty { "en" }
         val zone = Schedule.zone(place)
         val start = from.withZoneSameInstant(zone).toLocalDate().minusDays(1)
         val out = mutableListOf<Ev>()
@@ -101,7 +101,7 @@ object Alarms {
 
     fun channels(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
-        Tr.lang = Prefs(ctx).lang.ifEmpty { "ur" }
+        Tr.lang = Prefs(ctx).lang.ifEmpty { "en" }
         nm.createNotificationChannel(NotificationChannel(CH_ADHAN, Tr["prayerTime"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
         // reminders without a sound of their own: a notification with vibration only (no bell)
         nm.createNotificationChannel(NotificationChannel(CH_REM, Tr["remTitle"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null); enableVibration(true) })
@@ -148,7 +148,7 @@ object Alarms {
     }
 
     private fun handle(ctx: Context, pr: Prefs, e: Ev, playSound: Boolean) {
-        Tr.lang = pr.lang.ifEmpty { "ur" }
+        Tr.lang = pr.lang.ifEmpty { "en" }
         val nm = ctx.getSystemService(NotificationManager::class.java)
         val open = PendingIntent.getActivity(ctx, 3, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
         val place = pr.place
@@ -329,7 +329,7 @@ class SoundService : Service() {
 
     override fun onStartCommand(i: Intent?, flags: Int, startId: Int): Int {
         if (i == null) { stopSelf(); return START_NOT_STICKY }
-        Tr.lang = Prefs(this).lang.ifEmpty { "ur" }
+        Tr.lang = Prefs(this).lang.ifEmpty { "en" }
         val alarm = i.getBooleanExtra("alarm", false)
         val stop = PendingIntent.getBroadcast(this, 20, Intent(this, ActionReceiver::class.java).setAction("STOP"), PendingIntent.FLAG_IMMUTABLE)
         val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)

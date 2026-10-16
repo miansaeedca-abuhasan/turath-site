@@ -65,7 +65,7 @@ class DuroodService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val pr = Prefs(this); Tr.lang = pr.lang.ifEmpty { "ur" }
+        val pr = Prefs(this); Tr.lang = pr.lang.ifEmpty { "en" }
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel("durood", Tr["durood"], NotificationManager.IMPORTANCE_MIN).apply { setShowBadge(false) })
         val open = PendingIntent.getActivity(this, 30, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)

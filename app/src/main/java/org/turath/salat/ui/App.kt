@@ -63,7 +63,7 @@ fun isDark(s: AppState, phoneDark: Boolean): Boolean = when (s.prefs.theme) {
 @Composable
 fun App(act: MainActivity) {
     val s = remember { AppState(act) }
-    Tr.lang = s.prefs.lang.ifEmpty { "ur" }
+    Tr.lang = s.prefs.lang.ifEmpty { "en" }
     LaunchedEffect(Unit) { while (true) { s.now = ZonedDateTime.now(); delay(1000) } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
     val scheme = if (dark) darkColorScheme(primary = Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
