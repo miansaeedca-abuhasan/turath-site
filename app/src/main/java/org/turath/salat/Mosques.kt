@@ -19,7 +19,9 @@ object Mosques {
 
     private val DENOM = Regex("shia|shi'a|shiite|twelver|ithna|ismaili|isma'ili|nizari|dawoodi|bohra|bohora|ahmadi|qadiani|lahori|alawi|alevi|druze|nation_of_islam|zaidi", RegexOption.IGNORE_CASE)
     private val NAME = Regex(
-        "ahmadi|ahmadiyy|qadian|lahore ahmad|bohra|bohri|dawoodi|dawat-e-hadiyah|ismaili|jamatkhana|jamat khana|jamaat khana|aga khan|" +
+        "ahmadi|ahmadiyy|qadian|lahore ahmad|baitul hamd|bait-ul-hamd|baitul islam|bait-ul-islam|baitul futuh|baitul rehman|baitul rahman|baitul nasr|baitul ahad|" +
+            "baitul huda|baitul zafar|baitul mahdi|baitul mujeeb|baitul ikram|baitul afiyat|baitul aafiyat|baitul ehsan|baitul muqeet|baitul tauheed|baitul baseer|" +
+            "baitul hadi|baitul naseer|baitul wahid|baitul atta|baitul shukur|baitul bashir|baitul nur|mahmood mosque|fazl mosque|nasir mosque|bait-ul-|bohra|bohri|dawoodi|dawat-e-hadiyah|ismaili|jamatkhana|jamat khana|jamaat khana|aga khan|" +
             "imambargah|imambara|imam bargah|imam-bargah|husainiya|hussainiya|husseiniya|hosseinieh|hussaini|husayniyya|hussainia|" +
             "shia|shi'a|shiite|ja'?fari|jafaria|zainabia|zaynabiyya|abbas centre|al-?mahdi|ahlul?\\s?bayt|ahl ul bayt|mahfil-e-|" +
             "احمدی|احمدیہ|أحمدي|الأحمدية|قادیان|قاديان|بوہر|بهرة|بوهرة|اسماعیلی|إسماعيلي|جماعت خانہ|امام ?بارگاہ|امامباڑہ|حسینیہ|حسينية|شیعہ|شيعة|جعفری|جعفرية|زینبیہ|زينبية",
@@ -57,7 +59,7 @@ object Mosques {
             if (!good(s)) for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
-                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 40_000
+                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = 25_000
                     c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
                     c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
                     if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
