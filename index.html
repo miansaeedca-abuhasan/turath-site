@@ -1670,7 +1670,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'en_walk', ur: 'انگریزی ترجمہ (صحیح انٹرنیشنل) — آواز: ابراہیم واک', en: 'English (Sahih International) — voice: Ibrahim Walk', ar: 'الترجمة الإنجليزية (صحيح إنترناشونال) — بصوت إبراهيم ووك', f: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps'},
     {k: 'tts', ur: 'منتخب اردو ترجمہ — فون کی آواز', en: 'Chosen Urdu translation — device voice', ar: 'الترجمة الأردية المختارة — صوت الجهاز'}];
   if (I.ar) I.ar.trVoice = 'التلاوة مع الترجمة (بعد كل آية)';
-  const trVoice = () => TRV.find(x => x.k === (QS.trVoice !== undefined ? QS.trVoice : QS.trAudio ? 'tts' : '')) || TRV[0];
+  // the translation read aloud after each ayah is switched off (owner's wish: no computer voice): recitation only
+  const trVoice = () => TRV[0];
   function trVoiceRow() {
     const sel = el('select', {'aria-label': T('trVoice')});
     TRV.forEach(x => sel.append(el('option', {value: x.k}, ui === 'ar' ? x.ar : LTR() ? x.en : x.ur)));
@@ -1741,7 +1742,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('read', T('quran'), '#/q'), tile('listen', T('audio'), '#/q/audio'),
       tile('bms', T('bmHadith'), '#/bm'), tile('bm0', T('bmQuran'), '#/q/bm'),
       tile('hadith', T('hbBooks'), '#/hb'),
-      tile('tune', T('ttsSet'), null, () => LISTEN.settings()),
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('quiz', T('quizT'), '#/quiz'));
@@ -2479,7 +2479,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const last = lsGet('qlast', null); if (last) sel.value = last.s;
     v.append(el('div', {class: 'card'}, el('label', {class: 'srow'}, el('span', {}, T('surahs')), sel,
       el('button', {class: 'btn', type: 'button', on: {click: () => { location.hash = '#/q/s/' + sel.value + '/1/play'; }}}, icon('play'), ' ' + T('recite'))),
-      trVoiceRow()));
+      ));
     v.append(el('div', {class: 'card'}, reciterList()));
     v.append(el('p', {class: 'note'}, T('netAudio')));
   }
@@ -2516,8 +2516,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     sheet(T('settings'), [slider(T('arSize'), 'ar', 20, 56, 1), slider(T('trSize'), 'trs', 14, 30, 1), slider(T('speed'), 'speed', SMIN, SMAX, 1),
       el('label', {class: 'srow'}, el('span', {}, T('qfont')), fsel),
       el('label', {class: 'srow'}, el('span', {}, T('reciter')), el('button', {class: 'btn', type: 'button', on: {click: reciterSheet}}, LTR() ? recOf().en : recOf().ur)),
-      trVoiceRow(),
-      el('label', {class: 'srow'}, el('span', {}, T('ttsSet')), el('button', {class: 'btn', type: 'button', on: {click: () => LISTEN.settings()}}, icon('listen')))]);
+      ]);
   }
 
   /* ---------- find ayah, search, bookmarks ---------- */
