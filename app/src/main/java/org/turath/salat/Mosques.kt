@@ -29,10 +29,14 @@ object Mosques {
     fun hide(pr: Prefs, id: String) = pr.sp.edit().putStringSet("mosqueHide", hiddenSet(pr) + id).apply()
 
     /** the mosques within `km` kilometres, nearest first (blocking: call off the main thread) */
+    /** a real answer: has elements and no «runtime error» remark (Overpass answers a timeout with an empty list) */
+    private fun good(s: String) = s.contains("\"elements\"") && !Regex("\"remark\"\\s*:\\s*\"[^\"]*(error|timed out|timeout)", RegexOption.IGNORE_CASE).containsMatchIn(s) &&
+        !Regex("\"elements\"\\s*:\\s*\\[\\s*\\]").containsMatchIn(s)
+
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
-        val key = "mq_%.3f_%.3f".format(lat, lng)
+        val key = "mq2_%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
@@ -48,7 +52,7 @@ object Mosques {
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
             }.getOrDefault("")
-            if (!s.contains("\"elements\"")) for (u in listOf("https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
+            if (!good(s)) for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
                     c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 40_000
@@ -56,11 +60,11 @@ object Mosques {
                     c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
                     if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
                 }.getOrDefault("")
-                if (s.contains("\"elements\"")) break
+                if (good(s)) break
             }
             // the map servers busy: OpenStreetMap's own search (Nominatim) for mosques in the same box
-            if (!s.contains("\"elements\"")) s = photon(lat, lng)
-            if (!s.contains("\"elements\"")) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
+            if (!good(s)) s = photon(lat, lng)
+            if (!good(s)) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
             pr.sp.edit().putString(key, s).putLong(key + "_t", System.currentTimeMillis()).apply()
             s
