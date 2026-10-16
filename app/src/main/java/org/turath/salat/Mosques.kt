@@ -36,7 +36,7 @@ object Mosques {
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
-        val key = "mq3_%.3f_%.3f".format(lat, lng)
+        val key = "mq4_%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
@@ -46,10 +46,10 @@ object Mosques {
             val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             // mosques and musallas, and Islamic centres (often mapped as a community centre, an office of the religion or only by their name)
             val q = "[out:json][timeout:60];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
-                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"name\"~\"islamic|masjid|mosque|musall|muslim\",i][\"amenity\"]($bb););out center tags;"
+                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship\"][\"name\"~\"islam|muslim|masjid|mosque|musall\",i]($bb););out center tags;"
             // the site first (it keeps the answer a week), then the main Overpass server and its mirrors
             var s = runCatching {
-                val c = URL("https://turathkhairalquroon.com/api/mosques?v=3&bb=$bb").openConnection() as HttpURLConnection
+                val c = URL("https://turathkhairalquroon.com/api/mosques?v=4&bb=$bb").openConnection() as HttpURLConnection
                 c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
@@ -121,7 +121,7 @@ object Mosques {
                 val name = pp.optString("name")
                 // a church, temple … found by the word: only names that look like a mosque or an Islamic centre
                 if (!Regex("mosque|masjid|masjed|musall|islam|muslim|jami|مسجد|جامع|مصلى", RegexOption.IGNORE_CASE).containsMatchIn(name)) continue
-                val tags = JSONObject().put("name", name)
+                val tags = JSONObject().put("name", name).put("amenity", "place_of_worship")
                 listOf("housenumber" to "addr:housenumber", "street" to "addr:street", "city" to "addr:city", "state" to "addr:state", "postcode" to "addr:postcode")
                     .forEach { (a, b) -> pp.optString(a).takeIf { it.isNotEmpty() }?.let { tags.put(b, it) } }
                 els.put(JSONObject().put("type", id.substringBefore('/')).put("id", pp.optLong("osm_id")).put("lat", co.getDouble(1)).put("lon", co.getDouble(0)).put("tags", tags))
@@ -155,6 +155,7 @@ object Mosques {
                 val tags = JSONObject(ex.toString())
                 o.optJSONObject("namedetails")?.let { nd -> nd.keys().forEach { k -> tags.put(k, nd.optString(k)) } }
                 if (!tags.has("name")) tags.put("name", o.optString("name"))
+                if (worship) tags.put("amenity", "place_of_worship")
                 els.put(JSONObject().put("type", o.optString("osm_type")).put("id", o.optLong("osm_id"))
                     .put("lat", o.optString("lat").toDoubleOrNull() ?: continue).put("lon", o.optString("lon").toDoubleOrNull() ?: continue).put("tags", tags))
             }

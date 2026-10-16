@@ -3,7 +3,7 @@
 import subprocess, time, re, os, json
 os.makedirs('shots', exist_ok=True)
 # can the map servers be reached from here, and how fast (for the mosque finder)
-q = '[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](43.139,-80.264,44.039,-79.024);out center tags;'
+q = '[out:json][timeout:60];(nwr["amenity"="place_of_worship"]["religion"="muslim"](43.139,-80.264,44.039,-79.024);nwr["religion"="muslim"]["amenity"](43.139,-80.264,44.039,-79.024);nwr["religion"="muslim"]["office"](43.139,-80.264,44.039,-79.024);nwr["building"="mosque"](43.139,-80.264,44.039,-79.024);nwr["amenity"~"community_centre|social_centre|place_of_worship"]["name"~"islam|muslim|masjid|mosque|musall",i](43.139,-80.264,44.039,-79.024););out center tags;'
 with open('shots/overpass.txt', 'w') as o:
     for u in ['https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']:
         r = subprocess.run(['curl', '-s', '-A', 'SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)', '-o', '/tmp/op.json', '-w', '%{http_code} %{time_total}', '--max-time', '70', '--data-urlencode', 'data=' + q, u], capture_output=True, text=True)
@@ -68,6 +68,7 @@ for lang in ['ur', 'ar', 'en']:
     if tap_text(cam): time.sleep(4); shot(f'{lang}_6_camera')
     tap_text(tabs[lang][0]); time.sleep(1)
     if tap_desc(menu[lang]): shot(f'{lang}_7_menu'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
+    subprocess.run(['adb', 'emu', 'geo', 'fix', '-79.644', '43.589'], capture_output=True)
     if tap_text(tabs[lang][5]): time.sleep(40); shot(f'{lang}_8_mosques')
     if lang == 'ur':
         for name, item in [('settings', 'ترتیبات'), ('durood', 'درود کی یاد دہانی'), ('look', 'ایپ اور ویجٹ کی شکل'), ('fasting', 'روزے، تکبیرات اور جمعہ')]:
