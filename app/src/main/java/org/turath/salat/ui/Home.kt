@@ -132,7 +132,7 @@ class Countdown(now: ZonedDateTime, st: Schedule.State, t: DayTimes) {
     val up = st.current != null && st.current != P.SUNRISE && now.isBefore(st.currentAt!!.plusMinutes(30))
     val prayer: P = if (up) st.current!! else st.next
     val sec = if (up) Duration.between(st.currentAt, now).seconds else Duration.between(now, st.nextAt).seconds
-    val text = (if (up) "+ " else "− ") + hms(sec)
+    val text = "\u200E" + (if (up) "+ " else "− ") + hms(sec)
 }
 
 @Composable

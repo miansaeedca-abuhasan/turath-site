@@ -157,10 +157,7 @@ class Prefs(ctx: Context) {
         get() = sp.getString("rem", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { Reminder.from(a.getJSONObject(it)) } } ?: defaultReminders()
         set(v) = sp.edit().putString("rem", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
-    private fun defaultReminders() = listOf(
-        Reminder(1, "تہجد", listOf(P.FAJR), -60, 127, Snd.CHORUS, false),
-        Reminder(2, "جمعہ کی تیاری", listOf(P.DHUHR), -45, 1 shl 4, Snd.NOTIFY, false),
-    )
+    private fun defaultReminders() = emptyList<Reminder>()
 
     /** other cities shown with their times (Makkah, Madinah, al-Quds first) */
     var worldCities: List<Place>

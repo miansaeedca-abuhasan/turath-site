@@ -58,6 +58,8 @@ object Mosques {
                 }.getOrDefault("")
                 if (s.contains("\"elements\"")) break
             }
+            // the map servers busy: OpenStreetMap's own search (Nominatim) for mosques in the same box
+            if (!s.contains("\"elements\"")) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
             pr.sp.edit().putString(key, s).putLong(key + "_t", System.currentTimeMillis()).apply()
             s
@@ -84,6 +86,39 @@ object Mosques {
             out += M(id, name, la, lo, Cities.dist(lat, lng, la, lo), addr)
         }
         return out.filter { it.km <= km + 0.5 }.sortedBy { it.km }
+    }
+
+    /** mosques from Nominatim, given back in the shape of an Overpass answer */
+    private fun nominatim(s: Double, w: Double, n: Double, e: Double): String {
+        val els = JSONArray(); val seen = HashSet<String>()
+        for (q in listOf("mosque", "masjid", "musalla", "islamic centre")) {
+            val txt = runCatching {
+                val u = "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=50&bounded=1&extratags=1&namedetails=1&q=" + URLEncoder.encode(q, "UTF-8") +
+                    "&viewbox=%.4f,%.4f,%.4f,%.4f".format(Locale.US, w, n, e, s)
+                val c = URL(u).openConnection() as HttpURLConnection
+                c.connectTimeout = 10_000; c.readTimeout = 30_000
+                c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (turathkhairalquroon@gmail.com)")
+                if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
+            }.getOrDefault("")
+            if (!txt.startsWith("[")) continue
+            val a = JSONArray(txt)
+            for (i in 0 until a.length()) {
+                val o = a.getJSONObject(i)
+                val ex = o.optJSONObject("extratags") ?: JSONObject()
+                val worship = o.optString("category") == "amenity" && o.optString("type") == "place_of_worship"
+                if (!worship && ex.optString("religion") != "muslim") continue
+                if (ex.has("religion") && ex.optString("religion") != "muslim") continue
+                val id = o.optString("osm_type") + "/" + o.optLong("osm_id")
+                if (!seen.add(id)) continue
+                val tags = JSONObject(ex.toString())
+                o.optJSONObject("namedetails")?.let { nd -> nd.keys().forEach { k -> tags.put(k, nd.optString(k)) } }
+                if (!tags.has("name")) tags.put("name", o.optString("name"))
+                els.put(JSONObject().put("type", o.optString("osm_type")).put("id", o.optLong("osm_id"))
+                    .put("lat", o.optString("lat").toDoubleOrNull() ?: continue).put("lon", o.optString("lon").toDoubleOrNull() ?: continue).put("tags", tags))
+            }
+            Thread.sleep(1100)          // Nominatim: one request a second
+        }
+        return if (els.length() > 0) JSONObject().put("elements", els).toString() else ""
     }
 
     /** the street address of a mosque without one in OpenStreetMap: the phone's own geocoder */

@@ -9,6 +9,9 @@ with open('shots/overpass.txt', 'w') as o:
         r = subprocess.run(['curl', '-s', '-o', '/tmp/op.json', '-w', '%{http_code} %{time_total}', '--max-time', '70', '--data-urlencode', 'data=' + q, u], capture_output=True, text=True)
         n = open('/tmp/op.json').read().count('"type"') if os.path.exists('/tmp/op.json') else 0
         o.write(f'{u} {r.stdout} elements~{n}\n')
+    r = subprocess.run(['curl', '-s', '-A', 'SalatKhairAlQuroon/1.0 (turathkhairalquroon@gmail.com)', '-o', '/tmp/nm.json', '-w', '%{http_code} %{time_total}', '--max-time', '40',
+        'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=50&bounded=1&extratags=1&q=mosque&viewbox=-80.264,44.039,-79.024,43.139'], capture_output=True, text=True)
+    o.write(f'nominatim {r.stdout} results~{open("/tmp/nm.json").read().count("osm_id") if os.path.exists("/tmp/nm.json") else 0}\n')
 print(open('shots/overpass.txt').read())
 def sh(*a, inp=None):
     return subprocess.run(['adb', *a], input=inp, capture_output=True).stdout
