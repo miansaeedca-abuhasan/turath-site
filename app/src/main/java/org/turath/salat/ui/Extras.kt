@@ -188,7 +188,7 @@ fun AboutPage(s: AppState, back: () -> Unit) {
                 "• Hijri calendar: Umm al-Qura (Java HijrahDate).\n" +
                 "• Mosques: OpenStreetMap (© OpenStreetMap contributors, ODbL).\n" +
                 "• Adhan recordings: Shaikh Ali Ahmad Mulla, Shaikh Hamad al-Daghriri (Masjid al-Haram), Shaikh Essam Bukhari (Masjid an-Nabawi), Shaikh Abdul Basit Abdus Samad, Shaikh Saleh al-Nabet, Shaikh Nur ad-Din Hamza al-Maghribi — from the collection of Turath Khair al-Quroon.\n" +
-                "• Birdsong (Wikimedia Commons / xeno-canto, shortened): Nightingale — Phoenicurus ochruros (XC416395), Blackbird — Olivier Grimm (XC561032), Skylark — Pascal Christe (XC482777), Wren — Borja (XC425718), Dawn chorus — Alexander Wendt: CC BY-SA 4.0; Robin — Dan Stowell (XC124862): CC BY-SA 3.0; Morning birds — BigSoundBank: CC0.",
+                "• Birdsong (Wikimedia Commons / xeno-canto, shortened): Nightingale — Phoenicurus ochruros (XC416395), Blackbird — Olivier Grimm (XC561032), Skylark — Pascal Christe (XC482777), Wren — Borja (XC425718), Dawn chorus — Alexander Wendt: CC BY-SA 4.0; Robin — Dan Stowell (XC124862): CC BY-SA 3.0; Morning birds — BigSoundBank: CC0; Canary (Serinus canaria forma domestica, ies): CC BY-SA 3.0; Serin (XC483089), Siskin, Woodlark, Sedge Warbler (W1CDR, Wikimedia Commons), Blackcap and Golden Oriole (DM550, Slovakia), Red-whiskered bulbul: CC BY-SA 4.0; Song Thrush (near Basel): CC BY-SA 3.0.",
                 fontSize = 12.sp)
         }
         Spacer(Modifier.height(20.dp))

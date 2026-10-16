@@ -266,7 +266,7 @@ object Tr {
         "nextPrayer" to arrayOf("اگلی نماز", "الصلاة القادمة", "Next prayer"),
         "CANARY" to arrayOf("کناری", "الكناري", "Canary"),
         "CANARY2" to arrayOf("کناری (جنگلی)", "النعار الأوروبي", "Serin"),
-        "GOLDFINCH" to arrayOf("گولڈ فنچ", "الحسون", "Goldfinch"),
+        "GOLDFINCH" to arrayOf("سِسکن", "الحسون الأخضر", "Siskin"),
         "THRUSH" to arrayOf("کستورا (تھرش)", "السمنة المغردة", "Song thrush"),
         "BLACKCAP" to arrayOf("بلیک کیپ", "أبو قلنسوة", "Blackcap"),
         "BULBUL" to arrayOf("بلبل", "البلبل", "Bulbul"),
