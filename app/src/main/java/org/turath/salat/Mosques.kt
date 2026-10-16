@@ -36,13 +36,19 @@ object Mosques {
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
-            val dLat = 0.45; val dLng = 0.45 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
-            val bb = "%.4f,%.4f,%.4f,%.4f".format(Locale.US, lat - dLat, lng - dLng, lat + dLat, lng + dLng)
+            // the box centre on a 0.05° grid, so that nearby phones ask for the same box (kept a week on the site)
+            val cLat = Math.round(lat * 20) / 20.0; val cLng = Math.round(lng * 20) / 20.0
+            val dLat = 0.5; val dLng = 0.5 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
+            val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             val q = "[out:json][timeout:60];nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);out center tags;"
-            // the main Overpass server, then its mirrors
-            var s = ""
-            // two rounds: a busy server often answers a few seconds later
-            for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
+            // the site first (it keeps the answer a week), then the main Overpass server and its mirrors
+            var s = runCatching {
+                val c = URL("https://turathkhairalquroon.com/api/mosques?bb=$bb").openConnection() as HttpURLConnection
+                c.connectTimeout = 10_000; c.readTimeout = 70_000
+                c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
+                if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
+            }.getOrDefault("")
+            if (!s.contains("\"elements\"")) for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
                     c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 60_000
