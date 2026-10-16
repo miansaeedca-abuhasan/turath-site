@@ -41,6 +41,9 @@ android {
     androidResources { noCompress += listOf("tsv") }
 }
 
+// every screen is drawn again after a change of settings (they are read from SharedPreferences, not from Compose state)
+composeCompiler { enableStrongSkippingMode = false }
+
 dependencies {
     val bom = platform("androidx.compose:compose-bom:2024.12.01")
     implementation(bom)

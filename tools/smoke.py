@@ -74,6 +74,10 @@ for lang in ['ur', 'ar', 'en']:
         tap_text('کیلنڈر'); time.sleep(2)
         if tap_desc('نیا واقعہ'): shot('ur_9_event_editor'); sh('shell', 'input', 'keyevent', '4')
         sh('shell', 'input', 'tap', '540', '900'); shot('ur_9_day_sheet'); sh('shell', 'input', 'keyevent', '4')
+# random taps and swipes over the whole app (in English): any crash shows in the log below
+sh('shell', 'am', 'force-stop', 'org.turath.salat'); sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(5)
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '7', '3000').decode()[-1500:])
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '11', '3000').decode()[-1500:])
 # a home-screen widget cannot be placed from adb; the widget is checked by its update code running without errors
 open('shots/logcat.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat.txt').read()[-3000:])

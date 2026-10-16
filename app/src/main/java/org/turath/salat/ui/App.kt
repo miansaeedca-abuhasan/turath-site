@@ -72,12 +72,31 @@ fun App(act: MainActivity) {
     MaterialTheme(colorScheme = scheme) {
         CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-                key(s.version, Tr.lang) {
+                key(Tr.lang) {
+                    // read here so that a change of settings draws the screens again, keeping where the user is (scroll, open page)
+                    @Suppress("UNUSED_VARIABLE") val v = s.version
+                    CrashReport(s)
                     if (s.prefs.place == null || s.prefs.lang.isEmpty()) Onboard(s) else Main(s)
                 }
             }
         }
     }
+}
+
+/** the app stopped last time: offer to send the report by email (to fix it) */
+@Composable
+fun CrashReport(s: AppState) {
+    var text by remember { mutableStateOf(s.prefs.sp.getString("crash", null)) }
+    val t = text ?: return
+    fun clear() { s.prefs.sp.edit().remove("crash").apply(); text = null }
+    AlertDialog(onDismissRequest = { clear() }, title = { Text(Tr["crashTitle"]) }, text = { Text(Tr["crashText"]) },
+        confirmButton = { TextButton(onClick = {
+            runCatching { s.act.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:turathkhairalquroon@gmail.com"))
+                .putExtra(Intent.EXTRA_SUBJECT, "Salat app crash " + runCatching { s.act.packageManager.getPackageInfo(s.act.packageName, 0).versionName }.getOrDefault(""))
+                .putExtra(Intent.EXTRA_TEXT, t)) }
+            clear()
+        }) { Text(Tr["crashSend"]) } },
+        dismissButton = { TextButton(onClick = { clear() }) { Text(Tr["cancel"]) } })
 }
 
 private data class NavTab(val key: String, val icon: ImageVector)

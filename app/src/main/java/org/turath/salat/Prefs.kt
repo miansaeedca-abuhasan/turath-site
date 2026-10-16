@@ -19,7 +19,10 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     ADHAN_MAKKAH("adhan_makkah", Mu.MULLA), ADHAN_DAGHRIRI("adhan_daghriri", Mu.DAGHRIRI), ADHAN_DAGHRIRI2("adhan_daghriri2", Mu.DAGHRIRI),
     ADHAN_MADINAH("adhan_madinah", Mu.BUKHARI), ADHAN_AQSA("adhan_aqsa"),
     // iqamah (for tahajjud, ishraq and duha), when the app has the recordings
-    IQAMA_MAKKAH("iqama_makkah", Mu.MULLA, "iqama"), IQAMA_MADINAH("iqama_madinah", Mu.BUKHARI, "iqama"),
+    IQAMA_MAKKAH("iqama_makkah", Mu.MULLA, "iqama"), IQAMA_MAKKAH_S("iqama_makkah_short", Mu.MULLA, "iqama"),
+    IQAMA_MADINAH("iqama_madinah", Mu.BUKHARI, "iqama"), IQAMA_MADINAH_S("iqama_madinah_short", Mu.BUKHARI, "iqama"),
+    IQAMA_AQSA("iqama_aqsa", null, "iqama"), IQAMA_1("iqama_1", null, "iqama"), IQAMA_2("iqama_2", null, "iqama"),
+    IQAMA_3("iqama_3", null, "iqama"), IQAMA_4("iqama_4", null, "iqama"),
     ADHAN_BASIT("adhan_basit", Mu.BASIT), ADHAN_NABET("adhan_nabet", Mu.NABET), ADHAN_MAGHRIBI("adhan_maghribi", Mu.MAGHRIBI),
     // short calls for alarms and reminders, cut from the adhans: «الصلاة خير من النوم», «حي على الصلاة», «أشهد أن لا إله إلا الله», «الله أكبر»
     KHAYR_MULLA("short_khayr_mulla", Mu.MULLA, "khayr"), KHAYR_BUKHARI("short_khayr_bukhari", Mu.BUKHARI, "khayr"),
@@ -39,7 +42,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     val bird get() = raw?.startsWith("birds") == true
     val short get() = phrase != null
     /** Makkah, Madinah or other (birds: "birds") */
-    val city get() = when { bird -> "birds"; this == ADHAN_AQSA -> "other"; else -> mu?.city ?: "phone" }
+    val city get() = when { bird -> "birds"; this == ADHAN_AQSA || phrase == "iqama" && mu == null -> "other"; else -> mu?.city ?: "phone" }
 }
 
 /** where a sound is chosen: the five prayers (adhans only), nafl times (iqamah, calls, birds), reminders and alarms (calls, birds) */

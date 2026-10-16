@@ -274,8 +274,15 @@ object Tr {
         "WARBLER" to arrayOf("واربلر", "الهازجة", "Warbler"),
         "FINCH" to arrayOf("چافنچ", "الشرشور", "Chaffinch"),
         "ORIOLE" to arrayOf("پیلک (اوریول)", "الصفير", "Golden oriole"),
-        "IQAMA_MAKKAH" to arrayOf("اقامت — مکہ", "الإقامة — مكة", "Iqamah — Makkah"),
-        "IQAMA_MADINAH" to arrayOf("اقامت — مدینہ", "الإقامة — المدينة", "Iqamah — Madinah"),
+        "IQAMA_MAKKAH" to arrayOf("اقامت — مکمل", "الإقامة — كاملة", "Iqamah — complete"),
+        "IQAMA_MAKKAH_S" to arrayOf("اقامت — مختصر", "الإقامة — مختصرة", "Iqamah — short"),
+        "IQAMA_MADINAH" to arrayOf("اقامت — مکمل", "الإقامة — كاملة", "Iqamah — complete"),
+        "IQAMA_MADINAH_S" to arrayOf("اقامت — مختصر", "الإقامة — مختصرة", "Iqamah — short"),
+        "IQAMA_AQSA" to arrayOf("اقامت — مسجد اقصیٰ", "الإقامة — المسجد الأقصى", "Iqamah — al-Aqsa"),
+        "IQAMA_1" to arrayOf("اقامت 1", "الإقامة 1", "Iqamah 1"),
+        "IQAMA_2" to arrayOf("اقامت 2", "الإقامة 2", "Iqamah 2"),
+        "IQAMA_3" to arrayOf("اقامت 3", "الإقامة 3", "Iqamah 3"),
+        "IQAMA_4" to arrayOf("اقامت 4", "الإقامة 4", "Iqamah 4"),
         "tMosque" to arrayOf("مساجد", "المساجد", "Mosques"),
         "aroundYou" to arrayOf("آپ کے موجودہ مقام کے گرد", "حول موقعك الحالي", "Around where you are now"),
         "aroundCity" to arrayOf("شہر کے مرکز کے گرد:", "حول مركز المدينة:", "Around the centre of"),
@@ -324,6 +331,9 @@ object Tr {
         "azkarENote" to arrayOf("عصر کے بعد اطلاع", "إشعار بعد العصر", "A notification after Asr"),
         "persistent" to arrayOf("اگلی نماز ہر وقت اطلاعات میں", "الصلاة القادمة دائمًا في الإشعارات", "Next prayer always in notifications"),
         "persistentNote" to arrayOf("اگلی نماز اور باقی وقت، نوٹیفکیشن بار میں", "الصلاة القادمة والوقت المتبقي في شريط الإشعارات", "The next prayer and time left, in the notification bar"),
+        "crashTitle" to arrayOf("ایپ پچھلی بار بند ہو گئی تھی", "توقف التطبيق في المرة السابقة", "The app stopped last time"),
+        "crashText" to arrayOf("خرابی کی رپورٹ ای میل سے بھیج دیں تاکہ اسے ٹھیک کیا جا سکے۔ اس میں صرف خرابی کی تکنیکی تفصیل ہے۔", "أرسل تقرير الخطأ بالبريد لإصلاحه. فيه التفاصيل الفنية للخطأ فقط.", "Send the error report by email so it can be fixed. It has only the technical details of the error."),
+        "crashSend" to arrayOf("رپورٹ بھیجیں", "أرسل التقرير", "Send the report"),
         "prayerTime" to arrayOf("نماز کا وقت ہو گیا", "حان وقت الصلاة", "It is time for prayer"),
     )
 
@@ -345,6 +355,7 @@ object Tr {
 
     /** a short name of a sound: «اذان — علی ملا», «حی علی الصلاۃ — عصام بخاری», a bird (the list is grouped by Makkah / Madinah / other) */
     fun snd(s: Snd): String = when {
+        s.phrase == "iqama" -> get(s.name)
         s == Snd.ADHAN_AQSA -> get("adhanW") + " — " + get("r_AQSA")
         s.adhan -> get("adhanW") + " — " + get("r_" + s.mu!!.name) + (if (s == Snd.ADHAN_DAGHRIRI2) " " + num(2) else "")
         s.phrase != null -> get("p_" + s.phrase) + " — " + get("r_" + s.mu!!.name)

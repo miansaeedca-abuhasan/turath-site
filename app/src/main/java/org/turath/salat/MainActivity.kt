@@ -16,6 +16,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import org.turath.salat.ui.App
 
+/** keeps the report of a crash (shown on the next start, to be sent by email) */
+class SalatApp : android.app.Application() {
+    override fun onCreate() {
+        super.onCreate()
+        val prev = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { t, e ->
+            runCatching {
+                getSharedPreferences("salat", MODE_PRIVATE).edit().putString("crash",
+                    "Android " + Build.VERSION.RELEASE + " · " + Build.MANUFACTURER + " " + Build.MODEL + "\n" + android.util.Log.getStackTraceString(e).take(8000)).commit()
+            }
+            prev?.uncaughtException(t, e)
+        }
+    }
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
