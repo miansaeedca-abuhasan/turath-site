@@ -44,6 +44,14 @@ class MainActivity : ComponentActivity() {
     var tabRequest by mutableIntStateOf(-1)
     override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); tabRequest = i.getIntExtra("tab", -1) }
 
+    /** left for a while (home button, another app): the next opening starts at Today, not where the app was left; a short trip (a permission box, the phone's settings) keeps the place */
+    private var stoppedAt = 0L
+    override fun onStop() { super.onStop(); stoppedAt = System.currentTimeMillis() }
+    override fun onStart() {
+        super.onStart()
+        if (stoppedAt != 0L && System.currentTimeMillis() - stoppedAt > 20_000 && tabRequest < 0) tabRequest = 0
+    }
+
     override fun onResume() {
         super.onResume()
         Thread { runCatching { Alarms.schedule(this) } }.start()

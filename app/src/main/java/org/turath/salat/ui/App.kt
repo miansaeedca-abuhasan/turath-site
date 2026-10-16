@@ -66,7 +66,7 @@ fun App(act: MainActivity) {
     val s = remember { AppState(act) }
     Tr.lang = s.prefs.lang.ifEmpty { "en" }
     LaunchedEffect(Unit) { while (true) { s.now = ZonedDateTime.now(); delay(1000) } }
-    LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
+    LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.sub = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
     val acc = s.prefs.appAccent.takeIf { it >= 0 }?.let { Color(Pal.COLORS[it]) }
     val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),

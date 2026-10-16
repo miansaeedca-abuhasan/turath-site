@@ -124,7 +124,7 @@ object Alarms {
         val canExact = Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms()
         try {
             if (next.kind == "suhoor" && canExact)
-                am.setAlarmClock(AlarmManager.AlarmClockInfo(ms, PendingIntent.getActivity(ctx, 2, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)), pi(ctx))
+                am.setAlarmClock(AlarmManager.AlarmClockInfo(ms, PendingIntent.getActivity(ctx, 2, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)), pi(ctx))
             else if (canExact) am.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, ms, pi(ctx))
             else am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, ms, pi(ctx))
         } catch (e: SecurityException) {
@@ -150,7 +150,7 @@ object Alarms {
     private fun handle(ctx: Context, pr: Prefs, e: Ev, playSound: Boolean) {
         Tr.lang = pr.lang.ifEmpty { "en" }
         val nm = ctx.getSystemService(NotificationManager::class.java)
-        val open = PendingIntent.getActivity(ctx, 3, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val open = PendingIntent.getActivity(ctx, 3, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val place = pr.place
         when (e.kind) {
             "prayer", "nafl", "custom", "suhoor" -> {
@@ -332,7 +332,7 @@ class SoundService : Service() {
         Tr.lang = Prefs(this).lang.ifEmpty { "en" }
         val alarm = i.getBooleanExtra("alarm", false)
         val stop = PendingIntent.getBroadcast(this, 20, Intent(this, ActionReceiver::class.java).setAction("STOP"), PendingIntent.FLAG_IMMUTABLE)
-        val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)
+        val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat)
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
             .setContentIntent(open).setDeleteIntent(stop)

@@ -63,7 +63,7 @@ class Widget : AppWidgetProvider() {
                 .setContentTitle(Tr.p(st.next).substringBefore(" (") + " — " + Alarms.fmt(pr, st.nextAt)).setContentText(line)
                 .setWhen(st.nextAt.toInstant().toEpochMilli()).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
                 .setOngoing(true).setOnlyAlertOnce(true)
-                .setContentIntent(PendingIntent.getActivity(ctx, 6, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)).build()
+                .setContentIntent(PendingIntent.getActivity(ctx, 6, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)).build()
             nm.notify(4100, n)
         }
 
@@ -127,7 +127,7 @@ class Widget : AppWidgetProvider() {
                 v.setTextColor(R.id.date, dim); v.setTextColor(R.id.date2, dim)
                 size(v, R.id.date, 11f, pr); size(v, R.id.date2, 11f, pr)
             }
-            v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
+            v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             if (full) {
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
@@ -170,7 +170,8 @@ class WidgetCal : AppWidgetProvider() {
             if (ids.isEmpty()) return
             val pr = Prefs(ctx); val place = pr.place ?: return
             Tr.lang = pr.lang.ifEmpty { "en" }
-            val nowH = Schedule.hijriNow(pr, place, ZonedDateTime.now(Schedule.zone(place)))
+            // the English date is always the phone's; today is the cell of that date (the Hijri day changing at Maghrib belongs to the prayer widget)
+            val nowH = Schedule.hijriOf(pr, LocalDate.now())
             var ym = nowH.year * 12 + nowH.month - 1 + pr.sp.getInt("wcalOff", 0)
             val y = ym / 12; val m = ym % 12 + 1
             val len = runCatching { HijrahDate.of(y, m, 1).lengthOfMonth() }.getOrDefault(30)
@@ -219,6 +220,8 @@ class WidgetCal : AppWidgetProvider() {
                 }
                 v.addView(ROWS[row], c)
             }
+            // a tap on the widget itself opens the calendar (not the screen the app was left on)
+            v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 47, Intent(ctx, MainActivity::class.java).putExtra("tab", 3), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             v.setOnClickPendingIntent(R.id.prev, act(ctx, "org.turath.salat.CAL_PREV", 41))
             v.setOnClickPendingIntent(R.id.next, act(ctx, "org.turath.salat.CAL_NEXT", 42))
             v.setOnClickPendingIntent(R.id.title, act(ctx, "org.turath.salat.CAL_TODAY", 43))

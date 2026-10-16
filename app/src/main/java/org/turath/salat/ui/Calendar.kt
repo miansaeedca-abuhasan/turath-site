@@ -57,7 +57,7 @@ fun strong(m: Int, d: Int) = ISLAMIC_DAYS.any { it.m == m && it.d == d && it.to 
 @Composable
 fun CalendarScreen(s: AppState) {
     val place = s.prefs.place ?: return
-    val nowH = Schedule.hijriNow(s.prefs, place, s.now)
+    val nowH = Schedule.hijriOf(s.prefs, s.now.toLocalDate())   // the English date is the phone's; only the Hijri one can be adjusted (Settings)
     var ym by remember { mutableIntStateOf(nowH.year * 12 + nowH.month - 1) }
     var dayOpen by remember { mutableStateOf<Int?>(null) }
     var edit by remember { mutableStateOf<CalEvent?>(null) }
