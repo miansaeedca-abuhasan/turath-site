@@ -1,0 +1,18 @@
+site try1: 503 3.457280s elements~0 {"error":"busy"}
+site try2: 503 1.674976s elements~0 {"error":"busy"}
+https://overpass-api.de/api/interpreter UA: 200 46.652501s elements~112 {
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-16T00:29:14Z",
+    "copyright": 
+https://overpass.private.coffee/api/interpreter UA: 500 0.947186s elements~0 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
+<title>500 Internal Server Error</title>
+</hea
+https://overpass.kumi.systems/api/interpreter UA: 200 6.280398s elements~111 {
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-05-31T22:37:44Z",
+    "copyright": 
