@@ -31,6 +31,25 @@ class Widget : AppWidgetProvider() {
             runCatching { prayer(ctx, Widget::class.java, R.layout.widget, true) }
             runCatching { prayer(ctx, WidgetSmall::class.java, R.layout.widget_small, false) }
             runCatching { WidgetCal.draw(ctx) }
+            runCatching { nextNote(ctx) }
+        }
+
+        /** the always-there notification: the next prayer with a live count (when the user wants it) */
+        fun nextNote(ctx: Context) {
+            val nm = ctx.getSystemService(android.app.NotificationManager::class.java)
+            val pr = Prefs(ctx); val place = pr.place
+            if (!pr.persistent || place == null) { nm.cancel(4100); return }
+            Tr.lang = pr.lang.ifEmpty { "ur" }
+            val now = ZonedDateTime.now(Schedule.zone(place))
+            val st = Schedule.state(pr, place, now)
+            val t = Schedule.day(pr, place, now.toLocalDate())
+            val line = listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA).joinToString("  ") { Tr.p(it).substringBefore(" (") + " " + Alarms.fmt(pr, t[it]).substringBefore(" ") }
+            val n = android.app.Notification.Builder(ctx, Alarms.CH_NEXT).setSmallIcon(R.drawable.ic_stat)
+                .setContentTitle(Tr.p(st.next).substringBefore(" (") + " — " + Alarms.fmt(pr, st.nextAt)).setContentText(line)
+                .setWhen(st.nextAt.toInstant().toEpochMilli()).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
+                .setOngoing(true).setOnlyAlertOnce(true)
+                .setContentIntent(PendingIntent.getActivity(ctx, 6, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE)).build()
+            nm.notify(4100, n)
         }
 
         fun ink(pr: Prefs) = if (pr.widgetLight) Color.parseColor("#1B1B1B") else Color.WHITE

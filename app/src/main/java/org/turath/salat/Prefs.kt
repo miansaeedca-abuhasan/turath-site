@@ -12,12 +12,14 @@ val FIVE = listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
 
 /** sound for an alarm or reminder; a sound file missing from the app falls back to the phone's alarm tone */
 /** muezzins whose recordings the app has */
-enum class Mu { MULLA, DAGHRIRI, BUKHARI, NABET, MAGHRIBI, BASIT }
+enum class Mu(val city: String) { MULLA("makkah"), DAGHRIRI("makkah"), BUKHARI("madinah"), NABET("other"), MAGHRIBI("other"), BASIT("other") }
 
 enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null) {
     // adhans (a «_fajr» file of the same name is used for Fajr when the app has one)
     ADHAN_MAKKAH("adhan_makkah", Mu.MULLA), ADHAN_DAGHRIRI("adhan_daghriri", Mu.DAGHRIRI), ADHAN_DAGHRIRI2("adhan_daghriri2", Mu.DAGHRIRI),
     ADHAN_MADINAH("adhan_madinah", Mu.BUKHARI), ADHAN_AQSA("adhan_aqsa"),
+    // iqamah (for tahajjud, ishraq and duha), when the app has the recordings
+    IQAMA_MAKKAH("iqama_makkah", Mu.MULLA, "iqama"), IQAMA_MADINAH("iqama_madinah", Mu.BUKHARI, "iqama"),
     ADHAN_BASIT("adhan_basit", Mu.BASIT), ADHAN_NABET("adhan_nabet", Mu.NABET), ADHAN_MAGHRIBI("adhan_maghribi", Mu.MAGHRIBI),
     // short calls for alarms and reminders, cut from the adhans: «الصلاة خير من النوم», «حي على الصلاة», «أشهد أن لا إله إلا الله», «الله أكبر»
     KHAYR_MULLA("short_khayr_mulla", Mu.MULLA, "khayr"), KHAYR_BUKHARI("short_khayr_bukhari", Mu.BUKHARI, "khayr"),
@@ -29,12 +31,19 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     // birdsong
     BIRDS1("birds1"), NIGHTINGALE("birds_nightingale"), BLACKBIRD("birds_blackbird"), ROBIN("birds_robin"), SKYLARK("birds_skylark"),
     WREN("birds_wren"), CHORUS("birds_chorus"),
+    CANARY("birds_canary"), CANARY2("birds_canary2"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
+    BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
     TONE(null), NOTIFY(null), SILENT(null);
 
     val adhan get() = name.startsWith("ADHAN")
     val bird get() = raw?.startsWith("birds") == true
     val short get() = phrase != null
+    /** Makkah, Madinah or other (birds: "birds") */
+    val city get() = when { bird -> "birds"; this == ADHAN_AQSA -> "other"; else -> mu?.city ?: "phone" }
 }
+
+/** where a sound is chosen: the five prayers (adhans only), nafl times (iqamah, calls, birds), reminders and alarms (calls, birds) */
+enum class SndUse { PRAYER, NAFL, REMINDER }
 
 /** a reminder like «35 min before Fajr on Tuesday and Wednesday» */
 data class Reminder(
@@ -52,6 +61,27 @@ data class Reminder(
             return Reminder(o.getLong("id"), o.optString("label"), b, o.getInt("min"), o.getInt("days"),
                 runCatching { Snd.valueOf(o.getString("snd")) }.getOrDefault(Snd.NOTIFY), o.getBoolean("on"))
         }
+    }
+}
+
+/** the user's own event in the calendar: on a date (hijri or gregorian), once, every month or every year,
+ *  at a time of the clock or some minutes before / after a prayer */
+data class CalEvent(
+    val id: Long, val label: String, val hijri: Boolean, val y: Int, val m: Int, val d: Int,
+    val repeat: String /* "once", "month", "year" */, val atMin: Int /* minutes after midnight, or -1 */,
+    val base: P?, val offset: Int, val sound: Snd, val on: Boolean = true
+) {
+    fun json() = JSONObject().put("id", id).put("label", label).put("hijri", hijri).put("y", y).put("m", m).put("d", d).put("rep", repeat)
+        .put("at", atMin).put("base", base?.name ?: "").put("off", offset).put("snd", sound.name).put("on", on)
+    /** does it fall on this day (gregorian date, with its hijri daytime date) */
+    fun on(g: java.time.LocalDate, h: Hijri): Boolean {
+        val (yy, mm, dd) = if (hijri) Triple(h.year, h.month, h.day) else Triple(g.year, g.monthValue, g.dayOfMonth)
+        return when (repeat) { "month" -> dd == d; "year" -> dd == d && mm == m; else -> dd == d && mm == m && yy == y }
+    }
+    companion object {
+        fun from(o: JSONObject) = CalEvent(o.getLong("id"), o.optString("label"), o.optBoolean("hijri"), o.optInt("y"), o.optInt("m"), o.optInt("d"),
+            o.optString("rep", "once"), o.optInt("at", -1), o.optString("base").takeIf { it.isNotEmpty() }?.let { runCatching { P.valueOf(it) }.getOrNull() },
+            o.optInt("off"), runCatching { Snd.valueOf(o.optString("snd")) }.getOrDefault(Snd.NOTIFY), o.optBoolean("on", true))
     }
 }
 
@@ -101,7 +131,9 @@ class Prefs(ctx: Context) {
 
     // sound of each prayer and nafl time (adhan / short / birds / silent)
     fun sound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("snd_" + p.name, null) ?: "") }.getOrElse { defaultSound(p) }
-    fun setSound(p: P, s: Snd) = sp.edit().putString("snd_" + p.name, s.name).apply()
+    fun setSound(p: P, s: Snd) { sp.edit().putString("snd_" + p.name, s.name).apply(); if (s.raw != null) sp.edit().putString("lastsnd_" + p.name, s.name).apply() }
+    /** the last real sound chosen for a prayer (to go back to it from «notification only» / «silent») */
+    fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p in FIVE) Snd.ADHAN_MAKKAH else Snd.NIGHTINGALE }
     private fun defaultSound(p: P) = when (p) {
         P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA -> Snd.ADHAN_MAKKAH
         P.ISHRAQ -> Snd.NIGHTINGALE
@@ -116,6 +148,17 @@ class Prefs(ctx: Context) {
     fun setVibrateFor(p: P, v: Boolean) = sp.edit().putBoolean("vib_" + p.name, v).apply()
 
     // fasting: Monday / Thursday, and the white days (13–15)
+    var ashura: Boolean get() = sp.getBoolean("ashura", true); set(v) = sp.edit().putBoolean("ashura", v).apply()
+    var arafah: Boolean get() = sp.getBoolean("arafah", true); set(v) = sp.edit().putBoolean("arafah", v).apply()
+    // takbirat: Eid al-Fitr (from the night of Eid until the prayer), the ten days of Dhul-Hijjah, after the prayers of Arafah and Tashreeq
+    var takbirFitr: Boolean get() = sp.getBoolean("tkFitr", true); set(v) = sp.edit().putBoolean("tkFitr", v).apply()
+    var takbirHijjah: Boolean get() = sp.getBoolean("tkHijjah", true); set(v) = sp.edit().putBoolean("tkHijjah", v).apply()
+    var takbirTashreeq: Boolean get() = sp.getBoolean("tkTashreeq", true); set(v) = sp.edit().putBoolean("tkTashreeq", v).apply()
+    // morning and evening adhkar
+    var azkarMorning: Boolean get() = sp.getBoolean("azkarM", false); set(v) = sp.edit().putBoolean("azkarM", v).apply()
+    var azkarEvening: Boolean get() = sp.getBoolean("azkarE", false); set(v) = sp.edit().putBoolean("azkarE", v).apply()
+    /** a notification always showing the next prayer and its count */
+    var persistent: Boolean get() = sp.getBoolean("persist", false); set(v) = sp.edit().putBoolean("persist", v).apply()
     var monThu: Boolean get() = sp.getBoolean("monthu", false); set(v) = sp.edit().putBoolean("monthu", v).apply()
     var beed: Boolean get() = sp.getBoolean("beed", false); set(v) = sp.edit().putBoolean("beed", v).apply()
     // Ramadan: suhoor alarm and iftar reminder every day; the phone on vibrate after Isha for the taraweeh
@@ -131,6 +174,7 @@ class Prefs(ctx: Context) {
     fun fastDay(d: java.time.LocalDate): Boolean {
         val h = Schedule.hijriOf(this, d)
         return (ramadan && h.month == 9) ||
+            (ashura && h.month == 1 && (h.day == 9 || h.day == 10)) || (arafah && h.month == 12 && h.day == 9) ||
             (monThu && (d.dayOfWeek == java.time.DayOfWeek.MONDAY || d.dayOfWeek == java.time.DayOfWeek.THURSDAY)) ||
             (beed && h.day in 13..15 && beedAccepted("${h.year}-${h.month}"))
     }
@@ -158,6 +202,10 @@ class Prefs(ctx: Context) {
         set(v) = sp.edit().putString("rem", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
     private fun defaultReminders() = emptyList<Reminder>()
+
+    var events: List<CalEvent>
+        get() = sp.getString("events", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { CalEvent.from(a.getJSONObject(it)) } } ?: emptyList()
+        set(v) = sp.edit().putString("events", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
     /** other cities shown with their times (Makkah, Madinah, al-Quds first) */
     var worldCities: List<Place>

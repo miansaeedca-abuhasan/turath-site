@@ -36,15 +36,29 @@ fun MosqueFinder(s: AppState) {
     var list by remember { mutableStateOf<List<Mosques.M>?>(null) }
     var err by remember { mutableStateOf(false) }
     var reload by remember { mutableIntStateOf(0) }
-    LaunchedEffect(km, reload) {
+    // the centre of the search: the phone's location now (the city's centre only until it is known)
+    var center by remember { mutableStateOf<Pair<Double, Double>?>(null) }
+    var live by remember { mutableStateOf(false) }
+    var asked by remember { mutableIntStateOf(0) }
+    LaunchedEffect(asked) {
+        if (!ctx.hasLocation()) { if (asked == 0) center = place.lat to place.lng; return@LaunchedEffect }
+        currentLocation(ctx) { l -> if (l != null) { center = l.latitude to l.longitude; live = true } else if (center == null) center = place.lat to place.lng }
+    }
+    LaunchedEffect(km, reload, center) {
+        val c = center ?: return@LaunchedEffect
         list = null; err = false
-        list = withContext(Dispatchers.IO) { runCatching { Mosques.find(ctx, place.lat, place.lng, km) }.getOrNull() }
+        list = withContext(Dispatchers.IO) { runCatching { Mosques.find(ctx, c.first, c.second, km) }.getOrNull() }
         if (list == null) err = true
     }
     Column(Modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+            Icon(if (live) Icons.Outlined.MyLocation else Icons.Outlined.LocationCity, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
+            Text("  " + (if (live) Tr["aroundYou"] else Tr["aroundCity"] + " " + place.name), Modifier.weight(1f), fontSize = 13.sp)
+            if (!live) TextButton(onClick = { ctx.onPermResult = { asked++ }; if (ctx.hasLocation()) asked++ else ctx.askLocation() }) { Text(Tr["useGps"]) }
+        }
         // Google Maps (its own search of mosques around; the filter below does not apply there)
         OutlinedButton(onClick = {
-            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${place.lat},${place.lng}?q=" + Uri.encode("mosque")))) }
+            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${center?.first ?: place.lat},${center?.second ?: place.lng}?q=" + Uri.encode("mosque")))) }
         }, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) { Icon(Icons.Outlined.Map, null); Text("  " + Tr["gmapsNearby"]) }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(Tr["radius"] + ": ", fontSize = 14.sp)
@@ -75,9 +89,15 @@ fun MosqueFinder(s: AppState) {
                             trailingContent = {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(Tr.num("%.1f".format(m.km)) + " " + Tr["km"], fontWeight = FontWeight.Bold)
+                                    Row {
                                     IconButton(onClick = {
                                         runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}"))) }
                                     }) { Icon(Icons.Outlined.Directions, Tr["openMap"]) }
+                                    IconButton(onClick = {
+                                        ctx.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText(m.name, m.name + "\n" + Mosques.address(ctx, m)))
+                                        Toast.makeText(ctx, Tr["copied"], Toast.LENGTH_SHORT).show()
+                                    }) { Icon(Icons.Outlined.ContentCopy, Tr["copyAddr"]) }
+                                    }
                                 }
                             },
                             modifier = Modifier.combinedClickable(

@@ -60,6 +60,31 @@ object Events {
                 if (pr.before(p) > 0) out += Ev(t[p].minusMinutes(pr.before(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.before(p)) + " " + Tr["min"] + " " + Tr["before"] + " " + Tr.p(p))
                 if (pr.after(p) > 0) out += Ev(t[p].plusMinutes(pr.after(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.after(p)) + " " + Tr["min"] + " " + Tr["after"] + " " + Tr.p(p))
             }
+            // takbirat (Snd.TAKBIRAT): Eid al-Fitr from Maghrib of its night until the Eid prayer; the ten days of Dhul-Hijjah now and then;
+            // after each prayer from Fajr of Arafah to Asr of the 13th
+            val tk = Snd.TAKBIRAT
+            if (pr.takbirFitr) {
+                if (Schedule.hijriOf(pr, d.plusDays(1)).let { it.month == 10 && it.day == 1 }) {
+                    out += Ev(t[P.MAGHRIB].plusMinutes(5), "custom", P.MAGHRIB, tk, Tr["takbirFitr"]); out += Ev(t[P.ISHA].plusMinutes(15), "custom", P.ISHA, tk, Tr["takbirFitr"])
+                }
+                if (h.month == 10 && h.day == 1) { out += Ev(t[P.FAJR].plusMinutes(20), "custom", P.FAJR, tk, Tr["takbirFitr"]); out += Ev(t[P.SUNRISE].plusMinutes(10), "custom", P.SUNRISE, tk, Tr["takbirFitr"]) }
+            }
+            if (h.month == 12) {
+                val afterPrayers = pr.takbirTashreeq && h.day in 9..13
+                if (pr.takbirHijjah && h.day in 1..13 && !afterPrayers) {
+                    out += Ev(t[P.SUNRISE].plusMinutes(90), "custom", P.SUNRISE, tk, Tr["takbirHijjah"]); out += Ev(t[P.ASR].plusMinutes(30), "custom", P.ASR, tk, Tr["takbirHijjah"])
+                }
+                if (afterPrayers) for (p in FIVE) if (!(h.day == 13 && (p == P.MAGHRIB || p == P.ISHA)))
+                    out += Ev(t[p].plusMinutes(10), "custom", p, tk, Tr["takbirAfter"])
+            }
+            // morning and evening adhkar (a notification)
+            if (pr.azkarMorning) out += Ev(t[P.FAJR].plusMinutes(25), "custom", P.FAJR, Snd.NOTIFY, Tr["azkarM"])
+            if (pr.azkarEvening) out += Ev(t[P.ASR].plusMinutes(30), "custom", P.ASR, Snd.NOTIFY, Tr["azkarE"])
+            // the user's own events in the calendar
+            for (c in pr.events) if (c.on && c.on(d, h)) {
+                val at = if (c.base != null) t[c.base].plusMinutes(c.offset.toLong()) else d.atStartOfDay(zone).plusMinutes(maxOf(0, c.atMin).toLong())
+                out += Ev(at, "custom", c.base, c.sound, c.label.ifEmpty { Tr["event"] }, c.id)
+            }
             // the user's own reminders
             for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1) for (b in r.bases)
                 out += Ev(t[b].plusMinutes(r.minutes.toLong()), "custom", b, r.sound, r.label.ifEmpty { Tr.num(kotlin.math.abs(r.minutes)) + " " + Tr["min"] + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + Tr.p(b) }, r.id)
@@ -72,13 +97,16 @@ object Events {
 }
 
 object Alarms {
-    const val CH_ADHAN = "adhan"; const val CH_REM = "reminders"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
+    const val CH_ADHAN = "adhan"; const val CH_REM = "reminders_quiet"; const val CH_NEXT = "next_prayer"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
 
     fun channels(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         Tr.lang = Prefs(ctx).lang.ifEmpty { "ur" }
         nm.createNotificationChannel(NotificationChannel(CH_ADHAN, Tr["prayerTime"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
-        nm.createNotificationChannel(NotificationChannel(CH_REM, Tr["remTitle"], NotificationManager.IMPORTANCE_HIGH))
+        // reminders without a sound of their own: a notification with vibration only (no bell)
+        nm.createNotificationChannel(NotificationChannel(CH_REM, Tr["remTitle"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null); enableVibration(true) })
+        nm.createNotificationChannel(NotificationChannel(CH_NEXT, Tr["nextPrayer"], NotificationManager.IMPORTANCE_LOW).apply { setShowBadge(false) })
+        runCatching { nm.deleteNotificationChannel("reminders") }
         nm.createNotificationChannel(NotificationChannel(CH_ALARM, Tr["suhoor"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
         nm.createNotificationChannel(NotificationChannel(CH_IFTAR, Tr["iftar"], NotificationManager.IMPORTANCE_HIGH))
     }
@@ -114,7 +142,7 @@ object Alarms {
         val due = Events.list(ctx, now.minusMinutes(15), 2).filter { val m = it.at.toInstant().toEpochMilli(); m > lo && m <= now.toInstant().toEpochMilli() + 3000 }
         pr.sp.edit().putLong("lastDone", now.toInstant().toEpochMilli() + 3000).apply()
         // one sound at a time: the prayer's adhan wins over a reminder at the same minute
-        val sound = due.filter { it.snd != Snd.SILENT && it.snd != Snd.NOTIFY && it.kind != "iftar" }.minByOrNull { listOf("suhoor", "prayer", "nafl", "custom").indexOf(it.kind).let { i -> if (i < 0) 9 else i } }
+        val sound = due.filter { it.snd != Snd.SILENT && it.snd != Snd.NOTIFY && it.kind != "iftar" && it.kind != "widget" }.minByOrNull { listOf("suhoor", "prayer", "nafl", "custom").indexOf(it.kind).let { i -> if (i < 0) 9 else i } }
         for (e in due) handle(ctx, pr, e, e === sound)
         schedule(ctx)
     }
@@ -272,19 +300,27 @@ class SoundService : Service() {
             return ctx.resources.getIdentifier(r, "raw", ctx.packageName)
         }
 
-        /** sounds that can be chosen: an adhan only when its recording is in the app */
-        fun choices(ctx: Context, fajr: Boolean, adhans: Boolean = true) =
-            Snd.entries.filter { it.raw == null && it != Snd.SILENT || it == Snd.SILENT || (if (it.adhan) adhans && rawId(ctx, it, fajr) != 0 else rawId(ctx, it) != 0) }
-                .sortedBy { when { it.adhan -> 0; it.short -> 1; it.bird -> 2; else -> 3 } }
+        /** the sounds that can be chosen here (only those whose recording is in the app; no phone ringtones or bells):
+         *  the five prayers — adhans only; nafl times — iqamah, calls and birds; reminders / alarms — calls and birds */
+        fun choices(ctx: Context, use: SndUse, fajr: Boolean = false): List<Snd> {
+            val ok = Snd.entries.filter { it.raw != null && rawId(ctx, it, fajr) != 0 }
+            val l = when (use) {
+                SndUse.PRAYER -> ok.filter { it.adhan }
+                SndUse.NAFL -> ok.filter { !it.adhan }
+                SndUse.REMINDER -> ok.filter { !it.adhan && it.phrase != "iqama" } + Snd.NOTIFY
+            }
+            val order = listOf("makkah", "madinah", "other", "birds", "phone")
+            return l.sortedBy { order.indexOf(it.city) * 10 + (if (it.adhan) 0 else if (it.short) 1 else 2) }
+        }
 
         /** the sound file of the app, or null when that sound is not (yet) in the app */
         fun uri(ctx: Context, s: Snd, fajr: Boolean = false): Uri? {
             val id = rawId(ctx, s, fajr)
+            // no phone ringtone: a missing recording falls back to «حي على الصلاة»
             return when {
                 id != 0 -> Uri.parse("android.resource://${ctx.packageName}/$id")
-                s == Snd.SILENT -> null
-                s == Snd.NOTIFY || s.bird -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                else -> RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM)
+                s == Snd.SILENT || s == Snd.NOTIFY -> null
+                else -> rawId(ctx, Snd.SHORT_HAYYA).takeIf { it != 0 }?.let { Uri.parse("android.resource://${ctx.packageName}/$it") }
             }
         }
     }

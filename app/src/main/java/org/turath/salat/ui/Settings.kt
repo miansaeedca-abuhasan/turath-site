@@ -74,6 +74,8 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
             Choice(Tr["volAlarm"], pr.volStream == "alarm") { pr.volStream = "alarm"; s.changed() }
             HorizontalDivider()
             SwitchRow(Tr["adhanSilent"], pr.adhanInSilent, Tr["adhanSilentNote"]) { pr.adhanInSilent = it; s.changed() }
+            HorizontalDivider()
+            SwitchRow(Tr["persistent"], pr.persistent, Tr["persistentNote"]) { pr.persistent = it; Widget.update(s.act); s.changed() }
         }
         SectionTitle(Tr["school"])
         Card0 {
@@ -124,6 +126,21 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         }
         Spacer(Modifier.height(30.dp))
     }
+}
+
+/** the phone's location now (a fresh fix when it can, else the last known), on the main thread */
+@SuppressLint("MissingPermission")
+fun currentLocation(act: org.turath.salat.MainActivity, done: (android.location.Location?) -> Unit) {
+    val lm = act.getSystemService(LocationManager::class.java)
+    val last = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER, LocationManager.PASSIVE_PROVIDER)
+        .mapNotNull { runCatching { lm.getLastKnownLocation(it) }.getOrNull() }.maxByOrNull { it.time }
+    if (last != null && System.currentTimeMillis() - last.time < 2 * 60_000) { done(last); return }
+    val prov = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER).firstOrNull { runCatching { lm.isProviderEnabled(it) }.getOrDefault(false) }
+    if (prov == null || Build.VERSION.SDK_INT < 30) { done(last); return }
+    var sent = false
+    lm.getCurrentLocation(prov, null, act.mainExecutor) { l -> if (!sent) { sent = true; done(l ?: last) } }
+    // no answer in 12 seconds: the last known place
+    android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ if (!sent) { sent = true; done(last) } }, 12_000)
 }
 
 /** the phone's location: the nearest city gives the name and the time zone */

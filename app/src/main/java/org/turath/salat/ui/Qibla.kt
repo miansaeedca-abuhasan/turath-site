@@ -106,7 +106,7 @@ fun DrawScope.kaaba(c: Offset, k: Float) {
 private fun Buzz(on: Boolean, ctx: Context) {
     var was by remember { mutableStateOf(false) }
     LaunchedEffect(on) {
-        if (on && !was) (ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)?.vibrate(VibrationEffect.createOneShot(70, VibrationEffect.DEFAULT_AMPLITUDE))
+        if (on && !was) (ctx.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator)?.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
         was = on
     }
 }
@@ -139,7 +139,9 @@ fun QiblaCompass(s: AppState) {
     val h = rememberHeading(ctx, place.lat, place.lng, false)
     val head = if (h.deg.isNaN()) 0f else h.deg
     val diff = angleDiff(q, head)
-    val on = abs(diff) < 3 && !h.deg.isNaN()
+    var hold by remember { mutableStateOf(false) }
+    if (!h.deg.isNaN()) { if (abs(diff) < 3) hold = true else if (abs(diff) > 8) hold = false }
+    val on = hold
     Buzz(on, ctx)
     val green = Color(0xFF2E9E5B)
     val ink = MaterialTheme.colorScheme.onBackground
@@ -208,7 +210,9 @@ fun QiblaCamera(s: AppState) {
     val h = rememberHeading(act, place.lat, place.lng, true)
     val head = if (h.deg.isNaN()) 0f else h.deg
     val diff = angleDiff(q, head)
-    val on = abs(diff) < 4 && !h.deg.isNaN()
+    var locked by remember { mutableStateOf(false) }
+    if (!h.deg.isNaN()) { if (abs(diff) < 4) locked = true else if (abs(diff) > 25) locked = false }
+    val on = locked
     Buzz(on, act)
     val green = Color(0xFF2E9E5B)
     Box(Modifier.fillMaxSize().padding(top = 8.dp)) {
@@ -227,8 +231,16 @@ fun QiblaCamera(s: AppState) {
         Canvas(Modifier.fillMaxSize()) {
             val fov = 60f                                  // about the width a phone camera sees
             val cx = size.width / 2; val cy = size.height * .42f
+            if (on) {
+                // found: the Ka'bah held in the middle with a green frame, no more searching
+                val k = 34.dp.toPx()
+                drawRoundRect(green.copy(alpha = .25f), Offset(cx - k - 14.dp.toPx(), cy - k - 14.dp.toPx()), Size(2 * k + 28.dp.toPx(), 2 * k + 28.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(18.dp.toPx()))
+                drawRoundRect(green, Offset(cx - k - 14.dp.toPx(), cy - k - 14.dp.toPx()), Size(2 * k + 28.dp.toPx(), 2 * k + 28.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(18.dp.toPx()), style = Stroke(6.dp.toPx()))
+                kaaba(Offset(cx, cy), k)
+                return@Canvas
+            }
             // the aim in the middle
-            drawCircle(if (on) green else Color.White, 34.dp.toPx(), Offset(cx, cy), style = Stroke(3.dp.toPx()))
+            drawCircle(Color.White, 34.dp.toPx(), Offset(cx, cy), style = Stroke(3.dp.toPx()))
             drawLine(Color.White.copy(alpha = .8f), Offset(cx, cy - 50.dp.toPx()), Offset(cx, cy + 50.dp.toPx()), 1.5.dp.toPx())
             val x = cx + diff / fov * size.width
             if (abs(diff) < fov / 2 + 5) {
@@ -247,7 +259,8 @@ fun QiblaCamera(s: AppState) {
             horizontalAlignment = Alignment.CenterHorizontally) {
             Text(if (on) Tr["qiblaOn"] else (if (diff > 0) Tr["turnRight"] else Tr["turnLeft"]) + "  " + Tr.num("%.0f°".format(abs(diff))),
                 color = if (on) Color(0xFF7CE0A0) else Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Text(Tr["cameraHint"], color = Color.White.copy(alpha = .8f), fontSize = 13.sp, textAlign = TextAlign.Center)
+            if (on) TextButton(onClick = { locked = false }) { Text(Tr["searchAgain"], color = Color.White) }
+            else Text(Tr["cameraHint"], color = Color.White.copy(alpha = .8f), fontSize = 13.sp, textAlign = TextAlign.Center)
             if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) Text(Tr["accLow"], color = Color(0xFFFF8A80), fontSize = 13.sp, textAlign = TextAlign.Center)
         }
     }

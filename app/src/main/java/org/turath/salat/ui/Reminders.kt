@@ -54,6 +54,10 @@ fun RemindersScreen(s: AppState) {
                 SwitchRow(Tr.p(p), on, if (on) Tr.snd(pr.sound(p)) else Tr["off"]) { pr.setSound(p, if (it) (if (p == P.TAHAJJUD) Snd.CHORUS else Snd.NIGHTINGALE) else Snd.SILENT); s.changed() }
             }
         }
+        Card0 {
+            SwitchRow(Tr["azkarM"], pr.azkarMorning, Tr["azkarMNote"]) { pr.azkarMorning = it; s.changed() }
+            SwitchRow(Tr["azkarE"], pr.azkarEvening, Tr["azkarENote"]) { pr.azkarEvening = it; s.changed() }
+        }
         for (r in pr.reminders) Card0 {
             Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { edit = r }) {
                 Column(Modifier.weight(1f)) {
@@ -140,7 +144,7 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
             }
         }
     }
-    if (snd) SoundPicker(s, Tr["sound"], r.sound, SoundService.choices(s.act, false)) { v -> if (v != null) r = r.copy(sound = v); snd = false }
+    if (snd) SoundPicker(s, Tr["sound"], r.sound, SoundService.choices(s.act, SndUse.REMINDER)) { v -> if (v != null) r = r.copy(sound = v); snd = false }
 }
 
 @Composable

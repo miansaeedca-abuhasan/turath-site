@@ -34,7 +34,7 @@ def shot(name):
 apk = 'app/build/outputs/apk/debug/app-debug.apk'
 print(sh('install', '-r', '-g', apk).decode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6); shot('00_first_start')
-tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla']}
+tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ', 'مساجد'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة', 'المساجد'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla', 'Mosques']}
 menu = {'ur': 'مینو', 'ar': 'القائمة', 'en': 'Menu'}
 def tap_desc(t):
     sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
@@ -52,16 +52,15 @@ for lang in ['ur', 'ar', 'en']:
     sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(8)
     shot(f'{lang}_1_home')
-    for i, t in enumerate(tabs[lang][1:], 2):
+    for i, t in enumerate(tabs[lang][1:5], 2):
         if tap_text(t): shot(f'{lang}_{i}_{t}')
     cam = {'ur': 'کیمرہ', 'ar': 'الكاميرا', 'en': 'Camera'}[lang]
     if tap_text(cam): time.sleep(4); shot(f'{lang}_6_camera')
     tap_text(tabs[lang][0]); time.sleep(1)
     if tap_desc(menu[lang]): shot(f'{lang}_7_menu'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
-    mq = {'ur': 'قریبی مساجد', 'ar': 'المساجد القريبة', 'en': 'Mosques nearby'}[lang]
-    if from_menu(lang, mq): time.sleep(40); shot(f'{lang}_8_mosques'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
+    if tap_text(tabs[lang][5]): time.sleep(40); shot(f'{lang}_8_mosques')
     if lang == 'ur':
-        for name, item in [('settings', 'ترتیبات'), ('durood', 'درود کی یاد دہانی'), ('look', 'ایپ اور ویجٹ کی شکل'), ('fasting', 'روزہ، رمضان اور جمعہ')]:
+        for name, item in [('settings', 'ترتیبات'), ('durood', 'درود کی یاد دہانی'), ('look', 'ایپ اور ویجٹ کی شکل'), ('fasting', 'روزے، تکبیرات اور جمعہ')]:
             if from_menu(lang, item):
                 shot(f'ur_9_{name}'); sh('shell', 'input', 'swipe', '540', '1800', '540', '400', '400'); shot(f'ur_9_{name}_b')
                 sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
@@ -69,6 +68,9 @@ for lang in ['ur', 'ar', 'en']:
         tap_text('یاد دہانی'); time.sleep(1)
         if tap_desc('نئی یاد دہانی'): shot('ur_9_reminder_editor'); sh('shell', 'input', 'keyevent', '4')
         tap_text('اوقات'); time.sleep(1)
+        tap_text('کیلنڈر'); time.sleep(2)
+        if tap_desc('نیا واقعہ'): shot('ur_9_event_editor'); sh('shell', 'input', 'keyevent', '4')
+        sh('shell', 'input', 'tap', '540', '900'); shot('ur_9_day_sheet'); sh('shell', 'input', 'keyevent', '4')
 # a home-screen widget cannot be placed from adb; the widget is checked by its update code running without errors
 open('shots/logcat.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat.txt').read()[-3000:])

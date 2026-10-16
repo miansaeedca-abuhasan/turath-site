@@ -94,6 +94,9 @@ fun FastingPage(s: AppState, back: () -> Unit) {
         }
         SectionTitle(Tr["fasting"])
         Card0 {
+            SwitchRow(Tr["fAshura"], pr.ashura) { pr.ashura = it; s.changed() }
+            SwitchRow(Tr["fArafah"], pr.arafah) { pr.arafah = it; s.changed() }
+            HorizontalDivider()
             SwitchRow(Tr["monThu"], pr.monThu) { pr.monThu = it; s.changed() }
             HorizontalDivider()
             SwitchRow(Tr["beed"], pr.beed, Tr["beedNote"]) { pr.beed = it; s.changed() }
@@ -104,6 +107,12 @@ fun FastingPage(s: AppState, back: () -> Unit) {
             }
             Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
         }
+        SectionTitle(Tr["takbirat"])
+        Card0 {
+            SwitchRow(Tr["tkFitr"], pr.takbirFitr) { pr.takbirFitr = it; s.changed() }
+            SwitchRow(Tr["tkHijjah"], pr.takbirHijjah) { pr.takbirHijjah = it; s.changed() }
+            SwitchRow(Tr["tkTashreeq"], pr.takbirTashreeq) { pr.takbirTashreeq = it; s.changed() }
+        }
         SectionTitle(Tr["JUMUAH"])
         Card0 {
             SwitchRow(Tr["jumuahVib"], pr.jumuahVib) { v -> pr.jumuahVib = v; s.changed(); if (v && s.act.needDnd()) s.act.askDnd() }
@@ -111,7 +120,7 @@ fun FastingPage(s: AppState, back: () -> Unit) {
         }
         Spacer(Modifier.height(20.dp))
     }
-    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, false).filter { it != Snd.SILENT }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
+    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, SndUse.REMINDER).filter { it != Snd.NOTIFY }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
 }
 
 /** the salawat reminder on unlocking the phone: which recordings, how often, the user's own files */

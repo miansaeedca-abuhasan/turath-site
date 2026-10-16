@@ -85,7 +85,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 @Composable
 fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
-        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore))
+        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosque", Icons.Outlined.Mosque))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
         Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -109,7 +109,7 @@ fun Main(s: AppState) {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                     tabs.forEachIndexed { i, t ->
                         NavigationBarItem(selected = s.tab == i, onClick = { s.tab = i }, icon = { Icon(t.icon, Tr[t.key]) },
-                            label = { Text(Tr[t.key], fontSize = 11.sp, maxLines = 1) })
+                            label = { Text(Tr[t.key], fontSize = 10.sp, maxLines = 1, softWrap = false) })
                     }
                 }
             }
@@ -120,7 +120,11 @@ fun Main(s: AppState) {
                     1 -> TimesScreen(s)
                     2 -> RemindersScreen(s)
                     3 -> CalendarScreen(s)
-                    else -> QiblaScreen(s)
+                    4 -> QiblaScreen(s)
+                    else -> Column(Modifier.fillMaxSize().statusBarsPadding()) {
+                        Text(Tr["mosques"], Modifier.padding(start = 52.dp, top = 8.dp, bottom = 6.dp), fontSize = 26.sp, fontWeight = FontWeight.Bold)
+                        MosqueFinder(s)
+                    }
                 }
                 // the menu button (top corner, as in the other screens)
                 if (s.tab != 4) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {

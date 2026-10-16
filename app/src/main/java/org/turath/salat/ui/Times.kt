@@ -49,23 +49,30 @@ fun TimesScreen(s: AppState) {
                     Text(Tr.p(p), Modifier.weight(1f), fontSize = if (five) 19.sp else 15.sp,
                         color = when { zawal -> Color(0xFFB3261E); five -> MaterialTheme.colorScheme.onSurface; else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .7f) })
                     if (p in FIVE || p == P.ISHRAQ || p == P.CHASHT || p == P.TAHAJJUD) {
-                        if (five && s.prefs.vibrateMode) IconButton(onClick = { s.prefs.setVibrateFor(p, !s.prefs.vibrateFor(p)); s.changed() }) {
-                            Icon(if (s.prefs.vibrateFor(p)) Icons.Outlined.Vibration else Icons.Outlined.PhoneAndroid, null,
-                                tint = if (s.prefs.vibrateFor(p)) Gold else Color.Gray)
-                        }
+                        // three choices, as in Salatuk: the sound (tap again to choose which), a notification only, silent
                         val snd = s.prefs.sound(p)
-                        IconButton(onClick = { pick = p }) {
-                            Icon(when { snd == Snd.SILENT -> Icons.AutoMirrored.Outlined.VolumeOff; snd.bird -> Icons.Outlined.Park; else -> Icons.AutoMirrored.Outlined.VolumeUp },
-                                null, tint = if (snd == Snd.SILENT) Color.Gray else MaterialTheme.colorScheme.primary)
+                        val mode = when (snd) { Snd.SILENT -> 2; Snd.NOTIFY -> 1; else -> 0 }
+                        val on = MaterialTheme.colorScheme.primary; val off = MaterialTheme.colorScheme.onSurface.copy(alpha = .35f)
+                        IconButton(onClick = { if (mode == 0) pick = p else { s.prefs.setSound(p, s.prefs.lastSound(p)); s.changed() } }, Modifier.size(38.dp)) {
+                            Icon(if (snd.bird) Icons.Outlined.Park else Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = if (mode == 0) on else off)
                         }
-                    } else Spacer(Modifier.width(48.dp))
+                        IconButton(onClick = { s.prefs.setSound(p, Snd.NOTIFY); s.changed() }, Modifier.size(38.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (mode == 1) on else off) }
+                        IconButton(onClick = { s.prefs.setSound(p, Snd.SILENT); s.changed() }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (mode == 2) on else off) }
+                    } else Spacer(Modifier.width(114.dp))
                 }
                 if (p == P.ISHA || p == P.SUNRISE) HorizontalDivider(Modifier.padding(vertical = 4.dp))
+            }
+            // the middle of the night (from Maghrib to the next Fajr)
+            val nf = Schedule.day(s.prefs, place, date.plusDays(1))[P.FAJR]
+            val mid = t[P.MAGHRIB].plusSeconds(java.time.Duration.between(t[P.MAGHRIB], nf).seconds / 2)
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(s.fmt(mid), fontSize = 16.sp, modifier = Modifier.width(112.dp))
+                Text(Tr["midnight"], Modifier.weight(1f), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
             }
         }
         Text(Tr["hijriChange"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
     }
-    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, p == P.FAJR, p in FIVE), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
+    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, if (p in FIVE) SndUse.PRAYER else SndUse.NAFL, p == P.FAJR), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
 }
 
 /** choose a sound on a page of its own: a tap chooses it and plays it (at the volume the adhan will have) */
@@ -86,15 +93,15 @@ fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, fajr: Boo
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                     var group = ""
                     for (x in list) {
-                        val g = when { x.adhan -> "gAdhan"; x.short -> "gShort"; x.bird -> "gBirds"; else -> "gPhone" }
+                        val g = when (x.city) { "makkah" -> "gMakkah"; "madinah" -> "gMadinah"; "other" -> "gOther"; "birds" -> "gBirds"; else -> "gPhone" }
                         if (g != group) { group = g; Text(Tr[g], Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
                         Row(Modifier.fillMaxWidth().clickable {
                             sel = x
-                            if (x == Snd.SILENT || playing == x) { Preview.stop(); playing = null }
+                            if (x == Snd.SILENT || x == Snd.NOTIFY || playing == x) { Preview.stop(); playing = null }
                             else { Preview.play(ctx, x, fajr) { playing = null }; playing = x }
                         }.padding(horizontal = 8.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(selected = sel == x, onClick = null, modifier = Modifier.padding(12.dp))
-                            Text(Tr.snd(x), Modifier.weight(1f), fontSize = 16.sp)
+                            Text(Tr.sndShort(x), Modifier.weight(1f), fontSize = 16.sp)
                             if (playing == x) Icon(Icons.Outlined.GraphicEq, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 12.dp))
                         }
                     }
