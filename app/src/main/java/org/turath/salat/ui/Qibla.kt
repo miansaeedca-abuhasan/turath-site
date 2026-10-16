@@ -146,7 +146,7 @@ fun QiblaScreen(s: AppState) {
         text = {
             Column(Modifier.verticalScroll(rememberScrollState())) {
                 // the figure-8 poster: how to move the phone
-                androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(R.drawable.calib_poster), null, Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)))
+                androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.calib_poster), null, Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)))
                 Spacer(Modifier.height(10.dp))
                 Text(Tr["calibHow"])
             }
