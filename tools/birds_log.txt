@@ -1,7 +1,10 @@
-ok nightingale File:Luscinia megarhynchos - Common Nightingale XC416395.mp3 CC BY-SA 4.0
-ok blackbird File:Turdus merula - Common Blackbird XC561032.mp3 CC BY-SA 4.0
-ok robin File:Erithacus rubecula - European Robin XC124862.ogg CC BY-SA 3.0
-ok skylark File:Alauda arvensis - Eurasian Skylark XC482777.mp3 CC BY-SA 4.0
-ok dove File:Clamator glandarius, bedelroep, Hartbeesfontein, b.mp3 CC BY-SA 4.0
-ok wren File:Troglodytes troglodytes - Eurasian Wren XC425718.mp3 CC BY-SA 4.0
-ok chorus File:0426AM Dawn Chorus 07-May-2023.ogg CC BY-SA 4.0
+ok canary File:Serinus canaria forma domestica - audio 01 ies.ogg CC BY-SA 3.0
+ok canary2 File:Serinus serinus - European Serin XC483089.mp3 CC BY-SA 4.0
+ok goldfinch File:Eurasian Siskin (Carduelis spinus) (W1CDR0001494 BD4).ogg CC BY-SA 4.0
+ok thrush File:Song Thrush singing - near Basel.flac CC BY-SA 3.0
+ok blackcap File:DM550181 Sylvia atricapilla song 3 males Slovakia.ogg CC BY-SA 4.0
+ok bulbul File:Red-whiskered bulbul (Pycnonotus jocosus).wav CC BY-SA 4.0
+ok lark File:Woodlark (Lullula arborea) (W1CDR0001500 BD8).ogg CC BY-SA 4.0
+ok warbler File:Sedge Warbler (Acrocephalus schoenobaenus) (W1CDR0001431 BD22).ogg CC BY-SA 4.0
+ok finch File:DM550169 120m 00s 180m 00sDendrocoposMajorKix.ogg CC BY-SA 4.0
+ok oriole File:GoldenOriole OriolusOriolus song Slovakia OlympusDM550.ogg CC BY-SA 4.0

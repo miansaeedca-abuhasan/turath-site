@@ -54,5 +54,85 @@
   "author": "Alexander Wendt",
   "from_second": 3804,
   "seconds": 25
+ },
+ "canary": {
+  "title": "File:Serinus canaria forma domestica - audio 01 ies.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Serinus_canaria_forma_domestica_-_audio_01_ies.ogg",
+  "licence": "CC BY-SA 3.0",
+  "author": "Frank Vincentz",
+  "from_second": 177,
+  "seconds": 25
+ },
+ "canary2": {
+  "title": "File:Serinus serinus - European Serin XC483089.mp3",
+  "page": "https://commons.wikimedia.org/wiki/File:Serinus_serinus_-_European_Serin_XC483089.mp3",
+  "licence": "CC BY-SA 4.0",
+  "author": "Marie-Lan Taÿ Pamart",
+  "from_second": 29,
+  "seconds": 25
+ },
+ "goldfinch": {
+  "title": "File:Eurasian Siskin (Carduelis spinus) (W1CDR0001494 BD4).ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Eurasian_Siskin_(Carduelis_spinus)_(W1CDR0001494_BD4).ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "",
+  "from_second": 64,
+  "seconds": 25
+ },
+ "thrush": {
+  "title": "File:Song Thrush singing - near Basel.flac",
+  "page": "https://commons.wikimedia.org/wiki/File:Song_Thrush_singing_-_near_Basel.flac",
+  "licence": "CC BY-SA 3.0",
+  "author": "Amada44",
+  "from_second": 40,
+  "seconds": 25
+ },
+ "blackcap": {
+  "title": "File:DM550181 Sylvia atricapilla song 3 males Slovakia.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:DM550181_Sylvia_atricapilla_song_3_males_Slovakia.ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "SanoAK: Alexander Kürthy",
+  "from_second": 83,
+  "seconds": 25
+ },
+ "bulbul": {
+  "title": "File:Red-whiskered bulbul (Pycnonotus jocosus).wav",
+  "page": "https://commons.wikimedia.org/wiki/File:Red-whiskered_bulbul_(Pycnonotus_jocosus).wav",
+  "licence": "CC BY-SA 4.0",
+  "author": "Subhashish Panigrahi",
+  "from_second": 52,
+  "seconds": 25
+ },
+ "lark": {
+  "title": "File:Woodlark (Lullula arborea) (W1CDR0001500 BD8).ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Woodlark_(Lullula_arborea)_(W1CDR0001500_BD8).ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "",
+  "from_second": 1,
+  "seconds": 25
+ },
+ "warbler": {
+  "title": "File:Sedge Warbler (Acrocephalus schoenobaenus) (W1CDR0001431 BD22).ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:Sedge_Warbler_(Acrocephalus_schoenobaenus)_(W1CDR0001431_BD22).ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "",
+  "from_second": 60,
+  "seconds": 25
+ },
+ "finch": {
+  "title": "File:DM550169 120m 00s 180m 00sDendrocoposMajorKix.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:DM550169_120m_00s_180m_00sDendrocoposMajorKix.ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "Alexander Kürthy",
+  "from_second": 0,
+  "seconds": 20
+ },
+ "oriole": {
+  "title": "File:GoldenOriole OriolusOriolus song Slovakia OlympusDM550.ogg",
+  "page": "https://commons.wikimedia.org/wiki/File:GoldenOriole_OriolusOriolus_song_Slovakia_OlympusDM550.ogg",
+  "licence": "CC BY-SA 4.0",
+  "author": "SanoAK: Alexander Kürthy",
+  "from_second": 69,
+  "seconds": 25
  }
 }
