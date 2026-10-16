@@ -7,10 +7,12 @@ export async function onRequest({request}) {
   const bad = bb.length !== 4 || bb.some(x => !isFinite(x)) || bb[2] - bb[0] > 1.2 || bb[3] - bb[1] > 3.5;
   if (bad) return new Response(JSON.stringify({error: 'bb'}), {status: 400, headers: {'Content-Type': 'application/json'}});
   const box = bb.map(x => x.toFixed(2)).join(',');
-  const cache = caches.default, key = new Request('https://turathkhairalquroon.com/api/mosques?v=2&bb=' + box);
+  const cache = caches.default, key = new Request('https://turathkhairalquroon.com/api/mosques?v=3&bb=' + box);
   const hit = await cache.match(key);
   if (hit) return hit;
-  const q = '[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](' + box + ');out center tags;';
+  // mosques, musallas and Islamic centres (also mapped as a community centre, an office of the religion or only by name)
+  const q = '[out:json][timeout:60];(nwr["amenity"="place_of_worship"]["religion"="muslim"](' + box + ');nwr["religion"="muslim"]["amenity"](' + box + ');' +
+    'nwr["religion"="muslim"]["office"](' + box + ');nwr["building"="mosque"](' + box + ');nwr["name"~"islamic|masjid|mosque|musall|muslim",i]["amenity"](' + box + '););out center tags;';
   for (const ep of ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']) {
     try {
       const r = await fetch(ep, {method: 'POST', body: 'data=' + encodeURIComponent(q),
