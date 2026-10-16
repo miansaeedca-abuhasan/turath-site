@@ -1,0 +1,26 @@
+# quick check of the mosque sources from outside (site API and Overpass), result in tools/netcheck.txt
+name: netcheck
+on:
+  push:
+    branches: [salah-app]
+    paths: ['tools/netcheck_trigger.txt']
+permissions:
+  contents: write
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          Q='[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](43.10,-80.34,44.10,-78.96);out center tags;'
+          {
+          for i in 1 2; do
+            curl -s -o /tmp/a.json -w "site try$i: %{http_code} %{time_total}s " --max-time 90 "https://turathkhairalquroon.com/api/mosques?bb=43.10,-80.34,44.10,-78.96"; echo "elements~$(grep -o '"type"' /tmp/a.json | wc -l) $(head -c 200 /tmp/a.json)"
+          done
+          for u in https://overpass-api.de/api/interpreter https://overpass.private.coffee/api/interpreter https://overpass.kumi.systems/api/interpreter; do
+            curl -s -o /tmp/b.json -w "$u UA: %{http_code} %{time_total}s " -A "SalatKhairAlQuroon/1.0 (+https://turathkhairalquroon.com)" --max-time 90 --data-urlencode "data=$Q" $u; echo "elements~$(grep -o '"type"' /tmp/b.json | wc -l) $(head -c 150 /tmp/b.json)"
+          done
+          } > tools/netcheck.txt 2>&1
+          cat tools/netcheck.txt
+          git config user.name "check-bot"; git config user.email "check-bot@users.noreply.github.com"
+          git add tools/netcheck.txt && git commit -qm "netcheck result" && git push
