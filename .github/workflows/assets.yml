@@ -13,10 +13,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: sudo apt-get install -y -qq ffmpeg >/dev/null && pip install -q faster-whisper
-      - run: python3 tools/birds.py > tools/birds_log.txt 2>&1 || true
+      - run: python3 tools/transcribe.py > tools/transcribe_run.txt 2>&1 || true
       - name: commit
         if: always()
         run: |
           git config user.name "assets-bot"; git config user.email "assets-bot@users.noreply.github.com"
-          git add tools/birds_log.txt tools/birds_credits.json app/src/main/res/raw || true
+          git add tools/incoming_log.txt tools/transcribe_run.txt || true
           git commit -qm "birdsong and adhan phrase times" && git push
