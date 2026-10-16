@@ -11,7 +11,7 @@ export async function onRequest({request}) {
   const hit = await cache.match(key);
   if (hit) return hit;
   const q = '[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](' + box + ');out center tags;';
-  for (const ep of ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']) {
+  for (const ep of ['https://overpass.kumi.systems/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter']) {
     try {
       const r = await fetch(ep, {method: 'POST', body: 'data=' + encodeURIComponent(q),
         headers: {'Content-Type': 'application/x-www-form-urlencoded', 'User-Agent': 'SalatKhairAlQuroon/1.0 (+https://turathkhairalquroon.com; mosque finder)', 'Accept': 'application/json'}});
