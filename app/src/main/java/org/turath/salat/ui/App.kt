@@ -84,7 +84,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 
 @Composable
 fun Main(s: AppState) {
-    val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.AutoMirrored.Outlined.List),
+    val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
         NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
