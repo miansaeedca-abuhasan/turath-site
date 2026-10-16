@@ -61,8 +61,8 @@ object Events {
                 if (pr.after(p) > 0) out += Ev(t[p].plusMinutes(pr.after(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.after(p)) + " " + Tr["min"] + " " + Tr["after"] + " " + Tr.p(p))
             }
             // the user's own reminders
-            for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1)
-                out += Ev(t[r.base].plusMinutes(r.minutes.toLong()), "custom", r.base, r.sound, r.label, r.id)
+            for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1) for (b in r.bases)
+                out += Ev(t[b].plusMinutes(r.minutes.toLong()), "custom", b, r.sound, r.label.ifEmpty { Tr.num(kotlin.math.abs(r.minutes)) + " " + Tr["min"] + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + Tr.p(b) }, r.id)
             // the widget shows the next prayer: refresh at each prayer and at midnight
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")
@@ -136,7 +136,9 @@ object Alarms {
                     "suhoor" -> if (place != null) Tr["suhoorEnds"] + " " + fmt(pr, Schedule.day(pr, place, e.at.toLocalDate().let { if (e.at.hour >= 12) it.plusDays(1) else it })[P.FAJR]) else ""
                     else -> place?.name ?: ""
                 }
-                if (playSound) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", e.p == P.FAJR && e.kind == "prayer")
+                // the phone on silent / vibrate: only a notification, unless the adhan is wanted then too (suhoor alarm always rings)
+                val quiet = Audio.silentNow(ctx) && e.kind != "suhoor" && !pr.adhanInSilent
+                if (playSound && !quiet) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", e.p == P.FAJR && e.kind == "prayer")
                 else {
                     val ch = if (e.snd == Snd.NOTIFY) CH_REM else CH_ADHAN
                     nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat)
@@ -173,6 +175,39 @@ object Alarms {
             when (Tr.lang) { "ur" -> if (h < 12) "صبح" else "شام"; "ar" -> if (h < 12) "ص" else "م"; else -> if (h < 12) "am" else "pm" })
         return Tr.num(s)
     }
+}
+
+/** which phone volume the sounds follow (the user's choice: media, ring or alarm volume) */
+object Audio {
+    fun usage(pr: Prefs) = when (pr.volStream) { "ring" -> AudioAttributes.USAGE_NOTIFICATION_RINGTONE; "alarm" -> AudioAttributes.USAGE_ALARM; else -> AudioAttributes.USAGE_MEDIA }
+    fun stream(pr: Prefs) = when (pr.volStream) { "ring" -> AudioManager.STREAM_RING; "alarm" -> AudioManager.STREAM_ALARM; else -> AudioManager.STREAM_MUSIC }
+    /** `alarm`: the suhoor alarm, or the adhan wanted on a silent phone — at the alarm volume */
+    fun attrs(ctx: Context, alarm: Boolean = false): AudioAttributes = AudioAttributes.Builder()
+        .setUsage(if (alarm) AudioAttributes.USAGE_ALARM else usage(Prefs(ctx))).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+    fun silentNow(ctx: Context) = ctx.getSystemService(AudioManager::class.java).ringerMode != AudioManager.RINGER_MODE_NORMAL
+}
+
+/** a sound heard in the app before choosing it (at the volume the adhan will have) */
+object Preview {
+    private var mp: MediaPlayer? = null
+    var playing: Snd? = null; private set
+    fun play(ctx: Context, s: Snd, fajr: Boolean = false, done: () -> Unit = {}) {
+        stop()
+        val u = SoundService.uri(ctx, s, fajr) ?: return
+        playing = s
+        mp = runCatching {
+            MediaPlayer().apply {
+                setAudioAttributes(Audio.attrs(ctx)); setDataSource(ctx, u)
+                setOnCompletionListener { stop(); done() }
+                prepare(); start()
+            }
+        }.getOrNull()
+    }
+    fun playUri(ctx: Context, u: Uri) {
+        stop()
+        mp = runCatching { MediaPlayer().apply { setAudioAttributes(Audio.attrs(ctx)); setDataSource(ctx, u); setOnCompletionListener { stop() }; prepare(); start() } }.getOrNull()
+    }
+    fun stop() { runCatching { mp?.stop() }; mp?.release(); mp = null; playing = null }
 }
 
 /** the phone on vibrate at prayer time, back to ringing afterwards (only if the app put it on vibrate) */
@@ -282,7 +317,7 @@ class SoundService : Service() {
         until = System.currentTimeMillis() + when { alarm -> 180_000L; own == 0 -> 40_000L; else -> 600_000L }
         try {
             mp = MediaPlayer().apply {
-                setAudioAttributes(AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build())
+                setAudioAttributes(Audio.attrs(this@SoundService, alarm || Audio.silentNow(this@SoundService)))
                 setDataSource(this@SoundService, u)
                 isLooping = alarm || own == 0
                 setOnCompletionListener { stopSelf() }

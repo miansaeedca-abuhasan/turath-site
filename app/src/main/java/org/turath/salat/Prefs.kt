@@ -38,15 +38,20 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
 
 /** a reminder like «35 min before Fajr on Tuesday and Wednesday» */
 data class Reminder(
-    val id: Long, val label: String, val base: P, val minutes: Int, /* negative = before */
+    val id: Long, val label: String, val bases: List<P>, val minutes: Int, /* negative = before */
     val days: Int /* bit 0 = Monday … bit 6 = Sunday */, val sound: Snd, val on: Boolean
 ) {
-    fun json() = JSONObject().put("id", id).put("label", label).put("base", base.name).put("min", minutes)
-        .put("days", days).put("snd", sound.name).put("on", on)
+    val base get() = bases.firstOrNull() ?: P.FAJR
+    fun json() = JSONObject().put("id", id).put("label", label).put("base", base.name).put("bases", JSONArray().apply { bases.forEach { put(it.name) } })
+        .put("min", minutes).put("days", days).put("snd", sound.name).put("on", on)
 
     companion object {
-        fun from(o: JSONObject) = Reminder(o.getLong("id"), o.optString("label"), P.valueOf(o.getString("base")),
-            o.getInt("min"), o.getInt("days"), runCatching { Snd.valueOf(o.getString("snd")) }.getOrDefault(Snd.NOTIFY), o.getBoolean("on"))
+        fun from(o: JSONObject): Reminder {
+            val b = o.optJSONArray("bases")?.let { a -> (0 until a.length()).mapNotNull { runCatching { P.valueOf(a.getString(it)) }.getOrNull() } }
+                ?: listOf(P.valueOf(o.getString("base")))
+            return Reminder(o.getLong("id"), o.optString("label"), b, o.getInt("min"), o.getInt("days"),
+                runCatching { Snd.valueOf(o.getString("snd")) }.getOrDefault(Snd.NOTIFY), o.getBoolean("on"))
+        }
     }
 }
 
@@ -71,6 +76,19 @@ class Prefs(ctx: Context) {
     var hijriAdjust: Int get() = sp.getInt("hadj", 0); set(v) = sp.edit().putInt("hadj", v).apply()
     /** the first day of the week in the calendar (1 = Monday … 6 = Saturday, 7 = Sunday) */
     var weekStart: Int get() = sp.getInt("wstart", 1); set(v) = sp.edit().putInt("wstart", v).apply()
+    /** which phone volume the adhan and the other sounds follow: "media", "ring" or "alarm" */
+    var volStream: String get() = sp.getString("vol", "media") ?: "media"; set(v) = sp.edit().putString("vol", v).apply()
+    /** the adhan also when the phone is on silent / vibrate (then at the alarm volume) */
+    var adhanInSilent: Boolean get() = sp.getBoolean("adhanSilent", false); set(v) = sp.edit().putBoolean("adhanSilent", v).apply()
+    /** "time" (light by day, dark from Maghrib to sunrise), "dark", "light" or "phone" (as the phone) */
+    var theme: String get() = sp.getString("theme", "time") ?: "time"; set(v) = sp.edit().putString("theme", v).apply()
+    /** widgets: transparency of the background in percent (0 = solid, 100 = none), light or dark */
+    var widgetAlpha: Int get() = sp.getInt("wAlpha", 20); set(v) = sp.edit().putInt("wAlpha", v.coerceIn(0, 100)).apply()
+    var widgetLight: Boolean get() = sp.getBoolean("wLight", false); set(v) = sp.edit().putBoolean("wLight", v).apply()
+    /** the user's own durood recordings (content URIs from the phone) */
+    var duroodFiles: List<String>
+        get() = sp.getString("duroodFiles", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { a.getString(it) } } ?: emptyList()
+        set(v) = sp.edit().putString("duroodFiles", JSONArray().apply { v.forEach { put(it) } }.toString()).apply()
     var h24: Boolean get() = sp.getBoolean("h24", false); set(v) = sp.edit().putBoolean("h24", v).apply()
 
     fun adjust(p: P): Int = sp.getInt("adj_" + p.name, 0)
@@ -140,8 +158,8 @@ class Prefs(ctx: Context) {
         set(v) = sp.edit().putString("rem", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
     private fun defaultReminders() = listOf(
-        Reminder(1, "تہجد", P.FAJR, -60, 127, Snd.CHORUS, false),
-        Reminder(2, "جمعہ کی تیاری", P.DHUHR, -45, 1 shl 4, Snd.NOTIFY, false),
+        Reminder(1, "تہجد", listOf(P.FAJR), -60, 127, Snd.CHORUS, false),
+        Reminder(2, "جمعہ کی تیاری", listOf(P.DHUHR), -45, 1 shl 4, Snd.NOTIFY, false),
     )
 
     /** other cities shown with their times (Makkah, Madinah, al-Quds first) */

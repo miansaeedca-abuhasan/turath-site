@@ -54,11 +54,6 @@ private fun Perm(label: String, need: Boolean, ask: () -> Unit) {
 @Composable
 fun SettingsScreen(s: AppState, back: () -> Unit) {
     val pr = s.prefs; val act = s.act
-    BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else back() }
-    when (s.sub) {
-        "city" -> { CityPicker(s, false) { s.sub = "" }; return }
-        "world" -> { CityPicker(s, true) { s.sub = "" }; return }
-    }
     var tick by remember { mutableIntStateOf(0) }       // redraw after returning from a system permission screen
     LaunchedEffect(Unit) { act.onPermResult = { tick++ } }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
@@ -71,20 +66,15 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 if (!act.needNotifications() && !act.needExact() && !act.needBattery()) Text("✓", color = Color(0xFF2E9E5B))
             }
         }
-        SectionTitle(Tr["language"])
-        Card0 { Row { for ((k, n) in LANGS) FilterChip(pr.lang == k, { pr.lang = k; Tr.lang = k; Alarms.channels(act); s.changed() }, { Text(n) }, Modifier.padding(end = 8.dp)) } }
-
-        SectionTitle(Tr["location"])
+        SectionTitle(Tr["soundSet"])
         Card0 {
-            val p = pr.place
-            Text((p?.name ?: "") + "، " + Cities.countryName(p?.country ?: "", Tr.lang), fontSize = 17.sp, fontWeight = FontWeight.Bold)
-            Text(Tr.num("%.4f, %.4f  ·  %s".format(p?.lat ?: 0.0, p?.lng ?: 0.0, p?.tz ?: "")), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
-            Row {
-                TextButton(onClick = { s.sub = "city" }) { Text(Tr["changeCity"]) }
-                TextButton(onClick = { gps(s) }) { Icon(Icons.Outlined.MyLocation, null); Text(" " + Tr["useGps"]) }
-            }
+            Text(Tr["volSource"], fontSize = 14.sp)
+            Choice(Tr["volMedia"], pr.volStream == "media") { pr.volStream = "media"; s.changed() }
+            Choice(Tr["volRing"], pr.volStream == "ring") { pr.volStream = "ring"; s.changed() }
+            Choice(Tr["volAlarm"], pr.volStream == "alarm") { pr.volStream = "alarm"; s.changed() }
+            HorizontalDivider()
+            SwitchRow(Tr["adhanSilent"], pr.adhanInSilent, Tr["adhanSilentNote"]) { pr.adhanInSilent = it; s.changed() }
         }
-
         SectionTitle(Tr["school"])
         Card0 {
             Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
@@ -132,23 +122,6 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 for (v in listOf(1, 6, 7)) FilterChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
             }
         }
-        SectionTitle(Tr["world"])
-        Card0 {
-            for (c in pr.worldCities) Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(c.name, Modifier.weight(1f))
-                IconButton(onClick = { pr.worldCities = pr.worldCities.filter { it != c }; s.changed() }) { Icon(Icons.Outlined.Close, Tr["delete"]) }
-            }
-            TextButton(onClick = { s.sub = "world" }) { Icon(Icons.Outlined.Add, null); Text(" " + Tr["addCity"]) }
-        }
-        SectionTitle(Tr["credits"])
-        Card0 {
-            Text("• GeoNames (geonames.org) — CC BY 4.0: cities, coordinates, time zones.\n" +
-                "• Prayer-time formulas: PrayTimes.org method (sun declination and equation of time).\n" +
-                "• Hijri calendar: Umm al-Qura (Java HijrahDate).\n" +
-                "• Adhan recordings: Shaikh Ali Ahmad Mulla, Shaikh Hamad al-Daghriri (Masjid al-Haram), Shaikh Essam Bukhari (Masjid an-Nabawi), Shaikh Abdul Basit Abdus Samad, Shaikh Saleh al-Nabet, Shaikh Nur ad-Din Hamza al-Maghribi — from the collection of Turath Khair al-Quroon.\n" +
-                "• Birdsong (Wikimedia Commons / xeno-canto, shortened): Nightingale — Phoenicurus ochruros (XC416395), Blackbird — Olivier Grimm (XC561032), Skylark — Pascal Christe (XC482777), Wren — Borja (XC425718), Dawn chorus — Alexander Wendt: CC BY-SA 4.0; Robin — Dan Stowell (XC124862): CC BY-SA 3.0; Morning birds — BigSoundBank: CC0.",
-                fontSize = 12.sp)
-        }
         Spacer(Modifier.height(30.dp))
     }
 }
@@ -164,7 +137,7 @@ fun gps(s: AppState) {
         Thread {
             val c = Cities.nearest(act, l.latitude, l.longitude) ?: return@Thread
             act.runOnUiThread {
-                s.prefs.place = Place(c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.changed()
+                s.prefs.place = Place(c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.page = ""; s.changed()
             }
         }.start()
     }

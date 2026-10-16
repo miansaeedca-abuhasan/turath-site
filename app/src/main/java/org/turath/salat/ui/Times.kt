@@ -30,6 +30,7 @@ fun TimesScreen(s: AppState) {
     val t = Schedule.day(s.prefs, place, date)
     val loc = Locale(Tr.lang)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding()) {
+        Spacer(Modifier.height(44.dp))
         Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { offset-- }) { Icon(Icons.Outlined.ChevronLeft, null) }
             Column(Modifier.weight(1f).clickable { offset = 0 }, horizontalAlignment = Alignment.CenterHorizontally) {
@@ -67,27 +68,39 @@ fun TimesScreen(s: AppState) {
     pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, p == P.FAJR, p in FIVE), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
 }
 
-/** choose a sound (each can be heard first) */
+/** choose a sound on a page of its own: a tap chooses it and plays it (at the volume the adhan will have) */
 @Composable
 fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, fajr: Boolean = false, done: (Snd?) -> Unit) {
     var sel by remember { mutableStateOf(cur) }
-    var playing by remember { mutableStateOf(false) }
+    var playing by remember { mutableStateOf<Snd?>(null) }
     val ctx = s.act
-    DisposableEffect(Unit) { onDispose { ctx.stopService(android.content.Intent(ctx, SoundService::class.java)) } }
-    AlertDialog(onDismissRequest = { done(null) }, title = { Text(title) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                for (x in list) Row(Modifier.fillMaxWidth().clickable { sel = x }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(selected = sel == x, onClick = { sel = x })
-                    Text(Tr.snd(x), Modifier.weight(1f))
-                    if (x != Snd.SILENT) IconButton(onClick = {
-                        if (playing) ctx.stopService(android.content.Intent(ctx, SoundService::class.java))
-                        else SoundService.start(ctx, x, Tr.snd(x), "", false, fajr)
-                        playing = !playing
-                    }) { Icon(Icons.Outlined.PlayCircle, Tr["test"]) }
+    DisposableEffect(Unit) { onDispose { Preview.stop() } }
+    androidx.compose.ui.window.Dialog(onDismissRequest = { done(null) }, properties = androidx.compose.ui.window.DialogProperties(usePlatformDefaultWidth = false)) {
+        Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+            Column(Modifier.fillMaxSize()) {
+                Row(Modifier.fillMaxWidth().statusBarsPadding().padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { done(null) }) { Icon(Icons.Outlined.Close, Tr["cancel"]) }
+                    Text(title, Modifier.weight(1f), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                    TextButton(onClick = { done(sel) }) { Text(Tr["save"], fontSize = 17.sp) }
+                }
+                Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                    var group = ""
+                    for (x in list) {
+                        val g = when { x.adhan -> "gAdhan"; x.short -> "gShort"; x.bird -> "gBirds"; else -> "gPhone" }
+                        if (g != group) { group = g; Text(Tr[g], Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                        Row(Modifier.fillMaxWidth().clickable {
+                            sel = x
+                            if (x == Snd.SILENT || playing == x) { Preview.stop(); playing = null }
+                            else { Preview.play(ctx, x, fajr) { playing = null }; playing = x }
+                        }.padding(horizontal = 8.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                            RadioButton(selected = sel == x, onClick = null, modifier = Modifier.padding(12.dp))
+                            Text(Tr.snd(x), Modifier.weight(1f), fontSize = 16.sp)
+                            if (playing == x) Icon(Icons.Outlined.GraphicEq, null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(end = 12.dp))
+                        }
+                    }
+                    Text(Tr["volNote"], Modifier.padding(20.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
                 }
             }
-        },
-        confirmButton = { TextButton(onClick = { done(sel) }) { Text(Tr["save"]) } },
-        dismissButton = { TextButton(onClick = { done(null) }) { Text(Tr["cancel"]) } })
+        }
+    }
 }

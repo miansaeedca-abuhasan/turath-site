@@ -42,6 +42,10 @@ fun MosqueFinder(s: AppState) {
         if (list == null) err = true
     }
     Column(Modifier.fillMaxSize()) {
+        // Google Maps (its own search of mosques around; the filter below does not apply there)
+        OutlinedButton(onClick = {
+            runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${place.lat},${place.lng}?q=" + Uri.encode("mosque")))) }
+        }, Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp)) { Icon(Icons.Outlined.Map, null); Text("  " + Tr["gmapsNearby"]) }
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(Tr["radius"] + ": ", fontSize = 14.sp)
             for (k in listOf(3, 5, 10, 15, 25, 50)) {
@@ -72,8 +76,8 @@ fun MosqueFinder(s: AppState) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                     Text(Tr.num("%.1f".format(m.km)) + " " + Tr["km"], fontWeight = FontWeight.Bold)
                                     IconButton(onClick = {
-                                        runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("geo:${m.lat},${m.lng}?q=${m.lat},${m.lng}(${Uri.encode(m.name)})"))) }
-                                    }) { Icon(Icons.Outlined.Map, Tr["openMap"]) }
+                                        runCatching { ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/dir/?api=1&destination=${m.lat},${m.lng}"))) }
+                                    }) { Icon(Icons.Outlined.Directions, Tr["openMap"]) }
                                 }
                             },
                             modifier = Modifier.combinedClickable(

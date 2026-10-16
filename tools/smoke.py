@@ -31,7 +31,17 @@ def shot(name):
 apk = 'app/build/outputs/apk/debug/app-debug.apk'
 print(sh('install', '-r', '-g', apk).decode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6); shot('00_first_start')
-tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ و مساجد'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة والمساجد'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla']}
+tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla']}
+menu = {'ur': 'مینو', 'ar': 'القائمة', 'en': 'Menu'}
+def tap_desc(t):
+    sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
+    m = re.search(r'content-desc="' + re.escape(t) + r'"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', x)
+    if not m: print('no desc', t); return False
+    a, b, c, d = map(int, m.groups()); sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); return True
+def from_menu(lang, item):
+    tap_text(tabs[lang][0]); time.sleep(2)
+    if tap_desc(menu[lang]): time.sleep(2); return tap_text(item)
+    return False
 place = json.dumps({"n": "Mississauga", "c": "CA", "lat": 43.589, "lng": -79.644, "tz": "America/Toronto"}).replace('"', '&quot;')
 for lang in ['ur', 'ar', 'en']:
     sh('shell', 'am', 'force-stop', 'org.turath.salat')
@@ -39,19 +49,23 @@ for lang in ['ur', 'ar', 'en']:
     sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(8)
     shot(f'{lang}_1_home')
-    sh('shell', 'input', 'swipe', '540', '1800', '540', '500', '400'); shot(f'{lang}_1b_home_scrolled')
     for i, t in enumerate(tabs[lang][1:], 2):
         if tap_text(t): shot(f'{lang}_{i}_{t}')
+    cam = {'ur': 'کیمرہ', 'ar': 'الكاميرا', 'en': 'Camera'}[lang]
+    if tap_text(cam): time.sleep(4); shot(f'{lang}_6_camera')
+    tap_text(tabs[lang][0]); time.sleep(1)
+    if tap_desc(menu[lang]): shot(f'{lang}_7_menu'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
     mq = {'ur': 'قریبی مساجد', 'ar': 'المساجد القريبة', 'en': 'Mosques nearby'}[lang]
-    if tap_text(mq): time.sleep(45); shot(f'{lang}_7_mosques')
+    if from_menu(lang, mq): time.sleep(40); shot(f'{lang}_8_mosques'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
     if lang == 'ur':
-        tap_text(tabs[lang][0]); time.sleep(2)
-        sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
-        m = re.search(r'content-desc="ترتیبات"[^>]*bounds="\[(\d+),(\d+)\]\[(\d+),(\d+)\]"', x)
-        if m:
-            a, b, c, d = map(int, m.groups()); sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); shot('ur_6_settings')
-            sh('shell', 'input', 'swipe', '540', '1800', '540', '400', '400'); shot('ur_6b_settings')
-            sh('shell', 'input', 'keyevent', '4')
+        for name, item in [('settings', 'ترتیبات'), ('durood', 'درود کی یاد دہانی'), ('look', 'ایپ اور ویجٹ کی شکل'), ('fasting', 'روزہ، رمضان اور جمعہ')]:
+            if from_menu(lang, item):
+                shot(f'ur_9_{name}'); sh('shell', 'input', 'swipe', '540', '1800', '540', '400', '400'); shot(f'ur_9_{name}_b')
+                sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
+        if from_menu(lang, 'آواز کا والیم'): shot('ur_9_volume'); sh('shell', 'input', 'keyevent', '4')
+        tap_text('یاد دہانی'); time.sleep(1)
+        if tap_desc('نئی یاد دہانی'): shot('ur_9_reminder_editor'); sh('shell', 'input', 'keyevent', '4')
+        tap_text('اوقات'); time.sleep(1)
 # a home-screen widget cannot be placed from adb; the widget is checked by its update code running without errors
 open('shots/logcat.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat.txt').read()[-3000:])

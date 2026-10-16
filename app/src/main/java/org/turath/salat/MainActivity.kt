@@ -27,6 +27,7 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         Thread { Alarms.schedule(this) }.start()
+        volumeControlStream = Audio.stream(Prefs(this))
         Durood.start(this)
     }
 

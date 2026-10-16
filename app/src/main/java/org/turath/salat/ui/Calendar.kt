@@ -50,6 +50,7 @@ fun CalendarScreen(s: AppState) {
     val ws = s.prefs.weekStart
     val lead = (first.dayOfWeek.value - ws + 7) % 7      // the week from the chosen first day
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding().padding(8.dp)) {
+        Spacer(Modifier.height(40.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { ym-- }) { Icon(Icons.Outlined.ChevronLeft, null) }
             Column(Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
