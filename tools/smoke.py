@@ -5,13 +5,16 @@ os.makedirs('shots', exist_ok=True)
 # can the map servers be reached from here, and how fast (for the mosque finder)
 q = '[out:json][timeout:60];nwr["amenity"="place_of_worship"]["religion"="muslim"](43.139,-80.264,44.039,-79.024);out center tags;'
 with open('shots/overpass.txt', 'w') as o:
-    for u in ['https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']:
-        r = subprocess.run(['curl', '-s', '-o', '/tmp/op.json', '-w', '%{http_code} %{time_total}', '--max-time', '70', '--data-urlencode', 'data=' + q, u], capture_output=True, text=True)
+    for u in ['https://maps.mail.ru/osm/tools/overpass/api/interpreter', 'https://overpass-api.de/api/interpreter', 'https://overpass.private.coffee/api/interpreter', 'https://overpass.kumi.systems/api/interpreter']:
+        r = subprocess.run(['curl', '-s', '-A', 'SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)', '-o', '/tmp/op.json', '-w', '%{http_code} %{time_total}', '--max-time', '70', '--data-urlencode', 'data=' + q, u], capture_output=True, text=True)
         n = open('/tmp/op.json').read().count('"type"') if os.path.exists('/tmp/op.json') else 0
         o.write(f'{u} {r.stdout} elements~{n}\n')
     r = subprocess.run(['curl', '-s', '-A', 'SalatKhairAlQuroon/1.0 (turathkhairalquroon@gmail.com)', '-o', '/tmp/nm.json', '-w', '%{http_code} %{time_total}', '--max-time', '40',
         'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=50&bounded=1&extratags=1&q=mosque&viewbox=-80.264,44.039,-79.024,43.139'], capture_output=True, text=True)
     o.write(f'nominatim {r.stdout} results~{open("/tmp/nm.json").read().count("osm_id") if os.path.exists("/tmp/nm.json") else 0}\n')
+    r = subprocess.run(['curl', '-s', '-A', 'SalatKhairAlQuroon/1.0', '-o', '/tmp/ph.json', '-w', '%{http_code} %{time_total}', '--max-time', '40',
+        'https://photon.komoot.io/api/?limit=50&osm_tag=amenity:place_of_worship&q=mosque&lat=43.589&lon=-79.644'], capture_output=True, text=True)
+    o.write(f'photon {r.stdout} results~{open("/tmp/ph.json").read().count("osm_id") if os.path.exists("/tmp/ph.json") else 0}\n')
 print(open('shots/overpass.txt').read())
 def sh(*a, inp=None):
     return subprocess.run(['adb', *a], input=inp, capture_output=True).stdout

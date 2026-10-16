@@ -48,7 +48,7 @@ object Mosques {
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
             }.getOrDefault("")
-            if (!s.contains("\"elements\"")) for (u in listOf("https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://overpass-api.de/api/interpreter")) {
+            if (!s.contains("\"elements\"")) for (u in listOf("https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter")) {
                 s = runCatching {
                     val c = URL(u).openConnection() as HttpURLConnection
                     c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 10_000; c.readTimeout = 40_000
@@ -59,6 +59,7 @@ object Mosques {
                 if (s.contains("\"elements\"")) break
             }
             // the map servers busy: OpenStreetMap's own search (Nominatim) for mosques in the same box
+            if (!s.contains("\"elements\"")) s = photon(lat, lng)
             if (!s.contains("\"elements\"")) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
             pr.sp.edit().putString(key, s).putLong(key + "_t", System.currentTimeMillis()).apply()
@@ -86,6 +87,36 @@ object Mosques {
             out += M(id, name, la, lo, Cities.dist(lat, lng, la, lo), addr)
         }
         return out.filter { it.km <= km + 0.5 }.sortedBy { it.km }
+    }
+
+    /** mosques from Photon (komoot, OpenStreetMap data) around a point, in the shape of an Overpass answer */
+    private fun photon(lat: Double, lng: Double): String {
+        val els = JSONArray(); val seen = HashSet<String>()
+        for (q in listOf("mosque", "masjid", "islamic center", "musalla")) {
+            val txt = runCatching {
+                val u = "https://photon.komoot.io/api/?limit=50&osm_tag=amenity:place_of_worship&q=" + URLEncoder.encode(q, "UTF-8") + "&lat=%.5f&lon=%.5f".format(Locale.US, lat, lng)
+                val c = URL(u).openConnection() as HttpURLConnection
+                c.connectTimeout = 10_000; c.readTimeout = 25_000
+                c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (turathkhairalquroon@gmail.com)")
+                if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
+            }.getOrDefault("")
+            if (!txt.startsWith("{")) continue
+            val fs = JSONObject(txt).optJSONArray("features") ?: continue
+            for (i in 0 until fs.length()) {
+                val f = fs.getJSONObject(i); val pp = f.optJSONObject("properties") ?: continue
+                val co = f.optJSONObject("geometry")?.optJSONArray("coordinates") ?: continue
+                val id = pp.optString("osm_type").let { when (it) { "N" -> "node"; "W" -> "way"; "R" -> "relation"; else -> it } } + "/" + pp.optLong("osm_id")
+                if (!seen.add(id)) continue
+                val name = pp.optString("name")
+                // a church, temple … found by the word: only names that look like a mosque or an Islamic centre
+                if (!Regex("mosque|masjid|masjed|musall|islam|muslim|jami|مسجد|جامع|مصلى", RegexOption.IGNORE_CASE).containsMatchIn(name)) continue
+                val tags = JSONObject().put("name", name)
+                listOf("housenumber" to "addr:housenumber", "street" to "addr:street", "city" to "addr:city", "state" to "addr:state", "postcode" to "addr:postcode")
+                    .forEach { (a, b) -> pp.optString(a).takeIf { it.isNotEmpty() }?.let { tags.put(b, it) } }
+                els.put(JSONObject().put("type", id.substringBefore('/')).put("id", pp.optLong("osm_id")).put("lat", co.getDouble(1)).put("lon", co.getDouble(0)).put("tags", tags))
+            }
+        }
+        return if (els.length() > 0) JSONObject().put("elements", els).toString() else ""
     }
 
     /** mosques from Nominatim, given back in the shape of an Overpass answer */
