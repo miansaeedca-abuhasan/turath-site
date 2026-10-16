@@ -77,12 +77,17 @@ fun App(act: MainActivity) {
         CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
             androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(baseDensity.density, baseDensity.fontScale * s.prefs.appFont / 100f)) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
+              // the app's logo, faint, behind every screen
+              Box(Modifier.fillMaxSize()) {
+                androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null,
+                    Modifier.align(Alignment.Center).fillMaxWidth(0.85f), alpha = if (dark) 0.07f else 0.09f)
                 key(Tr.lang) {
                     // read here so that a change of settings draws the screens again, keeping where the user is (scroll, open page)
                     @Suppress("UNUSED_VARIABLE") val v = s.version
                     CrashReport(s)
                     if (s.prefs.place == null || s.prefs.lang.isEmpty()) Onboard(s) else Main(s)
                 }
+              }
             }
         }
     }
@@ -145,7 +150,7 @@ fun Main(s: AppState) {
         }
     }) {
         Scaffold(
-            containerColor = MaterialTheme.colorScheme.background,
+            containerColor = Color.Transparent,
             bottomBar = {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
                     tabs.forEachIndexed { i, t ->

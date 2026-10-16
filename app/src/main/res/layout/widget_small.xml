@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/root" android:layout_width="match_parent" android:layout_height="match_parent" android:layoutDirection="locale">
     <ImageView android:id="@+id/bg" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wbg_dark" android:scaleType="fitXY" />
+    <ImageView android:id="@+id/wm" android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/logo" android:scaleType="centerInside" android:padding="6dp" android:alpha="0.13" />
     <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical" android:padding="12dp" android:gravity="center_vertical">
         <TextView android:id="@+id/gear" android:layout_width="0dp" android:layout_height="0dp" android:visibility="gone" />
         <TextView android:id="@+id/city" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#E0B54A" android:textSize="12sp" android:maxLines="1" android:layout_marginBottom="2dp" android:text="Makkah" />
