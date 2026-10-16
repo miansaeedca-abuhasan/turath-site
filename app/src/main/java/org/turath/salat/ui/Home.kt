@@ -4,6 +4,7 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -37,6 +38,7 @@ import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreen(s: AppState) {
     val place = s.prefs.place ?: return
@@ -47,7 +49,12 @@ fun HomeScreen(s: AppState) {
     val cd = Countdown(now, st, today)
     val loc = Locale(Tr.lang)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
-        Spacer(Modifier.height(48.dp))
+        // a moving line between the menu and the globe: nafl times, adhkar, Friday, today's special day, the user's events
+        val line = remember(now.toLocalDate(), now.hour < 12, s.version) { Widget.ticker(s.prefs, place, now, today) }
+        Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
+            Text(line, Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE, velocity = 40.dp), maxLines = 1,
+                fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+        }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { s.page = "city"; s.sub = "city" }) {
             Icon(if (s.prefs.placeByGps) Icons.Outlined.MyLocation else Icons.Outlined.PushPin, null, tint = MaterialTheme.colorScheme.primary)
             Text(" " + place.name, fontSize = 28.sp, fontWeight = FontWeight.Bold)
