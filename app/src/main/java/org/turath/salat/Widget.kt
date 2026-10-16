@@ -199,7 +199,11 @@ class WidgetCal : AppWidgetProvider() {
                         c.setTextViewText(R.id.e, ev[0].label.ifEmpty { Tr["event"] }.take(8))
                         c.setTextColor(R.id.e, if (today) Color.BLACK else Color.WHITE)
                     }
-                    c.setInt(R.id.cell, "setBackgroundResource", when { today -> R.drawable.wcal_today; ev.isNotEmpty() -> R.drawable.wcal_event; sp -> R.drawable.wcal_special
+                    // the known Islamic days filled: the Eids, Arafah, Ashura, Badr … in green, the ten days, the white days … in gold
+                    val big = org.turath.salat.ui.strong(m, d)
+                    val anySp = org.turath.salat.ui.specialsOf(m, d).isNotEmpty()
+                    if (big && !today) c.setTextColor(R.id.h, Color.WHITE)
+                    c.setInt(R.id.cell, "setBackgroundResource", when { today -> R.drawable.wcal_today; ev.isNotEmpty() -> R.drawable.wcal_event; big -> R.drawable.wcal_strong; anySp || sp -> R.drawable.wcal_special
                         friday -> R.drawable.wcal_friday; else -> R.drawable.wcal_none })
                 }
                 v.addView(ROWS[row], c)
@@ -212,6 +216,19 @@ class WidgetCal : AppWidgetProvider() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             v.setOnClickPendingIntent(R.id.gear, Widget.settingsIntent(ctx, 45))
             v.setTextColor(R.id.menu, ink)
+            // the moving line: this month's known days and the user's events, then today's line of the prayer widget
+            runCatching {
+                val items = mutableListOf<String>()
+                for (d in 1..len) {
+                    val g = first.plusDays((d - 1).toLong())
+                    org.turath.salat.ui.specialsOf(m, d).forEach { items += Tr.num(d) + " " + Tr.hijriMonth(m) + ": " + it }
+                    pr.events.filter { it.on && it.on(g, Hijri(y, m, d)) }.forEach { items += Tr.num(d) + " " + Tr.hijriMonth(m) + ": " + it.label.ifEmpty { Tr["event"] } }
+                }
+                org.turath.salat.ui.ISLAMIC_DAYS.filter { it.m == m && it.d == null }.forEach { items += Tr.hijriMonth(m) + ": " + Tr[it.key] }
+                val now = ZonedDateTime.now(Schedule.zone(place))
+                items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
+                v.setTextViewText(R.id.ticker, items.distinct().joinToString("     ◆     "))
+            }
             mgr.updateAppWidget(ids, v)
         }
 

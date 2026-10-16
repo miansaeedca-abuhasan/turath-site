@@ -56,7 +56,9 @@ class Heading { var deg by mutableFloatStateOf(Float.NaN); var acc by mutableInt
 fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): Heading {
     val h = remember(upright) { Heading() }
     val decl = remember { GeomagneticField(lat.toFloat(), lng.toFloat(), 0f, System.currentTimeMillis()).declination }
-    DisposableEffect(upright) {
+    // the sensors only while the app is on the screen: leaving it (home, another app, the screen off) stops them, and with them the vibration
+    val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(upright, owner) {
         val sm = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val rv = sm.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
         val acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
@@ -85,10 +87,20 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
             }
             override fun onAccuracyChanged(sn: Sensor, a: Int) { if (sn.type == Sensor.TYPE_MAGNETIC_FIELD) h.acc = a }
         }
-        rv?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
-        mag?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
-        if (rv == null) acc?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
-        onDispose { sm.unregisterListener(l) }
+        var on = false
+        fun start() {
+            if (on) return; on = true
+            rv?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
+            mag?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
+            if (rv == null) acc?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
+        }
+        fun stop() { if (on) { on = false; sm.unregisterListener(l); h.deg = Float.NaN } }
+        val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
+            when (e) { androidx.lifecycle.Lifecycle.Event.ON_RESUME -> start(); androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> stop(); else -> {} }
+        }
+        if (owner.lifecycle.currentState.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)) start()
+        owner.lifecycle.addObserver(obs)
+        onDispose { owner.lifecycle.removeObserver(obs); stop() }
     }
     return h
 }
@@ -216,6 +228,8 @@ fun QiblaCamera(s: AppState) {
     Buzz(on, act)
     val green = Color(0xFF2E9E5B)
     Box(Modifier.fillMaxSize().padding(top = 8.dp)) {
+        // the camera works only while this view is on the screen and the app is in front: paused -> closed, back -> opened again
+        val camObs = remember { arrayOfNulls<androidx.lifecycle.LifecycleEventObserver>(1) }
         AndroidView(factory = { c ->
             PreviewView(c).also { pv ->
                 val fut = ProcessCameraProvider.getInstance(c)
@@ -223,11 +237,19 @@ fun QiblaCamera(s: AppState) {
                     runCatching {
                         val cp = fut.get()
                         val pre = Preview.Builder().build().also { it.setSurfaceProvider(pv.surfaceProvider) }
-                        cp.unbindAll(); cp.bindToLifecycle(act, CameraSelector.DEFAULT_BACK_CAMERA, pre)
+                        fun bind() = runCatching { cp.unbindAll(); cp.bindToLifecycle(act, CameraSelector.DEFAULT_BACK_CAMERA, pre) }
+                        bind()
+                        val o = androidx.lifecycle.LifecycleEventObserver { _, e ->
+                            when (e) { androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> runCatching { cp.unbindAll() }; androidx.lifecycle.Lifecycle.Event.ON_RESUME -> bind(); else -> {} }
+                        }
+                        camObs[0] = o; act.lifecycle.addObserver(o)
                     }
                 }, ContextCompat.getMainExecutor(c))
             }
-        }, modifier = Modifier.fillMaxSize(), onRelease = { runCatching { ProcessCameraProvider.getInstance(act).get().unbindAll() } })
+        }, modifier = Modifier.fillMaxSize(), onRelease = {
+            camObs[0]?.let { act.lifecycle.removeObserver(it) }; camObs[0] = null
+            runCatching { ProcessCameraProvider.getInstance(act).get().unbindAll() }
+        })
         Canvas(Modifier.fillMaxSize()) {
             val fov = 60f                                  // about the width a phone camera sees
             val cx = size.width / 2; val cy = size.height * .42f
