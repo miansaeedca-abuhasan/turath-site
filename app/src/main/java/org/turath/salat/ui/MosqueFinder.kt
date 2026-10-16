@@ -42,13 +42,21 @@ fun MosqueFinder(s: AppState) {
     var asked by remember { mutableIntStateOf(0) }
     LaunchedEffect(asked) {
         if (!ctx.hasLocation()) { if (asked == 0) center = place.lat to place.lng; return@LaunchedEffect }
-        currentLocation(ctx) { l -> if (l != null) { center = l.latitude to l.longitude; live = true } else if (center == null) center = place.lat to place.lng }
+        currentLocation(ctx) { l ->
+            if (l != null) {
+                // a fix only a few hundred metres from the centre in use must not restart the search (the list would blink away and be built again)
+                val c = center
+                if (c == null || Cities.dist(c.first, c.second, l.latitude, l.longitude) > 0.5) center = l.latitude to l.longitude
+                live = true
+            } else if (center == null) center = place.lat to place.lng
+        }
     }
     LaunchedEffect(km, reload, center) {
         val c = center ?: return@LaunchedEffect
         list = null; err = false
-        list = withContext(Dispatchers.IO) { runCatching { Mosques.find(ctx, c.first, c.second, km) }.getOrNull() }
-        if (list == null) err = true
+        val found = withContext(Dispatchers.IO) { runCatching { Mosques.find(ctx, c.first, c.second, km) }.getOrNull() }
+        list = found
+        if (found == null) err = true
     }
     Column(Modifier.fillMaxSize()) {
         // one short line: where the search is around, and Google Maps as an icon
@@ -67,18 +75,20 @@ fun MosqueFinder(s: AppState) {
                 Spacer(Modifier.width(6.dp))
             }
         }
-        Text((list?.let { Tr.num(it.size) + " " + Tr["mosquesFound"] + " · " } ?: "") + Tr["mosqueTapShort"], Modifier.padding(horizontal = 16.dp, vertical = 2.dp), fontSize = 11.sp,
+        // read once: the state can change between two reads (a «list!!» could hit null when a new search began while the list was being drawn)
+        val shown = list
+        Text((shown?.let { Tr.num(it.size) + " " + Tr["mosquesFound"] + " · " } ?: "") + Tr["mosqueTapShort"], Modifier.padding(horizontal = 16.dp, vertical = 2.dp), fontSize = 11.sp,
             color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f), maxLines = 1)
         when {
             err -> Column(Modifier.padding(16.dp)) {
                 Text(Tr["mosqueErr"], color = Color(0xFFB3261E))
                 TextButton(onClick = { reload++ }) { Text(Tr["retry"]) }
             }
-            list == null -> Box(Modifier.fillMaxWidth().padding(30.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-            list!!.isEmpty() -> Text(Tr["mosqueNone"], Modifier.padding(16.dp))
+            shown == null -> Box(Modifier.fillMaxWidth().padding(30.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+            shown.isEmpty() -> Text(Tr["mosqueNone"], Modifier.padding(16.dp))
             else -> {
                 LazyColumn(Modifier.fillMaxSize()) {
-                    items(list!!, key = { it.id }) { m ->
+                    items(shown, key = { it.id }) { m ->
                         var addr by remember(m.id) { mutableStateOf(m.address) }
                         LaunchedEffect(m.id) { if (addr.isEmpty()) addr = withContext(Dispatchers.IO) { Mosques.address(ctx, m) }.also { m.address = it } }
                         var menu by remember { mutableStateOf(false) }
@@ -110,7 +120,7 @@ fun MosqueFinder(s: AppState) {
                         )
                         DropdownMenu(menu, { menu = false }) {
                             DropdownMenuItem(text = { Text(Tr["hideMosque"]) }, onClick = {
-                                Mosques.hide(s.prefs, m.id); list = list!!.filter { it.id != m.id }; menu = false
+                                Mosques.hide(s.prefs, m.id); list = list?.filter { it.id != m.id }; menu = false
                             })
                         }
                         HorizontalDivider()

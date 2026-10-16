@@ -30,7 +30,7 @@
         <TextView android:id="@+id/ticker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp"
             android:singleLine="true" android:ellipsize="marquee" android:marqueeRepeatLimit="marquee_forever" android:scrollHorizontally="true"
             android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true"
-            android:textColor="#E0B54A" android:textSize="12sp" android:text="">
+            android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="">
             <requestFocus android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true" />
         </TextView>
 

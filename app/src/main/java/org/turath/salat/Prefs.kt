@@ -34,7 +34,8 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     // birdsong
     BIRDS1("birds1"), NIGHTINGALE("birds_nightingale"), BLACKBIRD("birds_blackbird"), ROBIN("birds_robin"), SKYLARK("birds_skylark"),
     WREN("birds_wren"), CHORUS("birds_chorus"),
-    CANARY("birds_canary"), CANARY2("birds_canary2"), CANARY3("birds_canary3"), CANARY4("birds_canary4"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
+    CANARY("birds_canary"), CANARY2("birds_canary2"), CANARY3("birds_canary3"), CANARY4("birds_canary4"), CANARY5("birds_canary5"), CANARY6("birds_canary6"),
+    CANARY7("birds_canary7"), CANARY8("birds_canary8"), CANARY9("birds_canary9"), CANARY10("birds_canary10"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
     BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
     TONE(null), NOTIFY(null), SILENT(null);
 
@@ -118,6 +119,15 @@ class Prefs(ctx: Context) {
     /** widgets: transparency of the background in percent (0 = solid, 100 = none), light or dark */
     var widgetAlpha: Int get() = sp.getInt("wAlpha", 20); set(v) = sp.edit().putInt("wAlpha", v.coerceIn(0, 100)).apply()
     var widgetLight: Boolean get() = sp.getBoolean("wLight", false); set(v) = sp.edit().putBoolean("wLight", v).apply()
+    /** widgets: the colour of the border round the current prayer (an index of Pal.COLORS), the text colour (-1 = by the background; 0–7 Pal.COLORS; 8 black),
+     *  the colour of the moving line (-1 = by the background), and the size of the texts in percent */
+    var widgetAccent: Int get() = sp.getInt("wAccent", 0).coerceIn(0, Pal.COLORS.size - 1); set(v) = sp.edit().putInt("wAccent", v).apply()
+    var widgetInk: Int get() = sp.getInt("wInk", -1).coerceIn(-1, Pal.COLORS.size); set(v) = sp.edit().putInt("wInk", v).apply()
+    var widgetTicker: Int get() = sp.getInt("wTick", -1).coerceIn(-1, Pal.COLORS.size); set(v) = sp.edit().putInt("wTick", v).apply()
+    var widgetSize: Int get() = sp.getInt("wSize", 100).coerceIn(70, 160); set(v) = sp.edit().putInt("wSize", v).apply()
+    /** the app: the main colour (-1 = by the theme; 0–6 Pal.COLORS) and the size of all texts in percent */
+    var appAccent: Int get() = sp.getInt("appAccent", -1).coerceIn(-1, 6); set(v) = sp.edit().putInt("appAccent", v).apply()
+    var appFont: Int get() = sp.getInt("appFont", 100).coerceIn(70, 160); set(v) = sp.edit().putInt("appFont", v).apply()
     /** the user's own durood recordings (content URIs from the phone) */
     var duroodFiles: List<String>
         get() = sp.getString("duroodFiles", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { a.getString(it) } } ?: emptyList()

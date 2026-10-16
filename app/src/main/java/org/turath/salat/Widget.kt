@@ -67,8 +67,13 @@ class Widget : AppWidgetProvider() {
             nm.notify(4100, n)
         }
 
-        fun ink(pr: Prefs) = if (pr.widgetLight) Color.parseColor("#1B1B1B") else Color.WHITE
-        fun dim(pr: Prefs) = if (pr.widgetLight) Color.parseColor("#99000000") else Color.parseColor("#CCFFFFFF")
+        fun ink(pr: Prefs) = if (pr.widgetInk >= 0) Pal.ink(pr.widgetInk) else if (pr.widgetLight) Color.parseColor("#1B1B1B") else Color.WHITE
+        fun dim(pr: Prefs) = if (pr.widgetInk >= 0) (Pal.ink(pr.widgetInk) and 0x00FFFFFF) or 0xCC000000.toInt()
+            else if (pr.widgetLight) Color.parseColor("#99000000") else Color.parseColor("#CCFFFFFF")
+        fun accent(pr: Prefs) = Pal.COLORS[pr.widgetAccent]
+        /** the moving line: clearly readable on the background (bright amber on dark, deep amber on light) unless the user chose a colour */
+        fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#7A4A00") else Color.parseColor("#FFD54F")
+        private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
 
         /** the background with the chosen transparency, light or dark */
         fun background(v: RemoteViews, pr: Prefs) {
@@ -89,7 +94,9 @@ class Widget : AppWidgetProvider() {
             background(v, pr)
             val ink = ink(pr); val dim = dim(pr)
             v.setTextViewText(R.id.city, place.name)
+            v.setTextColor(R.id.city, accent(pr))
             v.setTextColor(R.id.prayer, ink); v.setTextColor(R.id.count, ink)
+            size(v, R.id.city, 12f, pr); size(v, R.id.prayer, 30f, pr); size(v, R.id.count, 28f, pr)
             // within 30 minutes of a prayer's time: count up from it; otherwise: count down to the next
             val upFrom = st.currentAt?.takeIf { st.current != P.SUNRISE && now.isBefore(it.plusMinutes(30)) }
             val base = SystemClock.elapsedRealtime() - System.currentTimeMillis()
@@ -107,20 +114,24 @@ class Widget : AppWidgetProvider() {
                     val on = p == shown
                     v.setTextViewText(NAMES[i], Tr.p(p).substringBefore(" ("))
                     v.setTextViewText(IDS[i], Alarms.fmt(pr, t[p]).replace(" صبح", "").replace(" شام", "").replace(" am", "").replace(" pm", ""))
-                    v.setTextColor(NAMES[i], if (on) GOLD else dim)
-                    v.setTextColor(IDS[i], if (on) GOLD else ink)
-                    v.setInt(COLS[i], "setBackgroundResource", if (on) R.drawable.wcal_special else R.drawable.wcal_none)
+                    v.setTextColor(NAMES[i], if (on) accent(pr) else dim)
+                    v.setTextColor(IDS[i], if (on) accent(pr) else ink)
+                    // the current prayer: a border in the chosen colour (no filled highlight)
+                    v.setInt(COLS[i], "setBackgroundResource", if (on) Pal.BORDERS[pr.widgetAccent] else R.drawable.wcal_none)
+                    size(v, NAMES[i], 12f, pr); size(v, IDS[i], 14f, pr)
                 }
                 val h = Schedule.hijriNow(pr, place, now)
                 val loc = Locale(Tr.lang)
                 v.setTextViewText(R.id.date, now.dayOfWeek.getDisplayName(TextStyle.FULL, loc))
                 v.setTextViewText(R.id.date2, Tr.hijri(h) + "   ·   " + Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d-M-yyyy"))))
                 v.setTextColor(R.id.date, dim); v.setTextColor(R.id.date2, dim)
+                size(v, R.id.date, 11f, pr); size(v, R.id.date2, 11f, pr)
             }
             v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE))
             if (full) {
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
+                v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)
             }
             mgr.updateAppWidget(ids, v)
         }
@@ -228,6 +239,7 @@ class WidgetCal : AppWidgetProvider() {
                 val now = ZonedDateTime.now(Schedule.zone(place))
                 items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
                 v.setTextViewText(R.id.ticker, items.distinct().joinToString("     ◆     "))
+                v.setTextColor(R.id.ticker, Widget.tickerColor(pr))
             }
             mgr.updateAppWidget(ids, v)
         }

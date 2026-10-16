@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -36,7 +38,7 @@ class WidgetSettings : ComponentActivity() {
             MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFFE0B54A))) {
                 CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
                     Surface(Modifier.fillMaxSize(), color = Color(0xFF121212)) {
-                        Column(Modifier.fillMaxSize().statusBarsPadding().padding(20.dp)) {
+                        Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(20.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(Tr["widgets"], Modifier.weight(1f), fontSize = 26.sp, fontWeight = FontWeight.Bold, color = Color.White)
                                 TextButton(onClick = { Widget.update(this@WidgetSettings); finish() }) { Text(Tr["save"], fontSize = 18.sp) }
@@ -59,6 +61,8 @@ class WidgetSettings : ComponentActivity() {
                                 verticalAlignment = Alignment.CenterVertically) {
                                 RadioButton(alpha == v, { alpha = v; pr.widgetAlpha = v; Widget.update(this@WidgetSettings) }); Text(Tr.num(v) + "%", color = Color.White, fontSize = 16.sp)
                             }
+                            org.turath.salat.ui.WidgetLook(pr) { Widget.update(this@WidgetSettings) }
+                            Spacer(Modifier.height(40.dp))
                         }
                     }
                 }

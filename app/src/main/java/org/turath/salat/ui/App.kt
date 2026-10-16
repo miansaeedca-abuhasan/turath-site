@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.VolumeUp
@@ -67,11 +68,14 @@ fun App(act: MainActivity) {
     LaunchedEffect(Unit) { while (true) { s.now = ZonedDateTime.now(); delay(1000) } }
     LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
-    val scheme = if (dark) darkColorScheme(primary = Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
+    val acc = s.prefs.appAccent.takeIf { it >= 0 }?.let { Color(Pal.COLORS[it]) }
+    val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
         surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED))
-    else lightColorScheme(primary = Blue, secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF))
+    else lightColorScheme(primary = acc ?: Blue, secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF))
+    val baseDensity = androidx.compose.ui.platform.LocalDensity.current
     MaterialTheme(colorScheme = scheme) {
-        CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+        CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
+            androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(baseDensity.density, baseDensity.fontScale * s.prefs.appFont / 100f)) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                 key(Tr.lang) {
                     // read here so that a change of settings draws the screens again, keeping where the user is (scroll, open page)
@@ -84,19 +88,36 @@ fun App(act: MainActivity) {
     }
 }
 
-/** the app stopped last time: offer to send the report by email (to fix it) */
+/** the app stopped last time: the report is shown on the screen (copy it, or send it by email) so the error can be found and fixed */
 @Composable
 fun CrashReport(s: AppState) {
     var text by remember { mutableStateOf(s.prefs.sp.getString("crash", null)) }
     val t = text ?: return
     fun clear() { s.prefs.sp.edit().remove("crash").apply(); text = null }
-    AlertDialog(onDismissRequest = { clear() }, title = { Text(Tr["crashTitle"]) }, text = { Text(Tr["crashText"]) },
-        confirmButton = { TextButton(onClick = {
-            runCatching { s.act.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:turathkhairalquroon@gmail.com"))
-                .putExtra(Intent.EXTRA_SUBJECT, "Salat app crash " + runCatching { s.act.packageManager.getPackageInfo(s.act.packageName, 0).versionName }.getOrDefault(""))
-                .putExtra(Intent.EXTRA_TEXT, t)) }
-            clear()
-        }) { Text(Tr["crashSend"]) } },
+    AlertDialog(onDismissRequest = { clear() }, title = { Text(Tr["crashTitle"]) },
+        text = {
+            Column {
+                Text(Tr["crashText"], fontSize = 14.sp)
+                Spacer(Modifier.height(8.dp))
+                Box(Modifier.fillMaxWidth().heightIn(max = 260.dp).background(MaterialTheme.colorScheme.onSurface.copy(alpha = .06f)).verticalScroll(rememberScrollState()).padding(6.dp)) {
+                    SelectionContainer { Text(t.take(2500), fontSize = 10.sp, lineHeight = 13.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace) }
+                }
+            }
+        },
+        confirmButton = {
+            Row {
+                TextButton(onClick = {
+                    runCatching { s.act.getSystemService(android.content.ClipboardManager::class.java).setPrimaryClip(android.content.ClipData.newPlainText("crash", t)) }
+                    android.widget.Toast.makeText(s.act, Tr["crashCopied"], android.widget.Toast.LENGTH_SHORT).show()
+                }) { Text(Tr["crashCopy"]) }
+                TextButton(onClick = {
+                    runCatching { s.act.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:turathkhairalquroon@gmail.com"))
+                        .putExtra(Intent.EXTRA_SUBJECT, "Salat app crash " + runCatching { s.act.packageManager.getPackageInfo(s.act.packageName, 0).versionName }.getOrDefault(""))
+                        .putExtra(Intent.EXTRA_TEXT, t)) }
+                    clear()
+                }) { Text(Tr["crashSend"]) }
+            }
+        },
         dismissButton = { TextButton(onClick = { clear() }) { Text(Tr["cancel"]) } })
 }
 

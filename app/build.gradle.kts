@@ -26,8 +26,9 @@ android {
     buildTypes {
         getByName("debug") { signingConfig = signingConfigs.getByName("test") }
         getByName("release") {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // not shrunk for now: the release build is the one installed on phones, and shrinking can break libraries (Compose, CameraX) only there
+            isMinifyEnabled = false
+            isShrinkResources = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("test")
         }

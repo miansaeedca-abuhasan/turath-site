@@ -13,6 +13,8 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -140,7 +142,15 @@ fun QiblaScreen(s: AppState) {
         if (mode == 0) QiblaCompass(s) else QiblaCamera(s)
     }
     if (calib) AlertDialog(onDismissRequest = { calib = false }, confirmButton = { TextButton(onClick = { calib = false }) { Text(Tr["ok"]) } },
-        title = { Text(Tr["calibrate"]) }, text = { Text(Tr["calibHow"]) })
+        title = { Text(Tr["calibrate"]) },
+        text = {
+            Column(Modifier.verticalScroll(rememberScrollState())) {
+                // the figure-8 poster: how to move the phone
+                androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(R.drawable.calib_poster), null, Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)))
+                Spacer(Modifier.height(10.dp))
+                Text(Tr["calibHow"])
+            }
+        })
 }
 
 @Composable

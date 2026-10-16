@@ -89,3 +89,17 @@ print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--p
 # a home-screen widget cannot be placed from adb; the widget is checked by its update code running without errors
 open('shots/logcat.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat.txt').read()[-3000:])
+
+# the RELEASE apk (the one installed on phones): the mosque tab with a location fix, left open for 40 s, then random taps; a crash shows in logcat_release.txt
+sh('logcat', '-c')
+rel = 'app/build/outputs/apk/release/app-release.apk'
+sh('uninstall', 'org.turath.salat')
+print(sh('install', '-r', '-g', rel).decode())
+xml = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string name="lang">en</string><string name="place">' + place + '</string></map>\n'
+sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
+sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6)
+subprocess.run(['adb', 'emu', 'geo', 'fix', '-79.644', '43.589'], capture_output=True)
+if tap_text('Mosques'): time.sleep(45); shot('rel_mosques')
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '150', '-s', '5', '2000').decode()[-800:])
+open('shots/logcat_release.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
+print(open('shots/logcat_release.txt').read()[-3000:])
