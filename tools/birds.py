@@ -3,15 +3,21 @@ for each bird, the recording with the most song is cut to its best 25 seconds (t
 levelled -> app/src/main/res/raw/birds_<key>.mp3; sources and licences -> tools/birds_credits.json."""
 import json, subprocess, urllib.request, urllib.parse, os, re, sys
 UA = {'User-Agent': 'SalatKhairAlQuroonBuild/1.0 (https://turathkhairalquroon.com; app sounds)'}
-BIRDS = [('nightingale', 'Luscinia megarhynchos song'), ('blackbird', 'Turdus merula song'), ('robin', 'Erithacus rubecula song'),
-         ('canary', 'Serinus canaria song'), ('skylark', 'Alauda arvensis song'), ('bulbul', 'Pycnonotus barbatus song'),
-         ('dove', 'Streptopelia senegalensis'), ('wren', 'Troglodytes troglodytes song'), ('chorus', 'dawn chorus birds')]
+import sys
+# more birds (run again with the keys to fetch): each key with several searches, the first that gives a free recording wins
+BIRDS = [('canary', 'Serinus canaria'), ('canary', 'canary song'), ('canary', 'Serinus canaria domestica'), ('canary', 'canary bird'),
+         ('canary2', 'Serinus serinus song'), ('canary2', 'European Serin'),
+         ('goldfinch', 'Carduelis carduelis song'), ('thrush', 'Turdus philomelos song'), ('blackcap', 'Sylvia atricapilla song'),
+         ('bulbul', 'Pycnonotus'), ('lark', 'Lullula arborea song'), ('warbler', 'Acrocephalus song'),
+         ('finch', 'Fringilla coelebs song'), ('oriole', 'Oriolus oriolus song')]
 OK = re.compile(r'^(cc0|cc-zero|public domain|pd|cc by(-sa)? [0-9.]+|cc-by(-sa)?-[0-9.]+)', re.I)
 out, credits = 'app/src/main/res/raw', {}
 os.makedirs(out, exist_ok=True)
 def get(url):
     return urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=60).read()
+done = set()
 for key, q in BIRDS:
+    if key in done or os.path.exists(f'{out}/birds_{key}.mp3'): continue
     api = 'https://commons.wikimedia.org/w/api.php?' + urllib.parse.urlencode({'action': 'query', 'format': 'json', 'generator': 'search',
         'gsrsearch': q + ' filetype:audio', 'gsrnamespace': 6, 'gsrlimit': 20, 'prop': 'imageinfo', 'iiprop': 'url|size|extmetadata|mediatype'})
     try: pages = json.loads(get(api)).get('query', {}).get('pages', {}).values()
@@ -22,6 +28,7 @@ for key, q in BIRDS:
         lic = re.sub('<[^>]+>', '', md.get('LicenseShortName', {}).get('value', ''))
         dur = float(ii.get('duration') or 0)
         if not OK.match(lic.strip()) or 'nc' in lic.lower(): continue
+        if re.search(r'bell|ring|music|piano|whistle|call only|alarm', p['title'], re.I): continue
         artist = re.sub('<[^>]+>', '', md.get('Artist', {}).get('value', '')).strip()
         cands.append((ii.get('size', 0), p['title'], ii['url'], lic, artist, ii.get('descriptionurl')))
     cands.sort(reverse=True)
@@ -40,6 +47,8 @@ for key, q in BIRDS:
             subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-ss', str(best), '-t', str(w), '-i', '/tmp/b', '-ac', '1', '-ar', '44100', '-b:a', '80k',
                             '-af', f'highpass=f=150,loudnorm=I=-18:TP=-2,afade=t=in:d=1.5,afade=t=out:st={w - 3}:d=3', f'{out}/birds_{key}.mp3'], check=True)
             credits[key] = {'title': title, 'page': desc, 'licence': lic, 'author': artist, 'from_second': best, 'seconds': w}
-            print('ok', key, title, lic); break
+            print('ok', key, title, lic); done.add(key); break
         except Exception as e: print('fail', key, title, e)
-json.dump(credits, open('tools/birds_credits.json', 'w'), ensure_ascii=False, indent=1)
+old = json.load(open('tools/birds_credits.json')) if os.path.exists('tools/birds_credits.json') else {}
+old.update(credits)
+json.dump(old, open('tools/birds_credits.json', 'w'), ensure_ascii=False, indent=1)
