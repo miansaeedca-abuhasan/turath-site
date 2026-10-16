@@ -21,7 +21,7 @@ object Mosques {
     private val NAME = Regex(
         "ahmadi|ahmadiyy|qadian|lahore ahmad|baitul hamd|bait-ul-hamd|baitul islam|bait-ul-islam|baitul futuh|baitul rehman|baitul rahman|baitul nasr|baitul ahad|" +
             "baitul huda|baitul zafar|baitul mahdi|baitul mujeeb|baitul ikram|baitul afiyat|baitul aafiyat|baitul ehsan|baitul muqeet|baitul tauheed|baitul baseer|" +
-            "baitul hadi|baitul naseer|baitul wahid|baitul atta|baitul shukur|baitul bashir|baitul nur|mahmood mosque|fazl mosque|nasir mosque|bait-ul-|bohra|bohri|dawoodi|dawat-e-hadiyah|ismaili|jamatkhana|jamat khana|jamaat khana|aga khan|" +
+            "baitul hadi|baitul naseer|baitul wahid|baitul atta|baitul shukur|baitul bashir|baitul nur|mahmood mosque|fazl mosque|nasir mosque|bohra|bohri|dawoodi|dawat-e-hadiyah|ismaili|jamatkhana|jamat khana|jamaat khana|aga khan|" +
             "imambargah|imambara|imam bargah|imam-bargah|husainiya|hussainiya|husseiniya|hosseinieh|hussaini|husayniyya|hussainia|" +
             "shia|shi'a|shiite|ja'?fari|jafaria|zainabia|zaynabiyya|abbas centre|al-?mahdi|ahlul?\\s?bayt|ahl ul bayt|mahfil-e-|" +
             "احمدی|احمدیہ|أحمدي|الأحمدية|قادیان|قاديان|بوہر|بهرة|بوهرة|اسماعیلی|إسماعيلي|جماعت خانہ|امام ?بارگاہ|امامباڑہ|حسینیہ|حسينية|شیعہ|شيعة|جعفری|جعفرية|زینبیہ|زينبية",
