@@ -1,4 +1,4 @@
-"""GeoNames cities15000 (CC BY 4.0) -> app/src/main/assets/cities.tsv:
+"""GeoNames cities5000 (CC BY 4.0) -> app/src/main/assets/cities.tsv:
 name, ascii name, country code, latitude, longitude, time zone, population, a name in Arabic script (if GeoNames has one)."""
 import sys, re, os
 src, out = sys.argv[1], sys.argv[2]

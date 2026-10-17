@@ -136,7 +136,23 @@ fun currentLocation(act: org.turath.salat.MainActivity, done: (android.location.
     android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ if (!sent) { sent = true; done(last) } }, 12_000)
 }
 
-/** the phone's location: the nearest city gives the name and the time zone */
+/** the local area's name from the phone's address lookup (needs the system's geocoder, which works without the app having internet access); null when it has no answer */
+@Suppress("DEPRECATION")
+fun areaName(ctx: android.content.Context, lat: Double, lng: Double): String? = runCatching {
+    if (!android.location.Geocoder.isPresent()) return null
+    val g = android.location.Geocoder(ctx, java.util.Locale(if (Tr.lang == "en") "en" else Tr.lang))
+    val a = if (Build.VERSION.SDK_INT >= 33) {
+        val box = arrayOfNulls<List<android.location.Address>>(1); val latch = java.util.concurrent.CountDownLatch(1)
+        g.getFromLocation(lat, lng, 1, object : android.location.Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<android.location.Address>) { box[0] = addresses; latch.countDown() }
+            override fun onError(errorMessage: String?) { latch.countDown() }
+        })
+        latch.await(6, java.util.concurrent.TimeUnit.SECONDS); box[0]?.firstOrNull()
+    } else g.getFromLocation(lat, lng, 1)?.firstOrNull()
+    (a?.subLocality ?: a?.locality)?.takeIf { it.isNotBlank() }
+}.getOrNull()
+
+/** the phone's location: the area's name from the phone's address lookup, the time zone from the nearest city */
 @SuppressLint("MissingPermission")
 fun gps(s: AppState) {
     val act = s.act
@@ -146,8 +162,10 @@ fun gps(s: AppState) {
         if (l == null) return
         Thread {
             val c = Cities.nearest(act, l.latitude, l.longitude) ?: return@Thread
+            // the name of the neighbourhood or town where the phone is (the phone's own address lookup); the nearest city of the list only as a fallback
+            val here = areaName(act, l.latitude, l.longitude)
             act.runOnUiThread {
-                s.prefs.place = Place(c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.page = ""; s.changed()
+                s.prefs.place = Place(here ?: c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.page = ""; s.changed()
             }
         }.start()
     }

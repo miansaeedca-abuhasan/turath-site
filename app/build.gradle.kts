@@ -40,7 +40,6 @@ android {
     }
     kotlinOptions { jvmTarget = "17" }
     buildFeatures { compose = true }
-    androidResources { noCompress += listOf("tsv") }
 }
 
 // every screen is drawn again after a change of settings (they are read from SharedPreferences, not from Compose state)

@@ -4,7 +4,7 @@ import android.content.Context
 import java.util.Locale
 import kotlin.math.*
 
-/** cities of the world (GeoNames, cities with 15 000 people or more): assets/cities.tsv */
+/** cities of the world (GeoNames, towns with 5 000 people or more): assets/cities.tsv */
 object Cities {
     class City(val name: String, val ascii: String, val country: String, val lat: Double, val lng: Double, val tz: String, val pop: Int, val arName: String) {
         fun place() = Place(name, country, lat, lng, tz)
