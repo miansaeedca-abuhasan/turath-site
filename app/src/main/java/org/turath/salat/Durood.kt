@@ -69,7 +69,7 @@ class DuroodService : Service() {
         val nm = getSystemService(NotificationManager::class.java)
         nm.createNotificationChannel(NotificationChannel("durood", Tr["durood"], NotificationManager.IMPORTANCE_MIN).apply { setShowBadge(false) })
         val open = PendingIntent.getActivity(this, 30, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val n = Notification.Builder(this, "durood").setSmallIcon(R.drawable.ic_stat).setContentTitle(Tr["durood"])
+        val n = Notification.Builder(this, "durood").setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this)).setContentTitle(Tr["durood"])
             .setContentText(Durood.PHRASES[0]).setContentIntent(open).setOngoing(true).build()
         if (Build.VERSION.SDK_INT >= 34) startForeground(78, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE) else startForeground(78, n)
         registerReceiver(rx, IntentFilter(Intent.ACTION_USER_PRESENT))

@@ -33,11 +33,12 @@ object Events {
                 val s = pr.sound(p)
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
                 val taraweeh = p == P.ISHA && pr.taraweehVib && ramadanNight
-                val jumuah = p == P.DHUHR && pr.jumuahVib && d.dayOfWeek == DayOfWeek.FRIDAY
-                if (taraweeh || jumuah || (pr.vibrateMode && pr.vibrateFor(p))) {
-                    val mins = when { taraweeh -> maxOf(pr.taraweehMinutes, pr.vibrateMinutes); jumuah -> maxOf(pr.jumuahMinutes, pr.vibrateMinutes); else -> pr.vibrateMinutes }
-                    out += Ev(t[p], "vibon", p)
-                    out += Ev(t[p].plusMinutes(mins.toLong()), "viboff", p)
+                if (taraweeh) { out += Ev(t[p], "vibon", p); out += Ev(t[p].plusMinutes(pr.taraweehMinutes.toLong()), "viboff", p) }
+                // the phone on vibrate for this prayer (on Fridays Dhuhr's own setting is replaced by the Jumu'ah one)
+                val vk = if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY) "JUMUAH" else p.name
+                if (pr.vibOn(vk) && pr.vibLen(vk) > 0) {
+                    val start = t[p].plusMinutes((if (pr.vibAfter(vk)) pr.vibFrom(vk) else -pr.vibFrom(vk)).toLong())
+                    out += Ev(start, "vibon", p); out += Ev(start.plusMinutes(pr.vibLen(vk).toLong()), "viboff", p)
                 }
             }
             for (p in listOf(P.ISHRAQ, P.CHASHT, P.TAHAJJUD)) {
@@ -144,6 +145,11 @@ object Alarms {
         // one sound at a time: the prayer's adhan wins over a reminder at the same minute
         val sound = due.filter { it.snd != Snd.SILENT && it.snd != Snd.NOTIFY && it.kind != "iftar" && it.kind != "widget" }.minByOrNull { listOf("suhoor", "prayer", "nafl", "custom").indexOf(it.kind).let { i -> if (i < 0) 9 else i } }
         for (e in due) handle(ctx, pr, e, e === sound)
+        // the phone must not stay on vibrate after the end of a window (an alarm that came late): ring again when no window is open now
+        runCatching {
+            val last = Events.list(ctx, now.minusHours(3), 1).filter { (it.kind == "vibon" || it.kind == "viboff") && !it.at.isAfter(now.plusSeconds(3)) }.maxByOrNull { it.at }
+            if (last?.kind != "vibon") Vibrate.off(ctx, pr)
+        }
         schedule(ctx)
     }
 
@@ -169,13 +175,13 @@ object Alarms {
                 if (playSound && !quiet) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", e.p == P.FAJR && e.kind == "prayer")
                 else {
                     val ch = if (e.snd == Snd.NOTIFY) CH_REM else CH_ADHAN
-                    nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat)
+                    nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                         .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build())
                 }
             }
             "iftar" -> {
                 // a countdown to maghrib with the du'a of iftar
-                val n = Notification.Builder(ctx, CH_IFTAR).setSmallIcon(R.drawable.ic_stat)
+                val n = Notification.Builder(ctx, CH_IFTAR).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                     .setContentTitle(Tr["duaTime"]).setContentText(Tr["iftarDua"])
                     .setStyle(Notification.BigTextStyle().bigText(Tr["iftarDua"] + "\n" + Tr["iftarDuaSrc"]))
                     .setWhen(e.extra).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
@@ -186,7 +192,7 @@ object Alarms {
                 fun act(yes: Boolean) = PendingIntent.getBroadcast(ctx, if (yes) 11 else 12,
                     Intent(ctx, ActionReceiver::class.java).setAction(if (yes) "BEED_YES" else "BEED_NO").putExtra("key", e.text),
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-                nm.notify(4002, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat)
+                nm.notify(4002, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                     .setContentTitle(Tr["beedAsk"]).setContentText(Tr["beed"]).setContentIntent(open)
                     .addAction(Notification.Action.Builder(null, Tr["accept"], act(true)).build())
                     .addAction(Notification.Action.Builder(null, Tr["decline"], act(false)).build()).setAutoCancel(true).build())
@@ -333,7 +339,7 @@ class SoundService : Service() {
         val alarm = i.getBooleanExtra("alarm", false)
         val stop = PendingIntent.getBroadcast(this, 20, Intent(this, ActionReceiver::class.java).setAction("STOP"), PendingIntent.FLAG_IMMUTABLE)
         val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-        val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat)
+        val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this))
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
             .setContentIntent(open).setDeleteIntent(stop)
             .addAction(Notification.Action.Builder(null, Tr["stop"], stop).build())

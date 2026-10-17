@@ -116,11 +116,6 @@ fun FastingPage(s: AppState, back: () -> Unit) {
             SwitchRow(Tr["tkHijjah"], pr.takbirHijjah) { pr.takbirHijjah = it; s.changed() }
             SwitchRow(Tr["tkTashreeq"], pr.takbirTashreeq) { pr.takbirTashreeq = it; s.changed() }
         }
-        SectionTitle(Tr["JUMUAH"])
-        Card0 {
-            SwitchRow(Tr["jumuahVib"], pr.jumuahVib) { v -> pr.jumuahVib = v; s.changed(); if (v && s.act.needDnd()) s.act.askDnd() }
-            if (pr.jumuahVib) Stepper(Tr["jumuahMin"], pr.jumuahMinutes, 15, 150, 15) { pr.jumuahMinutes = it; s.changed() }
-        }
         Spacer(Modifier.height(20.dp))
     }
     if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, SndUse.REMINDER).filter { it != Snd.NOTIFY }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }

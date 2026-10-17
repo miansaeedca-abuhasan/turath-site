@@ -43,7 +43,9 @@ class Widget : AppWidgetProvider() {
             val h = Schedule.hijriNow(pr, place, now)
             org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + it }
             for (e in pr.events) if (e.on && e.on(now.toLocalDate(), h)) l += "• " + e.label.ifEmpty { Tr["event"] }
-            if (now.dayOfWeek == java.time.DayOfWeek.FRIDAY) l += Tr["tkFriday"]
+            // the salawat reminder runs from Thursday's Maghrib to Friday's Maghrib
+            val jumuahDays = (now.dayOfWeek == java.time.DayOfWeek.THURSDAY && !now.isBefore(t[P.MAGHRIB])) || (now.dayOfWeek == java.time.DayOfWeek.FRIDAY && now.isBefore(t[P.MAGHRIB]))
+            if (jumuahDays) l += Tr["tkFriday"]
             listOf(P.TAHAJJUD, P.ISHRAQ, P.CHASHT).forEach { l += Tr.p(it).substringBefore(" (") + " " + Alarms.fmt(pr, t[it]) }
             l += if (now.isBefore(t[P.DHUHR])) Tr["azkarM"] + ": " + Tr["tkAzkarM"] else Tr["azkarE"] + ": " + Tr["tkAzkarE"]
             return l.joinToString("     ◆     ")
@@ -59,8 +61,8 @@ class Widget : AppWidgetProvider() {
             val st = Schedule.state(pr, place, now)
             val t = Schedule.day(pr, place, now.toLocalDate())
             val line = listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA).joinToString("  ") { Tr.p(it).substringBefore(" (") + " " + Alarms.fmt(pr, t[it]).substringBefore(" ") }
-            val n = android.app.Notification.Builder(ctx, Alarms.CH_NEXT).setSmallIcon(R.drawable.ic_stat)
-                .setContentTitle(Tr.p(st.next).substringBefore(" (") + " — " + Alarms.fmt(pr, st.nextAt)).setContentText(line)
+            val n = android.app.Notification.Builder(ctx, Alarms.CH_NEXT).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
+                .setContentTitle(pname(st.next, now) + " — " + Alarms.fmt(pr, st.nextAt)).setContentText(line)
                 .setWhen(st.nextAt.toInstant().toEpochMilli()).setShowWhen(true).setUsesChronometer(true).setChronometerCountDown(true)
                 .setOngoing(true).setOnlyAlertOnce(true)
                 .setContentIntent(PendingIntent.getActivity(ctx, 6, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)).build()
@@ -73,6 +75,8 @@ class Widget : AppWidgetProvider() {
         fun accent(pr: Prefs) = Pal.COLORS[pr.widgetAccent]
         /** the moving line: clearly readable on the background (bright amber on dark, deep amber on light) unless the user chose a colour */
         fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#7A4A00") else Color.parseColor("#FFD54F")
+        /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
+        fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
         private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
 
         /** the background with the chosen transparency, light or dark */
@@ -101,7 +105,11 @@ class Widget : AppWidgetProvider() {
             val upFrom = st.currentAt?.takeIf { st.current != P.SUNRISE && now.isBefore(it.plusMinutes(30)) }
             val base = SystemClock.elapsedRealtime() - System.currentTimeMillis()
             val shown = if (upFrom != null) st.current!! else st.next
-            v.setTextViewText(R.id.prayer, Tr.p(shown).substringBefore(" ("))
+            v.setTextViewText(R.id.prayer, pname(shown, now))
+            // the zawal time (no prayer): «Prohibited Time» in red
+            if (t.forbiddenAt(now)?.first == t[P.ZAWAL]) {
+                v.setTextViewText(R.id.prayer, Tr["prohibited"]); v.setTextColor(R.id.prayer, 0xFFFF3B30.toInt()); size(v, R.id.prayer, 21f, pr)
+            }
             if (upFrom != null) {
                 v.setChronometer(R.id.count, base + upFrom.toInstant().toEpochMilli(), "+%s", true)
                 v.setChronometerCountDown(R.id.count, false)
@@ -112,7 +120,7 @@ class Widget : AppWidgetProvider() {
             if (full) {
                 SIX.forEachIndexed { i, p ->
                     val on = p == shown
-                    v.setTextViewText(NAMES[i], Tr.p(p).substringBefore(" ("))
+                    v.setTextViewText(NAMES[i], pname(p, now))
                     v.setTextViewText(IDS[i], Alarms.fmt(pr, t[p]).replace(" صبح", "").replace(" شام", "").replace(" am", "").replace(" pm", ""))
                     v.setTextColor(NAMES[i], if (on) accent(pr) else dim)
                     v.setTextColor(IDS[i], if (on) accent(pr) else ink)
@@ -170,8 +178,8 @@ class WidgetCal : AppWidgetProvider() {
             if (ids.isEmpty()) return
             val pr = Prefs(ctx); val place = pr.place ?: return
             Tr.lang = pr.lang.ifEmpty { "en" }
-            // the English date is always the phone's; today is the cell of that date (the Hijri day changing at Maghrib belongs to the prayer widget)
-            val nowH = Schedule.hijriOf(pr, LocalDate.now())
+            // the Hijri date changes at Maghrib; the English dates in the cells are the phone's
+            val nowH = Schedule.hijriNow(pr, place, ZonedDateTime.now(Schedule.zone(place)))
             var ym = nowH.year * 12 + nowH.month - 1 + pr.sp.getInt("wcalOff", 0)
             val y = ym / 12; val m = ym % 12 + 1
             val len = runCatching { HijrahDate.of(y, m, 1).lengthOfMonth() }.getOrDefault(30)

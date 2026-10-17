@@ -79,8 +79,8 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         }
         SectionTitle(Tr["school"])
         Card0 {
-            Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
             Choice(Tr["shafii"], pr.school == "shafii") { pr.school = "shafii"; s.changed() }
+            Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
         }
         SectionTitle(Tr["method"])
         Card0 {
@@ -97,17 +97,8 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
             Stepper(Tr["chashtAfter"], pr.chashtAfter, 20, 240, 5) { pr.chashtAfter = it; s.changed() }
             Stepper(Tr["zawalBefore"], pr.zawalBefore, 0, 30, 1) { pr.zawalBefore = it; s.changed() }
         }
-        SectionTitle(Tr["vibMode"])
-        Card0 {
-            SwitchRow(Tr["vibMode"], pr.vibrateMode) { v ->
-                pr.vibrateMode = v; s.changed()
-                if (v && act.needDnd()) act.askDnd()
-            }
-            if (pr.vibrateMode) {
-                Stepper(Tr["vibMin"], pr.vibrateMinutes, 5, 90, 5) { pr.vibrateMinutes = it; s.changed() }
-                key(tick) { Perm(Tr["vibNeed"], act.needDnd()) { act.askDnd() } }
-            }
-        }
+        SectionTitle(Tr["vibPage"])
+        Card0 { Text(Tr["vibPage"] + "  ›", Modifier.fillMaxWidth().clickable { s.page = "vibration"; s.sub = "" }.padding(vertical = 8.dp), fontSize = 16.sp) }
         SectionTitle(Tr["hijriAdj"])
         Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -2, 2, 1) { pr.hijriAdjust = it; s.changed() } }
         SectionTitle(Tr["dst"])

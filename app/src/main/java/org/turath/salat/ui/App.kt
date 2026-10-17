@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -131,7 +132,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 @Composable
 fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
-        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore))
+        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("world", Icons.Outlined.Public))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
         Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -166,14 +167,15 @@ fun Main(s: AppState) {
                     1 -> TimesScreen(s)
                     2 -> RemindersScreen(s)
                     3 -> CalendarScreen(s)
-                    else -> QiblaScreen(s)
+                    4 -> QiblaScreen(s)
+                    else -> WorldPage(s) { s.tab = 0 }
                 }
                 // the menu button (top corner, as in the other screens)
                 // the prayer times of other cities (Makkah, Madinah, al-Quds …) from the Today screen
                 if (s.tab == 0) IconButton(onClick = { s.page = "world"; s.sub = "" }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopEnd)) {
                     Icon(Icons.Outlined.Public, Tr["world"])
                 }
-                if (s.tab != 4) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {
+                if (s.tab != 4 && s.tab != 5) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {
                     Icon(Icons.Outlined.Menu, Tr["menu"])
                 }
             }
@@ -186,9 +188,13 @@ fun Main(s: AppState) {
 private fun Menu(s: AppState, open: (String) -> Unit) {
     val place = s.prefs.place
     Column(Modifier.fillMaxHeight().verticalScroll(rememberScrollState())) {
-        Column(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Teal, Ink))).statusBarsPadding().padding(20.dp)) {
-            Text(Tr["app"], color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
-            Text(place?.name ?: "", color = Gold, fontSize = 15.sp)
+        Row(Modifier.fillMaxWidth().background(Brush.verticalGradient(listOf(Teal, Ink))).statusBarsPadding().padding(20.dp), verticalAlignment = Alignment.CenterVertically) {
+            androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null, Modifier.size(56.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)))
+            Spacer(Modifier.width(14.dp))
+            Column {
+                Text(Tr["app"], color = Color.White, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                Text(place?.name ?: "", color = Gold, fontSize = 15.sp)
+            }
         }
         @Composable fun item(key: String, icon: ImageVector, label: String) =
             NavigationDrawerItem(label = { Text(label, fontSize = 16.sp) }, selected = false, onClick = { open(key) }, icon = { Icon(icon, null) },
@@ -197,6 +203,7 @@ private fun Menu(s: AppState, open: (String) -> Unit) {
         item("city", Icons.Outlined.PushPin, Tr["location"])
         item("language", Icons.Outlined.Language, Tr["language"])
         item("volume", Icons.AutoMirrored.Outlined.VolumeUp, Tr["volume"])
+        item("vibration", Icons.Outlined.Vibration, Tr["vibPage"])
         item("settings", Icons.Outlined.Settings, Tr["settings"])
         item("look", Icons.Outlined.Palette, Tr["look"])
         HorizontalDivider(Modifier.padding(vertical = 6.dp))
@@ -216,6 +223,7 @@ private fun Page(s: AppState, back: () -> Unit) {
         "city" -> CityPicker(s, false) { s.page = ""; s.sub = "" }
         "language" -> LanguagePage(s, back)
         "settings" -> SettingsScreen(s, back)
+        "vibration" -> VibrationPage(s, back)
         "look" -> LookPage(s, back)
         "world" -> WorldPage(s, back)
         "fasting" -> FastingPage(s, back)

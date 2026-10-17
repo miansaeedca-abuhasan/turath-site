@@ -47,6 +47,17 @@ fun RemindersScreen(s: AppState) {
             Text(Tr["tRem"], Modifier.weight(1f), fontSize = 28.sp, fontWeight = FontWeight.Bold)
             IconButton(onClick = { edit = Reminder(System.currentTimeMillis(), "", listOf(P.FAJR), -15, 127, Snd.NOTIFY, true) }) { Icon(Icons.Outlined.Add, Tr["newRem"], Modifier.size(30.dp)) }
         }
+        for (r in pr.reminders.sortedByDescending { it.id }) Card0 {
+            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { edit = r }) {
+                Column(Modifier.weight(1f)) {
+                    Row { Days(r.days) }
+                    Text(r.label.ifEmpty { Tr["remTitle"] }, fontSize = 19.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 2.dp))
+                    Text(Tr.num(minText(r.minutes)) + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + r.bases.joinToString("، ") { Tr.p(it).substringBefore(" (") }, fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                }
+                Switch(checked = r.on, onCheckedChange = { v -> pr.reminders = pr.reminders.map { if (it.id == r.id) it.copy(on = v) else it }; s.changed() })
+            }
+        }
         // the voluntary prayers, ready made
         for (p in listOf(P.TAHAJJUD, P.ISHRAQ, P.CHASHT)) {
             val on = pr.sound(p) != Snd.SILENT
@@ -57,17 +68,6 @@ fun RemindersScreen(s: AppState) {
         Card0 {
             SwitchRow(Tr["azkarM"], pr.azkarMorning, Tr["azkarMNote"]) { pr.azkarMorning = it; s.changed() }
             SwitchRow(Tr["azkarE"], pr.azkarEvening, Tr["azkarENote"]) { pr.azkarEvening = it; s.changed() }
-        }
-        for (r in pr.reminders) Card0 {
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { edit = r }) {
-                Column(Modifier.weight(1f)) {
-                    Row { Days(r.days) }
-                    Text(r.label.ifEmpty { Tr["remTitle"] }, fontSize = 19.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 2.dp))
-                    Text(Tr.num(minText(r.minutes)) + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + r.bases.joinToString("، ") { Tr.p(it).substringBefore(" (") }, fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
-                }
-                Switch(checked = r.on, onCheckedChange = { v -> pr.reminders = pr.reminders.map { if (it.id == r.id) it.copy(on = v) else it }; s.changed() })
-            }
         }
         Text(Tr["remHint"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f))
     }

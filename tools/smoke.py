@@ -37,7 +37,7 @@ def shot(name):
 apk = 'app/build/outputs/apk/debug/app-debug.apk'
 print(sh('install', '-r', '-g', apk).decode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6); shot('00_first_start')
-tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ', 'مساجد'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة', 'المساجد'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla', 'Mosques']}
+tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ', 'دنیا کے شہر'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة', 'مدن العالم'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla', 'World cities']}
 menu = {'ur': 'مینو', 'ar': 'القائمة', 'en': 'Menu'}
 def tap_desc(t):
     sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')
@@ -69,7 +69,7 @@ for lang in ['ur', 'ar', 'en']:
     tap_text(tabs[lang][0]); time.sleep(1)
     if tap_desc(menu[lang]): shot(f'{lang}_7_menu'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
     subprocess.run(['adb', 'emu', 'geo', 'fix', '-79.644', '43.589'], capture_output=True)
-    if tap_text(tabs[lang][5]): time.sleep(40); shot(f'{lang}_8_mosques')
+    if tap_text(tabs[lang][5]): time.sleep(3); shot(f'{lang}_8_world')
     if lang == 'ur':
         for name, item in [('settings', 'ترتیبات'), ('durood', 'درود کی یاد دہانی'), ('look', 'ایپ اور ویجٹ کی شکل'), ('fasting', 'روزے، تکبیرات اور جمعہ')]:
             if from_menu(lang, item):
@@ -84,8 +84,8 @@ for lang in ['ur', 'ar', 'en']:
         sh('shell', 'input', 'tap', '540', '900'); shot('ur_9_day_sheet'); sh('shell', 'input', 'keyevent', '4')
 # random taps and swipes over the whole app (in English): any crash shows in the log below
 sh('shell', 'am', 'force-stop', 'org.turath.salat'); sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(5)
-print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '7', '3000').decode()[-1500:])
-print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '11', '3000').decode()[-1500:])
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '7', '1500').decode()[-1500:])
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '11', '1500').decode()[-1500:])
 # a home-screen widget cannot be placed from adb; the widget is checked by its update code running without errors
 open('shots/logcat.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat.txt').read()[-3000:])
@@ -99,7 +99,7 @@ xml = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string na
 sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6)
 subprocess.run(['adb', 'emu', 'geo', 'fix', '-79.644', '43.589'], capture_output=True)
-if tap_text('Mosques'): time.sleep(45); shot('rel_mosques')
-print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '150', '-s', '5', '2000').decode()[-800:])
+if tap_text('World cities'): time.sleep(3); shot('rel_world')
+print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '150', '-s', '5', '500').decode()[-800:])
 open('shots/logcat_release.txt', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'AndroidRuntime:E', 'salat:V', '*:S'))
 print(open('shots/logcat_release.txt').read()[-3000:])
