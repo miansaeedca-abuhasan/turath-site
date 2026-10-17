@@ -174,9 +174,7 @@ fun AboutPage(s: AppState, back: () -> Unit) {
         Card0 {
             Text(Tr["app"], fontSize = 22.sp, fontWeight = FontWeight.Bold)
             Text(Tr["aboutText"], fontSize = 15.sp, modifier = Modifier.padding(vertical = 8.dp))
-            Text("turathkhairalquroon@gmail.com", color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable {
-                runCatching { s.act.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:turathkhairalquroon@gmail.com"))) } })
-            Text("turathkhairalquroon.com", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(top = 4.dp).clickable {
+            Text("turathkhairalquroon.com", color = MaterialTheme.colorScheme.primary, modifier = Modifier.clickable {
                 runCatching { s.act.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://turathkhairalquroon.com"))) } })
         }
         SectionTitle(Tr["credits"])
