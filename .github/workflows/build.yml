@@ -17,9 +17,9 @@ jobs:
         with: { gradle-version: '8.11.1' }
       - name: cities (GeoNames, CC BY 4.0)
         run: |
-          curl -fsSL --retry 3 -o /tmp/c.zip https://download.geonames.org/export/dump/cities5000.zip
+          curl -fsSL --retry 3 -o /tmp/c.zip https://download.geonames.org/export/dump/cities1000.zip
           unzip -o -q /tmp/c.zip -d /tmp
-          python3 tools/cities.py /tmp/cities5000.txt app/src/main/assets/cities.tsv
+          python3 tools/cities.py /tmp/cities1000.txt app/src/main/assets/cities.tsv
       - name: birdsong (BigSoundBank, CC0)
         run: |
           sudo apt-get install -y -qq ffmpeg >/dev/null

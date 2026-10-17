@@ -36,6 +36,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(b)
         enableEdgeToEdge()
         Alarms.channels(this)
+        Thread { runCatching { Cities.load(this) } }.start()   // the list of towns is read in the background, so that the first search is quick
         tabRequest = intent?.getIntExtra("tab", -1) ?: -1
         setContent { App(this) }
     }

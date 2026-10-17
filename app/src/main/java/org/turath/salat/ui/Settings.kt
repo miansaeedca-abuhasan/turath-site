@@ -152,6 +152,28 @@ fun areaName(ctx: android.content.Context, lat: Double, lng: Double): String? = 
     (a?.subLocality ?: a?.locality)?.takeIf { it.isNotBlank() }
 }.getOrNull()
 
+class Found(val place: Place, val sub: String)
+
+/** any town or neighbourhood typed by name, from the phone's address lookup (works without the app having internet access); the time zone comes from the nearest listed city */
+@Suppress("DEPRECATION")
+fun geoSearch(ctx: android.content.Context, q: String, cc: String?): List<Found> = runCatching {
+    if (!android.location.Geocoder.isPresent()) return emptyList()
+    val g = android.location.Geocoder(ctx, java.util.Locale(Tr.lang))
+    val list: List<android.location.Address> = if (Build.VERSION.SDK_INT >= 33) {
+        val box = arrayOfNulls<List<android.location.Address>>(1); val latch = java.util.concurrent.CountDownLatch(1)
+        g.getFromLocationName(q, 8, object : android.location.Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<android.location.Address>) { box[0] = addresses; latch.countDown() }
+            override fun onError(errorMessage: String?) { latch.countDown() }
+        })
+        latch.await(8, java.util.concurrent.TimeUnit.SECONDS); box[0] ?: emptyList()
+    } else g.getFromLocationName(q, 8) ?: emptyList()
+    list.filter { it.hasLatitude() && it.hasLongitude() && (cc == null || it.countryCode == cc) }.mapNotNull { a ->
+        val name = (a.subLocality ?: a.locality ?: a.featureName)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+        val tz = Cities.nearest(ctx, a.latitude, a.longitude)?.tz ?: return@mapNotNull null
+        Found(Place(name, a.countryCode ?: "", a.latitude, a.longitude, tz), listOfNotNull(a.locality?.takeIf { it != name }, a.adminArea, a.countryName).distinct().joinToString(", "))
+    }.distinctBy { it.place.name + it.sub }
+}.getOrDefault(emptyList())
+
 /** the phone's location: the area's name from the phone's address lookup, the time zone from the nearest city */
 @SuppressLint("MissingPermission")
 fun gps(s: AppState) {
@@ -188,6 +210,16 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
         OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth().padding(horizontal = 12.dp), singleLine = true,
             leadingIcon = { Icon(Icons.Outlined.Search, null) }, placeholder = { Text(Tr["search"]) })
         if (!world && cc == null) TextButton(onClick = { gps(s) }, Modifier.padding(horizontal = 8.dp)) { Icon(Icons.Outlined.MyLocation, null); Text(" " + Tr["useGps"]) }
+        var found by remember { mutableStateOf<List<Found>>(emptyList()) }
+        LaunchedEffect(q, cc) {
+            found = emptyList()
+            if (q.trim().length >= 3) { kotlinx.coroutines.delay(700); found = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { geoSearch(act, q.trim(), cc) } }
+        }
+        val pickFound: (Found) -> Unit = { f ->
+            if (world) s.prefs.worldCities = s.prefs.worldCities + f.place
+            else { s.prefs.place = f.place; s.prefs.placeByGps = false }
+            s.changed(); done()
+        }
         val pick: (Cities.City) -> Unit = { c ->
             if (world) s.prefs.worldCities = s.prefs.worldCities + c.place()
             else { s.prefs.place = c.place(); s.prefs.placeByGps = false }
@@ -200,12 +232,16 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
                 if (qq.length >= 3) items(Cities.search(act, qq)) { c ->
                     ListItem(headlineContent = { Text(Cities.display(c, Tr.lang)) }, supportingContent = { Text(Cities.countryName(c.country, Tr.lang)) }, modifier = Modifier.clickable { pick(c) })
                 }
+                items(found) { f -> ListItem(headlineContent = { Text(f.place.name) }, supportingContent = { Text(f.sub) }, leadingContent = { Icon(Icons.Outlined.Place, null) }, modifier = Modifier.clickable { pickFound(f) }) }
                 items(countries.filter { qq.isEmpty() || it.second.lowercase().contains(qq) || it.first.lowercase() == qq }) { (code, name) ->
                     ListItem(headlineContent = { Text(name) }, trailingContent = { Text(code) }, modifier = Modifier.clickable { cc = code; q = "" })
                 }
-            } else items(Cities.inCountry(act, cc!!, q).take(400)) { c ->
-                ListItem(headlineContent = { Text(Cities.display(c, Tr.lang)) }, supportingContent = { if (Cities.display(c, Tr.lang) != c.name) Text(c.name) },
-                    modifier = Modifier.clickable { pick(c) })
+            } else {
+                items(Cities.inCountry(act, cc!!, q).take(400)) { c ->
+                    ListItem(headlineContent = { Text(Cities.display(c, Tr.lang)) }, supportingContent = { if (Cities.display(c, Tr.lang) != c.name) Text(c.name) },
+                        modifier = Modifier.clickable { pick(c) })
+                }
+                items(found) { f -> ListItem(headlineContent = { Text(f.place.name) }, supportingContent = { Text(f.sub) }, leadingContent = { Icon(Icons.Outlined.Place, null) }, modifier = Modifier.clickable { pickFound(f) }) }
             }
         }
     }
