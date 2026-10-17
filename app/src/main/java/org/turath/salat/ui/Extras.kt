@@ -92,8 +92,6 @@ fun FastingPage(s: AppState, back: () -> Unit) {
         SectionTitle(Tr["ramadan"])
         Card0 {
             SwitchRow(Tr["ramadanFast"], pr.ramadan, Tr["ramadanNote"]) { pr.ramadan = it; s.changed() }
-            SwitchRow(Tr["taraweeh"], pr.taraweehVib) { v -> pr.taraweehVib = v; s.changed(); if (v && s.act.needDnd()) s.act.askDnd() }
-            if (pr.taraweehVib) Stepper(Tr["taraweehMin"], pr.taraweehMinutes, 60, 120, 15) { pr.taraweehMinutes = it; s.changed() }
         }
         SectionTitle(Tr["fasting"])
         Card0 {
@@ -127,11 +125,13 @@ fun DuroodPage(s: AppState, back: () -> Unit) {
     val pr = s.prefs; val ctx = s.act
     var sel by remember { mutableStateOf(Durood.chosen(pr)) }
     var files by remember { mutableStateOf(pr.duroodFiles) }
+    var ownSel by remember { mutableStateOf(Durood.ownChosen(pr)) }
     var playing by remember { mutableIntStateOf(-1) }
     DisposableEffect(Unit) { onDispose { Preview.stop() } }
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
         for (u in uris) runCatching { ctx.contentResolver.takePersistableUriPermission(u, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-        files = (files + uris.map { it.toString() }).distinct(); pr.duroodFiles = files; Durood.start(ctx)
+        files = (files + uris.map { it.toString() }).distinct(); pr.duroodFiles = files
+        ownSel = ownSel + uris.map { it.toString() }; Durood.setOwnChosen(pr, ownSel); Durood.start(ctx)
     }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["duroodMenu"], back)
@@ -157,6 +157,7 @@ fun DuroodPage(s: AppState, back: () -> Unit) {
         SectionTitle(Tr["duroodOwn"])
         Card0 {
             for (f in files) Row(verticalAlignment = Alignment.CenterVertically) {
+                Checkbox(f in ownSel, { v -> ownSel = if (v) ownSel + f else ownSel - f; Durood.setOwnChosen(pr, ownSel); Durood.start(ctx) })
                 IconButton(onClick = { Preview.playUri(ctx, Uri.parse(f)) }) { Icon(Icons.Outlined.PlayCircle, Tr["test"]) }
                 Text(Uri.parse(f).lastPathSegment?.substringAfterLast('/') ?: f, Modifier.weight(1f), maxLines = 1, fontSize = 14.sp)
                 IconButton(onClick = { files = files - f; pr.duroodFiles = files; Durood.start(ctx) }) { Icon(Icons.Outlined.Close, Tr["delete"]) }

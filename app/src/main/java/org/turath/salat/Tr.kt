@@ -383,6 +383,12 @@ object Tr {
     /** full day names from Monday (1) to Sunday (7) */
     fun dayName(v: Int) = get("daysCal").split(',', '،')[v - 1]
     fun dayShort(v: Int) = get("days").split(',', '،')[v - 1]
+    /** the day names of the calendar widget: whole names in Urdu and Arabic (Arabic without «ال»), Monday (1) to Sunday (7) */
+    fun dayWidget(v: Int): String = when (lang) {
+        "ur" -> listOf("پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ", "اتوار")[v - 1]
+        "ar" -> listOf("إثنين", "ثلاثاء", "أربعاء", "خميس", "جمعة", "سبت", "أحد")[v - 1]
+        else -> dayShort(v)
+    }
 
     /** a short name of a sound: «اذان — علی ملا», «حی علی الصلاۃ — عصام بخاری», a bird (the list is grouped by Makkah / Madinah / other) */
     fun snd(s: Snd): String = when {

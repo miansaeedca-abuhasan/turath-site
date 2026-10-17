@@ -139,7 +139,10 @@ fun QiblaScreen(s: AppState) {
             SegmentedButton(mode == 0, { mode = 0 }, SegmentedButtonDefaults.itemShape(0, 2), icon = { Icon(Icons.Outlined.Explore, null) }) { Text(Tr["compass"]) }
             SegmentedButton(mode == 1, { mode = 1 }, SegmentedButtonDefaults.itemShape(1, 2), icon = { Icon(Icons.Outlined.PhotoCamera, null) }) { Text(Tr["camera"]) }
         }
-        if (mode == 0) QiblaCompass(s) else QiblaCamera(s)
+        // the compass and the camera are drawn the same way in every language (the qibla must not depend on the language)
+        CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+            if (mode == 0) QiblaCompass(s) else QiblaCamera(s)
+        }
     }
     if (calib) AlertDialog(onDismissRequest = { calib = false }, confirmButton = { TextButton(onClick = { calib = false }) { Text(Tr["ok"]) } },
         title = { Text(Tr["calibrate"]) },

@@ -32,8 +32,6 @@ object Events {
             for (p in FIVE) {
                 val s = pr.sound(p)
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
-                val taraweeh = p == P.ISHA && pr.taraweehVib && ramadanNight
-                if (taraweeh) { out += Ev(t[p], "vibon", p); out += Ev(t[p].plusMinutes(pr.taraweehMinutes.toLong()), "viboff", p) }
                 // the phone on vibrate for this prayer (on Fridays Dhuhr's own setting is replaced by the Jumu'ah one)
                 val vk = if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY) "JUMUAH" else p.name
                 if (pr.vibOn(vk) && pr.vibLen(vk) > 0) {

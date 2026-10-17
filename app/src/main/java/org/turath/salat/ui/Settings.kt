@@ -90,6 +90,8 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         SectionTitle(Tr["adjust"])
         Card0 {
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) Stepper(Tr.p(p), pr.adjust(p), -30, 30, 1) { pr.setAdjust(p, it); s.changed() }
+            // Tahajjud (the last third of the night): the calculated time, moved earlier or later by up to 200 minutes
+            Stepper(Tr.p(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
         }
         SectionTitle(Tr["naflTimes"])
         Card0 {

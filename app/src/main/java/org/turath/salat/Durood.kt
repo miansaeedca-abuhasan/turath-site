@@ -37,8 +37,12 @@ object Durood {
     )
 
     /** the recordings the user chose (all by default) */
-    fun chosen(pr: Prefs): Set<Int> = pr.sp.getString("duroodSel", null)?.split(',')?.mapNotNull { it.toIntOrNull() }?.toSet() ?: PHRASES.indices.toSet()
-    fun setChosen(pr: Prefs, v: Set<Int>) = pr.sp.edit().putString("duroodSel", v.sorted().joinToString(",")).apply()
+    /** only «صَلِّ عَلَى النَّبِيِّ» by default; whatever else is played was ticked in the list */
+    fun chosen(pr: Prefs): Set<Int> = pr.sp.getString("duroodSel2", null)?.split(',')?.mapNotNull { it.toIntOrNull() }?.toSet() ?: setOf(1)
+    fun setChosen(pr: Prefs, v: Set<Int>) = pr.sp.edit().putString("duroodSel2", v.sorted().joinToString(",")).apply()
+    /** the user's own recordings that are ticked (none until ticked, a newly added one is ticked) */
+    fun ownChosen(pr: Prefs): Set<String> = pr.sp.getStringSet("duroodOwnSel", emptySet())!!.toSet()
+    fun setOwnChosen(pr: Prefs, v: Set<String>) = pr.sp.edit().putStringSet("duroodOwnSel", v).apply()
     fun rawUri(ctx: Context, i: Int): Uri? = ctx.resources.getIdentifier("durood_${i + 1}", "raw", ctx.packageName).takeIf { it != 0 }?.let { Uri.parse("android.resource://${ctx.packageName}/$it") }
 
     fun on(pr: Prefs) = pr.sp.getBoolean("durood", true)
@@ -46,7 +50,7 @@ object Durood {
 
     /** the recordings to play: the app's chosen ones, then the user's own */
     fun sources(ctx: Context): List<Uri> { val pr = Prefs(ctx)
-        return chosen(pr).sorted().mapNotNull { rawUri(ctx, it) } + pr.duroodFiles.map { Uri.parse(it) } }
+        return chosen(pr).sorted().mapNotNull { rawUri(ctx, it) } + pr.duroodFiles.filter { it in ownChosen(pr) }.map { Uri.parse(it) } }
 
     fun start(ctx: Context) {
         if (!on(Prefs(ctx)) || sources(ctx).isEmpty()) { ctx.stopService(Intent(ctx, DuroodService::class.java)); return }
@@ -84,7 +88,8 @@ class DuroodService : Service() {
         // silent or vibrate (the app puts the phone on vibrate at prayer time), or a call: no sound
         if (am.ringerMode != AudioManager.RINGER_MODE_NORMAL || am.mode != AudioManager.MODE_NORMAL) return
         val now = System.currentTimeMillis()
-        if (now - pr.sp.getLong("duroodLast", 0) < Durood.gapMinutes(pr) * 60_000L) return
+        // one salawat at a time: not while one is playing, and never twice within a few seconds (the unlock can be announced twice)
+        if (mp?.isPlaying == true || now - pr.sp.getLong("duroodLast", 0) < maxOf(Durood.gapMinutes(pr) * 60_000L, 15_000L)) return
         val src = Durood.sources(this)
         if (src.isEmpty()) return
         // in turn, or one at random

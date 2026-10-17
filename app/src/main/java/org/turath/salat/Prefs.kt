@@ -135,7 +135,7 @@ class Prefs(ctx: Context) {
     var h24: Boolean get() = sp.getBoolean("h24", false); set(v) = sp.edit().putBoolean("h24", v).apply()
 
     fun adjust(p: P): Int = sp.getInt("adj_" + p.name, 0)
-    fun setAdjust(p: P, v: Int) = sp.edit().putInt("adj_" + p.name, v.coerceIn(-30, 30)).apply()
+    fun setAdjust(p: P, v: Int) = sp.edit().putInt("adj_" + p.name, v.coerceIn(if (p == P.TAHAJJUD) -200 else -30, if (p == P.TAHAJJUD) 200 else 30)).apply()
 
     /** minutes after sunrise for ishraq, after sunrise for chasht, before dhuhr for the zawal (forbidden) time */
     var ishraqAfter: Int get() = sp.getInt("ishraq", 15); set(v) = sp.edit().putInt("ishraq", v).apply()

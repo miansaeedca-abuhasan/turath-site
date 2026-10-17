@@ -180,8 +180,8 @@ class WidgetCal : AppWidgetProvider() {
             if (ids.isEmpty()) return
             val pr = Prefs(ctx); val place = pr.place ?: return
             Tr.lang = pr.lang.ifEmpty { "en" }
-            // the Hijri date changes at Maghrib; the English dates in the cells are the phone's
-            val nowH = Schedule.hijriNow(pr, place, ZonedDateTime.now(Schedule.zone(place)))
+            // the calendar's «today» is the phone's date (the prayer widget's Hijri date alone changes at Maghrib)
+            val nowH = Schedule.hijriOf(pr, LocalDate.now())
             var ym = nowH.year * 12 + nowH.month - 1 + pr.sp.getInt("wcalOff", 0)
             val y = ym / 12; val m = ym % 12 + 1
             val len = runCatching { HijrahDate.of(y, m, 1).lengthOfMonth() }.getOrDefault(30)
@@ -200,7 +200,8 @@ class WidgetCal : AppWidgetProvider() {
             // short day names (the first letters of the full name)
             for (i in 0 until 7) {
                 val d = (ws - 1 + i) % 7 + 1
-                v.setTextViewText(HEADS[i], Tr.dayShort(d))
+                v.setTextViewText(HEADS[i], Tr.dayWidget(d))
+                if (Tr.lang != "en") v.setTextViewTextSize(HEADS[i], android.util.TypedValue.COMPLEX_UNIT_SP, 8.5f)
             }
             for (r in ROWS) v.removeAllViews(r)
             for (row in 0 until 6) for (col in 0 until 7) {
