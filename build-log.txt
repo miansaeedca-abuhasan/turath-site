@@ -1,0 +1,165 @@
+
+Welcome to Gradle 8.11.1!
+
+Here are the highlights of this release:
+ - Parallel load and store for Configuration Cache
+ - Java compilation errors at the end of the build output
+ - Consolidated report for warnings and deprecations
+
+For more details see https://docs.gradle.org/8.11.1/release-notes.html
+
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.11.1/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+
+> Configure project :app
+w: file:///home/runner/work/turath-site/turath-site/app/build.gradle.kts:47:19: 'enableStrongSkippingMode: Property<Boolean>' is deprecated. Use the featureFlags option instead
+
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preDebugBuild UP-TO-DATE
+> Task :app:generateDebugResValues
+> Task :app:checkDebugAarMetadata
+> Task :app:mapDebugSourceSetPaths
+> Task :app:generateDebugResources
+> Task :app:packageDebugResources
+> Task :app:mergeDebugResources
+> Task :app:createDebugCompatibleScreenManifests
+> Task :app:extractDeepLinksDebug
+> Task :app:parseDebugLocalResources
+> Task :app:processDebugMainManifest
+> Task :app:processDebugManifest
+> Task :app:preDebugUnitTestBuild UP-TO-DATE
+> Task :app:processDebugManifestForPackage
+> Task :app:javaPreCompileDebugUnitTest
+> Task :app:javaPreCompileDebug
+> Task :app:mergeDebugNativeDebugMetadata NO-SOURCE
+> Task :app:mergeDebugShaders
+> Task :app:compileDebugShaders NO-SOURCE
+> Task :app:generateDebugAssets UP-TO-DATE
+> Task :app:mergeDebugAssets
+> Task :app:desugarDebugFileDependencies
+> Task :app:compressDebugAssets
+> Task :app:processDebugResources
+> Task :app:checkDebugDuplicateClasses
+
+> Task :app:compileDebugKotlin
+e: The daemon has terminated unexpectedly on startup attempt #1 with error code: 0. The daemon process output:
+    1. Kotlin compile daemon is ready
+
+> Task :app:mergeExtDexDebug
+
+> Task :app:compileDebugKotlin
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/MainActivity.kt:75:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/MainActivity.kt:76:15 'fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Unit' is deprecated. This method has been deprecated in favor of using the Activity Result API
+      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt
+      contracts for common intents available in
+      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for
+      testing, and allow receiving results in separate, testable classes independent from your
+      activity. Use
+      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing
+      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and
+      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/ui/App.kt:134:99 'val Icons.Outlined.FormatListBulleted: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.FormatListBulleted.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/ui/Qibla.kt:123:55 'static field VIBRATOR_SERVICE: String' is deprecated. Deprecated in Java.
+
+> Task :app:compileDebugJavaWithJavac NO-SOURCE
+> Task :app:processDebugJavaRes
+> Task :app:bundleDebugClassesToCompileJar
+> Task :app:bundleDebugClassesToRuntimeJar
+> Task :app:dexBuilderDebug
+> Task :app:mergeDebugGlobalSynthetics
+> Task :app:compileDebugUnitTestKotlin
+> Task :app:compileDebugUnitTestJavaWithJavac NO-SOURCE
+> Task :app:processDebugUnitTestJavaRes
+> Task :app:mergeDebugJavaResource
+> Task :app:testDebugUnitTest
+> Task :app:mergeLibDexDebug
+> Task :app:mergeDebugJniLibFolders
+> Task :app:validateSigningDebug
+> Task :app:writeDebugAppMetadata
+> Task :app:mergeProjectDexDebug
+> Task :app:mergeDebugNativeLibs
+> Task :app:writeDebugSigningConfigVersions
+> Task :app:buildKotlinToolingMetadata
+> Task :app:preReleaseBuild UP-TO-DATE
+
+> Task :app:stripDebugDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libimage_processing_util_jni.so, libsurface_util_jni.so.
+
+> Task :app:checkReleaseAarMetadata
+> Task :app:generateReleaseResValues
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:packageDebug
+> Task :app:parseReleaseLocalResources
+> Task :app:createDebugApkListingFileRedirect
+> Task :app:processReleaseManifestForPackage
+> Task :app:assembleDebug
+> Task :app:javaPreCompileRelease
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:mergeReleaseResources
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so, libimage_processing_util_jni.so, libsurface_util_jni.so.
+
+> Task :app:mergeReleaseArtProfile
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:collectReleaseDependencies
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:processReleaseResources
+> Task :app:writeReleaseSigningConfigVersions
+> Task :app:convertLinkedResourcesToProtoRelease
+
+> Task :app:compileReleaseKotlin
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/MainActivity.kt:75:18 This declaration overrides a deprecated member but is not marked as deprecated itself. Please add the '@Deprecated' annotation or suppress the diagnostic.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/MainActivity.kt:76:15 'fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray): Unit' is deprecated. This method has been deprecated in favor of using the Activity Result API
+      which brings increased type safety via an {@link ActivityResultContract} and the prebuilt
+      contracts for common intents available in
+      {@link androidx.activity.result.contract.ActivityResultContracts}, provides hooks for
+      testing, and allow receiving results in separate, testable classes independent from your
+      activity. Use
+      {@link #registerForActivityResult(ActivityResultContract, ActivityResultCallback)} passing
+      in a {@link RequestMultiplePermissions} object for the {@link ActivityResultContract} and
+      handling the result in the {@link ActivityResultCallback#onActivityResult(Object) callback}.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/ui/App.kt:134:99 'val Icons.Outlined.FormatListBulleted: ImageVector' is deprecated. Use the AutoMirrored version at Icons.AutoMirrored.Outlined.FormatListBulleted.
+w: file:///home/runner/work/turath-site/turath-site/app/src/main/java/org/turath/salat/ui/Qibla.kt:123:55 'static field VIBRATOR_SERVICE: String' is deprecated. Deprecated in Java.
+
+> Task :app:compileReleaseJavaWithJavac NO-SOURCE
+> Task :app:generateReleaseLintVitalReportModel
+> Task :app:mergeReleaseGeneratedProguardFiles
+> Task :app:processReleaseJavaRes
+> Task :app:mergeReleaseJavaResource
+> Task :app:expandReleaseArtProfileWildcards
+> Task :app:lintVitalAnalyzeRelease
+> Task :app:minifyReleaseWithR8
+> Task :app:lintVitalReportRelease
+> Task :app:lintVitalRelease
+> Task :app:compileReleaseArtProfile
+> Task :app:shrinkReleaseRes
+> Task :app:convertShrunkResourcesToBinaryRelease
+> Task :app:optimizeReleaseResources
+> Task :app:packageRelease
+> Task :app:createReleaseApkListingFileRedirect
+> Task :app:assembleRelease
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_3-1792241903005.json
+
+BUILD SUCCESSFUL in 5m 9s
+90 actionable tasks: 90 executed

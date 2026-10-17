@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="org.turath.salat.CalcTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-10-17T13:01:28" hostname="runnervm8k3b6" time="0.08">
+  <properties/>
+  <testcase name="makkah" classname="org.turath.salat.CalcTest" time="0.073"/>
+  <testcase name="mississauga" classname="org.turath.salat.CalcTest" time="0.004"/>
+  <testcase name="highLatitude" classname="org.turath.salat.CalcTest" time="0.001"/>
+  <system-out><![CDATA[Makkah: 05:00 06:16 12:06 15:27 17:56 19:26
+Mississauga ISNA Hanafi: 06:14 07:33 13:04 16:50 18:35 19:54
+Oslo June: 02:21 03:54 13:19 18:00 22:44 00:12
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
