@@ -233,7 +233,6 @@ object Tr {
         "widgetLight" to arrayOf("ویجٹ کا پس منظر سفید", "خلفية الودجة فاتحة", "Light widget background"),
         "duroodRandom" to arrayOf("ہر بار مختلف درود (بے ترتیب)", "صيغة مختلفة كل مرة (عشوائي)", "A different one each time (random)"),
         "duroodWhich" to arrayOf("درود کے الفاظ (سننے کے لیے دبائیں)", "صيغ الصلاة على النبي (اضغط للاستماع)", "Wordings (tap to listen)"),
-        "duroodOwn" to arrayOf("اپنی آڈیو", "تسجيلاتك", "Your own recordings"),
         "duroodAdd" to arrayOf("فون سے آڈیو فائل شامل کریں", "أضف ملفًا صوتيًا من الهاتف", "Add an audio file from the phone"),
         "gmapsNearby" to arrayOf("گوگل میپس میں قریبی مساجد دیکھیں", "اعرض المساجد القريبة في خرائط Google", "See nearby mosques in Google Maps"),
         "adhanW" to arrayOf("اذان", "الأذان", "Adhan"),

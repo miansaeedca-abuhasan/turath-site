@@ -6,11 +6,11 @@ plugins {
 
 android {
     namespace = "org.turath.salat"
-    compileSdk = 35
+    compileSdk = 36
     defaultConfig {
         applicationId = "org.turath.salat"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 36
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = "1.0." + (System.getenv("VERSION_CODE") ?: "1")
         resourceConfigurations += listOf("en", "ar", "ur")

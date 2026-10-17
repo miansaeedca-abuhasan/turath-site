@@ -40,9 +40,6 @@ object Durood {
     /** only «صَلِّ عَلَى النَّبِيِّ» by default; whatever else is played was ticked in the list */
     fun chosen(pr: Prefs): Set<Int> = pr.sp.getString("duroodSel2", null)?.split(',')?.mapNotNull { it.toIntOrNull() }?.toSet() ?: setOf(1)
     fun setChosen(pr: Prefs, v: Set<Int>) = pr.sp.edit().putString("duroodSel2", v.sorted().joinToString(",")).apply()
-    /** the user's own recordings that are ticked (none until ticked, a newly added one is ticked) */
-    fun ownChosen(pr: Prefs): Set<String> = pr.sp.getStringSet("duroodOwnSel", emptySet())!!.toSet()
-    fun setOwnChosen(pr: Prefs, v: Set<String>) = pr.sp.edit().putStringSet("duroodOwnSel", v).apply()
     fun rawUri(ctx: Context, i: Int): Uri? = ctx.resources.getIdentifier("durood_${i + 1}", "raw", ctx.packageName).takeIf { it != 0 }?.let { Uri.parse("android.resource://${ctx.packageName}/$it") }
 
     fun on(pr: Prefs) = pr.sp.getBoolean("durood", true)
