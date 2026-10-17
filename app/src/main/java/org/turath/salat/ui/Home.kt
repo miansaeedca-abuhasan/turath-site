@@ -49,6 +49,7 @@ fun HomeScreen(s: AppState) {
     val cd = Countdown(now, st, today)
     val loc = Locale(Tr.lang)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
+        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null, Modifier.padding(top = 4.dp).size(44.dp).clip(RoundedCornerShape(11.dp)))
         // a moving line between the menu and the globe: nafl times, adhkar, Friday, today's special day, the user's events
         val line = remember(now.toLocalDate(), now.hour < 12, s.version, forb?.first) { Widget.ticker(s.prefs, place, now, today) }
         Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {

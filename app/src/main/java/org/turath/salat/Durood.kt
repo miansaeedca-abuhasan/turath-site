@@ -46,11 +46,11 @@ object Durood {
     fun rawUri(ctx: Context, i: Int): Uri? = ctx.resources.getIdentifier("durood_${i + 1}", "raw", ctx.packageName).takeIf { it != 0 }?.let { Uri.parse("android.resource://${ctx.packageName}/$it") }
 
     fun on(pr: Prefs) = pr.sp.getBoolean("durood", true)
-    fun gapMinutes(pr: Prefs) = pr.sp.getInt("duroodGap", 5)
+    fun gapMinutes(pr: Prefs) = pr.sp.getInt("duroodGap", 0)
 
     /** the recordings to play: the app's chosen ones, then the user's own */
     fun sources(ctx: Context): List<Uri> { val pr = Prefs(ctx)
-        return chosen(pr).sorted().mapNotNull { rawUri(ctx, it) } + pr.duroodFiles.filter { it in ownChosen(pr) }.map { Uri.parse(it) } }
+        return chosen(pr).sorted().mapNotNull { rawUri(ctx, it) } }
 
     fun start(ctx: Context) {
         if (!on(Prefs(ctx)) || sources(ctx).isEmpty()) { ctx.stopService(Intent(ctx, DuroodService::class.java)); return }
@@ -62,7 +62,11 @@ class DuroodService : Service() {
     private var mp: MediaPlayer? = null
 
     private val rx = object : BroadcastReceiver() {
-        override fun onReceive(c: Context, i: Intent) { if (i.action == Intent.ACTION_USER_PRESENT) remind() }
+        override fun onReceive(c: Context, i: Intent) {
+            // unlocking, or the screen turning on when there is no lock (with a lock the unlock itself is awaited)
+            val locked = c.getSystemService(android.app.KeyguardManager::class.java).isKeyguardLocked
+            if (i.action == Intent.ACTION_USER_PRESENT || (i.action == Intent.ACTION_SCREEN_ON && !locked)) remind()
+        }
     }
 
     override fun onBind(i: Intent?): IBinder? = null
@@ -76,7 +80,7 @@ class DuroodService : Service() {
         val n = Notification.Builder(this, "durood").setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this)).setContentTitle(Tr["durood"])
             .setContentText(Durood.PHRASES[0]).setContentIntent(open).setOngoing(true).build()
         if (Build.VERSION.SDK_INT >= 34) startForeground(78, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE) else startForeground(78, n)
-        registerReceiver(rx, IntentFilter(Intent.ACTION_USER_PRESENT))
+        registerReceiver(rx, IntentFilter(Intent.ACTION_USER_PRESENT).apply { addAction(Intent.ACTION_SCREEN_ON) })
     }
 
     override fun onStartCommand(i: Intent?, flags: Int, id: Int) = START_STICKY
@@ -85,11 +89,11 @@ class DuroodService : Service() {
         val pr = Prefs(this)
         if (!Durood.on(pr)) return
         val am = getSystemService(AudioManager::class.java)
-        // silent or vibrate (the app puts the phone on vibrate at prayer time), or a call: no sound
-        if (am.ringerMode != AudioManager.RINGER_MODE_NORMAL || am.mode != AudioManager.MODE_NORMAL) return
+        // played on a silent or vibrating phone too (it is a media sound); only during a call it is not
+        if (am.mode != AudioManager.MODE_NORMAL) return
         val now = System.currentTimeMillis()
         // one salawat at a time: not while one is playing, and never twice within a few seconds (the unlock can be announced twice)
-        if (mp?.isPlaying == true || now - pr.sp.getLong("duroodLast", 0) < maxOf(Durood.gapMinutes(pr) * 60_000L, 15_000L)) return
+        if (mp?.isPlaying == true || now - pr.sp.getLong("duroodLast", 0) < maxOf(Durood.gapMinutes(pr) * 60_000L, 6_000L)) return
         val src = Durood.sources(this)
         if (src.isEmpty()) return
         // in turn, or one at random
@@ -98,7 +102,7 @@ class DuroodService : Service() {
         mp?.release()
         mp = runCatching {
             MediaPlayer().apply {
-                setAudioAttributes(Audio.attrs(this@DuroodService))
+                setAudioAttributes(android.media.AudioAttributes.Builder().setUsage(android.media.AudioAttributes.USAGE_MEDIA).setContentType(android.media.AudioAttributes.CONTENT_TYPE_MUSIC).build())
                 setDataSource(this@DuroodService, src[k % src.size])
                 setVolume(.7f, .7f); setOnCompletionListener { it.release(); mp = null }
                 prepare(); start()

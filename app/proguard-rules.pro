@@ -1,1 +1,3 @@
 -keep class org.turath.salat.** { *; }
+-dontwarn **
+-keep class androidx.camera.** { *; }

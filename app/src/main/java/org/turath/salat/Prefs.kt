@@ -138,7 +138,7 @@ class Prefs(ctx: Context) {
     fun setAdjust(p: P, v: Int) = sp.edit().putInt("adj_" + p.name, v.coerceIn(if (p == P.TAHAJJUD) -200 else -30, if (p == P.TAHAJJUD) 200 else 30)).apply()
 
     /** minutes after sunrise for ishraq, after sunrise for chasht, before dhuhr for the zawal (forbidden) time */
-    var ishraqAfter: Int get() = sp.getInt("ishraq", 15); set(v) = sp.edit().putInt("ishraq", v).apply()
+    var ishraqAfter: Int get() = sp.getInt("ishraq", 10); set(v) = sp.edit().putInt("ishraq", v).apply()
     var chashtAfter: Int get() = sp.getInt("chasht", 120); set(v) = sp.edit().putInt("chasht", v).apply()
     var zawalBefore: Int get() = sp.getInt("zawal", 10); set(v) = sp.edit().putInt("zawal", v).apply()
 
@@ -233,9 +233,11 @@ class Prefs(ctx: Context) {
         set(v) = sp.edit().putString("events", JSONArray().apply { v.forEach { put(it.json()) } }.toString()).apply()
 
     /** other cities shown with their times (Makkah, Madinah, al-Quds first) */
+    val fixedCities = listOf(Place("Makkah", "SA", 21.4225, 39.8262, "Asia/Riyadh"), Place("Madinah", "SA", 24.4672, 39.6111, "Asia/Riyadh"),
+        Place("Al-Quds", "PS", 31.7767, 35.2345, "Asia/Jerusalem"))
+    /** Makkah, Madinah and Bayt al-Maqdis are always there; the user adds the others */
     var worldCities: List<Place>
-        get() = sp.getString("world", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { val o = a.getJSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) } }
-            ?: listOf(Place("Makkah", "SA", 21.4225, 39.8262, "Asia/Riyadh"), Place("Madinah", "SA", 24.4672, 39.6111, "Asia/Riyadh"),
-                Place("Al-Quds", "PS", 31.7767, 35.2345, "Asia/Jerusalem"))
-        set(v) = sp.edit().putString("world", JSONArray().apply { v.forEach { put(JSONObject().put("n", it.name).put("c", it.country).put("lat", it.lat).put("lng", it.lng).put("tz", it.tz)) } }.toString()).apply()
+        get() = fixedCities + (sp.getString("world", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { val o = a.getJSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) } } ?: emptyList())
+            .filter { c -> fixedCities.none { it.name == c.name } }
+        set(v) = sp.edit().putString("world", JSONArray().apply { v.filter { c -> fixedCities.none { it.name == c.name } }.forEach { put(JSONObject().put("n", it.name).put("c", it.country).put("lat", it.lat).put("lng", it.lng).put("tz", it.tz)) } }.toString()).apply()
 }

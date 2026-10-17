@@ -13,6 +13,7 @@ android {
         targetSdk = 35
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = "1.0." + (System.getenv("VERSION_CODE") ?: "1")
+        resourceConfigurations += listOf("en", "ar", "ur")
     }
     signingConfigs {
         // a test key for installing the app directly (APK); the Play Store copy is signed with the owner's own key
@@ -26,9 +27,9 @@ android {
     buildTypes {
         getByName("debug") { signingConfig = signingConfigs.getByName("test") }
         getByName("release") {
-            // not shrunk for now: the release build is the one installed on phones, and shrinking can break libraries (Compose, CameraX) only there
-            isMinifyEnabled = false
-            isShrinkResources = false
+            // shrunk (R8): the unused part of the icon library and of Compose is cut away, which is most of the installed size
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("test")
         }

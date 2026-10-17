@@ -35,10 +35,13 @@ fun monthLength(y: Int, m: Int): Int = runCatching { HijrahDate.of(y, m, 1).leng
 data class IDay(val m: Int, val d: Int?, val to: Int?, val key: String)
 
 val ISLAMIC_DAYS = listOf(
+    IDay(2, null, null, "dRaji"), IDay(3, 12, null, "dWafat"), IDay(6, 22, null, "dAbuBakr"), IDay(7, null, null, "dHabasha"), IDay(7, null, null, "dYarmuk"),
+    IDay(8, null, null, "dQibla"), IDay(9, null, null, "dQuran"), IDay(9, 10, null, "dKhadija"), IDay(9, 21, null, "dAli"), IDay(9, null, null, "dWufud"),
+    IDay(10, null, null, "dAisha"), IDay(11, null, null, "dQada"), IDay(11, null, null, "dHijab"), IDay(12, 9, null, "dKhutba"), IDay(12, 18, null, "dUthman"), IDay(12, 26, null, "dUmar"),
     IDay(1, 9, null, "dTasua"), IDay(1, 10, null, "dAshura"), IDay(1, null, null, "dKhaybar"),
     IDay(3, null, null, "dHijra"), IDay(5, null, null, "dMutah"), IDay(7, null, null, "dTabuk"),
-    IDay(9, 1, null, "dRamadan"), IDay(9, 17, null, "dBadr"), IDay(9, null, null, "dFath"), IDay(9, 21, 30, "dLastTen"),
-    IDay(10, 1, null, "dFitr"), IDay(10, null, null, "dUhud"), IDay(10, null, null, "dKhandaq"), IDay(10, null, null, "dHunayn"),
+    IDay(9, 1, null, "dRamadan"), IDay(9, 17, null, "dBadr"), IDay(9, 20, null, "dFath"), IDay(9, 21, 30, "dLastTen"),
+    IDay(10, 1, null, "dFitr"), IDay(10, 7, null, "dUhud"), IDay(10, null, null, "dKhandaq"), IDay(10, null, null, "dHunayn"),
     IDay(11, null, null, "dHudaybiyyah"),
     IDay(12, 1, 10, "dTenDays"), IDay(12, 8, null, "dTarwiyah"), IDay(12, 9, null, "dArafah"), IDay(12, 10, null, "dAdha"), IDay(12, 11, 13, "dTashreeq"),
     IDay(12, null, null, "dFarewell"),
@@ -150,7 +153,8 @@ fun CalendarScreen(s: AppState) {
     dayOpen?.let { d ->
         val g = first.plusDays((d - 1).toLong())
         AlertDialog(onDismissRequest = { dayOpen = null },
-            title = { Column { Text(Tr.num(d) + " " + Tr.hijriMonth(m) + " " + Tr.num(y)); Text(Tr.num(g.toString()), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f)) } },
+            title = { Row(verticalAlignment = Alignment.CenterVertically) { Column(Modifier.weight(1f)) { Text(Tr.num(d) + " " + Tr.hijriMonth(m) + " " + Tr.num(y)); Text(Tr.num(g.toString()), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f)) }
+                androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null, Modifier.size(40.dp).clip(RoundedCornerShape(10.dp))) } },
             text = {
                 Column {
                     for (n in specialsOf(m, d)) Text("• $n", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 2.dp))

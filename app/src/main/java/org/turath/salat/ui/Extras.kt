@@ -124,15 +124,8 @@ fun FastingPage(s: AppState, back: () -> Unit) {
 fun DuroodPage(s: AppState, back: () -> Unit) {
     val pr = s.prefs; val ctx = s.act
     var sel by remember { mutableStateOf(Durood.chosen(pr)) }
-    var files by remember { mutableStateOf(pr.duroodFiles) }
-    var ownSel by remember { mutableStateOf(Durood.ownChosen(pr)) }
     var playing by remember { mutableIntStateOf(-1) }
     DisposableEffect(Unit) { onDispose { Preview.stop() } }
-    val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris ->
-        for (u in uris) runCatching { ctx.contentResolver.takePersistableUriPermission(u, Intent.FLAG_GRANT_READ_URI_PERMISSION) }
-        files = (files + uris.map { it.toString() }).distinct(); pr.duroodFiles = files
-        ownSel = ownSel + uris.map { it.toString() }; Durood.setOwnChosen(pr, ownSel); Durood.start(ctx)
-    }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["duroodMenu"], back)
         Card0 {
@@ -153,16 +146,6 @@ fun DuroodPage(s: AppState, back: () -> Unit) {
                     Icon(if (playing == i) Icons.Outlined.StopCircle else Icons.Outlined.PlayCircle, Tr["test"], tint = MaterialTheme.colorScheme.primary)
                 }
             }
-        }
-        SectionTitle(Tr["duroodOwn"])
-        Card0 {
-            for (f in files) Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(f in ownSel, { v -> ownSel = if (v) ownSel + f else ownSel - f; Durood.setOwnChosen(pr, ownSel); Durood.start(ctx) })
-                IconButton(onClick = { Preview.playUri(ctx, Uri.parse(f)) }) { Icon(Icons.Outlined.PlayCircle, Tr["test"]) }
-                Text(Uri.parse(f).lastPathSegment?.substringAfterLast('/') ?: f, Modifier.weight(1f), maxLines = 1, fontSize = 14.sp)
-                IconButton(onClick = { files = files - f; pr.duroodFiles = files; Durood.start(ctx) }) { Icon(Icons.Outlined.Close, Tr["delete"]) }
-            }
-            TextButton(onClick = { pick.launch(arrayOf("audio/*")) }) { Icon(Icons.Outlined.Add, null); Text(" " + Tr["duroodAdd"]) }
         }
         Spacer(Modifier.height(20.dp))
     }
@@ -202,12 +185,12 @@ fun WorldList(s: AppState, now: ZonedDateTime) {
         Card0 {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text(c.name, fontSize = 19.sp, fontWeight = FontWeight.Bold)
+                    Text(when (c.name) { "Makkah" -> Tr["wMakkah"]; "Madinah" -> Tr["wMadinah"]; "Al-Quds" -> Tr["wQuds"]; else -> c.name }, fontSize = 19.sp, fontWeight = FontWeight.Bold)
                     Text(when { diff > 0 -> Tr.num(fmtH(diff)) + " " + Tr["hoursAhead"]; diff < 0 -> Tr.num(fmtH(-diff)) + " " + Tr["hoursBehind"]; else -> Tr["sameTime"] },
                         fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
                 }
                 Text(s.fmt(there), fontSize = 18.sp, fontWeight = FontWeight.Medium)
-                IconButton(onClick = { s.prefs.worldCities = s.prefs.worldCities.filter { it != c }; s.changed() }) { Icon(Icons.Outlined.Close, Tr["delete"]) }
+                if (s.prefs.fixedCities.none { it.name == c.name }) IconButton(onClick = { s.prefs.worldCities = s.prefs.worldCities.filter { it != c }; s.changed() }) { Icon(Icons.Outlined.Close, Tr["delete"]) }
             }
             val t = Schedule.day(s.prefs, c, there.toLocalDate())
             val cd = Countdown(there, st, t)

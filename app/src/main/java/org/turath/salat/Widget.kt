@@ -43,6 +43,8 @@ class Widget : AppWidgetProvider() {
             t.forbiddenAt(now)?.let { f -> if (f.first == t[P.SUNRISE] || f.first == t[P.ZAWAL]) return (Tr["prohibited"] + "     ◆     ").repeat(3).trim() }
             val l = mutableListOf<String>()
             val h = Schedule.hijriNow(pr, place, now)
+            // the two Eids: the greeting first, in the language of the app
+            if ((h.month == 10 && h.day == 1) || (h.month == 12 && h.day == 10)) l += Tr["eidMsg"]
             org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + it }
             for (e in pr.events) if (e.on && e.on(now.toLocalDate(), h)) l += "• " + e.label.ifEmpty { Tr["event"] }
             // the salawat reminder runs from Thursday's Maghrib to Friday's Maghrib
