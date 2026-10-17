@@ -35,8 +35,8 @@ fun monthLength(y: Int, m: Int): Int = runCatching { HijrahDate.of(y, m, 1).leng
 data class IDay(val m: Int, val d: Int?, val to: Int?, val key: String)
 
 val ISLAMIC_DAYS = listOf(
-    IDay(2, null, null, "dRaji"), IDay(3, 12, null, "dWafat"), IDay(6, 22, null, "dAbuBakr"), IDay(7, null, null, "dHabasha"), IDay(7, null, null, "dYarmuk"),
-    IDay(8, null, null, "dQibla"), IDay(9, null, null, "dQuran"), IDay(9, 10, null, "dKhadija"), IDay(9, 21, null, "dAli"), IDay(9, null, null, "dWufud"),
+    IDay(2, null, null, "dRaji"), IDay(3, null, null, "dWafat"), IDay(6, null, null, "dAbuBakr"), IDay(7, null, null, "dHabasha"), IDay(7, null, null, "dYarmuk"),
+    IDay(8, null, null, "dQibla"), IDay(9, null, null, "dQuran"), IDay(9, null, null, "dKhadija"), IDay(9, 21, null, "dAli"), IDay(9, null, null, "dWufud"),
     IDay(10, null, null, "dAisha"), IDay(11, null, null, "dQada"), IDay(11, null, null, "dHijab"), IDay(12, 9, null, "dKhutba"), IDay(12, 18, null, "dUthman"), IDay(12, 26, null, "dUmar"),
     IDay(1, 9, null, "dTasua"), IDay(1, 10, null, "dAshura"), IDay(1, null, null, "dKhaybar"),
     IDay(3, null, null, "dHijra"), IDay(5, null, null, "dMutah"), IDay(7, null, null, "dTabuk"),
@@ -239,7 +239,10 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                         }
                     }
                     Spacer(Modifier.height(10.dp))
-                    Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().clickable { e = e.copy(sound = if (e.sound == Snd.NOTIFY) Snd.NIGHTINGALE else Snd.NOTIFY) }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(e.sound == Snd.NOTIFY, { c -> e = e.copy(sound = if (c) Snd.NOTIFY else Snd.NIGHTINGALE) }); Text(Tr["NOTIFY"])
+                    }
+                    if (e.sound != Snd.NOTIFY) Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Outlined.MusicNote, null); Text("  " + Tr["sound"], Modifier.weight(1f), fontWeight = FontWeight.Bold)
                         Text(Tr.snd(e.sound), color = MaterialTheme.colorScheme.primary)
                     }

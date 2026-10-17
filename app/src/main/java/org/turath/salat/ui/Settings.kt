@@ -102,7 +102,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         SectionTitle(Tr["vibPage"])
         Card0 { Text(Tr["vibPage"] + "  ›", Modifier.fillMaxWidth().clickable { s.page = "vibration"; s.sub = "" }.padding(vertical = 8.dp), fontSize = 16.sp) }
         SectionTitle(Tr["hijriAdj"])
-        Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -2, 2, 1) { pr.hijriAdjust = it; s.changed() } }
+        Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -3, 3, 1) { pr.hijriAdjust = it; s.changed() } }
         SectionTitle(Tr["dst"])
         Card0 {
             Choice(Tr["dstAuto"], pr.dst == "auto") { pr.dst = "auto"; s.changed() }
@@ -149,24 +149,28 @@ fun areaName(ctx: android.content.Context, lat: Double, lng: Double): String? = 
         })
         latch.await(6, java.util.concurrent.TimeUnit.SECONDS); box[0]?.firstOrNull()
     } else g.getFromLocation(lat, lng, 1)?.firstOrNull()
-    (a?.subLocality ?: a?.locality)?.takeIf { it.isNotBlank() }
+    a?.subLocality?.takeIf { it.isNotBlank() }
 }.getOrNull()
 
 class Found(val place: Place, val sub: String)
 
 /** any town or neighbourhood typed by name, from the phone's address lookup (works without the app having internet access); the time zone comes from the nearest listed city */
 @Suppress("DEPRECATION")
-fun geoSearch(ctx: android.content.Context, q: String, cc: String?): List<Found> = runCatching {
+fun geoSearch(ctx: android.content.Context, q: String, cc: String?, near: Place?): List<Found> = runCatching {
     if (!android.location.Geocoder.isPresent()) return emptyList()
     val g = android.location.Geocoder(ctx, java.util.Locale(Tr.lang))
-    val list: List<android.location.Address> = if (Build.VERSION.SDK_INT >= 33) {
-        val box = arrayOfNulls<List<android.location.Address>>(1); val latch = java.util.concurrent.CountDownLatch(1)
-        g.getFromLocationName(q, 8, object : android.location.Geocoder.GeocodeListener {
-            override fun onGeocode(addresses: MutableList<android.location.Address>) { box[0] = addresses; latch.countDown() }
+    fun ask(box: DoubleArray?): List<android.location.Address> = if (Build.VERSION.SDK_INT >= 33) {
+        val out = arrayOfNulls<List<android.location.Address>>(1); val latch = java.util.concurrent.CountDownLatch(1)
+        val cb = object : android.location.Geocoder.GeocodeListener {
+            override fun onGeocode(addresses: MutableList<android.location.Address>) { out[0] = addresses; latch.countDown() }
             override fun onError(errorMessage: String?) { latch.countDown() }
-        })
-        latch.await(8, java.util.concurrent.TimeUnit.SECONDS); box[0] ?: emptyList()
-    } else g.getFromLocationName(q, 8) ?: emptyList()
+        }
+        if (box != null) g.getFromLocationName(q, 8, box[0], box[1], box[2], box[3], cb) else g.getFromLocationName(q, 8, cb)
+        latch.await(8, java.util.concurrent.TimeUnit.SECONDS); out[0] ?: emptyList()
+    } else (if (box != null) g.getFromLocationName(q, 8, box[0], box[1], box[2], box[3]) else g.getFromLocationName(q, 8)) ?: emptyList()
+    // the places near the user's own place first (a «Malton» in Ontario before the one in Yorkshire), then the rest of the world
+    val close = if (near != null) ask(doubleArrayOf(near.lat - 1.5, near.lng - 2.0, near.lat + 1.5, near.lng + 2.0)) else emptyList()
+    val list: List<android.location.Address> = close + ask(null).filter { a -> close.none { it.latitude == a.latitude && it.longitude == a.longitude } }
     list.filter { it.hasLatitude() && it.hasLongitude() && (cc == null || it.countryCode == cc) }.mapNotNull { a ->
         val name = (a.subLocality ?: a.locality ?: a.featureName)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
         val tz = Cities.nearest(ctx, a.latitude, a.longitude)?.tz ?: return@mapNotNull null
@@ -185,7 +189,9 @@ fun gps(s: AppState) {
         Thread {
             val c = Cities.nearest(act, l.latitude, l.longitude) ?: return@Thread
             // the name of the neighbourhood or town where the phone is (the phone's own address lookup); the nearest city of the list only as a fallback
-            val here = areaName(act, l.latitude, l.longitude)
+            // the neighbourhood the phone's address lookup gives; else the nearest listed town within 8 km (Malton and the like); else the nearest city
+            val near = Cities.nearestTown(act, l.latitude, l.longitude, 8.0)
+            val here = areaName(act, l.latitude, l.longitude) ?: near?.let { Cities.display(it, Tr.lang) }
             act.runOnUiThread {
                 s.prefs.place = Place(here ?: c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.page = ""; s.changed()
             }
@@ -213,7 +219,7 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
         var found by remember { mutableStateOf<List<Found>>(emptyList()) }
         LaunchedEffect(q, cc) {
             found = emptyList()
-            if (q.trim().length >= 3) { kotlinx.coroutines.delay(700); found = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { geoSearch(act, q.trim(), cc) } }
+            if (q.trim().length >= 3) { kotlinx.coroutines.delay(700); found = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { geoSearch(act, q.trim(), cc, s.prefs.place) } }
         }
         val pickFound: (Found) -> Unit = { f ->
             if (world) s.prefs.worldCities = s.prefs.worldCities + f.place

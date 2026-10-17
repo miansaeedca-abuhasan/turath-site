@@ -45,7 +45,7 @@ class Widget : AppWidgetProvider() {
             val h = Schedule.hijriNow(pr, place, now)
             // the two Eids: the greeting first, in the language of the app
             if ((h.month == 10 && h.day == 1) || (h.month == 12 && h.day == 10)) l += Tr["eidMsg"]
-            org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + it }
+            org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + Tr.num(h.day) + " " + Tr.hijriMonth(h.month) + " — " + it }
             for (e in pr.events) if (e.on && e.on(now.toLocalDate(), h)) l += "• " + e.label.ifEmpty { Tr["event"] }
             // the salawat reminder runs from Thursday's Maghrib to Friday's Maghrib
             val jumuahDays = (now.dayOfWeek == java.time.DayOfWeek.THURSDAY && !now.isBefore(t[P.MAGHRIB])) || (now.dayOfWeek == java.time.DayOfWeek.FRIDAY && now.isBefore(t[P.MAGHRIB]))
@@ -85,8 +85,8 @@ class Widget : AppWidgetProvider() {
 
         /** the background with the chosen transparency, light or dark */
         fun background(v: RemoteViews, pr: Prefs) {
-            v.setImageViewResource(R.id.bg, if (pr.widgetLight) R.drawable.wbg_light else R.drawable.wbg_dark)
-            v.setInt(R.id.bg, "setImageAlpha", 255 * (100 - pr.widgetAlpha) / 100)
+            // a ready-made background for each step of 5 %: 0 = solid, 100 = clear (the same on every launcher)
+            v.setImageViewResource(R.id.bg, WidgetBg.res(pr.widgetLight, pr.widgetAlpha)); v.setInt(R.id.bg, "setImageAlpha", 255)
         }
 
         private fun prayer(ctx: Context, cls: Class<*>, layout: Int, full: Boolean) {
@@ -136,8 +136,8 @@ class Widget : AppWidgetProvider() {
                 val loc = Locale(Tr.lang)
                 v.setTextViewText(R.id.date, now.dayOfWeek.getDisplayName(TextStyle.FULL, loc))
                 v.setTextViewText(R.id.date2, Tr.hijri(h) + "   ·   " + Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d-M-yyyy"))))
-                v.setTextColor(R.id.date, dim); v.setTextColor(R.id.date2, dim)
-                size(v, R.id.date, 11f, pr); size(v, R.id.date2, 11f, pr)
+                v.setTextColor(R.id.date, ink); v.setTextColor(R.id.date2, dim)
+                size(v, R.id.date, 15f, pr); size(v, R.id.date2, 11f, pr)
             }
             v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             if (full) {

@@ -45,6 +45,9 @@ object Cities {
 
     fun nearest(ctx: Context, lat: Double, lng: Double): City? = load(ctx).minByOrNull { dist(lat, lng, it.lat, it.lng) }
 
+    /** the nearest listed town within [maxKm] kilometres, or null: neighbourhood-sized names for the live location */
+    fun nearestTown(ctx: Context, lat: Double, lng: Double, maxKm: Double): City? = load(ctx).minByOrNull { dist(lat, lng, it.lat, it.lng) }?.takeIf { dist(lat, lng, it.lat, it.lng) <= maxKm }
+
     fun dist(a: Double, b: Double, c: Double, d: Double): Double {
         val r = PI / 180
         val x = sin((c - a) * r / 2).pow(2) + cos(a * r) * cos(c * r) * sin((d - b) * r / 2).pow(2)

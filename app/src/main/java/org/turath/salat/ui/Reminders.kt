@@ -77,9 +77,12 @@ fun RemindersScreen(s: AppState) {
 private fun minText(m: Int): String { val a = kotlin.math.abs(m); return when { a >= 60 && a % 60 == 0 -> "${a / 60} ${Tr["hr"]}"; a >= 60 -> "${a / 60} ${Tr["hr"]} ${a % 60} ${Tr["min"]}"; else -> "$a ${Tr["min"]}" } }
 
 @Composable
+private fun dayLabels(): List<String> = if (Tr.lang == "en") Tr["days"].split(',', '،') else List(7) { Tr.dayWidget(it + 1) }
+
+@Composable
 private fun Days(bits: Int) {
-    Tr["days"].split(',', '،').forEachIndexed { i, n ->
-        Text(n, Modifier.padding(end = 7.dp), color = if ((bits shr i) and 1 == 1) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = .6f), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+    dayLabels().forEachIndexed { i, n ->
+        Text(n, Modifier.padding(end = 7.dp), color = if ((bits shr i) and 1 == 1) MaterialTheme.colorScheme.primary else Color.Gray.copy(alpha = .6f), fontWeight = FontWeight.Bold, fontSize = if (Tr.lang == "en") 12.sp else 11.sp)
     }
 }
 
@@ -136,7 +139,10 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Repeat, null); Text("  " + Tr["repeatOn"], fontWeight = FontWeight.Bold) }
                     Row(Modifier.padding(vertical = 6.dp)) { Days2(r.days) { r = r.copy(days = it) } }
                     Spacer(Modifier.height(10.dp))
-                    Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Row(Modifier.fillMaxWidth().clickable { r = r.copy(sound = if (r.sound == Snd.NOTIFY) Snd.NIGHTINGALE else Snd.NOTIFY) }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Checkbox(r.sound == Snd.NOTIFY, { c -> r = r.copy(sound = if (c) Snd.NOTIFY else Snd.NIGHTINGALE) }); Text(Tr["NOTIFY"])
+                    }
+                    if (r.sound != Snd.NOTIFY) Row(Modifier.fillMaxWidth().clickable { snd = true }.padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Outlined.MusicNote, null); Text("  " + Tr["sound"], Modifier.weight(1f), fontWeight = FontWeight.Bold)
                         Text(Tr.snd(r.sound), color = MaterialTheme.colorScheme.primary)
                     }
@@ -149,8 +155,9 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
 
 @Composable
 private fun Days2(bits: Int, set: (Int) -> Unit) {
-    Tr["days"].split(',', '،').forEachIndexed { i, n ->
+    val en = Tr.lang == "en"
+    dayLabels().forEachIndexed { i, n ->
         val on = (bits shr i) and 1 == 1
-        Text(n, Modifier.clickable { set(bits xor (1 shl i)) }.padding(horizontal = 8.dp, vertical = 6.dp), color = if (on) MaterialTheme.colorScheme.primary else Color.Gray, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+        Text(n, Modifier.clickable { set(bits xor (1 shl i)) }.padding(horizontal = if (en) 8.dp else 4.dp, vertical = 6.dp), color = if (on) MaterialTheme.colorScheme.primary else Color.Gray, fontWeight = FontWeight.Bold, fontSize = if (en) 18.sp else 14.sp, maxLines = 1)
     }
 }

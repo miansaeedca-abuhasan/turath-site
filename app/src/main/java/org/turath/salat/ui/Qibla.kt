@@ -57,6 +57,7 @@ class Heading { var deg by mutableFloatStateOf(Float.NaN); var acc by mutableInt
 @Composable
 fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): Heading {
     val h = remember(upright) { Heading() }
+    val corr = remember { Prefs(ctx) }
     val decl = remember { GeomagneticField(lat.toFloat(), lng.toFloat(), 0f, System.currentTimeMillis()).declination }
     // the sensors only while the app is on the screen: leaving it (home, another app, the screen off) stops them, and with them the vibration
     val owner = androidx.lifecycle.compose.LocalLifecycleOwner.current
@@ -72,7 +73,7 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
         fun push() {
             if (upright) SensorManager.remapCoordinateSystem(m, SensorManager.AXIS_X, SensorManager.AXIS_Z, r) else System.arraycopy(m, 0, r, 0, 9)
             SensorManager.getOrientation(r, o)
-            val az = ((Math.toDegrees(o[0].toDouble()) + decl + 360) % 360).toFloat()
+            val az = ((Math.toDegrees(o[0].toDouble()) + decl + corr.qiblaOffset + 720) % 360).toFloat()
             smooth = if (smooth.isNaN()) az else { var d = az - smooth; if (d > 180) d -= 360; if (d < -180) d += 360; (smooth + d * .12f + 360) % 360 }
             h.deg = smooth
         }
@@ -141,7 +142,7 @@ fun QiblaScreen(s: AppState) {
         }
         // the compass and the camera are drawn the same way in every language (the qibla must not depend on the language)
         CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
-            if (mode == 0) QiblaCompass(s) else QiblaCamera(s)
+            if (mode == 0) QiblaCompass(s) else QiblaCamera(s) { mode = 0 }
         }
     }
     if (calib) AlertDialog(onDismissRequest = { calib = false }, confirmButton = { TextButton(onClick = { calib = false }) { Text(Tr["ok"]) } },
@@ -152,6 +153,10 @@ fun QiblaScreen(s: AppState) {
                 androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.calib_poster), null, Modifier.fillMaxWidth().clip(RoundedCornerShape(12.dp)))
                 Spacer(Modifier.height(10.dp))
                 Text(Tr["calibHow"])
+                // if the compass is always off by the same angle (the phone's sensor, a magnetic case), the user sets the difference here
+                Spacer(Modifier.height(10.dp))
+                var off by remember { mutableIntStateOf(s.prefs.qiblaOffset) }
+                Stepper(Tr["compassFix"], off, -45, 45, 1) { off = it; s.prefs.qiblaOffset = it }
             }
         })
 }
@@ -216,7 +221,7 @@ fun QiblaCompass(s: AppState) {
 
 /** the camera view: hold the phone upright, the Ka'bah appears over the picture in the qibla direction */
 @Composable
-fun QiblaCamera(s: AppState) {
+fun QiblaCamera(s: AppState, close: () -> Unit) {
     val place = s.prefs.place ?: return
     val act = s.act
     var granted by remember { mutableStateOf(ContextCompat.checkSelfPermission(act, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }
@@ -263,6 +268,10 @@ fun QiblaCamera(s: AppState) {
             camObs[0]?.let { act.lifecycle.removeObserver(it) }; camObs[0] = null
             runCatching { ProcessCameraProvider.getInstance(act).get().unbindAll() }
         })
+        // close the camera: back to the compass
+        IconButton(onClick = close, Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color.Black.copy(alpha = .55f), androidx.compose.foundation.shape.CircleShape)) {
+            Icon(Icons.Outlined.Close, Tr["close"], tint = Color.White)
+        }
         Canvas(Modifier.fillMaxSize()) {
             val fov = 60f                                  // about the width a phone camera sees
             val cx = size.width / 2; val cy = size.height * .42f

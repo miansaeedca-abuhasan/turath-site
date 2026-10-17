@@ -107,6 +107,8 @@ class Prefs(ctx: Context) {
     var method: String get() = sp.getString("method", "") ?: ""; set(v) = sp.edit().putString("method", v).apply()
     /** "auto" (the country's rules), "on" (+1 hour), "off" */
     var dst: String get() = sp.getString("dst", "auto") ?: "auto"; set(v) = sp.edit().putString("dst", v).apply()
+    /** the compass of the qibla screen is turned by this many degrees (the user's own correction) */
+    var qiblaOffset: Int get() = sp.getInt("qOff", 0); set(v) = sp.edit().putInt("qOff", v.coerceIn(-45, 45)).apply()
     var hijriAdjust: Int get() = sp.getInt("hadj", 0); set(v) = sp.edit().putInt("hadj", v).apply()
     /** the first day of the week in the calendar (1 = Monday … 6 = Saturday, 7 = Sunday) */
     var weekStart: Int get() = sp.getInt("wstart", 1); set(v) = sp.edit().putInt("wstart", v).apply()
