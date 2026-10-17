@@ -1229,12 +1229,12 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
   function fix(tn){let t=tn.nodeValue;if(MK.test(t)){MK.lastIndex=0;t=t.replace(MK,'');tn.nodeValue=t;}MK.lastIndex=0;SAWRE.lastIndex=0;if(!SAWRE.test(t))return;const p=tn.parentElement;if(!p||SKIP.test(p.tagName)||p.closest('.saw,[contenteditable],.nosaw'))return;
     const L=langOf(tn),ctx=(p.textContent||'').slice(0,400),voc=(ctx.match(VOC)||[]).length>ctx.length/12;
     const f=document.createDocumentFragment();let last=0;SAWRE.lastIndex=0;let m;
-    while((m=SAWRE.exec(t))){f.append(t.slice(last,m.index));let w=m[0];
+    while((m=SAWRE.exec(t))){f.append(t.slice(last,m.index));let w=m[0];const pc=t[m.index-1],nc=t[m.index+m[0].length];if(pc&&/[\u0600-\u06ff]/.test(pc))f.append(' ');
       // the salawat as al-Jami writes it: «صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ» in a text with harakat, «صلى الله عليه وسلم» otherwise (no «وآله»)
       if(w==='ﷺ')w=L==='ar'?(voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم'):L==='ur'?'صلی اللہ علیہ وسلم':'ﷺ';
       else if(L==='ur'&&!/[\u064B-\u0652]/.test(w))w=/آل/.test(w)?'صلی اللہ علیہ وسلم':w;
       else w=voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم';
-      const sp=document.createElement('span');sp.className='saw';if(w!=='ﷺ'&&L!=='ar'&&L!=='ur')sp.lang='ar';sp.textContent=w;f.append(sp);last=m.index+m[0].length;}
+      const sp=document.createElement('span');sp.className='saw';if(w!=='ﷺ'&&L!=='ar'&&L!=='ur')sp.lang='ar';sp.textContent=w;f.append(sp);if(nc&&/[\u0600-\u06ff]/.test(nc))f.append(' ');last=m.index+m[0].length;}
     f.append(t.slice(last));tn.replaceWith(f);}
   function walk(root){if(root.nodeType===3){fix(root);return;}if(root.nodeType!==1||SKIP.test(root.tagName))return;
     const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),a=[];while(tw.nextNode())a.push(tw.currentNode);a.forEach(fix);}
