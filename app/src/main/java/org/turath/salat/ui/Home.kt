@@ -50,7 +50,7 @@ fun HomeScreen(s: AppState) {
     val loc = Locale(Tr.lang)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).statusBarsPadding(), horizontalAlignment = Alignment.CenterHorizontally) {
         // a moving line between the menu and the globe: nafl times, adhkar, Friday, today's special day, the user's events
-        val line = remember(now.toLocalDate(), now.hour < 12, s.version) { Widget.ticker(s.prefs, place, now, today) }
+        val line = remember(now.toLocalDate(), now.hour < 12, s.version, forb?.first) { Widget.ticker(s.prefs, place, now, today) }
         Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
             Text(line, Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE, velocity = 40.dp), maxLines = 1,
                 fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)

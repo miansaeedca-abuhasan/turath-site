@@ -39,6 +39,8 @@ class Widget : AppWidgetProvider() {
 
         /** the moving line under the times: the nafl times, the adhkar, Friday's salawat, today's special day */
         fun ticker(pr: Prefs, place: Place, now: ZonedDateTime, t: DayTimes): String {
+            // sunrise until Ishraq, and the zawal time before Dhuhr: only the «Prohibited Time» message moves
+            t.forbiddenAt(now)?.let { f -> if (f.first == t[P.SUNRISE] || f.first == t[P.ZAWAL]) return (Tr["prohibited"] + "     ◆     ").repeat(3).trim() }
             val l = mutableListOf<String>()
             val h = Schedule.hijriNow(pr, place, now)
             org.turath.salat.ui.specialsOf(h.month, h.day).forEach { l += "★ " + it }
