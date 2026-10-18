@@ -1,3 +1,10 @@
 -keep class org.turath.salat.** { *; }
 -dontwarn **
 -keep class androidx.camera.** { *; }
+-keep class androidx.camera.** { *; }
+-keep class androidx.concurrent.futures.** { *; }
+-keep class com.google.common.util.concurrent.** { *; }
+-keep class androidx.lifecycle.** { *; }
+-keep class androidx.core.** { *; }
+-keep class androidx.tracing.** { *; }
+-keep class androidx.annotation.** { *; }

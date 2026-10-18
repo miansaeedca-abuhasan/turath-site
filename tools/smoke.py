@@ -37,7 +37,7 @@ def shot(name):
 apk = 'app/build/outputs/apk/debug/app-debug.apk'
 print(sh('install', '-r', '-g', apk).decode())
 sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(6); shot('00_first_start')
-tabs = {'ur': ['آج', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ', 'دنیا کے شہر'], 'ar': ['اليوم', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة', 'مدن العالم'], 'en': ['Today', 'Times', 'Reminders', 'Calendar', 'Qibla', 'World cities']}
+tabs = {'ur': ['ہوم', 'اوقات', 'یاد دہانی', 'کیلنڈر', 'قبلہ', 'دنیا کے شہر'], 'ar': ['الرئيسية', 'المواقيت', 'التنبيهات', 'التقويم', 'القبلة', 'مدن العالم'], 'en': ['Home', 'Times', 'Reminders', 'Calendar', 'Qibla', 'World cities']}
 menu = {'ur': 'مینو', 'ar': 'القائمة', 'en': 'Menu'}
 def tap_desc(t):
     sh('shell', 'uiautomator', 'dump', '/sdcard/ui.xml'); x = sh('shell', 'cat', '/sdcard/ui.xml').decode('utf-8', 'ignore')

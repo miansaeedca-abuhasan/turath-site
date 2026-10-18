@@ -157,7 +157,7 @@ fun QiblaScreen(s: AppState) {
                 // if the compass is always off by the same angle (the phone's sensor, a magnetic case), the user sets the difference here
                 Spacer(Modifier.height(10.dp))
                 var off by remember { mutableIntStateOf(s.prefs.qiblaOffset) }
-                Stepper(Tr["compassFix"], off, -45, 45, 1) { off = it; s.prefs.qiblaOffset = it }
+                Stepper(Tr["compassFix"], off, -180, 180, 1) { off = it; s.prefs.qiblaOffset = it }
             }
         })
 }
@@ -217,7 +217,11 @@ fun QiblaCompass(s: AppState) {
             fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
         if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) Text(Tr["accLow"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
         var off by remember { mutableIntStateOf(s.prefs.qiblaOffset) }
-        Stepper(Tr["compassFix"], off, -45, 45, 1) { off = it; s.prefs.qiblaOffset = it }
+        Stepper(Tr["compassFix"], off, -180, 180, 1) { off = it; s.prefs.qiblaOffset = it }
+        // standing exactly towards the qibla (a mosque's wall, a known direction): one tap sets the correction
+        OutlinedButton(onClick = {
+            if (!h.deg.isNaN()) { var n = Math.round(q - (head - s.prefs.qiblaOffset)); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n }
+        }) { Text(Tr["setQibla"]) }
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
 }

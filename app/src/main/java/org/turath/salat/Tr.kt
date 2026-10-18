@@ -300,6 +300,7 @@ object Tr {
         "myEvents" to arrayOf("آپ کی تقریبات:", "حفلاتك:", "Your events:"),
         "calHint" to arrayOf("کسی دن پر دبائیں: اس دن کی تفصیل اور نئی تقریب (میٹنگ، یاد دہانی)۔ ہجری تاریخ مغرب کے ساتھ بدلتی ہے۔", "اضغط على يوم لرؤية تفاصيله وإضافة حدث (موعد، تذكير). يتغيّر التاريخ الهجري عند المغرب.", "Tap a day for its details and to add an event (a meeting, a reminder). The hijri date changes at Maghrib."),
         "noEvents" to arrayOf("اس دن کوئی تقریب نہیں", "لا شيء في هذا اليوم", "Nothing on this day"),
+        "setQibla" to arrayOf("میں ابھی عین قبلہ رخ کھڑا ہوں — تصحیح محفوظ کریں", "أنا الآن مواجه للقبلة تمامًا — احفظ التصحيح", "I am facing the Qibla right now — save the correction"),
         "compassFix" to arrayOf("قطب نما کی تصحیح (درجے)", "تصحيح البوصلة (درجات)", "Compass correction (degrees)"),
         "hYear" to arrayOf("سال", "السنة", "Year"), "hDay" to arrayOf("دن", "اليوم", "Day"),
         "ROOSTER" to arrayOf("مرغ کی آواز", "ديك", "Rooster"),
