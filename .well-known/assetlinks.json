@@ -1,8 +1,15 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "com.turathkhairalquroon.app",
-        "sha256_cert_fingerprints": ["71:99:C5:1F:77:18:94:94:52:D2:0C:88:C2:85:91:09:D6:16:7C:97:41:24:8F:F6:62:AA:A2:E1:FB:64:21:4B"]
-      }
-    }]
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.turathkhairalquroon.app",
+      "sha256_cert_fingerprints": [
+        "71:99:C5:1F:77:18:94:94:52:D2:0C:88:C2:85:91:09:D6:16:7C:97:41:24:8F:F6:62:AA:A2:E1:FB:64:21:4B",
+        "87:E0:7B:E6:E5:84:51:64:F0:04:3A:57:D7:73:59:91:1F:C7:E3:DA:B7:92:E0:4E:8E:07:AB:07:2C:2D:B5:C6"
+      ]
+    }
+  }
+]
