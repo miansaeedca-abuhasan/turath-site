@@ -11,10 +11,12 @@ def tap_text(t):
     sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); return True
 place = json.dumps({"n": "Mississauga", "c": "CA", "lat": 43.589, "lng": -79.644, "tz": "America/Toronto"}).replace('"', '&quot;')
 xml = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string name="lang">en</string><string name="place">' + place + '</string></map>\n'
-for apk in sorted(glob.glob('/tmp/camtest/*.apk')):
+apks = sorted(glob.glob('/tmp/camtest/*.apk'))
+open('shots/cam_out.txt', 'w').write('apks: ' + repr(apks) + '\n')
+for apk in apks:
     name = os.path.basename(apk)[:-4]
     sh('uninstall', 'org.turath.salat'); sh('logcat', '-c')
-    print(name, sh('install', '-r', '-g', apk).decode().strip())
+    open('shots/cam_out.txt', 'a').write(name + ' ' + sh('install', '-r', '-g', apk).decode().strip() + '\n')
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(4)
     sh('shell', 'am', 'force-stop', 'org.turath.salat')
     sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())

@@ -70,6 +70,8 @@ jobs:
           cp /tmp/variants/nomin.apk /tmp/out/salat-test-unshrunk.apk 2>/dev/null || true
           cp app/build/outputs/bundle/release/app-release.aab /tmp/out/salat-khairalquroon.aab 2>/dev/null || true
           cp -r shots /tmp/out/ 2>/dev/null || true
+          ls -la /tmp/camtest /tmp/variants > /tmp/out/variants.txt 2>&1 || true
+          for n in 1 2 3 4; do tail -c 6000 /tmp/v$n.log > /tmp/out/v$n.log 2>/dev/null || true; done
           tail -c 60000 /tmp/build.log > /tmp/out/build-log.txt 2>/dev/null || true
           find app/build/test-results -name '*.xml' -exec cat {} + > /tmp/out/tests.xml 2>/dev/null || true
           echo "${{ github.sha }} run ${{ github.run_number }}" > /tmp/out/VERSION.txt
