@@ -111,6 +111,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .grade{color:var(--ink);font-weight:600}
 .acts{display:flex;align-items:center;gap:.2rem;margin-top:.5rem;border-top:1px solid var(--line);padding-top:.4rem}
 .acts .ab{background:none;border:0;color:var(--muted);border-radius:50%;width:2.5rem;height:2.5rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.acts .ab.tafb{width:auto;border-radius:999px;padding:0 .8rem;gap:.35rem;color:var(--accent);border:1px solid var(--accent);font:600 .95rem/1 var(--urdu,serif);height:2.2rem}.acts .ab.tafb span{white-space:nowrap}
 .acts .ab:hover{background:var(--wash);color:var(--accent)}
 .acts .ab.on{color:var(--accent)}
 .sp{flex:1}
@@ -1668,13 +1669,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- settings ---------- */
   const SMIN = 10, SMAX = 80;
-  const QS = {tr: ['ur_jalandhari'], mode: 'tr', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: false,
+  const QS = {tr: ['ur_junagarhi'], mode: 'tr', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: false,
     hifz: {s: 1, from: 1, to: 7, ayahRep: 3, rangeRep: 1, gap: 0}};
   try { Object.assign(QS, JSON.parse(localStorage.qset || '{}')); } catch (e) {}
   QS.speed = Math.max(SMIN, Math.min(SMAX, QS.speed || 30));
   const qsave = () => { try { localStorage.qset = JSON.stringify(QS); } catch (e) {} applyVars(); };
   // Uthmani text (Madinah Mushaf) in the King Fahd Complex Hafs font; Indo-Pak text in Noto Naskh or Scheherazade (both draw every Indo-Pak sign)
   if (QS.font === 'amiri') QS.font = 'naskh';
+  { const ok = new Set(['ur_junagarhi','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','fr_hamidullah']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
+    QS.tr = fx(QS.tr); if (!QS.tr.length) QS.tr = ['ur_junagarhi']; if (QS.trBy) Object.keys(QS.trBy).forEach(u => { QS.trBy[u] = fx(QS.trBy[u]); if (!QS.trBy[u].length) delete QS.trBy[u]; }); }
   if (QS.fontv !== 2) { QS.fontv = 2; if (!QS.font || QS.font === 'naskh') QS.font = 'indo'; }   // the Indo-Pak script now has its own real Indo-Pak font
   const FONTS = {indo: ['IndoPak Nastaleeq', 'Indo-Pak (Nastaleeq)'], naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
   const AK = () => QS.rasm === 'indopak' ? 'ar_indopak' : 'ar_uthmani';
@@ -1688,7 +1691,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   applyVars();
   // each interface language keeps its own Quran translations (Arabic: none)
-  const TR_DEF = {ur: ['ur_jalandhari'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
+  const TR_DEF = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
   QS.trBy = QS.trBy || {};
   function trForLang() { if (QS.trUi === ui) return; if (QS.trUi) QS.trBy[QS.trUi] = QS.tr; else if (ui !== 'ar') { const own = QS.tr.filter(k => k.startsWith(ui)); if (own.length) QS.trBy[ui] = own; } QS.tr = (QS.trBy[ui] || TR_DEF[ui] || TR_DEF.ur).slice(); QS.trUi = ui; try { localStorage.qset = JSON.stringify(QS); } catch (e) {} }
   trForLang();
@@ -2143,7 +2146,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bm.addEventListener('click', () => { let l = lsGet('qbm', []); const on = l.includes(key); l = on ? l.filter(x => x !== key) : l.concat([key]); lsSet('qbm', l); toast(T(on ? 'removed' : 'saved')); paint(); }); paint();
     return el('div', {class: 'acts'},
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: () => playFrom(i)}}, icon('play')), bm,
-      el('button', {class: 'ab', type: 'button', title: T('tafsir'), 'aria-label': T('tafsir'), on: {click: () => showTafsir(s, a)}}, icon('tafsir')),
+      el('button', {class: 'ab tafb', type: 'button', title: T('tafsir'), 'aria-label': T('tafsir'), on: {click: () => showTafsir(s, a)}}, icon('tafsir'), el('span', {}, T('tafsir'))),
       el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(ayahText(s, a), '#/q/s/' + s + '/' + a)) ? 'copied' : 'copyfail'))}}, icon('copy')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: () => shareAyah(s, a)}}, icon('share')), el('span', {class: 'sp'}));
   }
@@ -2460,7 +2463,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (res !== 'end') toast(audioMsg(res));
       stopAudio(); PLAYER.hide(); return;
     }
-    const tv = trVoice(), trk = tv.k === 'tts' ? (QS.tr.find(k => k.startsWith('ur')) || 'ur_jalandhari') : null;
+    const tv = trVoice(), trk = tv.k === 'tts' ? (QS.tr.find(k => k.startsWith('ur')) || 'ur_junagarhi') : null;
     if (trk) await need([trk]);
     for (; AU.i < R.verses.length; AU.i++) {
       const [s, a] = R.verses[AU.i];
@@ -2556,8 +2559,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     Q.meta.missing.forEach(e => add(e, true));
     Q.meta.editions.filter(e => e.lang === 'en').forEach(e => boxes.push([e, add(e)]));
     ['bn', 'hi', 'gu', 'fr'].forEach(lg => Q.meta.editions.filter(e => e.lang === lg).forEach(e => boxes.push([e, add(e)])));
-    sheet(T('selectTr'), rows, [[T('reset'), () => { chosen.clear(); chosen.add('ur_jalandhari'); boxes.forEach(([e, c]) => c.checked = chosen.has(e.key)); return false; }],
-      [T('done'), () => { QS.tr = Q.meta.editions.filter(e => chosen.has(e.key)).map(e => e.key); QS.trBy[ui] = QS.tr.slice(); qsave(); if (redraw && R) showReader(R.kind, R.n, (R.verses[firstVisible()] || [])[1]); else if (location.hash === '' || location.hash === '#/') route(); }]]);
+    // the tafsirs, listed separately below the translations: the chosen one opens with the «Tafsir» button of each ayah
+    if (!Q.tafsirs) { try { await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js'))); } catch (e) {} }
+    const tl = (Q.tafsirs && Q.tafsirs.list) || [], tcur = tl.some(t => t.key === QS.tafsir) ? QS.tafsir : (tl.find(t => t.lang === ui) || tl.find(t => t.lang === 'ur') || tl[0] || {}).key; let tsel = tcur;
+    const trows = [];
+    ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui)).forEach(l => tl.filter(t => t.lang === l).forEach(t => {
+      const r = el('input', {type: 'radio', name: 'tafpick'}); r.checked = t.key === tcur; r.addEventListener('change', () => { tsel = t.key; });
+      trows.push(el('label', {class: 'srow chk'}, r, el('span', {dir: 'auto'}, LTR() ? t.en : t.ur)));
+    }));
+    const allRows = tl.length ? [el('p', {class: 'grp'}, T('selectTr'))].concat(rows, [el('p', {class: 'grp'}, T('tafsir'))], trows) : rows;
+    sheet(T('selectTr'), allRows, [[T('reset'), () => { chosen.clear(); chosen.add('ur_junagarhi'); boxes.forEach(([e, c]) => c.checked = chosen.has(e.key)); return false; }],
+      [T('done'), () => { if (tsel) QS.tafsir = tsel; QS.tr = Q.meta.editions.filter(e => chosen.has(e.key)).map(e => e.key); QS.trBy[ui] = QS.tr.slice(); qsave(); if (redraw && R) showReader(R.kind, R.n, (R.verses[firstVisible()] || [])[1]); else if (location.hash === '' || location.hash === '#/') route(); }]]);
   }
 
   /* ---------- reader settings ---------- */
@@ -2632,7 +2644,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const script = /[\u0980-\u09ff]/.test(raw) ? 'bn' : /[\u0600-\u06ff]/.test(raw) ? 'ur' : 'en';          // Arabic letters: the Quran text and the Urdu translations
       const arabicQ = script === 'ur' && !/[\u0679\u0688\u0691\u06ba\u06d2\u06d3\u06c1\u06be\u06af\u0686\u067e\u0698]/.test(raw);
       let trKeys = QS.tr.filter(k => k.startsWith(script));
-      if (!trKeys.length) trKeys = [script === 'en' ? 'en_sahih' : script === 'bn' ? 'bn_zakaria' : 'ur_jalandhari'];
+      if (!trKeys.length) trKeys = [script === 'en' ? 'en_sahih' : script === 'bn' ? 'bn_zakaria' : 'ur_junagarhi'];
       const keys = (arabicQ ? [AK()] : []).concat(trKeys);
       const showKeys = mode === 'tr' ? QS.tr.slice() : [];
       head.replaceChildren(el('p', {class: 'note'}, T('loading')));
@@ -2675,7 +2687,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const v = qv(); v.replaceChildren();
     const l = lsGet('qbm', []);
     if (!l.length) { v.append(el('p', {class: 'note'}, T('qnobm'))); return; }
-    const trk = QS.tr[0] || 'ur_jalandhari';
+    const trk = QS.tr[0] || 'ur_junagarhi';
     await need(arKeys().concat([trk]));
     l.map(x => x.split(':').map(Number)).sort((x, y) => vi(x[0], x[1]) - vi(y[0], y[1])).forEach(([s, a]) =>
       v.append(el('a', {class: 'card', href: '#/q/s/' + s + '/' + a}, el('span', {class: 'cs'}, sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a))),
