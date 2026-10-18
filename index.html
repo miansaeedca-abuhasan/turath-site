@@ -20,6 +20,7 @@
 @font-face{font-family:"Noto Naskh Arabic";font-weight:400 700;font-display:swap;src:local("Noto Naskh Arabic"),url("fonts/NotoNaskhArabic.woff") format("woff")}
 @font-face{font-family:"Noto Serif Bengali";font-weight:100 900;font-display:swap;src:local("Noto Serif Bengali"),url("fonts/NotoSerifBengali.woff") format("woff")}
 @font-face{font-family:"Noto Serif Devanagari";font-weight:100 900;font-display:swap;src:local("Noto Serif Devanagari"),url("fonts/NotoSerifDevanagari.woff") format("woff")}
+@font-face{font-family:"IndoPak Nastaleeq";font-display:swap;src:url("fonts/IndopakNastaleeq.woff2") format("woff2")}
 @font-face{font-family:"KFGQPC Hafs";font-display:swap;src:url("fonts/UthmanicHafs.woff2") format("woff2")}
 @font-face{font-family:"Gulzar";font-display:swap;size-adjust:122%;src:url("fonts/Gulzar.woff") format("woff")}
 @font-face{font-family:"Jameel Noori Nastaleeq";font-display:swap;size-adjust:128%;src:local("Jameel Noori Nastaleeq"),local("JameelNooriNastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
@@ -438,6 +439,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .qzreset{align-self:center}
 .qzref{margin:.2rem 0 0;font-size:.82rem}.qzref a{color:var(--accent)}
 .wbw{text-align:center}.wpos{color:var(--accent);font-size:.95rem;margin:.1rem 0 .3rem}
+.indo .qar{line-height:2.5}
 .wword{text-align:center!important;font-family:var(--qfont);font-size:calc(var(--qar)*1.7);line-height:1.9;margin:.2rem 0;color:#1f6f73}
 .wmean{font-size:1.25rem;font-weight:600;margin:.2rem 0}.wtl{font-style:italic;margin:.1rem 0}
 .wlem{display:flex;align-items:center;justify-content:center;gap:.35rem;flex-wrap:wrap;margin:.6rem 0;background:var(--wash);border-radius:2rem;padding:.3rem .8rem}
@@ -1653,14 +1655,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const qsave = () => { try { localStorage.qset = JSON.stringify(QS); } catch (e) {} applyVars(); };
   // Uthmani text (Madinah Mushaf) in the King Fahd Complex Hafs font; Indo-Pak text in Noto Naskh or Scheherazade (both draw every Indo-Pak sign)
   if (QS.font === 'amiri') QS.font = 'naskh';
-  const FONTS = {naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
+  if (QS.fontv !== 2) { QS.fontv = 2; if (!QS.font || QS.font === 'naskh') QS.font = 'indo'; }   // the Indo-Pak script now has its own real Indo-Pak font
+  const FONTS = {indo: ['IndoPak Nastaleeq', 'Indo-Pak (Nastaleeq)'], naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
   const AK = () => QS.rasm === 'indopak' ? 'ar_indopak' : 'ar_uthmani';
   const arKeys = () => [AK()].concat(QS.tajweed && QS.rasm !== 'indopak' ? ['tajweed'] : []);
   function applyVars() {
     const r = document.documentElement.style;
     r.setProperty('--qar', QS.ar + 'px'); r.setProperty('--qtr', QS.trs + 'px');
-    r.setProperty('--qfont', QS.rasm === 'indopak' ? '"' + (FONTS[QS.font] || FONTS.naskh)[0] + '","Noto Naskh Arabic","Scheherazade New",serif' : '"KFGQPC Hafs","Amiri Quran","Scheherazade New",serif');
+    r.setProperty('--qfont', QS.rasm === 'indopak' ? '"' + (FONTS[QS.font] || FONTS.indo)[0] + '","Noto Naskh Arabic","Scheherazade New",serif' : '"KFGQPC Hafs","Amiri Quran","Scheherazade New",serif');
     document.documentElement.classList.toggle('tajweed', !!QS.tajweed);
+    document.documentElement.classList.toggle('indo', QS.rasm === 'indopak' && QS.font === 'indo');
   }
   applyVars();
   // each interface language keeps its own Quran translations (Arabic: none)
@@ -1831,11 +1835,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: e => { e.preventDefault(); location.hash = '#/q/s/' + n + '/1/play'; }}}, icon('play')));
     return a;
   }
+  const JUZ_NAMES = ["الٓمٓ", "سَیَقُولُ", "تِلْكَ الرُّسُلُ", "لَنْ تَنَالُوا", "وَالْمُحْصَنَاتُ", "لَا يُحِبُّ اللّٰهُ", "وَإِذَا سَمِعُوا", "وَلَوْ أَنَّنَا", "قَالَ الْمَلَأُ", "وَاعْلَمُوا", "يَعْتَذِرُونَ", "وَمَا مِنْ دَابَّةٍ", "وَمَا أُبَرِّئُ", "رُبَمَا", "سُبْحَانَ الَّذِي", "قَالَ أَلَمْ", "اقْتَرَبَ لِلنَّاسِ", "قَدْ أَفْلَحَ", "وَقَالَ الَّذِينَ", "أَمَّنْ خَلَقَ", "اُتْلُ مَا أُوحِيَ", "وَمَنْ يَّقْنُتْ", "وَمَا لِيَ", "فَمَنْ أَظْلَمُ", "إِلَيْهِ يُرَدُّ", "حٰمٓ", "قَالَ فَمَا خَطْبُكُمْ", "قَدْ سَمِعَ اللّٰهُ", "تَبَارَكَ الَّذِي", "عَمَّ"];   // the traditional names of the 30 parahs (their opening words)
+  const juzTitle = n => T('paraN')(NUM(n)) + ' — ' + JUZ_NAMES[n - 1];
   async function showPara() {
     bar(T('para'), T('quran'), true); await need([]);
     const v = qv(); v.replaceChildren();
     Q.meta.juz.forEach(([s, a], i) => v.append(el('a', {class: 'card srow2', href: '#/q/j/' + (i + 1)}, el('span', {class: 'snum'}, NUM(i + 1)),
-      el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, T('paraN')(NUM(i + 1))), el('span', {class: 'cs'}, sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)))))));
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, T('paraN')(NUM(i + 1)), ' ', el('span', {class: 'qar', lang: 'ar', dir: 'rtl', style: 'font-size:1.15em'}, JUZ_NAMES[i])), el('span', {class: 'cs'}, sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)))))));
   }
   async function showRuku() {
     bar(T('ruku'), T('quran'), true); await need([]);
@@ -2045,7 +2051,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function showReader(kind, n, startAyah, autoplay, hifz) {
     stopAuto(); if (AU.on) { stopAudio(); PLAYER.hide(); }
     if (kind === 's' && (n < 1 || n > 114)) n = 1;
-    const title = kind === 's' ? null : kind === 'j' ? T('paraN')(NUM(n)) : T('rukuN')(NUM(n));
+    const title = kind === 's' ? null : kind === 'j' ? juzTitle(n) : T('rukuN')(NUM(n));
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
     await need(arKeys().concat(QS.tr, QS.mode === 'pages' ? ['ar_uthmani', 'mushaf', 'mushaf_v1'] : []));
     const verses = range(kind, n);
