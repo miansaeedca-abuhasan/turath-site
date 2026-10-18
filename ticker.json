@@ -4,12 +4,39 @@
   "رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود پڑھیں",
   "قرآن مجید کی روزانہ تلاوت کو اپنا معمول بنائیں"
  ],
+ "ar": [
+  "السلام عليكم ورحمة الله وبركاته — أهلاً بكم في تراث خير القرون",
+  "أكثروا من الصلاة على رسول الله ﷺ",
+  "اجعل تلاوة القرآن الكريم عادتك اليومية"
+ ],
  "en": [
   "Peace be upon you — welcome to Turath Khair Al-Quroon",
-  "Send abundant blessings upon the Messenger of Allah (ﷺ)",
+  "Send abundant blessings upon the Messenger of Allah ﷺ",
   "Make daily recitation of the Quran your habit"
  ],
+ "bn": [
+  "আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু — তুরাস খাইরুল কুরুনে স্বাগতম",
+  "রাসূলুল্লাহ ﷺ-এর উপর বেশি বেশি দরূদ পাঠ করুন",
+  "প্রতিদিন কুরআন তিলাওয়াতকে অভ্যাসে পরিণত করুন"
+ ],
+ "hi": [
+  "अस्सलामु अलैकुम व रहमतुल्लाहि व बरकातुहू — तुरास ख़ैरुल कुरून में आपका स्वागत है",
+  "अल्लाह के रसूल ﷺ पर कसरत से दरूद भेजिए",
+  "रोज़ाना क़ुरआन की तिलावत को अपनी आदत बनाइए"
+ ],
+ "gu": [
+  "અસ્સલામુ અલયકુમ વ રહમતુલ્લાહિ વ બરકાતુહુ — તુરાસ ખૈરુલ કુરૂનમાં આપનું સ્વાગત છે",
+  "અલ્લાહના રસૂલ ﷺ પર વધુ દરૂદ મોકલો",
+  "રોજ કુરઆનની તિલાવતને તમારી આદત બનાવો"
+ ],
+ "fr": [
+  "Que la paix soit sur vous — bienvenue sur Turath Khair Al-Quroon",
+  "Priez abondamment sur le Messager d’Allah ﷺ",
+  "Faites de la récitation quotidienne du Coran une habitude"
+ ],
  "default": [
-  "Turath Khair Al-Quroon"
+  "Peace be upon you — welcome to Turath Khair Al-Quroon",
+  "Send abundant blessings upon the Messenger of Allah ﷺ",
+  "Make daily recitation of the Quran your habit"
  ]
 }

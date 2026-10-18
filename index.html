@@ -174,7 +174,9 @@ body.withplayer .resume.float{display:none}
 .tick:active .tk{animation-play-state:paused}
 .tick .ti{display:inline-block;padding:0 2rem}
 @keyframes tkmove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-@media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem}.tick{white-space:normal;text-align:center}}
+.tick.rtl .tk{padding-inline-start:0;padding-left:100%;animation-name:tkright}
+@keyframes tkright{from{transform:translateX(-100%)}to{transform:translateX(0)}}
+@media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
 .agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--accent)}
 .grpbox{padding:0;overflow:hidden}.grpbox>summary{cursor:pointer;list-style:none;padding:.9rem 1.1rem;display:block;border-inline-start:4px solid var(--accent)}
@@ -1763,10 +1765,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (window.TODAY) TODAY.homeCards($('#today'));
   }
   // moving message bar on the home page; the messages come from ticker.json (edit that file, no app update needed)
-  const TICK_DEF = {ur: ['السلام علیکم ورحمۃ اللہ وبرکاتہ — تراث خیرالقرون میں خوش آمدید', 'رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود پڑھیں', 'قرآن مجید کی روزانہ تلاوت کو اپنا معمول بنائیں'],
-    en: ['Peace be upon you — welcome to Turath Khair Al-Quroon', 'Send abundant blessings upon the Messenger of Allah (ﷺ)', 'Make daily recitation of the Quran your habit']};
+  const TICK_DEF = {"ur": ["السلام علیکم ورحمۃ اللہ وبرکاتہ — تراث خیرالقرون میں خوش آمدید", "رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود پڑھیں", "قرآن مجید کی روزانہ تلاوت کو اپنا معمول بنائیں"], "ar": ["السلام عليكم ورحمة الله وبركاته — أهلاً بكم في تراث خير القرون", "أكثروا من الصلاة على رسول الله ﷺ", "اجعل تلاوة القرآن الكريم عادتك اليومية"], "en": ["Peace be upon you — welcome to Turath Khair Al-Quroon", "Send abundant blessings upon the Messenger of Allah ﷺ", "Make daily recitation of the Quran your habit"], "bn": ["আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু — তুরাস খাইরুল কুরুনে স্বাগতম", "রাসূলুল্লাহ ﷺ-এর উপর বেশি বেশি দরূদ পাঠ করুন", "প্রতিদিন কুরআন তিলাওয়াতকে অভ্যাসে পরিণত করুন"], "hi": ["अस्सलामु अलैकुम व रहमतुल्लाहि व बरकातुहू — तुरास ख़ैरुल कुरून में आपका स्वागत है", "अल्लाह के रसूल ﷺ पर कसरत से दरूद भेजिए", "रोज़ाना क़ुरआन की तिलावत को अपनी आदत बनाइए"], "gu": ["અસ્સલામુ અલયકુમ વ રહમતુલ્લાહિ વ બરકાતુહુ — તુરાસ ખૈરુલ કુરૂનમાં આપનું સ્વાગત છે", "અલ્લાહના રસૂલ ﷺ પર વધુ દરૂદ મોકલો", "રોજ કુરઆનની તિલાવતને તમારી આદત બનાવો"], "fr": ["Que la paix soit sur vous — bienvenue sur Turath Khair Al-Quroon", "Priez abondamment sur le Messager d’Allah ﷺ", "Faites de la récitation quotidienne du Coran une habitude"]};
   function tickerBar(v) {
-    const box = el('div', {class: 'tick', 'aria-live': 'off'});
+    const box = el('div', {class: 'tick' + (ui === 'ur' || ui === 'ar' ? ' rtl' : ''), 'aria-live': 'off'});
     v.append(box);
     const show = list => {
       if (!list || !list.length) { box.remove(); return; }
@@ -1777,9 +1778,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       box.replaceChildren(tk);
       if (window.SAWIFY) SAWIFY(box);
     };
-    show(TICK_DEF[ui] || (ui === 'ar' ? TICK_DEF.ur : TICK_DEF.en));
+    show(TICK_DEF[ui] || TICK_DEF.en);
     fetch('ticker.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => {
-      if (!j) return; const l = j[ui] || j.default; if (l) show(l);
+      if (!j) return; const l = j[ui] || j.en; if (l) show(l);
     }).catch(() => {});
   }
   // today's ayah (the same ayah all day): Arabic, and the translation in the interface language (none for Arabic)
