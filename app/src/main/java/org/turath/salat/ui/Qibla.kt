@@ -220,7 +220,7 @@ fun QiblaCompass(s: AppState) {
         Stepper(Tr["compassFix"], off, -180, 180, 1) { off = it; s.prefs.qiblaOffset = it }
         // standing exactly towards the qibla (a mosque's wall, a known direction): one tap sets the correction
         OutlinedButton(onClick = {
-            if (!h.deg.isNaN()) { var n = Math.round(q - (head - s.prefs.qiblaOffset)); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n }
+            if (!h.deg.isNaN()) { var n = (q - (head - s.prefs.qiblaOffset)).roundToInt(); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n }
         }) { Text(Tr["setQibla"]) }
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
