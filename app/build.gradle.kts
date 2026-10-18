@@ -31,6 +31,8 @@ android {
             isMinifyEnabled = project.findProperty("nomin") == null
             isShrinkResources = project.findProperty("nomin") == null
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            // only for the emulator test (run-as needs a debuggable app); the real release is never debuggable
+            isDebuggable = project.findProperty("dbg") != null
             signingConfig = signingConfigs.getByName("test")
         }
     }

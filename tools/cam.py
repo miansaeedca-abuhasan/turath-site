@@ -11,7 +11,7 @@ def tap_text(t):
     sh('shell', 'input', 'tap', str((a + c) // 2), str((b + d) // 2)); return True
 place = json.dumps({"n": "Mississauga", "c": "CA", "lat": 43.589, "lng": -79.644, "tz": "America/Toronto"}).replace('"', '&quot;')
 xml = '<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string name="lang">en</string><string name="place">' + place + '</string></map>\n'
-for apk in sorted(glob.glob('/tmp/variants/*.apk')):
+for apk in sorted(glob.glob('/tmp/camtest/*.apk')):
     name = os.path.basename(apk)[:-4]
     sh('uninstall', 'org.turath.salat'); sh('logcat', '-c')
     print(name, sh('install', '-r', '-g', apk).decode().strip())
