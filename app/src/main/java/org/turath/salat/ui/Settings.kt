@@ -172,7 +172,10 @@ fun geoSearch(ctx: android.content.Context, q: String, cc: String?, near: Place?
     val close = if (near != null) ask(doubleArrayOf(near.lat - 1.5, near.lng - 2.0, near.lat + 1.5, near.lng + 2.0)) else emptyList()
     val list: List<android.location.Address> = close + ask(null).filter { a -> close.none { it.latitude == a.latitude && it.longitude == a.longitude } }
     list.filter { it.hasLatitude() && it.hasLongitude() && (cc == null || it.countryCode == cc) }.mapNotNull { a ->
-        val name = (a.subLocality ?: a.locality ?: a.featureName)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
+        // the name that was typed (Malton) rather than the big city around it (Mississauga)
+        val ql = q.lowercase()
+        val name = (listOfNotNull(a.subLocality, a.featureName, a.locality).firstOrNull { it.isNotBlank() && it.lowercase().contains(ql) }
+            ?: a.subLocality ?: a.locality ?: a.featureName)?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
         val tz = Cities.nearest(ctx, a.latitude, a.longitude)?.tz ?: return@mapNotNull null
         Found(Place(name, a.countryCode ?: "", a.latitude, a.longitude, tz), listOfNotNull(a.locality?.takeIf { it != name }, a.adminArea, a.countryName).distinct().joinToString(", "))
     }.distinctBy { it.place.name + it.sub }
@@ -191,7 +194,9 @@ fun gps(s: AppState) {
             // the name of the neighbourhood or town where the phone is (the phone's own address lookup); the nearest city of the list only as a fallback
             // the neighbourhood the phone's address lookup gives; else the nearest listed town within 8 km (Malton and the like); else the nearest city
             val near = Cities.nearestTown(act, l.latitude, l.longitude, 8.0)
-            val here = areaName(act, l.latitude, l.longitude) ?: near?.let { Cities.display(it, Tr.lang) }
+            // a name the user chose before for this spot (Malton) comes first
+            val mine = s.prefs.labels.filter { Cities.dist(l.latitude, l.longitude, it.lat, it.lng) <= 6.0 }.minByOrNull { Cities.dist(l.latitude, l.longitude, it.lat, it.lng) }
+            val here = mine?.name ?: areaName(act, l.latitude, l.longitude) ?: near?.let { Cities.display(it, Tr.lang) }
             act.runOnUiThread {
                 s.prefs.place = Place(here ?: c.name, c.country, l.latitude, l.longitude, c.tz); s.prefs.placeByGps = true; s.sub = ""; s.page = ""; s.changed()
             }
@@ -223,7 +228,7 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
         }
         val pickFound: (Found) -> Unit = { f ->
             if (world) s.prefs.worldCities = s.prefs.worldCities + f.place
-            else { s.prefs.place = f.place; s.prefs.placeByGps = false }
+            else { s.prefs.place = f.place; s.prefs.placeByGps = false; s.prefs.addLabel(f.place) }
             s.changed(); done()
         }
         val pick: (Cities.City) -> Unit = { c ->
@@ -234,11 +239,11 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
         LazyColumn(Modifier.fillMaxSize()) {
             if (cc == null) {
                 val qq = q.trim().lowercase()
+                items(found) { f -> ListItem(headlineContent = { Text(f.place.name) }, supportingContent = { Text(f.sub) }, leadingContent = { Icon(Icons.Outlined.Place, null) }, modifier = Modifier.clickable { pickFound(f) }) }
                 // a city typed straight away (3 letters or more) is searched in all countries
                 if (qq.length >= 3) items(Cities.search(act, qq)) { c ->
                     ListItem(headlineContent = { Text(Cities.display(c, Tr.lang)) }, supportingContent = { Text(Cities.countryName(c.country, Tr.lang)) }, modifier = Modifier.clickable { pick(c) })
                 }
-                items(found) { f -> ListItem(headlineContent = { Text(f.place.name) }, supportingContent = { Text(f.sub) }, leadingContent = { Icon(Icons.Outlined.Place, null) }, modifier = Modifier.clickable { pickFound(f) }) }
                 items(countries.filter { qq.isEmpty() || it.second.lowercase().contains(qq) || it.first.lowercase() == qq }) { (code, name) ->
                     ListItem(headlineContent = { Text(name) }, trailingContent = { Text(code) }, modifier = Modifier.clickable { cc = code; q = "" })
                 }

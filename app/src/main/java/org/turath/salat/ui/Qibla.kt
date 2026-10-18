@@ -130,6 +130,7 @@ private fun Buzz(on: Boolean, ctx: Context) {
 @Composable
 fun QiblaScreen(s: AppState) {
     var mode by remember { mutableIntStateOf(0) }
+    androidx.activity.compose.BackHandler(mode == 1) { mode = 0 }
     var calib by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -215,6 +216,8 @@ fun QiblaCompass(s: AppState) {
         Text(Tr["qiblaDeg"] + ": " + Tr.num("%.0f°".format(q)) + " " + Tr["fromNorth"] + "  ·  " + Tr.num("%,d".format(Cities.dist(place.lat, place.lng, 21.422487, 39.826206).roundToInt())) + " " + Tr["km"],
             fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
         if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) Text(Tr["accLow"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
+        var off by remember { mutableIntStateOf(s.prefs.qiblaOffset) }
+        Stepper(Tr["compassFix"], off, -45, 45, 1) { off = it; s.prefs.qiblaOffset = it }
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
 }
@@ -248,26 +251,30 @@ fun QiblaCamera(s: AppState, close: () -> Unit) {
     Box(Modifier.fillMaxSize().padding(top = 8.dp)) {
         // the camera works only while this view is on the screen and the app is in front: paused -> closed, back -> opened again
         val camObs = remember { arrayOfNulls<androidx.lifecycle.LifecycleEventObserver>(1) }
+        var camErr by remember { mutableStateOf<String?>(null) }
         AndroidView(factory = { c ->
             PreviewView(c).also { pv ->
+                // a texture view instead of a surface view: no black flash inside Compose on some phones
+                pv.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                 val fut = ProcessCameraProvider.getInstance(c)
                 fut.addListener({
                     runCatching {
                         val cp = fut.get()
                         val pre = Preview.Builder().build().also { it.setSurfaceProvider(pv.surfaceProvider) }
-                        fun bind() = runCatching { cp.unbindAll(); cp.bindToLifecycle(act, CameraSelector.DEFAULT_BACK_CAMERA, pre) }
+                        fun bind() = runCatching { cp.unbindAll(); cp.bindToLifecycle(act, CameraSelector.DEFAULT_BACK_CAMERA, pre) }.onFailure { camErr = it.toString().take(160) }
                         bind()
                         val o = androidx.lifecycle.LifecycleEventObserver { _, e ->
                             when (e) { androidx.lifecycle.Lifecycle.Event.ON_PAUSE -> runCatching { cp.unbindAll() }; androidx.lifecycle.Lifecycle.Event.ON_RESUME -> bind(); else -> {} }
                         }
                         camObs[0] = o; act.lifecycle.addObserver(o)
-                    }
+                    }.onFailure { camErr = it.toString().take(160) }
                 }, ContextCompat.getMainExecutor(c))
             }
         }, modifier = Modifier.fillMaxSize(), onRelease = {
             camObs[0]?.let { act.lifecycle.removeObserver(it) }; camObs[0] = null
             runCatching { ProcessCameraProvider.getInstance(act).get().unbindAll() }
         })
+        camErr?.let { Text(it, Modifier.align(Alignment.TopCenter).padding(top = 56.dp, start = 16.dp, end = 16.dp).background(Color.Black.copy(alpha = .7f)).padding(8.dp), color = Color(0xFFFF8A80), fontSize = 12.sp) }
         // close the camera: back to the compass
         IconButton(onClick = close, Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color.Black.copy(alpha = .55f), androidx.compose.foundation.shape.CircleShape)) {
             Icon(Icons.Outlined.Close, Tr["close"], tint = Color.White)

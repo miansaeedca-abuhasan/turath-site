@@ -36,7 +36,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     WREN("birds_wren"), CHORUS("birds_chorus"),
     CANARY("birds_canary"), CANARY2("birds_canary2"), CANARY3("birds_canary3"), CANARY4("birds_canary4"), CANARY5("birds_canary5"), CANARY6("birds_canary6"),
     CANARY7("birds_canary7"), CANARY8("birds_canary8"), CANARY9("birds_canary9"), CANARY10("birds_canary10"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
-    BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
+    ROOSTER("birds_rooster"), BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
     TONE(null), NOTIFY(null), SILENT(null);
 
     val adhan get() = name.startsWith("ADHAN")
@@ -238,6 +238,12 @@ class Prefs(ctx: Context) {
     val fixedCities = listOf(Place("Makkah", "SA", 21.4225, 39.8262, "Asia/Riyadh"), Place("Madinah", "SA", 24.4672, 39.6111, "Asia/Riyadh"),
         Place("Al-Quds", "PS", 31.7767, 35.2345, "Asia/Jerusalem"))
     /** Makkah, Madinah and Bayt al-Maqdis are always there; the user adds the others */
+    /** the names the user picked for a spot (Malton …): the live location keeps such a name when the phone is near it */
+    var labels: List<Place>
+        get() = sp.getString("plabels", null)?.let { s -> runCatching { val a = JSONArray(s); (0 until a.length()).map { val o = a.getJSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) } }.getOrNull() } ?: emptyList()
+        set(v) = sp.edit().putString("plabels", JSONArray().apply { v.forEach { put(JSONObject().put("n", it.name).put("c", it.country).put("lat", it.lat).put("lng", it.lng).put("tz", it.tz)) } }.toString()).apply()
+    fun addLabel(p: Place) { labels = (listOf(p) + labels.filter { it.name != p.name }).take(12) }
+
     var worldCities: List<Place>
         get() = fixedCities + (sp.getString("world", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { val o = a.getJSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) } } ?: emptyList())
             .filter { c -> fixedCities.none { it.name == c.name } }

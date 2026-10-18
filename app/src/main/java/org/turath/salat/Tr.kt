@@ -16,7 +16,7 @@ object Tr {
         "ISHA" to arrayOf("عشاء", "العشاء", "Isha"), "TAHAJJUD" to arrayOf("تہجد (رات کا آخری تہائی)", "التهجد (الثلث الأخير)", "Tahajjud (last third)"),
         "JUMUAH" to arrayOf("جمعہ", "الجمعة", "Jumu'ah"),
         // tabs
-        "tHome" to arrayOf("آج", "اليوم", "Today"), "tTimes" to arrayOf("اوقات", "المواقيت", "Times"),
+        "tHome" to arrayOf("ہوم", "الرئيسية", "Home"), "tTimes" to arrayOf("اوقات", "المواقيت", "Times"),
         "tRem" to arrayOf("یاد دہانی", "التنبيهات", "Reminders"), "tCal" to arrayOf("کیلنڈر", "التقويم", "Calendar"),
                 "mosques" to arrayOf("قریبی مساجد", "المساجد القريبة", "Mosques nearby"),
         "radius" to arrayOf("دائرہ", "النطاق", "Radius"),
@@ -301,6 +301,8 @@ object Tr {
         "calHint" to arrayOf("کسی دن پر دبائیں: اس دن کی تفصیل اور نئی تقریب (میٹنگ، یاد دہانی)۔ ہجری تاریخ مغرب کے ساتھ بدلتی ہے۔", "اضغط على يوم لرؤية تفاصيله وإضافة حدث (موعد، تذكير). يتغيّر التاريخ الهجري عند المغرب.", "Tap a day for its details and to add an event (a meeting, a reminder). The hijri date changes at Maghrib."),
         "noEvents" to arrayOf("اس دن کوئی تقریب نہیں", "لا شيء في هذا اليوم", "Nothing on this day"),
         "compassFix" to arrayOf("قطب نما کی تصحیح (درجے)", "تصحيح البوصلة (درجات)", "Compass correction (degrees)"),
+        "hYear" to arrayOf("سال", "السنة", "Year"), "hDay" to arrayOf("دن", "اليوم", "Day"),
+        "ROOSTER" to arrayOf("مرغ کی آواز", "ديك", "Rooster"),
         "close" to arrayOf("بند کریں", "إغلاق", "Close"),
         "eventName" to arrayOf("تقریب کا نام", "اسم الحفل", "Event name"),
         "date" to arrayOf("تاریخ", "التاريخ", "Date"),

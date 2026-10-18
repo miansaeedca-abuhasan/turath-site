@@ -184,7 +184,8 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
     var mins by remember { mutableStateOf(kotlin.math.abs(e0.offset).toString()) }
     val exists = s.prefs.events.any { it.id == e0.id }
     // the gregorian date of the hijri date chosen (to switch between the two)
-    val g = if (e0.hijri) gregOf(s.prefs, e0.y, e0.m, e0.d) else LocalDate.of(e0.y, e0.m, e0.d)
+    var hdlg by remember { mutableStateOf(false) }
+    val g = runCatching { if (e.hijri) gregOf(s.prefs, e.y, e.m, e.d) else LocalDate.of(e.y, e.m, e.d) }.getOrNull()
     val h = g?.let { Schedule.hijriOf(s.prefs, it) }
     fun save() {
         val n = mins.filter { it.isDigit() }.toIntOrNull() ?: 0
@@ -207,9 +208,13 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Event, null); Text("  " + Tr["date"], fontWeight = FontWeight.Bold) }
                     Row(Modifier.padding(vertical = 4.dp)) {
-                        FilterChip(e.hijri, { if (h != null) e = e.copy(hijri = true, y = h.year, m = h.month, d = h.day) }, { Text(Tr.num(h?.day ?: 0) + " " + (h?.let { Tr.hijriMonth(it.month) } ?: "") + " " + Tr.num(h?.year ?: 0)) })
+                        FilterChip(e.hijri, { if (h != null) { e = e.copy(hijri = true, y = h.year, m = h.month, d = h.day); hdlg = true } }, { Text(Tr.num(h?.day ?: 0) + " " + (h?.let { Tr.hijriMonth(it.month) } ?: "") + " " + Tr.num(h?.year ?: 0)) })
                         Spacer(Modifier.width(8.dp))
-                        FilterChip(!e.hijri, { if (g != null) e = e.copy(hijri = false, y = g.year, m = g.monthValue, d = g.dayOfMonth) }, { Text(Tr.num(g?.toString() ?: "")) })
+                        FilterChip(!e.hijri, { if (g != null) {
+                            e = e.copy(hijri = false, y = g.year, m = g.monthValue, d = g.dayOfMonth)
+                            // a calendar opens to pick the day
+                            android.app.DatePickerDialog(s.act, { _, yy, mm, dd -> e = e.copy(hijri = false, y = yy, m = mm + 1, d = dd) }, g.year, g.monthValue - 1, g.dayOfMonth).show()
+                        } }, { Text(Tr.num(g?.toString() ?: "")) })
                     }
                     Row(Modifier.horizontalScroll(rememberScrollState())) {
                         for ((k, n) in listOf("once" to "repOnce", "month" to "repMonth", "year" to "repYear")) { FilterChip(e.repeat == k, { e = e.copy(repeat = k) }, { Text(Tr[n]) }); Spacer(Modifier.width(6.dp)) }
@@ -228,8 +233,10 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                             OutlinedTextField(mins, { mins = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(90.dp), singleLine = true,
                                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
                             Text("  " + Tr["minutes"])
-                            Spacer(Modifier.width(12.dp))
-                            FilterChip(before, { before = true }, { Text(Tr["beforeT"]) }); Spacer(Modifier.width(6.dp))
+                        }
+                        // before / after, one under the other
+                        Column {
+                            FilterChip(before, { before = true }, { Text(Tr["beforeT"]) })
                             FilterChip(!before, { before = false }, { Text(Tr["afterT"]) })
                         }
                         Row(Modifier.horizontalScroll(rememberScrollState())) {
@@ -250,8 +257,23 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
             }
         }
     }
+    if (hdlg) HijriPick(e.y, e.m, e.d, { y, m, d -> e = e.copy(hijri = true, y = y, m = m, d = d.coerceAtMost(monthLength(y, m))); hdlg = false }) { hdlg = false }
     if (snd) SoundPicker(s, Tr["sound"], e.sound, SoundService.choices(s.act, SndUse.REMINDER)) { v -> if (v != null) e = e.copy(sound = v); snd = false }
 }
 
 /** kept for the widget code and older callers: Ramadan, the Eids, Arafah, Ashura, the white days */
 fun special(m: Int, d: Int): String? = specialsOf(m, d).firstOrNull()
+
+
+/** a Hijri date: year, month and day, each moved up and down */
+@Composable
+private fun HijriPick(y0: Int, m0: Int, d0: Int, onPick: (Int, Int, Int) -> Unit, dismiss: () -> Unit) {
+    var y by remember { mutableIntStateOf(y0) }; var m by remember { mutableIntStateOf(m0) }; var d by remember { mutableIntStateOf(d0) }
+    AlertDialog(onDismissRequest = dismiss, confirmButton = { TextButton(onClick = { onPick(y, m, d) }) { Text(Tr["ok"]) } },
+        dismissButton = { TextButton(onClick = dismiss) { Text(Tr["cancel"]) } },
+        text = { Column {
+            Stepper(Tr["hYear"], y, 1400, 1500, 1) { y = it }
+            Stepper(Tr.hijriMonth(m), m, 1, 12, 1) { m = it }
+            Stepper(Tr["hDay"], d, 1, 30, 1) { d = it }
+        } })
+}

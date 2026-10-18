@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId = "org.turath.salat"
         minSdk = 26
-        targetSdk = 36
+        targetSdk = (project.findProperty("tsdk") as String?)?.toInt() ?: 36
         versionCode = (System.getenv("VERSION_CODE") ?: "1").toInt()
         versionName = "1.0." + (System.getenv("VERSION_CODE") ?: "1")
         resourceConfigurations += listOf("en", "ar", "ur")
@@ -28,8 +28,8 @@ android {
         getByName("debug") { signingConfig = signingConfigs.getByName("test") }
         getByName("release") {
             // shrunk (R8): the unused part of the icon library and of Compose is cut away, which is most of the installed size
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = project.findProperty("nomin") == null
+            isShrinkResources = project.findProperty("nomin") == null
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             signingConfig = signingConfigs.getByName("test")
         }

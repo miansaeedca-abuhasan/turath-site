@@ -131,7 +131,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 
 @Composable
 fun Main(s: AppState) {
-    val tabs = listOf(NavTab("tHome", Icons.Outlined.AccessTime), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
+    val tabs = listOf(NavTab("tHome", Icons.Outlined.Home), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
         NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("world", Icons.Outlined.Public))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -142,6 +142,8 @@ fun Main(s: AppState) {
     val scope = rememberCoroutineScope()
     var volume by remember { mutableStateOf(false) }
     BackHandler(drawer.isOpen) { scope.launch { drawer.close() } }
+    // back from any tab leads to Home, and from Home leaves the app
+    BackHandler(!drawer.isOpen && s.tab != 0) { s.tab = 0 }
     ModalNavigationDrawer(drawerState = drawer, drawerContent = {
         ModalDrawerSheet(Modifier.width(300.dp)) {
             Menu(s) { key ->
@@ -154,7 +156,8 @@ fun Main(s: AppState) {
             containerColor = Color.Transparent,
             bottomBar = {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                    tabs.forEachIndexed { i, t ->
+                    // Home in the middle of the bar (the tab numbers stay as they are)
+                    listOf(1, 2, 0, 3, 4, 5).forEach { i -> val t = tabs[i]
                         NavigationBarItem(selected = s.tab == i, onClick = { s.tab = i }, icon = { Icon(t.icon, Tr[t.key]) },
                             label = { Text(Tr[t.key], fontSize = 10.sp, maxLines = 1, softWrap = false) })
                     }
