@@ -199,6 +199,7 @@ body.withplayer .resume.float{display:none}
 .hbau{border-bottom:1px solid var(--line);padding-bottom:.2rem}.hbau small{font-weight:400}
 .hbrow .ct.arname{font-family:var(--arabic);font-size:1.2rem}
 .totcard{text-align:center;padding:.8rem 1rem}.totn{font:700 1.35rem/1.8 var(--urdu);color:var(--accent)}.totnote{font-size:.8rem;opacity:.8}
+.atn{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}.atn .btn{min-width:3rem;text-align:center}.atx{font-size:1.25rem;line-height:2.2}
 .hbgrp{margin:1.2rem .3rem .4rem;color:var(--accent);font-size:1.05rem}
 .tiles.t4{grid-template-columns:repeat(4,1fr)}
 .hbrow .sar{font-size:1.2rem;line-height:1.5;max-width:40%;text-align:end}
@@ -968,7 +969,7 @@ async function showBookList(){
   const N=n=>n==null?'':EN()?Number(n).toLocaleString('en-US'):ad(n);
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[ً-ْ]/g,''),n=toNum(f.value);
     let lastG;
-    list.replaceChildren(...rows.filter(r=>!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))).flatMap(r=>{return [rowEl(r)];}));};
+    list.replaceChildren(...rows.filter(r=>!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))).flatMap(r=>{return r.key==='atraf'&&!q?[el('p',{class:'grp'},ui==='ar'?'الفهارس':EN()?'Indexes':'فہارس'),rowEl(r)]:[rowEl(r)];}));};
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
@@ -982,7 +983,7 @@ async function showBookList(){
     hTile('bm0',T('bm'),null,'#/bm'),hTile('compare',T('cmp'),null,'#/cmp'));
   // total hadith in the app: al-Jami al-Kamil once (its Bengali text, Tuhfa and Fazail-e-Sahaba are taken from it),
   // the other books added; books of narrators' biographies and Hisn al-Muslim (du'as) are not counted
-  const NOTH=new Set(['shadharat','siyar','tarikhbukhari','thiqat','khaythama','sh10906','sh23764','hisn']);
+  const NOTH=new Set(['shadharat','siyar','tarikhbukhari','thiqat','khaythama','sh10906','sh23764','hisn','atraf']);
   const others=colls.filter(c=>!c.jami&&!NOTH.has(c.key)),tot=(cnt.jami||0)+others.reduce((a,c)=>a+(c.count||0),0);
   const G=n=>{const t=Number(n).toLocaleString('en-US');return EN()?t:ad(t.replace(/,/g,'٬')).replace(/٬/g,'٬');};
   const totCard=el('div',{class:'card totcard'},el('div',{class:'totn'},T('totAll')(G(tot))),
@@ -2780,6 +2781,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const HN = (b, x, y) => { let c = 0; for (let k = x; k <= y; k++) if (!(b.nn && b.nn[k])) c++; return c; };
   const subOf = b => b.sub ? (b.sub[ui] || b.sub.ur) : '';
   function card(b, n, lang, q) {
+    if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of al-Jami al-Kamil
+      const r = row(b, 'ar', n) || [], nums = String(r[2] || '').split(',').filter(Boolean), c = el('article', {class: 'card atraf'});
+      c.append(el('a', {class: 'mt ar atx', lang: 'ar', dir: 'rtl', href: '#/h/' + nums[0], style: 'display:block;text-decoration:none;color:inherit'}, ...rich(r[1] || '', 'ar')),
+        el('div', {class: 'atn'}, ...nums.map(x => el('a', {class: 'btn', href: '#/h/' + x}, fmtN(+x)))));
+      return c;
+    }
     const d = hobj(b, n, lang), c = el('article', {class: 'card'});
     // Arabic library books (turath.io) show the book's own printed number; the others show the app number and the printed one beside it
     const own = b.grp === 'ar' || !!b.jami, pn = b.an[n] || n;
@@ -3911,6 +3918,47 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   window.OFFLINE = {open: openSheet, sync, label: () => t('btn'),
     row: () => el('div', {}, el('p', {class: 'grp'}, t('title')), el('button', {type: 'button', class: 'tbtn', on: {click: () => { document.querySelectorAll('.sheetbg').forEach(x => x.remove()); openSheet(); }}}, t('btn')))};
   setTimeout(sync, 8000);
+})();
+
+</script>
+<script>
+/* زر «تشکیل»: يخفي حركات الحديث العربي ويعيدها عند الضغط ثانية (القرآن لا يتأثر) */
+(function () {
+  const KEY = 'harakatOff', RE = /[ً-ٰٟۖ-ۭ]/g, HAS = /[ً-ٰٟ]/;
+  const LBL = {ur: 'تشکیل', ar: 'التشكيل', en: 'Harakat', bn: 'হারাকাত', hi: 'हरकत', gu: 'હરકત', fr: 'Harakat'};
+  let off = false; try { off = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  const orig = new Map(); let btn, pend = false;
+  const skip = n => { const p = n.parentElement; return !p || p.closest('.qar,.qv,.ayah,script,style,input,textarea,.harakat-btn,[data-keeph]'); };
+  function strip(root) {
+    root.querySelectorAll('.ar,[lang=ar]').forEach(r => {
+      if (r.closest('.qar,.qv,.ayah,[data-keeph]')) return;
+      const w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT);
+      for (let n = w.nextNode(); n; n = w.nextNode()) {
+        if (orig.has(n) || !HAS.test(n.nodeValue) || skip(n)) continue;
+        orig.set(n, n.nodeValue); n.nodeValue = n.nodeValue.replace(RE, '');
+      }
+    });
+  }
+  function restore() { orig.forEach((v, n) => { n.nodeValue = v; }); orig.clear(); }
+  function apply() { if (off) strip(document.body); }
+  function sched() { if (pend || !off) return; pend = true; requestAnimationFrame(() => { pend = false; orig.forEach((v, n) => { if (!n.isConnected) orig.delete(n); }); strip(document.body); }); }
+  function show() {
+    const h = location.hash, hide = /^#\/(q|quiz)(\/|$)/.test(h) || h === '#/q';
+    if (btn) btn.style.display = hide ? 'none' : '';
+  }
+  function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
+  function paint() { if (!btn) return; btn.textContent = label(); btn.setAttribute('aria-pressed', String(off)); btn.classList.toggle('on', off); }
+  function init() {
+    const st = document.createElement('style');
+    st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:4.9rem;z-index:40;border:1px solid var(--line,#d9d2c3);background:var(--card,#fff);color:var(--accent,#0b5d4b);border-radius:999px;padding:.35rem .9rem;font:600 1rem/1.6 var(--urdu,serif);box-shadow:0 2px 8px rgba(0,0,0,.18);cursor:pointer;opacity:.92}.harakat-btn.on{background:var(--accent,#0b5d4b);color:#fff}html.sheetopen .harakat-btn{display:none}';
+    document.head.appendChild(st);
+    btn = document.createElement('button'); btn.type = 'button'; btn.className = 'harakat-btn';
+    btn.onclick = () => { off = !off; try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (e) {} if (off) strip(document.body); else restore(); paint(); };
+    document.body.appendChild(btn); paint(); show(); apply();
+    new MutationObserver(() => { sched(); const l = label(); if (btn.textContent !== l) paint(); }).observe(document.body, {childList: true, subtree: true});
+    addEventListener('hashchange', show);
+  }
+  if (document.body) init(); else addEventListener('DOMContentLoaded', init);
 })();
 
 </script>
