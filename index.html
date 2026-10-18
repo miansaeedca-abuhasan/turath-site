@@ -169,6 +169,12 @@ body.withplayer .resume.float{display:none}
 .filterbox{display:flex;align-items:center;gap:.5rem;padding:.2rem .9rem;color:var(--accent)}
 .filter{flex:1;min-width:0;border:0;background:none;padding:.6rem 0;outline:none}
 .hbanner{display:block;width:100%;height:auto;border-radius:14px;margin:0 0 .8rem;box-shadow:var(--shadow)}
+.tick{overflow:hidden;direction:ltr;white-space:nowrap;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 .8rem;padding:.5rem 0;color:var(--accent);font-weight:600}
+.tick .tk{display:inline-block;padding-inline-start:100%;animation:tkmove var(--tkd,60s) linear infinite}
+.tick:active .tk{animation-play-state:paused}
+.tick .ti{display:inline-block;padding:0 2rem}
+@keyframes tkmove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+@media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
 .agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--accent)}
 .grpbox{padding:0;overflow:hidden}.grpbox>summary{cursor:pointer;list-style:none;padding:.9rem 1.1rem;display:block;border-inline-start:4px solid var(--accent)}
@@ -1746,6 +1752,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('quiz', T('quizT'), '#/quiz'));
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
+    tickerBar(v);
     v.append(el('div', {class: 'card pad0'}, g));
     const last = lsGet('qlast', null);
     if (last) v.append(el('a', {class: 'resume', href: '#/q/s/' + last.s + '/' + last.a}, icon('history'), T('resume')));
@@ -1754,6 +1761,26 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', T('free'), vis));
     visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
+  }
+  // moving message bar on the home page; the messages come from ticker.json (edit that file, no app update needed)
+  const TICK_DEF = {ur: ['السلام علیکم ورحمۃ اللہ وبرکاتہ — تراث خیرالقرون میں خوش آمدید', 'رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود پڑھیں', 'قرآن مجید کی روزانہ تلاوت کو اپنا معمول بنائیں'],
+    en: ['Peace be upon you — welcome to Turath Khair Al-Quroon', 'Send abundant blessings upon the Messenger of Allah (ﷺ)', 'Make daily recitation of the Quran your habit']};
+  function tickerBar(v) {
+    const box = el('div', {class: 'tick', 'aria-live': 'off'});
+    v.append(box);
+    const show = list => {
+      if (!list || !list.length) { box.remove(); return; }
+      const mk = () => list.map(t => el('span', {class: 'ti', dir: 'auto'}, t));
+      const tk = el('span', {class: 'tk'}, ...mk(), ...mk());
+      const len = list.join('').length;
+      tk.style.setProperty('--tkd', Math.max(25, Math.round(len * 0.45)) + 's');
+      box.replaceChildren(tk);
+      if (window.SAWIFY) SAWIFY(box);
+    };
+    show(TICK_DEF[ui] || (ui === 'ar' ? TICK_DEF.ur : TICK_DEF.en));
+    fetch('ticker.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => {
+      if (!j) return; const l = j[ui] || j.default; if (l) show(l);
+    }).catch(() => {});
   }
   // today's ayah (the same ayah all day): Arabic, and the translation in the interface language (none for Arabic)
   const trForUi = () => ui === 'ar' ? null : (QS.tr.find(k => k.startsWith(ui + '_')) || (TR_DEF[ui] || TR_DEF.en)[0]);
@@ -3596,7 +3623,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     try { await need(); } catch (e) { box.replaceChildren(); return; }
     const out = [];
     // adhkar of this time of day
-    const ak = m ? 'morning' : 'evening', first = DLY.hadith[DLY[ak][0]];
+    const ak = m ? 'morning' : 'evening', first = DLY.hadith[DLY[ak][(dn + (m ? 0 : 7)) % DLY[ak].length]];   // a different one each day
     out.push(card(m ? 'sun' : 'moon', T(m ? 'tMorning' : 'tEvening'), [ui === 'ar' ? trP(clip(first.ar, 160), 'ar', 'mar') : trP(clip(trOfH(first), 180), ui)], '#/t/adhkar/' + (m ? 'm' : 'e'),
       el('span', {class: 'cs'}, (an.t ? timesLine(an) + ' — ' : '') + NUM(DLY[ak].length) + ' — ' + T('adhkarNote'))));
     // advice
