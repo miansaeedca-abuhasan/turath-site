@@ -964,13 +964,15 @@ async function showBookList(){
   const SUBJ=new Set(['tuhfa','fazail','seerah']);
   BOOKS.filter(b=>b.kind!=='external'&&b.kind!=='lang'&&!SUBJ.has(b.key)).forEach(b=>{const L=b.kind==='lang'&&LN[b.lang];rows.push({au:['jami','الجامع الكامل في الحديث الصحيح الشامل','الجامع الکامل اور اس سے ماخوذ کتب','Al-Jami al-Kamil',0],en:L?'Al-Jame Al-Kamil ('+L[1]+')':(b.name_en||b.name),ur:L?'الجامع الکامل ('+L[0]+')':b.name,ar:HB_AR[b.kind==='lang'?'jami':b.key]||b.name,n:cnt[b.key],
     open:()=>hbOpen(b.key),resume:()=>hbOpen(b.key,hbLast(b.key)||(b.key==='tuhfa'?'#/b':'#/c/1/0'))});});
+  const nJ=rows.length;
   colls.filter(c=>!SUBJ.has(c.key)).forEach(c=>rows.push({key:c.key,sub:c.sub?(c.sub[ui]||c.sub.ur):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
+  {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=nJ){const [ar]=rows.splice(ai,1);rows.splice(nJ,0,ar);}}   // the index of atraf goes at the end of the Al-Jami al-Kamil group
   rows.forEach((r,i)=>r.no=i+1);
   const f=el('input',{type:'search',class:'filter',placeholder:T('hbFilter'),'aria-label':T('hbFilter'),id:'hbfilter'}),list=el('div');
   const N=n=>n==null?'':EN()?Number(n).toLocaleString('en-US'):ad(n);
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[ً-ْ]/g,''),n=toNum(f.value);
     let lastG;
-    list.replaceChildren(...rows.filter(r=>!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))).flatMap(r=>{return r.key==='atraf'&&!q?[el('p',{class:'grp'},ui==='ar'?'الفهارس':EN()?'Indexes':'فہارس'),rowEl(r)]:[rowEl(r)];}));};
+    list.replaceChildren(...rows.filter(r=>!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))).flatMap(r=>{return [rowEl(r)];}));};
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
