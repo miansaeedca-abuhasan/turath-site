@@ -937,7 +937,12 @@ async function showKitabs(){
         el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},EN()?k.en:k.ar),el('span',{class:'cs'},rng(kitNums(k))+'  ،  '+T('count')(k.count))),
         EN()&&k.ar?el('span',{class:'sar',lang:'ar'},k.ar.replace(/^كتاب\s*/,'')):'',
         el('button',{class:'ab',type:'button',title:T('hOpenRead'),'aria-label':T('hOpenRead'),on:{click:e=>{e.preventDefault();HM.mode='read';hsave();location.hash='#/c/'+k.no+'/0';}}},icon('read')));
-      return a;}));};
+      return a;}));
+    // after the last kitab: the index of hadith fragments (فهرس أطراف الجامع الكامل) — its text and numbers open the hadith
+    if((book==='jami'||(BOOKS.find(x=>x.key===book)||{}).kind==='lang')&&(!q||'فهرس الاطراف اطراف atraf index fragments'.includes(q)||String(ks.length+1)===q||ad(ks.length+1)===q)){
+      list.append(el('a',{class:'card srow2',href:'#/s/atraf'},el('span',{class:'snum'},EN()?ks.length+1:ad(ks.length+1)),
+        el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'فهرس أطراف الجامع الكامل'),el('span',{class:'cs'},EN()?'Index of hadith fragments (Atraf)':({ur:'اطراف احادیث کی فہرست',ar:'فهرس أطراف الأحاديث'})[ui]||'اطراف احادیث کی فہرست'))));}
+  };
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
   box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'আল-জামি আল-কামিলের ভূমিকা',hi:'अल-जामिउल कामिल की भूमिका',gu:'અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to al-Jami al-Kamil'))):'',list);
@@ -966,7 +971,7 @@ async function showBookList(){
     open:()=>hbOpen(b.key),resume:()=>hbOpen(b.key,hbLast(b.key)||(b.key==='tuhfa'?'#/b':'#/c/1/0'))});});
   const nJ=rows.length;
   colls.filter(c=>!SUBJ.has(c.key)).forEach(c=>rows.push({key:c.key,sub:c.sub?(c.sub[ui]||c.sub.ur):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
-  {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=nJ){const [ar]=rows.splice(ai,1);rows.splice(nJ,0,ar);}}   // the index of atraf goes at the end of the Al-Jami al-Kamil group
+  {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Al-Jami al-Kamil kitab list
   rows.forEach((r,i)=>r.no=i+1);
   const f=el('input',{type:'search',class:'filter',placeholder:T('hbFilter'),'aria-label':T('hbFilter'),id:'hbfilter'}),list=el('div');
   const N=n=>n==null?'':EN()?Number(n).toLocaleString('en-US'):ad(n);
