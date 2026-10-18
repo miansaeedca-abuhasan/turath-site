@@ -175,7 +175,7 @@ body.withplayer .resume.float{display:none}
 .tick:active .tk{animation-play-state:paused}
 .tick .ti{display:inline-block;padding:0 2rem}
 @keyframes tkmove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
-.tick.rtl .tk{padding-inline-start:0;padding-left:100%;animation-name:tkright}
+.tick.rtl .tk{display:inline-flex;flex-direction:row-reverse;direction:ltr;padding-inline-start:0;padding-inline-end:0;padding-left:100%;animation-name:tkright}
 @keyframes tkright{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
@@ -1240,7 +1240,7 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
   const langOf=n=>{const e=n.parentElement&&n.parentElement.closest('[lang]');return e?e.getAttribute('lang'):document.documentElement.lang;};
   const MK=/[\ue000-\ue003]/g;   // marks of red / muhaddith text left in a plain text (another page's card): removed
   function fix(tn){let t=tn.nodeValue;if(MK.test(t)){MK.lastIndex=0;t=t.replace(MK,'');tn.nodeValue=t;}MK.lastIndex=0;SAWRE.lastIndex=0;if(!SAWRE.test(t))return;const p=tn.parentElement;if(!p||SKIP.test(p.tagName)||p.closest('.saw,[contenteditable],.nosaw'))return;
-    const L=langOf(tn),ctx=(p.textContent||'').slice(0,400),voc=(ctx.match(VOC)||[]).length>ctx.length/12;
+    let L=langOf(tn);const ctx=(p.textContent||'').slice(0,400);if(L!=='ur'&&/[ہےںٹڈڑگپچژ]/.test(ctx))L='ur';const voc=(ctx.match(VOC)||[]).length>ctx.length/12;
     const f=document.createDocumentFragment();let last=0;SAWRE.lastIndex=0;let m;
     while((m=SAWRE.exec(t))){f.append(t.slice(last,m.index));let w=m[0];const pc=t[m.index-1],nc=t[m.index+m[0].length];if(pc&&/[\u0600-\u06ff]/.test(pc))f.append(' ');
       // the salawat as al-Jami writes it: «صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ» in a text with harakat, «صلى الله عليه وسلم» otherwise (no «وآله»)
@@ -1792,11 +1792,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // moving message bar on the home page; the messages come from ticker.json (edit that file, no app update needed)
   const TICK_DEF = {"ur": ["السلام علیکم ورحمۃ اللہ وبرکاتہ — تراث خیرالقرون میں خوش آمدید", "رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود پڑھیں", "قرآن مجید کی روزانہ تلاوت کو اپنا معمول بنائیں"], "ar": ["السلام عليكم ورحمة الله وبركاته — أهلاً بكم في تراث خير القرون", "أكثروا من الصلاة على رسول الله ﷺ", "اجعل تلاوة القرآن الكريم عادتك اليومية"], "en": ["Peace be upon you — welcome to Turath Khair Al-Quroon", "Send abundant blessings upon the Messenger of Allah ﷺ", "Make daily recitation of the Quran your habit"], "bn": ["আসসালামু আলাইকুম ওয়া রাহমাতুল্লাহি ওয়া বারাকাতুহু — তুরাস খাইরুল কুরুনে স্বাগতম", "রাসূলুল্লাহ ﷺ-এর উপর বেশি বেশি দরূদ পাঠ করুন", "প্রতিদিন কুরআন তিলাওয়াতকে অভ্যাসে পরিণত করুন"], "hi": ["अस्सलामु अलैकुम व रहमतुल्लाहि व बरकातुहू — तुरास ख़ैरुल कुरून में आपका स्वागत है", "अल्लाह के रसूल ﷺ पर कसरत से दरूद भेजिए", "रोज़ाना क़ुरआन की तिलावत को अपनी आदत बनाइए"], "gu": ["અસ્સલામુ અલયકુમ વ રહમતુલ્લાહિ વ બરકાતુહુ — તુરાસ ખૈરુલ કુરૂનમાં આપનું સ્વાગત છે", "અલ્લાહના રસૂલ ﷺ પર વધુ દરૂદ મોકલો", "રોજ કુરઆનની તિલાવતને તમારી આદત બનાવો"], "fr": ["Que la paix soit sur vous — bienvenue sur Turath Khair Al-Quroon", "Priez abondamment sur le Messager d’Allah ﷺ", "Faites de la récitation quotidienne du Coran une habitude"]};
   function tickerBar(v) {
-    const box = el('div', {class: 'tick' + (ui === 'ur' || ui === 'ar' ? ' rtl' : ''), 'aria-live': 'off'});
+    const box = el('div', {class: 'tick' + (ui === 'ur' || ui === 'ar' ? ' rtl' : ''), 'aria-live': 'off', lang: ui});
     v.append(box);
     const show = list => {
       if (!list || !list.length) { box.remove(); return; }
-      const mk = () => list.map(t => el('span', {class: 'ti', dir: 'auto'}, t));
+      const mk = () => list.map(t => el('span', {class: 'ti', dir: 'auto', lang: ui}, t));
       const tk = el('span', {class: 'tk'}, ...mk(), ...mk());
       const len = list.join('').length;
       tk.style.setProperty('--tkd', Math.max(25, Math.round(len * 0.45)) + 's');
