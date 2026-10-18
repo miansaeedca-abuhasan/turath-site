@@ -8,3 +8,6 @@
 -keep class androidx.core.** { *; }
 -keep class androidx.tracing.** { *; }
 -keep class androidx.annotation.** { *; }
+# only remove what is unused: no optimizing, no renaming (these broke nothing else, but CameraX shows a black picture on the phone when optimized)
+-dontoptimize
+-dontobfuscate

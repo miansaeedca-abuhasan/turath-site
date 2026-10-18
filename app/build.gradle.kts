@@ -30,7 +30,7 @@ android {
             // shrunk (R8): the unused part of the icon library and of Compose is cut away, which is most of the installed size
             isMinifyEnabled = project.findProperty("nomin") == null
             isShrinkResources = project.findProperty("nomin") == null
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            proguardFiles(getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro")
             // only for the emulator test (run-as needs a debuggable app); the real release is never debuggable
             isDebuggable = project.findProperty("dbg") != null
             signingConfig = signingConfigs.getByName("test")

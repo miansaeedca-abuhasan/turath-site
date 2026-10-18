@@ -37,10 +37,6 @@ jobs:
           # two more copies of the release app, to find out what makes a phone refuse something: target API 35, and without shrinking
           mkdir -p /tmp/variants && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/main.apk
           gradle --no-daemon assembleRelease -Pnomin=1 -x lint -x lintVitalRelease > /tmp/v2.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/nomin.apk || true
-          # debuggable copies (same shrinking) only for the emulator camera test
-          mkdir -p /tmp/camtest
-          gradle --no-daemon assembleRelease -Pdbg=1 -x lint > /tmp/v3.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/main.apk || true
-          gradle --no-daemon assembleRelease -Pdbg=1 -Pnomin=1 -x lint > /tmp/v4.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/nomin.apk || true
           cp /tmp/variants/main.apk app/build/outputs/apk/release/app-release.apk
       - name: enable KVM
         run: |
@@ -58,7 +54,6 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back virtualscene
           script: |
-            python3 tools/cam.py
             python3 tools/smoke.py
       - name: publish to salah-apk
         if: always()
