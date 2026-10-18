@@ -1142,6 +1142,7 @@ function appSettings(){
     el('p',{class:'grp'},T('themeColor')),el('div',{class:'swatches'},...THEMES.map(([k,c,n])=>el('button',{type:'button',class:'swatch',style:'--c:'+c,'aria-pressed':String(k===LOOK.color),on:{click:()=>{LOOK.color=k;save();}}},n[ui]||n.en))),
     el('p',{class:'grp'},T('dayNight')),seg([['light','☀ '+T('modeLight')],['dark','☾ '+T('modeDark')],['auto',T('modeAuto')]],LOOK.mode,k=>{LOOK.mode=k;save();}),
     ...(window.TODAY?TODAY.settingsRows():[]),
+    ...(window.OFFLINE?[OFFLINE.row()]:[]),
     el('p',{class:'grp'},T('urduFont')),el('div',{class:'seg',role:'group'},...URDU_NAMES.map(([k,l])=>el('button',{type:'button',class:'segb',lang:'ur',style:'font-family:'+URDU_FONTS[k],'aria-pressed':String(k===LOOK.urdu),on:{click:()=>{LOOK.urdu=k;save();}}},l)))]);
 }
 // al-Jami al-Kamil in the interface language: the Bangla interface reads the Bangla layer
@@ -1760,6 +1761,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (last) v.append(el('a', {class: 'resume', href: '#/q/s/' + last.s + '/' + last.a}, icon('history'), T('resume')));
     v.append(el('div', {id: 'today'}));
     const vis = el('span', {class: 'visits'});
+    if (window.OFFLINE) v.append(el('button', {type: 'button', class: 'resume', on: {click: () => OFFLINE.open()}}, OFFLINE.label()));
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', T('free'), vis));
     visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
@@ -3754,6 +3756,135 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     moon: 'M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z',
     quote: 'M6 17h3l2-4V7H5v6h3zm8 0h3l2-4V7h-6v6h3z',
     gem: 'M19 3H5L2 9l10 12L22 9l-3-6zM9.62 8l1.5-3h1.76l1.5 3H9.62zM11 10v6.68L5.44 10H11zm2 0h5.56L13 16.68V10zm6.26-2h-2.65l-1.5-3h2.65l1.5 3zM6.24 5h2.65l-1.5 3H4.74l1.5-3z'});
+})();
+
+</script>
+<script>
+// Offline packs: the person chooses what to keep on the phone (Quran, tafsir, hadith books …).
+// Files are stored in the 'turath-off' cache under their exact URLs, which the service worker serves first; offline.json lists the packs.
+(() => {
+  const OFF = 'turath-off', META = 'offmeta';
+  const S = {
+    ur: {title: 'آف لائن (بغیر انٹرنیٹ)', intro: 'جو کچھ آپ یہاں سے محفوظ کر لیں گے وہ انٹرنیٹ کے بغیر بھی کھلے گا۔ بڑی فائلیں ہیں، اس لیے بہتر ہے کہ وائی فائی پر محفوظ کریں۔ قرآن کی تلاوت (آڈیو) انٹرنیٹ سے ہی چلتی ہے۔',
+      core: 'بنیادی (ضروری)', quran: 'قرآن مجید', tafsir: 'تفاسیر', hadith: 'احادیث', books: 'دوسری کتب', dl: 'محفوظ کریں', del: 'ہٹائیں', close: 'بند کریں', all: 'سب منتخب', none: 'کوئی نہیں',
+      kept: 'محفوظ ہے', mb: 'MB', free: 'فون میں جگہ', used: 'استعمال شدہ', working: 'محفوظ ہو رہا ہے', done: 'مکمل ہو گیا', removed: 'ہٹا دیا گیا', pick: 'پہلے کچھ منتخب کریں', fail: 'انٹرنیٹ یا جگہ کا مسئلہ ہے، دوبارہ کوشش کریں', btn: 'آف لائن کے لیے محفوظ کریں', total: 'کل'},
+    en: {title: 'Offline (no internet)', intro: 'Whatever you keep here opens without internet. The files are large, so keep them over Wi-Fi. Quran recitation (audio) still needs the internet.',
+      core: 'Core (required)', quran: 'The Quran', tafsir: 'Tafsir', hadith: 'Hadith', books: 'Other books', dl: 'Download', del: 'Remove', close: 'Close', all: 'Select all', none: 'None',
+      kept: 'Saved', mb: 'MB', free: 'Space on the phone', used: 'Used', working: 'Saving', done: 'Done', removed: 'Removed', pick: 'Choose something first', fail: 'Network or storage problem, try again', btn: 'Save for offline use', total: 'Total'},
+    ar: {title: 'بدون إنترنت', intro: 'ما تحفظه هنا يعمل دون إنترنت. الملفات كبيرة فالأفضل حفظها عبر الواي فاي. التلاوة الصوتية تحتاج إلى الإنترنت.',
+      core: 'الأساسيات (مطلوبة)', quran: 'القرآن الكريم', tafsir: 'التفاسير', hadith: 'الأحاديث', books: 'كتب أخرى', dl: 'حفظ', del: 'حذف', close: 'إغلاق', all: 'تحديد الكل', none: 'لا شيء',
+      kept: 'محفوظ', mb: 'MB', free: 'المساحة في الهاتف', used: 'المستخدم', working: 'جارٍ الحفظ', done: 'تم', removed: 'تم الحذف', pick: 'اختر شيئاً أولاً', fail: 'مشكلة في الشبكة أو المساحة، أعد المحاولة', btn: 'حفظ للاستخدام دون إنترنت', total: 'المجموع'},
+    bn: {title: 'অফলাইন (ইন্টারনেট ছাড়া)', intro: 'এখানে যা সংরক্ষণ করবেন তা ইন্টারনেট ছাড়াই খুলবে। ফাইলগুলো বড়, তাই ওয়াই-ফাইয়ে সংরক্ষণ করা ভালো। তিলাওয়াতের অডিওতে ইন্টারনেট লাগে।',
+      core: 'মৌলিক (আবশ্যক)', quran: 'কুরআন', tafsir: 'তাফসীর', hadith: 'হাদীস', books: 'অন্যান্য বই', dl: 'সংরক্ষণ', del: 'মুছুন', close: 'বন্ধ', all: 'সব নির্বাচন', none: 'কিছু না',
+      kept: 'সংরক্ষিত', mb: 'MB', free: 'ফোনে জায়গা', used: 'ব্যবহৃত', working: 'সংরক্ষণ হচ্ছে', done: 'সম্পন্ন', removed: 'মুছে ফেলা হয়েছে', pick: 'আগে কিছু বেছে নিন', fail: 'নেটওয়ার্ক বা জায়গার সমস্যা, আবার চেষ্টা করুন', btn: 'অফলাইনের জন্য সংরক্ষণ', total: 'মোট'},
+    hi: {title: 'ऑफ़लाइन (बिना इंटरनेट)', intro: 'यहाँ जो आप सहेजेंगे वह बिना इंटरनेट के खुलेगा। फ़ाइलें बड़ी हैं, इसलिए वाई-फ़ाई पर सहेजें। तिलावत की ऑडियो के लिए इंटरनेट चाहिए।',
+      core: 'बुनियादी (ज़रूरी)', quran: 'क़ुरआन', tafsir: 'तफ़सीर', hadith: 'हदीस', books: 'अन्य किताबें', dl: 'सहेजें', del: 'हटाएँ', close: 'बंद करें', all: 'सब चुनें', none: 'कोई नहीं',
+      kept: 'सहेजा हुआ', mb: 'MB', free: 'फ़ोन में जगह', used: 'उपयोग', working: 'सहेजा जा रहा है', done: 'पूरा हुआ', removed: 'हटा दिया गया', pick: 'पहले कुछ चुनें', fail: 'नेटवर्क या जगह की समस्या, फिर कोशिश करें', btn: 'ऑफ़लाइन के लिए सहेजें', total: 'कुल'},
+    gu: {title: 'ઓફલાઇન (ઇન્ટરનેટ વગર)', intro: 'અહીં જે સાચવશો તે ઇન્ટરનેટ વગર ખુલશે. ફાઇલો મોટી છે, તેથી વાઇ-ફાઇ પર સાચવો. તિલાવતના ઓડિયો માટે ઇન્ટરનેટ જોઈએ.',
+      core: 'મૂળભૂત (જરૂરી)', quran: 'કુરઆન', tafsir: 'તફસીર', hadith: 'હદીસ', books: 'અન્ય પુસ્તકો', dl: 'સાચવો', del: 'દૂર કરો', close: 'બંધ', all: 'બધું પસંદ કરો', none: 'કંઈ નહીં',
+      kept: 'સાચવેલ', mb: 'MB', free: 'ફોનમાં જગ્યા', used: 'વપરાયેલ', working: 'સાચવાઈ રહ્યું છે', done: 'પૂર્ણ', removed: 'દૂર કર્યું', pick: 'પહેલા કંઈક પસંદ કરો', fail: 'નેટવર્ક કે જગ્યાની સમસ્યા, ફરી પ્રયત્ન કરો', btn: 'ઓફલાઇન માટે સાચવો', total: 'કુલ'},
+    fr: {title: 'Hors ligne (sans internet)', intro: "Ce que vous gardez ici s'ouvre sans internet. Les fichiers sont volumineux : gardez-les en Wi-Fi. La récitation audio nécessite internet.",
+      core: 'Essentiel (obligatoire)', quran: 'Le Coran', tafsir: 'Tafsir', hadith: 'Hadiths', books: 'Autres livres', dl: 'Télécharger', del: 'Supprimer', close: 'Fermer', all: 'Tout sélectionner', none: 'Aucun',
+      kept: 'Enregistré', mb: 'Mo', free: 'Espace sur le téléphone', used: 'Utilisé', working: 'Enregistrement', done: 'Terminé', removed: 'Supprimé', pick: "Choisissez d'abord", fail: 'Problème de réseau ou de stockage, réessayez', btn: 'Enregistrer hors ligne', total: 'Total'}};
+  const t = k => ((S[ui] || S.en)[k] !== undefined ? (S[ui] || S.en)[k] : S.en[k]);
+  const mb = b => '\u2066' + (b / 1048576 < 10 ? (b / 1048576).toFixed(1) : Math.round(b / 1048576)) + ' ' + t('mb') + '\u2069';
+  let MAN = null, META_ = {}, busy = false;
+  const loadMan = async () => { if (!MAN) { const r = await fetch('offline.json', {cache: 'no-cache'}); MAN = await r.json(); } return MAN; };
+  const rd = async () => { try { const c = await caches.open(OFF), r = await c.match(META); META_ = r ? await r.json() : {}; } catch (e) { META_ = {}; } return META_; };
+  const wr = async () => { try { const c = await caches.open(OFF); await c.put(META, new Response(JSON.stringify(META_))); } catch (e) {} };
+  const name = g => (g.n[ui] || g.n.en || g.n.ur);
+  const url = f => f[2] || f[0];
+  async function fetchFile(c, f, signal) {
+    const r = await fetch(url(f), {cache: 'reload', signal});
+    if (!r.ok) throw new Error('http ' + r.status);
+    const len = +r.headers.get('content-length') || 0;
+    await c.put(url(f), r);
+    return len;
+  }
+  async function install(g, onbytes) {
+    const c = await caches.open(OFF), todo = g.f.filter(f => (META_[g.id] || {})[f[0]] !== f[1]);
+    let i = 0, err = null;
+    const worker = async () => { while (i < todo.length && !err) { const f = todo[i++]; try { await fetchFile(c, f); (META_[g.id] = META_[g.id] || {})[f[0]] = f[1]; onbytes(f[3] || 0); } catch (e) { err = e; } } };
+    await Promise.all([worker(), worker(), worker()]);
+    await wr();
+    if (err) throw err;
+  }
+  async function remove(g) {
+    const c = await caches.open(OFF);
+    for (const f of g.f) { try { await c.delete(url(f)); } catch (e) {} }
+    delete META_[g.id]; await wr();
+  }
+  const has = g => !!META_[g.id] && g.f.every(f => (META_[g.id] || {})[f[0]] === f[1]);
+  async function openSheet() {
+    let man;
+    try { man = await loadMan(); } catch (e) { toast(t('fail')); return; }
+    await rd();
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+    const sel = new Set(), rows = [], body = [];
+    const info = el('p', {class: 'cs'}), bar = el('progress', {max: 100, value: 0, style: 'width:100%;display:none'}), msg = el('p', {class: 'cs'});
+    const sumSel = () => man.groups.filter(g => sel.has(g.id)).reduce((s, g) => s + g.b, 0);
+    const upd = () => {
+      rows.forEach(([g, cb, st]) => { cb.checked = g.k === 'core' || sel.has(g.id); st.textContent = has(g) ? '✓ ' + t('kept') : ''; });
+      info.textContent = t('total') + ': ' + mb(sumSel());
+    };
+    const est = async () => { try { const e = await navigator.storage.estimate(); msg.textContent = t('used') + ': ' + mb(e.usage || 0) + ' · ' + t('free') + ': ' + mb(Math.max(0, (e.quota || 0) - (e.usage || 0))); } catch (e) {} };
+    body.push(el('p', {class: 'note'}, t('intro')));
+    const kinds = ['core', 'quran', 'tafsir', 'hadith', 'books'];
+    const bulk = el('div', {class: 'seg', role: 'group'},
+      el('button', {type: 'button', class: 'segb', on: {click: () => { man.groups.forEach(g => g.k !== 'core' && sel.add(g.id)); upd(); }}}, t('all')),
+      el('button', {type: 'button', class: 'segb', on: {click: () => { sel.clear(); upd(); }}}, t('none')));
+    body.push(bulk);
+    kinds.forEach(k => {
+      const gs = man.groups.filter(g => g.k === k); if (!gs.length) return;
+      body.push(el('p', {class: 'grp'}, t(k)));
+      gs.forEach(g => {
+        const cb = el('input', {type: 'checkbox'}), st = el('small', {class: 'cs'});
+        if (g.k === 'core') cb.disabled = true;
+        cb.addEventListener('change', () => { cb.checked ? sel.add(g.id) : sel.delete(g.id); upd(); });
+        rows.push([g, cb, st]);
+        body.push(el('label', {class: 'srow chk'}, cb, el('span', {dir: 'auto'}, name(g), ' ', el('small', {class: 'cs'}, '(' + mb(g.b) + ') '), st)));
+      });
+    });
+    body.push(info, bar, msg);
+    upd(); est();
+    const run = async () => {
+      if (busy) return false;
+      const todo = man.groups.filter(g => (sel.has(g.id) || g.k === 'core') && !has(g));
+      if (!todo.length) { toast(t('pick')); return false; }
+      busy = true; bar.style.display = ''; let done = 0; const total = todo.reduce((s, g) => s + g.b, 0) || 1;
+      try {
+        for (const g of todo) {
+          msg.textContent = t('working') + ': ' + name(g);
+          await install(g, b => { done += b; bar.value = Math.min(100, done * 100 / total); upd(); });
+          done = todo.slice(0, todo.indexOf(g) + 1).reduce((s, x) => s + x.b, 0); bar.value = Math.min(100, done * 100 / total); upd();
+        }
+        toast(t('done')); msg.textContent = t('done');
+      } catch (e) { toast(t('fail')); msg.textContent = t('fail'); }
+      busy = false; await est(); upd(); return false;
+    };
+    const del = async () => {
+      if (busy) return false;
+      const gs = man.groups.filter(g => sel.has(g.id) && g.k !== 'core' && META_[g.id]);
+      if (!gs.length) { toast(t('pick')); return false; }
+      for (const g of gs) await remove(g);
+      toast(t('removed')); await est(); upd(); return false;
+    };
+    sheet(t('title'), body, [[t('close'), null], [t('del'), () => { del(); return false; }], [t('dl'), () => { run(); return false; }]]);
+  }
+  // when the phone is online: files of saved packs that changed on the site are fetched again quietly
+  async function sync() {
+    try {
+      if (!navigator.onLine) return; await rd(); if (!Object.keys(META_).length) return;
+      const man = await loadMan();
+      for (const g of man.groups) { if (!META_[g.id]) continue;
+        if (!has(g)) { const c = await caches.open(OFF), old = new Set(g.f.map(f => f[0]));
+          for (const k of Object.keys(META_[g.id])) if (!old.has(k)) { try { await c.delete(k); } catch (e) {} delete META_[g.id][k]; }
+          await install(g, () => {}); } }
+    } catch (e) {}
+  }
+  window.OFFLINE = {open: openSheet, sync, label: () => t('btn'),
+    row: () => el('div', {}, el('p', {class: 'grp'}, t('title')), el('button', {type: 'button', class: 'tbtn', on: {click: () => { document.querySelectorAll('.sheetbg').forEach(x => x.remove()); openSheet(); }}}, t('btn')))};
+  setTimeout(sync, 8000);
 })();
 
 </script>
