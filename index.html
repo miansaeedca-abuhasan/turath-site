@@ -939,9 +939,8 @@ async function showKitabs(){
         el('button',{class:'ab',type:'button',title:T('hOpenRead'),'aria-label':T('hOpenRead'),on:{click:e=>{e.preventDefault();HM.mode='read';hsave();location.hash='#/c/'+k.no+'/0';}}},icon('read')));
       return a;}));
     // after the last kitab: the index of hadith fragments (فهرس أطراف الجامع الكامل) — its text and numbers open the hadith
-    if((book==='jami'||(BOOKS.find(x=>x.key===book)||{}).kind==='lang')&&(!q||'فهرس الاطراف اطراف atraf index fragments'.includes(q)||String(ks.length+1)===q||ad(ks.length+1)===q)){
-      list.append(el('a',{class:'card srow2',href:'#/s/atraf'},el('span',{class:'snum'},''),
-        el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'فهرس أطراف الجامع الكامل'),el('span',{class:'cs'},EN()?'Index of hadith fragments (Atraf)':({ur:'اطراف احادیث کی فہرست',ar:'فهرس أطراف الأحاديث'})[ui]||'اطراف احادیث کی فہرست'))));}
+    if((book==='jami'||(BOOKS.find(x=>x.key===book)||{}).kind==='lang')&&(!q||'فهرس الاطراف اطراف atraf index fragments'.includes(q))){
+      list.append(el('a',{class:'card srow2',href:'#/s/atraf'},el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'فهرس أطراف الجامع الكامل'))));}
   };
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
