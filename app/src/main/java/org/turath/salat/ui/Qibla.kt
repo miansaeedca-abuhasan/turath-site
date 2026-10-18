@@ -130,7 +130,10 @@ private fun Buzz(on: Boolean, ctx: Context) {
 @Composable
 fun QiblaScreen(s: AppState) {
     var mode by remember { mutableIntStateOf(0) }
-    androidx.activity.compose.BackHandler(mode == 1) { mode = 0 }
+    // a trail for finding why the camera view closes by itself (read in the emulator's log)
+    LaunchedEffect(mode) { android.util.Log.w("salatQ", "mode=" + mode) }
+    DisposableEffect(Unit) { android.util.Log.w("salatQ", "QiblaScreen shown"); onDispose { android.util.Log.w("salatQ", "QiblaScreen left") } }
+    androidx.activity.compose.BackHandler(mode == 1) { android.util.Log.w("salatQ", "BACK pressed"); mode = 0 }
     var calib by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -143,7 +146,7 @@ fun QiblaScreen(s: AppState) {
         }
         // the compass and the camera are drawn the same way in every language (the qibla must not depend on the language)
         CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
-            if (mode == 0) QiblaCompass(s) else QiblaCamera(s) { mode = 0 }
+            if (mode == 0) QiblaCompass(s) else QiblaCamera(s) { android.util.Log.w("salatQ", "close button", Throwable()); mode = 0 }
         }
     }
     if (calib) AlertDialog(onDismissRequest = { calib = false }, confirmButton = { TextButton(onClick = { calib = false }) { Text(Tr["ok"]) } },

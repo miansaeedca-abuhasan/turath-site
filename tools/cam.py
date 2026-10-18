@@ -22,6 +22,7 @@ for apk in apks:
     sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(7)
     tap_text('Qibla'); time.sleep(2)
-    tap_text('Camera'); time.sleep(8)
-    open(f'shots/cam_{name}.png', 'wb').write(sh('exec-out', 'screencap', '-p'))
-    open(f'shots/cam_{name}.log', 'wb').write(sh('logcat', '-d', '-v', 'brief', '*:W'))
+    tap_text('Camera')
+    for k in range(6):
+        time.sleep(1); open(f'shots/cam_{name}_{k}.png', 'wb').write(sh('exec-out', 'screencap', '-p'))
+    open(f'shots/cam_{name}.log', 'wb').write(sh('logcat', '-d', '-v', 'brief', 'salatQ:V', 'AndroidRuntime:E', 'CameraX:V', '*:S'))

@@ -37,13 +37,16 @@ jobs:
           # two more copies of the release app, to find out what makes a phone refuse something: target API 35, and without shrinking
           mkdir -p /tmp/variants && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/main.apk
           gradle --no-daemon assembleRelease -Pnomin=1 -x lint -x lintVitalRelease > /tmp/v2.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/nomin.apk || true
+          # copies for the emulator camera test: the debug app, and the shrunk release made debuggable
+          mkdir -p /tmp/camtest && cp app/build/outputs/apk/debug/app-debug.apk /tmp/camtest/debug.apk
+          gradle --no-daemon assembleRelease -Pdbg=1 -x lint > /tmp/v3.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/shrunk.apk || true
           cp /tmp/variants/main.apk app/build/outputs/apk/release/app-release.apk
       - name: enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules && sudo udevadm trigger --name-match=kvm
       - name: screenshots on an emulator
-        timeout-minutes: 20
+        timeout-minutes: 14
         continue-on-error: true
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -54,7 +57,7 @@ jobs:
           disable-animations: true
           emulator-options: -no-window -gpu swiftshader_indirect -no-snapshot -noaudio -no-boot-anim -camera-back virtualscene
           script: |
-            python3 tools/smoke.py
+            python3 tools/cam.py
       - name: publish to salah-apk
         if: always()
         run: |
