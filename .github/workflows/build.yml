@@ -36,12 +36,11 @@ jobs:
           test -f app/build/outputs/apk/debug/app-debug.apk
           # two more copies of the release app, to find out what makes a phone refuse something: target API 35, and without shrinking
           mkdir -p /tmp/variants && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/main.apk
-          gradle --no-daemon assembleRelease -Ptsdk=35 -x lint -x lintVitalRelease > /tmp/v1.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/t35.apk || true
           gradle --no-daemon assembleRelease -Pnomin=1 -x lint -x lintVitalRelease > /tmp/v2.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/nomin.apk || true
           # debuggable copies (same shrinking) only for the emulator camera test
           mkdir -p /tmp/camtest
-          gradle --no-daemon assembleRelease -Pdbg=1 -x lint -x lintVitalRelease > /tmp/v3.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/main.apk || true
-          gradle --no-daemon assembleRelease -Pdbg=1 -Pnomin=1 -x lint -x lintVitalRelease > /tmp/v4.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/nomin.apk || true
+          gradle --no-daemon assembleRelease -Pdbg=1 -x lint > /tmp/v3.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/main.apk || true
+          gradle --no-daemon assembleRelease -Pdbg=1 -Pnomin=1 -x lint > /tmp/v4.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/camtest/nomin.apk || true
           cp /tmp/variants/main.apk app/build/outputs/apk/release/app-release.apk
       - name: enable KVM
         run: |
@@ -66,7 +65,6 @@ jobs:
         run: |
           mkdir -p /tmp/out
           cp app/build/outputs/apk/release/app-release.apk /tmp/out/salat-khairalquroon.apk 2>/dev/null || cp app/build/outputs/apk/debug/app-debug.apk /tmp/out/salat-khairalquroon.apk 2>/dev/null || true
-          cp /tmp/variants/t35.apk /tmp/out/salat-test-target35.apk 2>/dev/null || true
           cp /tmp/variants/nomin.apk /tmp/out/salat-test-unshrunk.apk 2>/dev/null || true
           cp app/build/outputs/bundle/release/app-release.aab /tmp/out/salat-khairalquroon.aab 2>/dev/null || true
           cp -r shots /tmp/out/ 2>/dev/null || true
