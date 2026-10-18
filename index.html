@@ -250,6 +250,8 @@ body.withplayer .speedbox{bottom:calc(11.7rem + env(safe-area-inset-bottom,0px))
 html[lang=ur] .speedinfo{font:.95rem/1.8 var(--urdu)}
 .speedinfo b{color:var(--accent)}
 .speedbox .ib:hover{background:var(--wash)}
+html.sheetopen,html.sheetopen body{overflow:hidden;overscroll-behavior:none}
+.sheet,.sbody{overscroll-behavior:contain}
 .sheetbg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:1rem}
 .sheet{background:var(--card);color:var(--ink);border-radius:16px;width:min(30rem,100%);max-height:calc(100vh - 2rem);display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.3)}
 .stitle{margin:0;padding:1rem 1.2rem .4rem;font:600 1.3rem/1.6 var(--sans)}
@@ -1404,6 +1406,23 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return close;
   };
 
+  /* ---------- windows (sheets): the page behind neither scrolls nor changes; the phone's Back button closes the window first ---------- */
+  (() => {
+    let pushed = false, selfBack = false;
+    const open = () => document.querySelector('.sheetbg') !== null;
+    const sync = () => {
+      const o = open();
+      document.documentElement.classList.toggle('sheetopen', o);
+      if (o && !pushed) { pushed = true; try { history.pushState({sheetPush: 1}, '', location.href); } catch (e) {} }
+      else if (!o && pushed) { pushed = false; if (history.state && history.state.sheetPush) { selfBack = true; try { history.back(); } catch (e) { selfBack = false; } } }
+    };
+    new MutationObserver(sync).observe(document.body, {childList: true});
+    addEventListener('popstate', () => {
+      if (selfBack) { selfBack = false; return; }
+      if (pushed) { pushed = false; document.querySelectorAll('.sheetbg').forEach(x => x.remove()); document.documentElement.classList.remove('sheetopen'); }
+    });
+  })();
+
   /* ---------- shared bottom player bar ---------- */
   const P = {cb: null};
   window.PLAYER = {
@@ -2393,6 +2412,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   function tick(t) {
     if (!AS.on) return;
+    if (document.querySelector('.sheetbg')) { AS.last = t; requestAnimationFrame(tick); return; }   // a window is open: the page behind stays where it is
     AS.acc += QS.speed * Math.min(.1, (t - AS.last) / 1000); AS.last = t;
     const px = Math.floor(AS.acc);
     if (px >= 1) { scrollBy(0, px); AS.acc -= px; }
@@ -2421,7 +2441,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     document.querySelectorAll('.playing').forEach(x => x.classList.remove('playing'));
     const p = R && R.verses[i], n = p && R.nodes.get(p + '');
     if (n && QS.mode === 'pages') document.querySelectorAll('.mw[data-v="' + vi(p[0], p[1]) + '"]').forEach(x => x.classList.add('playing'));
-    if (n) { n.classList.add('playing'); if (!AS.on) n.scrollIntoView({behavior: 'smooth', block: QS.mode === 'mushaf' ? 'center' : 'start'}); }
+    if (n) { n.classList.add('playing'); if (!AS.on && !document.querySelector('.sheetbg')) n.scrollIntoView({behavior: 'smooth', block: QS.mode === 'mushaf' ? 'center' : 'start'}); }
   }
   async function playFrom(i) {
     if (!R) return;
