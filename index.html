@@ -272,6 +272,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .srow.chk input{width:1.3rem;height:1.3rem;accent-color:var(--accent);flex:none}
 .srow.chk small{display:block}
 .srow.dim{opacity:.55}
+.dimw{opacity:.4}
 .reclist .grp{margin:.8rem 0 .1rem}
 .srow2>.ab,.moment .ab{background:none;border:0;color:var(--accent);border-radius:50%;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .srow2>.ab:hover{background:var(--wash)}
@@ -684,7 +685,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=ba9903a3c3", "data/d2.js?h=8ad6a81498", "data/d3.js?h=c4e072565d", "data/d4.js?h=2e7fb3ae1d", "data/d5.js?h=ed9aee580d", "data/d6.js?h=8a10504b53", "data/d7.js?h=32b32f219b", "data/d8.js?h=84fa1e75cc", "data/d9.js?h=65bdfa0c7b", "data/d10.js?h=e5a8d58402"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=bcf96a8d33", "data/d2.js?h=8ad6a81498", "data/d3.js?h=c4e072565d", "data/d4.js?h=2e7fb3ae1d", "data/d5.js?h=ed9aee580d", "data/d6.js?h=8a10504b53", "data/d7.js?h=32b32f219b", "data/d8.js?h=84fa1e75cc", "data/d9.js?h=65bdfa0c7b", "data/d10.js?h=e5a8d58402"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -746,8 +747,8 @@ const ARL=/[\u0621-\u064a]/;
 const MH_RE=/(\(?(?:و?في\s+(?:رواية|روايةٍ|لفظ|حديث)(?:\s+(?:عند|ل|لـ)\s*[^:،.]{1,25})?\s*:|فذكر(?:ه|ها|ته|ت|تْه)?\s+(?:الحديث|مثله|نحوه|بمثله|بنحوه)|فذكر(?:ه|ها|ته)(?=[\s.،)]|$)|فذكرها\s+في\s+حديث\s+طويل|بهذا\s+الإسناد(?:\s+(?:مثله|نحوه))?|واللفظ\s+(?:له|لها|ل[\u0621-\u064a]+)|ولفظ\s+[\u0621-\u064a]+\s+(?:نحوه|مثله|سواء)|وزاد\s+(?:فيه|[\u0621-\u064a]+)\s*:|ثم\s+ذكر\s+(?:مثله|نحوه|الحديث))\)?)/g;
 function rich(text,lang){
   if(lang==='ar'&&text&&!/\ue002/.test(text)){MH_RE.lastIndex=0;if(MH_RE.test(text)){MH_RE.lastIndex=0;text=text.replace(MH_RE,'\ue002$1\ue003');}}
-  if(text&&/\ue002/.test(text)){const out=[];text.split(/\ue002([^\ue003]*)\ue003/).forEach((seg,i)=>{if(!seg)return;if(i%2)out.push(el('span',{class:'mh'},seg.replace(/[\ue000\ue001]/g,'')));else out.push(...rich(seg,lang));});return out;}
-  if(text&&/[\ue000\ue001]/.test(text)){const out=[];text.split(/\ue000([^\ue001]*)\ue001?/).forEach((seg,i)=>{if(!seg)return;seg=seg.replace(/[\ue000\ue001]/g,'');
+  if(text&&/\ue002/.test(text)){const out=[];text.split(/\ue002([^\ue003]*)\ue003/).forEach((seg,i)=>{if(!seg)return;if(i%2)out.push(el('span',{class:'mh'},seg.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'')));else out.push(...rich(seg,lang));});return out;}
+  if(text&&/[\ue000\ue001]/.test(text)){const out=[];text.split(/\ue000([^\ue001]*)\ue001?/).forEach((seg,i)=>{if(!seg)return;seg=seg.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'');
     if(i%2)out.push(el('span',{class:'red'},...rich0(seg,lang)));else out.push(...rich0(seg,lang));});return out;}
   return rich0(text,lang);}
 function rich0(text,lang){
@@ -823,7 +824,7 @@ function hadithText(d,scope,arabic){
   else tk=L==='ar'?(d.takhrij||''):L==='bn'?(d.takhrij_bn||d.takhrij_en||''):(d.takhrij_en||'');
   const ref=({ur:'الجامع الکامل: ',ar:'الجامع الكامل: ',bn:'আল-জামি আল-কামিল: ',hi:'अल-जामिउल कामिल: ',gu:'અલ-જામિઉલ કામિલ: '}[L]||'Al-Jami al-Kamil: ')+num;
   const voc=(arabic.match(/[\u064B-\u0652]/g)||[]).length>arabic.length/12;
-  arabic=arabic.replace(/ﷺ/g,voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم');tk=(tk||'').replace(/[\ue000\ue001]/g,'');if(L==='ar')tk=tk.replace(/ﷺ/g,'صلى الله عليه وسلم');
+  arabic=arabic.replace(/ﷺ/g,voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم');tk=(tk||'').replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'');if(L==='ar')tk=tk.replace(/ﷺ/g,'صلى الله عليه وسلم');
   return [curBookName()+' — '+T('hadith')(num),path,'',arabic,'',tr?tr.paras.join('\n'):'','',tk,'('+ref+')'].filter((x,i,a)=>!(x===''&&(i===0||a[i-1]===''))).join('\n').trim();
 }
 async function doCopy(d,scope){toast(T(await copyText(withLink(hadithText(d,scope,await vocalized(d)),'#/h/'+d.num))?'copied':'copyfail'));}
@@ -852,13 +853,35 @@ function gradeNode(g){
   if(/متفق/.test(n)){k='s';txt=T('grade').agreed}else if(/^صحیح/.test(n)){k='s';txt=T('grade').s}else if(/^حسن/.test(n)){k='h';txt=T('grade').h}else if(/^ضعیف/.test(n)){k='d';txt=T('grade').d}
   return el('span',{class:'gp g-'+k},txt);
 }
+
+/* ---------- excerpt -> full hadith: the source book's longer text; the words of the Jami are normal, the rest light ---------- */
+const NRM=t=>(t||'').replace(/[-]|[^]*/g,'').replace(/ﷺ/g,'صلى الله عليه وسلم').replace(/[ً-ٰٟـ]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ى/g,'ي').replace(/ة/g,'ه').replace(/[^ء-ي0-9\s]/g,' ');
+async function fullHadith(d,box){
+  box.replaceChildren();const jt=NRM((d.matn||[]).join(' ')).split(/\s+/).filter(Boolean);
+  const grams=new Set();for(let i=0;i+2<jt.length;i++)grams.add(jt[i]+' '+jt[i+1]+' '+jt[i+2]);
+  let best=null;
+  for(const r of (d.refs||[]).filter(r=>COLL.has(r.key)).slice(0,8)){
+    try{const it=await COLL.item(r.key,r.number,r.n);if(!it||!it.text)continue;
+      const raw=it.text.split(/\s+/).filter(Boolean),nt=raw.map(w=>NRM(w).replace(/\s+/g,''));
+      const inn=new Array(raw.length).fill(false);let hit=0;
+      for(let i=0;i+2<nt.length;i++)if(grams.has(nt[i]+' '+nt[i+1]+' '+nt[i+2])){[i,i+1,i+2].forEach(k=>{if(!inn[k]){inn[k]=true;hit++;}});}
+      if(!best||hit>best.hit||(hit===best.hit&&raw.length>best.raw.length))best={r,it,raw,inn,hit};
+    }catch(e){}}
+  if(!best||best.hit<3||best.raw.length<jt.length*1.15){box.append(el('p',{class:'note'},'اس حدیث کا اس سے طویل مکمل متن ہماری کتب میں نہیں ملا۔'));return;}
+  box.append(el('b',{},(COLL.name(best.r.key)||best.r.label)+' ('+best.r.number+')'));
+  const p=el('p',{class:'ar fullh',lang:'ar'});
+  best.raw.forEach((w,i)=>p.append(el('span',{class:best.inn[i]?'':'dimw'},w),' '));
+  box.append(p,el('a',{href:best.it.href||'#'},T('open')));
+}
+window.fullHadith=fullHadith;
 /* ---------- a hadith card (chapter view, bookmarks) ---------- */
 function hadithCard(d,scope){
   const c=el('article',{class:'card'});
-  c.append(el('div',{class:'top'},el('span',{class:'big'},fmt(d.num)),gradeNode(d.grade)));
+  const fb=el('div',{class:'refbox fullbox',hidden:true});
+  c.append(el('div',{class:'top'},el('span',{class:'big',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:'مکمل حدیث',on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},fmt(d.num)),gradeNode(d.grade)));
   const mt=el('div',{class:'mt ar',lang:'ar'});
   d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(el('span',{class:'sanad'},d.sanad+' '));pe.append(...rich(p,'ar'));mt.append(pe);});
-  c.append(mt);
+  c.append(mt,fb);
   const tr=trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
   c.append(actions(d,scope,true));return c;
@@ -1207,6 +1230,7 @@ $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
 // the takhrij of a hadith of al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
 function refBlock(d){const out=[];d.refs=d.refs||[];
+if(d.refs.some(r=>COLL.has(r.key))){const fb=el('div',{class:'refbox fullbox',hidden:true});out.push(el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;fb.replaceChildren(el('p',{class:'note'},'…'));await fullHadith(d,fb);}}},'مکمل حدیث (سند سمیت)'),fb);}
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
     d.refs.forEach(r=>{const nm=ui==='en'&&EN_BOOK[r.key]?EN_BOOK[r.key]:(r.n&&COLL.name(r.key))||r.label;
@@ -1221,11 +1245,16 @@ if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refb
 return out;}
 window.refBlock=refBlock;
 /* ---------- takhrij references linked to the books in the app: a tap shows that book's hadith under the paragraph (مقارنة) ---------- */
-const RALIAS=[["ابن أبي عاصم في الآحاد والمثاني", "sh9196"], ["النسائي في عمل اليوم والليلة", "amalyawm"], ["البيهقي في الأسماء والصفات", "sh9270"], ["الطبراني في المعجم الصغير", "sh13068"], ["الطبراني في المعجم الأوسط", "sh28171"], ["أبو نعيم في معرفة الصحابة", "sh10490"], ["الطبراني في مسند الشاميين", "sh13162"], ["البيهقي في القضاء والقدر", "sh13053"], ["البيهقي في دلائل النبوة", "dalail"], ["البخاري في الأدب المفرد", "adab"], ["النسائي في السنن الكبرى", "kubranasai"], ["البيهقي في السنن الكبرى", "kubrabayhaqi"], ["الإمام أحمد في المسند", "ahmad"], ["البزار في كشف الأستار", "sh12862"], ["الإمام أحمد في الزهد", "zuhd"], ["الطبرانيّ في الكبير", "sh21570"], ["البغوي في شرح السنة", "sharhsunna"], ["الطبراني في الدعاء", "sh13016"], ["الضياء في المختارة", "sh10480"], ["الطبراني في الكبير", "sh21570"], ["الطبراني في الأوسط", "sh28171"], ["البيهقي في الدلائل", "dalail"], ["الهيثميّ في المجمع", "majma"], ["الطبراني في الصغير", "sh13068"], ["الترمذي في الشمائل", "shamail"], ["أبو داود الطيالسي", "tayalisi"], ["الهيثمي في المجمع", "majma"], ["النسائي في الكبرى", "kubranasai"], ["عمل اليوم والليلة", "amalyawm"], ["البيهقي في الكبرى", "kubrabayhaqi"], ["الآجري في الشريعة", "sh13035"], ["إسحاق بن راهويه", "sh13159"], ["أحمد في المسند", "ahmad"], ["سعيد بن منصور", "sh13122"], ["أحمد في الزهد", "zuhd"], ["ابن أبي شيبة", "sh9944"], ["الأدب المفرد", "adab"], ["الإمام مالك", "malik"], ["كشف الأستار", "sh12862"], ["الإمام أحمد", "ahmad"], ["ابن راهويه", "sh13159"], ["عبد الرزاق", "abdrazzaq"], ["الدار قطني", "sh9771"], ["ابن خزيمة", "sh9697"], ["ابن السني", "sh13132"], ["ابن الجعد", "ibnjad"], ["الدارقطني", "sh9771"], ["اللالكائي", "sh9200"], ["الترمذيّ", "tirmidhi"], ["أبو داود", "abudawud"], ["أبي داود", "abudawud"], ["ابن حبان", "ibnhibban"], ["النسائيّ", "nasai"], ["ابن ماجه", "ibnmajah"], ["البخاريّ", "bukhari"], ["أبو يعلى", "sh12520"], ["الطيالسي", "tayalisi"], ["الدارمي", "darimi"], ["النسائي", "nasai"], ["البخاري", "bukhari"], ["الترمذي", "tirmidhi"], ["الحميدي", "humaydi"], ["البيهقي", "kubrabayhaqi"], ["الحاكم", "hakim"], ["البزار", "sh12862"], ["مالك", "malik"], ["أحمد", "ahmad"], ["مسلم", "muslim"]];
+const RALIAS=[["ابن أبي عاصم في الآحاد والمثاني", "sh9196"], ["النسائي في عمل اليوم والليلة", "amalyawm"], ["البيهقي في الأسماء والصفات", "sh9270"], ["الطبراني في المعجم الصغير", "sh13068"], ["الطبراني في المعجم الأوسط", "sh28171"], ["أبو نعيم في معرفة الصحابة", "sh10490"], ["الطبراني في مسند الشاميين", "sh13162"], ["البيهقي في القضاء والقدر", "sh13053"], ["البيهقي في دلائل النبوة", "dalail"], ["البخاري في الأدب المفرد", "adab"], ["النسائي في السنن الكبرى", "kubranasai"], ["البيهقي في السنن الكبرى", "kubrabayhaqi"], ["الإمام أحمد في المسند", "ahmad"], ["البزار في كشف الأستار", "sh12862"], ["الإمام أحمد في الزهد", "zuhd"], ["الطبرانيّ في الكبير", "mujamkabir"], ["البغوي في شرح السنة", "sharhsunna"], ["الطبراني في الدعاء", "sh13016"], ["الضياء في المختارة", "sh10480"], ["الطبراني في الكبير", "mujamkabir"], ["الطبراني في الأوسط", "sh28171"], ["البيهقي في الدلائل", "dalail"], ["الهيثميّ في المجمع", "majma"], ["الطبراني في الصغير", "sh13068"], ["الترمذي في الشمائل", "shamail"], ["أبو داود الطيالسي", "tayalisi"], ["الهيثمي في المجمع", "majma"], ["النسائي في الكبرى", "kubranasai"], ["عمل اليوم والليلة", "amalyawm"], ["البيهقي في الكبرى", "kubrabayhaqi"], ["الآجري في الشريعة", "sh13035"], ["إسحاق بن راهويه", "sh13159"], ["أحمد في المسند", "ahmad"], ["سعيد بن منصور", "sh13122"], ["أحمد في الزهد", "zuhd"], ["ابن أبي شيبة", "sh9944"], ["الأدب المفرد", "adab"], ["الإمام مالك", "malik"], ["كشف الأستار", "sh12862"], ["الإمام أحمد", "ahmad"], ["ابن راهويه", "sh13159"], ["عبد الرزاق", "abdrazzaq"], ["الدار قطني", "sh9771"], ["ابن خزيمة", "ibnkhuzaymah"], ["ابن السني", "sh13132"], ["ابن الجعد", "ibnjad"], ["الدارقطني", "sh9771"], ["اللالكائي", "sh9200"], ["الترمذيّ", "tirmidhi"], ["أبو داود", "abudawud"], ["أبي داود", "abudawud"], ["ابن حبان", "ibnhibban"], ["النسائيّ", "nasai"], ["ابن ماجه", "ibnmajah"], ["البخاريّ", "bukhari"], ["أبو يعلى", "sh12520"], ["الطيالسي", "tayalisi"], ["الدارمي", "darimi"], ["النسائي", "nasai"], ["البخاري", "bukhari"], ["الترمذي", "tirmidhi"], ["الحميدي", "humaydi"], ["البيهقي", "kubrabayhaqi"], ["الحاكم", "hakim"], ["البزار", "sh12862"], ["مالك", "malik"], ["أحمد", "ahmad"], ["مسلم", "muslim"]];
 const RRE=new RegExp('(?<=^|[\\s،,.:؛(«]|[\\s،(]و|^و|[\\s،(]ف)('+RALIAS.map(a=>a[0].replace(/ /g,'\\s+')).join('|')+')((?:\\s+(?:في|فى)\\s+[^()،.:؛\\d\\ue000\\ue001]{1,45}?)?\\s*)([\\ue000\\ue001]?)\\(([^()\\ue000\\ue001]{1,40})\\)(\\ue001?)','g');
 const RKEY=Object.fromEntries(RALIAS.map(a=>[a[0].replace(/\s+/g,' '),a[1]]));
 const DIG10=t=>t.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
-function refRich(t){const out=[];let last=0;RRE.lastIndex=0;let m;
+function refMk(key,n,red){const nm=+n;return el('a',{class:'rlink'+(red?' red':''),href:'#',title:'مقارنة',on:{click:async e=>{e.preventDefault();const p=e.target.closest('p')||e.target.parentNode;
+  let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+n)){box=el('div',{class:'refbox rinl','data-k':key+n});p.after(box);
+    box.append(el('b',{},(COLL.name(key)||key)+' ('+n+')'));if(!await COLL.refBox(key,nm,box,nm))box.append(el('p',{class:'note'},T('nobook')));}
+  else box.remove();}}},'['+((window.COLL&&COLL.printed&&COLL.printed(key,nm))||n)+']');}
+function refRich(t){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
+  const out=[];let last=0;RRE.lastIndex=0;let m;
   while((m=RRE.exec(t))){const key=RKEY[m[1].replace(/\s+/g,' ')];if(!key||!window.COLL)continue;
     const inner=DIG10(m[4]),red=m[3]==='\ue000';if(/\//.test(inner))continue;
     const nums=inner.split(/[،,و]/).map(x=>(x.match(/^\s*(\d+)/)||[])[1]).filter(Boolean);if(!nums.length)continue;
@@ -1246,7 +1275,7 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
   const SAWRE=new RegExp('ﷺ|'+DV('صلى')+'\\s+'+DV('الله')+'\\s+'+DV('عليه')+'\\s+(?:'+DV('وآله')+'\\s+|'+DV('و')+'\\s*'+DV('آله')+'\\s+)?'+DV('وسلم'),'g');
   const VOC=/[ً-ْ]/g,SKIP=/^(SCRIPT|STYLE|TEXTAREA|INPUT|OPTION|TITLE)$/;
   const langOf=n=>{const e=n.parentElement&&n.parentElement.closest('[lang]');return e?e.getAttribute('lang'):document.documentElement.lang;};
-  const MK=/[\ue000-\ue003]/g;   // marks of red / muhaddith text left in a plain text (another page's card): removed
+  const MK=/[\ue000-\ue003]|\ue010[^\ue011]*\ue011/g;   // marks of red / muhaddith text left in a plain text (another page's card): removed
   function fix(tn){let t=tn.nodeValue;if(MK.test(t)){MK.lastIndex=0;t=t.replace(MK,'');tn.nodeValue=t;}MK.lastIndex=0;SAWRE.lastIndex=0;if(!SAWRE.test(t))return;const p=tn.parentElement;if(!p||SKIP.test(p.tagName)||p.closest('.saw,[contenteditable],.nosaw'))return;
     let L=langOf(tn);const ctx=(p.textContent||'').slice(0,400);if(L!=='ur'&&/[ہےںٹڈڑگپچژ]/.test(ctx))L='ur';const voc=(ctx.match(VOC)||[]).length>ctx.length/12;
     const f=document.createDocumentFragment();let last=0;SAWRE.lastIndex=0;let m;
@@ -1272,7 +1301,7 @@ function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{}
   det.addEventListener('toggle',async()=>{if(!det.open||done)return;body.replaceChildren(el('p',{class:'note'},'…'));
     try{await drLoad(d.num);const ps=(window.DRDATA||{})[d.num]||[];done=true;
       body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...refRich(t))));
-      if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps.map(x=>x.replace(/[\ue000\ue001]/g,'')),'ar',body)}},icon('listen'),T('listenPart')));}
+      if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps.map(x=>x.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'')),'ar',body)}},icon('listen'),T('listenPart')));}
     catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
   return det;}
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
@@ -2818,7 +2847,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const d = hobj(b, n, lang), c = el('article', {class: 'card'});
     // Arabic library books (turath.io) show the book's own printed number; the others show the app number and the printed one beside it
     const own = b.grp === 'ar' || !!b.jami, pn = b.an[n] || n;
-    const printed = !own && b.an[n] && String(b.an[n]) !== String(n) ? el('span', {class: 'cs'}, '، ' + T('cPrinted')(b.an[n])) : null;
+    const mus = b.key === 'muslim' && b.an[n] && !(b.nn && b.nn[n]);
+    const printed = mus ? el('span', {class: 'cs'}, '  (' + (typeof ui !== 'undefined' && ui === 'ar' ? 'ترقيم عبد الباقي: ' + fmtN(pn) + ' ، الرقم العام: ' + fmtN(n) : 'ترقیم عبد الباقی: ' + fmtN(pn) + ' ، عام نمبر: ' + fmtN(n)) + ')')
+      : !own && b.an[n] && String(b.an[n]) !== String(n) ? el('span', {class: 'cs'}, '، ' + T('cPrinted')(b.an[n])) : null;
     // a note of the book (text between the hadith, e.g. in the Seerah) has no number: a small star instead
     const note = b.nn && b.nn[n];
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own ? pn : n)), printed,
@@ -3177,6 +3208,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   setTimeout(() => index().catch(() => {}), 0);
   window.COLL = {
+    printed(key, n) { const b = C.idx && C.idx.find(x => x.key === key); return b ? (b.an && b.an[n]) || n : n; },
     async route(h) {
       await index();
       const m = h.match(/^#\/s\/([a-z0-9]+)(?:\/(n\/)?(\d+))?/), b = m && bookOf(m[1]);
