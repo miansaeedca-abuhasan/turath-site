@@ -399,7 +399,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 :root[data-color="slate"][data-theme="dark"]{--accent:#93b3c1;--bar:#34505c;--wash:#1f2b30}
 .swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin:.3rem 0 .6rem}
 .swatch{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:.35rem .2rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.15rem;font-size:.85rem;line-height:1.5}
-.swatch::before{content:"";width:2rem;height:2rem;border-radius:50%;background:var(--c);box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.swatch::before{content:"";width:2.2rem;height:2.2rem;border-radius:50%;background:linear-gradient(135deg,var(--c) 50%,color-mix(in srgb,var(--c) 22%,#fff) 50%);box-shadow:0 0 0 1px rgba(0,0,0,.12)}
 .swatch[aria-pressed=true]{border-color:var(--c);box-shadow:0 0 0 2px var(--c)}
 
 /* today cards */
@@ -690,11 +690,11 @@ window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["dat
 </script>
 <script>
 const I={
-ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفیٰ) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفیٰ) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',poster:'پوسٹر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'متفق علیہ',s:'صحیح',h:'حسن',d:'ضعیف'},
  kind:{translation:'ترجمہ',intro_kitab:'کتاب کا تعارف',intro_majmu:'مجموعے کا تعارف',intro:'باب کا تعارف',sharh:'شرح',alfaz:'شرح الفاظِ حدیث',buhuth:'بحث الحدیث',duroos:'فوائد و دروس',extra:'اضافی معلومات'},
  field:{matn:'متن',sanad:'سند',chapter:'باب',takhrij:'تخریج',translation:'ترجمہ',sharh:'شرح',alfaz:'الفاظ',buhuth:'بحث',duroos:'دروس',extra:'اضافی',number:'نمبر',semantic:'مفہوم',ref:'حوالہ',intro:'تعارف',intro_kitab:'تعارف',intro_majmu:'تعارف'}},
-en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',poster:'Poster',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'Agreed upon',s:'Sahih',h:'Hasan',d:"Da'if"},
  kind:{translation:'Translation',intro_kitab:'Book Introduction',intro_majmu:'Collection Introduction',intro:'Chapter Introduction',sharh:'Commentary',alfaz:'Word Commentary',buhuth:'Discussion of the Hadith',duroos:'Lessons',extra:'Additional Notes'},
  field:{matn:'Text',sanad:'Isnad',chapter:'Chapter',takhrij:'Takhrij',translation:'Translation',sharh:'Commentary',alfaz:'Words',buhuth:'Discussion',duroos:'Lessons',extra:'Notes',number:'Number',semantic:'Meaning',ref:'Reference',intro:'Intro',intro_kitab:'Intro',intro_majmu:'Intro'}}};
@@ -707,6 +707,7 @@ const ICON={
  bm1:'M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z',
  bms:'M19 18l2 1V3c0-1.1-.9-2-2-2H8.99C7.89 1 7 1.9 7 3h10c1.1 0 2 .9 2 2v13zM15 5H5c-1.1 0-2 .9-2 2v16l7-3 7 3V7c0-1.1-.9-2-2-2z',
  copy:'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
+ poster:'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z',
  share:'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z',
  quiz:'M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5.99 13c-.59 0-1.05-.47-1.05-1.05 0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04-.01.58-.45 1.05-1.04 1.05zm2.5-6.17c-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c0-.41-.06-1.08.26-1.65.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.61.58 1.73.01 2.57z',
  dua:'M18.4 18.4L5.6 18.4L5.6 5.6L18.4 5.6zM12.0 21.0L3.0 12.0L12.0 3.0L21.0 12.0zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',seerah:'M12 2c-1.7 0-3 1.4-3 3.2V7H8v2H5v2h14V9h-3V7h-1V5.2C15 3.4 13.7 2 12 2zM3 12v10h7v-4.5c0-1.1.9-2 2-2s2 .9 2 2V22h7V12H3z',
@@ -753,7 +754,7 @@ function rich(text,lang){
     if(i%2)out.push(el('span',{class:'red'},...rich0(seg,lang)));else out.push(...rich0(seg,lang));});return out;}
   return rich0(text,lang);}
 function rich0(text,lang){
-  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?TASH.test(w):ARL.test(w);
+  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?(TASH.test(w)||/[يكةىأإٱ]/.test(w)):ARL.test(w);
   if(other&&!ARL.test(text))return [text];
   text.split(/(﴿[^﴾]*(?:﴾|$)|\{[^{}]{2,}\}|«[^»]*»)/).forEach(seg=>{
     if(!seg)return;
@@ -835,6 +836,15 @@ async function doShare(d,scope){
   const ok=await copyText(text);toast(T(ok?'shared':'copyfail'));
   try{window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener')}catch(e){}
 }
+async function hadithPoster(d){
+  const full=(await api('hadith/'+d.num+'?book=jami').catch(()=>null))||d;const tr={};
+  for(const l of ['ur','en']){try{const r=await api('hadith/'+d.num+'?book=jami_'+l);const c=((r&&r.content)||{}).translation||{};if(c[l])tr[l]=c[l].join('\n');}catch(e){}}
+  if(!tr.ur&&window.TODAY){const u=TODAY.urOf(d.num);if(u)tr.ur=u;}
+  const strip=s=>(s||'').replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
+  const ar=strip((d.matn||[]).join('\n')).replace(/ﷺ/g,'صلى الله عليه وسلم');
+  const g=(d.grade||'').trim();
+  POSTER.open({kind:'hadith',ar,tr:{ur:strip(tr.ur),en:strip(tr.en)},grade:g,ref:'الجامع الكامل ('+d.num+')',name:'hadith-'+d.num});
+}
 function actions(d,scope,withRead){
   const a=el('div',{class:'acts'});
   const bm=el('button',{class:'ab'+(bmHas(scope,d.num)?' on':''),type:'button','aria-label':T('bookmark'),title:T('bookmark')});
@@ -843,10 +853,11 @@ function actions(d,scope,withRead){
   a.append(bm);
   if(withRead)a.append(el('a',{class:'ab',href:'#/h/'+d.num,'aria-label':T('read'),title:T('read')},icon('read')));
   const cp=el('button',{class:'ab',type:'button','aria-label':T('copy'),title:T('copy'),on:{click:()=>doCopy(d,scope)}},icon('copy'));
+  const ps=el('button',{class:'ab',type:'button','aria-label':T('poster'),title:T('poster'),on:{click:()=>hadithPoster(d)}},icon('poster'));
   const sh=el('button',{class:'ab',type:'button','aria-label':T('share'),title:T('share'),on:{click:()=>doShare(d,scope)}},icon('share'));
   const ls=el('button',{class:'ab',type:'button','aria-label':T('listen'),title:T('listen'),on:{click:()=>LISTEN.playHadiths([{d,node:a.closest('.card')||a.parentNode}])}},icon('listen'));
   if(scope==='jami'&&window.CMP)a.append(CMP.button({k:'jami',n:d.num}));
-  a.append(ls,cp,sh,el('span',{class:'sp'}));return a;
+  a.append(ls,cp,ps,sh,el('span',{class:'sp'}));return a;
 }
 function gradeNode(g){
   if(!g)return null;const n=g.replace(/[\u064b-\u0652\u0670]/g,'').replace(/[ىي]/g,'ی').replace(/ه/g,'ہ');
@@ -1158,7 +1169,16 @@ function applyUi(){
 const THEMES=[['blue','#2f7fc0',{ur:'نیلا',ar:'أزرق',en:'Blue',bn:'নীল'}],['teal','#1f8a8a',{ur:'فیروزی',ar:'فيروزي',en:'Turquoise',bn:'ফিরোজা'}],
  ['emerald','#2e7d5b',{ur:'زمردی سبز',ar:'أخضر زمردي',en:'Emerald',bn:'পান্না সবুজ'}],['olive','#6b7f3a',{ur:'زیتونی',ar:'زيتوني',en:'Olive',bn:'জলপাই'}],
  ['gold','#a07a2c',{ur:'سنہری',ar:'ذهبي',en:'Gold',bn:'সোনালি'}],['maroon','#8c3b4a',{ur:'عنابی',ar:'عنّابي',en:'Maroon',bn:'মেরুন'}],
- ['violet','#6d5a9c',{ur:'بنفشی',ar:'بنفسجي',en:'Violet',bn:'বেগুনি'}],['slate','#4f6d7a',{ur:'سرمئی',ar:'رمادي مزرق',en:'Slate',bn:'ধূসর নীল'}]];
+ ['violet','#6d5a9c',{ur:'بنفشی',ar:'بنفسجي',en:'Violet',bn:'বেগুনি'}],['slate','#4f6d7a',{ur:'سرمئی',ar:'رمادي مزرق',en:'Slate',bn:'ধূসর নীল'}],
+ ['navy','#27468a',{ur:'گہرا نیلا',ar:'كحلي',en:'Navy'}],['sky','#0d8fc4',{ur:'آسمانی',ar:'سماوي',en:'Sky'}],['mint','#2aa876',{ur:'پودینہ سبز',ar:'نعناعي',en:'Mint'}],
+ ['forest','#2f6b3a',{ur:'جنگلی سبز',ar:'أخضر غابي',en:'Forest'}],['sand','#a88a52',{ur:'ریتیلا',ar:'رملي',en:'Sand'}],['orange','#d2691e',{ur:'نارنجی',ar:'برتقالي',en:'Orange'}],
+ ['coral','#d45d4c',{ur:'مرجانی',ar:'مرجاني',en:'Coral'}],['rose','#c2467a',{ur:'گلابی',ar:'وردي',en:'Rose'}],['plum','#7a3a74',{ur:'جامنی',ar:'برقوقي',en:'Plum'}],
+ ['indigo','#4a4fb0',{ur:'نیلگوں',ar:'نيلي',en:'Indigo'}],['brown','#7a5236',{ur:'بھورا',ar:'بني',en:'Brown'}],['charcoal','#444b52',{ur:'کوئلہ',ar:'فحمي',en:'Charcoal'}]];
+// colours added later get their light and dark sets computed from the one main colour
+(function(){const mix=(a,b,k)=>{const f=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)),x=f(a),y=f(b);return '#'+x.map((v,i)=>Math.round(v*(1-k)+y[i]*k).toString(16).padStart(2,'0')).join('');};
+  let css='';THEMES.slice(8).forEach(([k,c])=>{css+=':root[data-color="'+k+'"]:not([data-theme="dark"]){--accent:'+c+';--bar:'+c+';--wash:'+mix(c,'#ffffff',.88)+';--paper:'+mix(c,'#ffffff',.95)+'}'
+    +':root[data-color="'+k+'"][data-theme="dark"]{--accent:'+mix(c,'#ffffff',.45)+';--bar:'+mix(c,'#000000',.4)+';--wash:'+mix(c,'#101418',.82)+'}';});
+  const s=document.createElement('style');s.textContent=css;document.head.append(s);})();
 const LOOK={color:'blue',mode:'auto',urdu:'jameel'};try{Object.assign(LOOK,JSON.parse(localStorage.look||'{}'))}catch(e){}
 // Jameel Noori Nastaleeq became the default Urdu font (the old default "gulzar" already began with it)
 if(!LOOK.uv){if(LOOK.urdu==='gulzar')LOOK.urdu='jameel';LOOK.uv=2;}
@@ -1405,6 +1425,330 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+<script>
+/* Poster maker: a hadith or an ayah as a picture for WhatsApp / Facebook / Instagram.
+   POSTER.open({kind:'hadith'|'ayah', ar:'…', tr:{ur:'…', en:'…'}, grade:'صحیح', ref:'الجامع الکامل (11340)', name:'file-name', fontAr:'quran'})
+   All pictures are drawn here with the canvas (no downloaded images, no people): mosques, the Ka'bah, Madinah, snow, rain, nature, patterns. */
+(function () {
+  'use strict';
+  const BRAND = 'تراث خيرالقرون', SITE = 'turathkhairalquroon.com';
+  const F_AR = '"Amiri","Scheherazade New","Noto Naskh Arabic",serif', F_QR = '"Amiri Quran","Amiri","Scheherazade New",serif';
+  const F_UR = '"Jameel Noori Nastaleeq","Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif';
+  const F_EN = 'Georgia,"Times New Roman","Noto Serif",serif';
+  const SIZES = [
+    {k: 'sq', w: 1080, h: 1080, ur: 'مربع', ar: 'مربع', en: 'Square', hint: {ur: 'فیس بک · انسٹاگرام', ar: 'فيسبوك · إنستغرام', en: 'Facebook · Instagram'}},
+    {k: 'pt', w: 1080, h: 1350, ur: 'عمودی', ar: 'عمودي', en: 'Portrait', hint: {ur: 'انسٹاگرام · فیس بک', ar: 'إنستغرام · فيسبوك', en: 'Instagram · Facebook'}},
+    {k: 'st', w: 1080, h: 1920, ur: 'اسٹیٹس', ar: 'ستوري', en: 'Story', hint: {ur: 'واٹس ایپ اسٹیٹس · اسٹوری', ar: 'حالة واتساب · ستوري', en: 'WhatsApp status · Story'}},
+    {k: 'ls', w: 1200, h: 675, ur: 'افقی', ar: 'أفقي', en: 'Wide', hint: {ur: 'ٹوئٹر · فیس بک لنک', ar: 'تويتر · فيسبوك', en: 'Twitter · Facebook link'}}
+  ];
+  const TXT = {
+    ur: {title: 'پوسٹر بنائیں', size: 'سائز', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
+    ar: {title: 'صنع بطاقة', size: 'الحجم', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
+    en: {title: 'Make a poster', size: 'Size', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
+  };
+
+  /* ---------- drawing helpers ---------- */
+  const rng = seed => { let s = seed >>> 0; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
+  const lg = (c, x0, y0, x1, y1, st) => { const g = c.createLinearGradient(x0, y0, x1, y1); st.forEach(s => g.addColorStop(s[0], s[1])); return g; };
+  const sky = (c, w, h, st) => { c.fillStyle = lg(c, 0, 0, 0, h, st); c.fillRect(0, 0, w, h); };
+  function glow(c, x, y, r, col, a) {
+    c.save(); c.globalAlpha = a; const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col); g.addColorStop(1, col + '00');
+    c.fillStyle = g; c.fillRect(x - r, y - r, 2 * r, 2 * r); c.restore();
+  }
+  function ridge(c, w, h, y, amp, col, seed, n) {
+    const r = rng(seed), ph = [r() * 6, r() * 6, r() * 6];
+    c.beginPath(); c.moveTo(0, h);
+    for (let x = 0; x <= w + 1; x += w / 90) {
+      const t = x / w * (n || 3), v = Math.sin(t * 3.1 + ph[0]) * .55 + Math.sin(t * 6.7 + ph[1]) * .3 + Math.sin(t * 13 + ph[2]) * .15;
+      c.lineTo(x, y - amp * (v * .5 + .5));
+    }
+    c.lineTo(w, h); c.closePath(); c.fillStyle = col; c.fill();
+  }
+  function stars(c, w, h, n, seed, maxY) {
+    const r = rng(seed); c.save();
+    for (let i = 0; i < n; i++) {
+      const x = r() * w, y = r() * h * (maxY || .6), s = r() * 1.8 + .5;
+      c.globalAlpha = .35 + r() * .6; c.fillStyle = '#fff'; c.beginPath(); c.arc(x, y, s * (w / 1080), 0, 7); c.fill();
+    }
+    c.restore();
+  }
+  function crescent(c, x, y, r, col) {
+    const o = document.createElement('canvas'); o.width = o.height = Math.ceil(r * 2.4); const k = o.getContext('2d'), m = o.width / 2;
+    k.fillStyle = col; k.beginPath(); k.arc(m, m, r, 0, 7); k.fill();
+    k.globalCompositeOperation = 'destination-out'; k.beginPath(); k.arc(m + r * .42, m - r * .12, r * .86, 0, 7); k.fill();
+    c.drawImage(o, x - m, y - m);
+  }
+  function mosque(c, cx, by, s, col, lit) {
+    const u = s / 10; c.fillStyle = col;
+    c.fillRect(cx - 3 * u, by - 1.8 * u, 6 * u, 1.8 * u);
+    c.beginPath(); c.arc(cx, by - 1.8 * u, 2.2 * u, Math.PI, 0); c.fill();
+    c.fillRect(cx - .3 * u, by - 4.5 * u, .6 * u, .6 * u); c.fillRect(cx - .06 * u, by - 5.3 * u, .12 * u, .9 * u);
+    c.beginPath(); c.arc(cx, by - 5.35 * u, .17 * u, 0, 7); c.fill();
+    [-1, 1].forEach(g => {
+      c.beginPath(); c.arc(cx + g * 3.5 * u, by - 1.4 * u, 1 * u, Math.PI, 0); c.fill(); c.fillRect(cx + g * 3.5 * u - u, by - 1.4 * u, 2 * u, 1.4 * u);
+      let mx = cx + g * 5.3 * u;
+      c.fillRect(mx - .28 * u, by - 6 * u, .56 * u, 6 * u); c.fillRect(mx - .52 * u, by - 4.6 * u, 1.04 * u, .22 * u); c.fillRect(mx - .4 * u, by - 6.5 * u, .8 * u, .5 * u);
+      c.beginPath(); c.moveTo(mx - .4 * u, by - 6.5 * u); c.quadraticCurveTo(mx, by - 8.1 * u, mx + .4 * u, by - 6.5 * u); c.fill(); c.fillRect(mx - .04 * u, by - 8.4 * u, .08 * u, .7 * u);
+      mx = cx + g * 7.3 * u; c.fillRect(mx - .22 * u, by - 4.2 * u, .44 * u, 4.2 * u);
+      c.beginPath(); c.moveTo(mx - .32 * u, by - 4.2 * u); c.quadraticCurveTo(mx, by - 5.5 * u, mx + .32 * u, by - 4.2 * u); c.fill();
+    });
+    c.fillRect(cx - 8.4 * u, by - .15 * u, 16.8 * u, .15 * u);
+    if (lit) {
+      c.fillStyle = lit;
+      for (let i = -2; i <= 2; i++) { c.beginPath(); c.arc(cx + i * 1 * u, by - 1.05 * u, .22 * u, Math.PI, 0); c.fill(); c.fillRect(cx + i * u - .22 * u, by - 1.05 * u, .44 * u, .55 * u); }
+    }
+  }
+  function palm(c, x, by, h, col) {
+    c.strokeStyle = col; c.fillStyle = col; c.lineCap = 'round'; c.lineWidth = h * .035;
+    c.beginPath(); c.moveTo(x, by); c.quadraticCurveTo(x + h * .06, by - h * .5, x + h * .02, by - h); c.stroke();
+    const tx = x + h * .02, ty = by - h;
+    for (let i = 0; i < 8; i++) {
+      const a = Math.PI * (.08 + i * .12) + Math.PI * .96, l = h * .34; c.lineWidth = h * .022;
+      c.beginPath(); c.moveTo(tx, ty); c.quadraticCurveTo(tx + Math.cos(a) * l * .6, ty + Math.sin(a) * l * .6 - l * .18, tx + Math.cos(a) * l, ty + Math.sin(a) * l + l * .22); c.stroke();
+    }
+  }
+  function pine(c, x, by, h, col) {
+    c.fillStyle = col;
+    for (let i = 0; i < 4; i++) { const w = h * (.46 - i * .09), y0 = by - h * (.2 + i * .22); c.beginPath(); c.moveTo(x - w, y0); c.lineTo(x, y0 - h * .36); c.lineTo(x + w, y0); c.closePath(); c.fill(); }
+    c.fillRect(x - h * .03, by - h * .2, h * .06, h * .2);
+  }
+  function pattern(c, w, h, bg, line, a, g) {
+    c.fillStyle = bg; c.fillRect(0, 0, w, h); c.save(); c.strokeStyle = line; c.globalAlpha = a; c.lineWidth = Math.max(1.2, w / 700);
+    for (let y = 0; y < h + g; y += g) for (let x = 0; x < w + g; x += g) {
+      c.save(); c.translate(x, y);
+      for (let k = 0; k < 2; k++) { c.rotate(k * Math.PI / 4); c.strokeRect(-g * .36, -g * .36, g * .72, g * .72); }
+      c.beginPath(); c.arc(0, 0, g * .5, 0, 7); c.stroke(); c.restore();
+    }
+    c.restore();
+  }
+
+  /* ---------- the pictures ---------- */
+  const SCENES = [
+    {k: 'madinah', ur: 'مدینہ', ar: 'المدينة', en: 'Madinah', dark: true, draw(c, w, h) {
+      sky(c, w, h, [[0, '#123a4a'], [.55, '#3b6a73'], [.8, '#e9b27a'], [1, '#f4cf9a']]); stars(c, w, h, 90, 3, .35); glow(c, w * .5, h * .82, w * .6, '#ffd59a', .55);
+      ridge(c, w, h, h * .86, h * .03, '#2b4a45', 5, 4); const by = h * .96, s = w * .5, cx = w / 2, u = s / 10;
+      c.fillStyle = '#e9dcc0'; c.fillRect(cx - 4.5 * u, by - 2.2 * u, 9 * u, 2.2 * u); c.fillStyle = '#d3c19b'; c.fillRect(cx - 4.5 * u, by - 2.2 * u, 9 * u, .25 * u);
+      const g = c.createLinearGradient(0, by - 5.6 * u, 0, by - 2.2 * u); g.addColorStop(0, '#46b07a'); g.addColorStop(1, '#1d6b48');
+      c.fillStyle = g; c.beginPath(); c.arc(cx, by - 2.4 * u, 2 * u, Math.PI, 0); c.fill(); c.fillRect(cx - 1.4 * u, by - 3 * u, 2.8 * u, .9 * u);
+      c.fillStyle = '#e6c15a'; c.fillRect(cx - .05 * u, by - 5.2 * u, .1 * u, .8 * u); c.beginPath(); c.arc(cx, by - 5.3 * u, .16 * u, 0, 7); c.fill();
+      [-1, 1].forEach(sg => [4.9, 6.6].forEach((d, i) => { const mx = cx + sg * d * u, mh = i ? 5.2 : 6.6; c.fillStyle = '#e9dcc0'; c.fillRect(mx - .3 * u, by - mh * u, .6 * u, mh * u);
+        c.fillStyle = '#e6c15a'; c.fillRect(mx - .42 * u, by - (mh - .8) * u, .84 * u, .16 * u); c.beginPath(); c.moveTo(mx - .4 * u, by - mh * u); c.quadraticCurveTo(mx, by - (mh + 1.7) * u, mx + .4 * u, by - mh * u); c.fill(); }));
+      palm(c, w * .1, h, h * .42, '#0c2420'); palm(c, w * .9, h, h * .36, '#0c2420'); palm(c, w * .2, h, h * .26, '#12302b');
+    }},
+    {k: 'kaaba', ur: 'بیت اللہ', ar: 'بيت الله', en: 'The Ka\'bah', dark: true, draw(c, w, h) {
+      sky(c, w, h, [[0, '#1c3b5a'], [.5, '#6d8fa8'], [.78, '#f1c08c'], [1, '#f8dcb0']]); stars(c, w, h, 70, 11, .3); glow(c, w * .5, h * .74, w * .55, '#ffe0aa', .6);
+      ridge(c, w, h, h * .78, h * .05, '#8a7a6a', 4, 5); ridge(c, w, h, h * .8, h * .03, '#6a5d52', 8, 6);
+      [[.12, .5], [.2, .42], [.84, .46], [.92, .55]].forEach(m => { c.fillStyle = '#5c4f46'; c.fillRect(w * m[0] - w * .008, h * .79 - h * m[1] * .5, w * .016, h * m[1] * .5); c.beginPath(); c.moveTo(w * m[0] - w * .012, h * .79 - h * m[1] * .5); c.quadraticCurveTo(w * m[0], h * .79 - h * m[1] * .5 - h * .05, w * m[0] + w * .012, h * .79 - h * m[1] * .5); c.fill(); });
+      c.fillStyle = lg(c, 0, h * .8, 0, h, [[0, '#efe6d6'], [1, '#cfc2ac']]); c.fillRect(0, h * .8, w, h * .2);
+      c.strokeStyle = 'rgba(120,100,70,.25)'; c.lineWidth = 2; for (let i = 1; i < 6; i++) { c.beginPath(); c.ellipse(w / 2, h * .9, w * .1 * i, h * .018 * i, 0, 0, 7); c.stroke(); }
+      const kw = w * .2, kh = w * .23, kx = w / 2 - kw / 2 - w * .02, ky = h * .9 - kh;
+      c.fillStyle = lg(c, kx, ky, kx, ky + kh, [[0, '#1d1d22'], [1, '#0b0b0e']]); c.fillRect(kx, ky, kw, kh);
+      c.fillStyle = '#2a2a30'; c.beginPath(); c.moveTo(kx + kw, ky); c.lineTo(kx + kw + w * .07, ky + h * .012); c.lineTo(kx + kw + w * .07, ky + kh - h * .01); c.lineTo(kx + kw, ky + kh); c.fill();
+      c.fillStyle = '#c9a24a'; c.fillRect(kx, ky + kh * .2, kw, kh * .1); c.beginPath(); c.moveTo(kx + kw, ky + kh * .2); c.lineTo(kx + kw + w * .07, ky + kh * .2 + h * .008); c.lineTo(kx + kw + w * .07, ky + kh * .3 + h * .008); c.lineTo(kx + kw, ky + kh * .3); c.fill();
+      c.fillStyle = '#b8903a'; c.fillRect(kx + kw * .62, ky + kh * .5, kw * .22, kh * .5);
+      c.fillStyle = 'rgba(255,230,160,.35)'; for (let i = 0; i < 14; i++) c.fillRect(kx + kw * .05 + i * kw * .065, ky + kh * .23, kw * .035, kh * .04);
+    }},
+    {k: 'sunset', ur: 'غروبِ آفتاب', ar: 'الغروب', en: 'Sunset mosque', dark: false, draw(c, w, h) {
+      sky(c, w, h, [[0, '#6b5b95'], [.35, '#e58e8e'], [.62, '#ffc98f'], [1, '#ffe6b8']]); glow(c, w * .5, h * .72, w * .7, '#fff1c7', .8);
+      c.fillStyle = '#fff6df'; c.beginPath(); c.arc(w * .5, h * .72, w * .09, 0, 7); c.fill();
+      ridge(c, w, h, h * .85, h * .04, '#8e5d6e', 21, 4); ridge(c, w, h, h * .9, h * .03, '#5a3b4e', 7, 5);
+      mosque(c, w * .5, h * .93, w * .55, '#2f1e32', '#ffd98a'); c.fillStyle = '#2f1e32'; c.fillRect(0, h * .93, w, h * .07);
+    }},
+    {k: 'night', ur: 'رات کی مسجد', ar: 'مسجد ليلي', en: 'Mosque at night', dark: true, draw(c, w, h) {
+      sky(c, w, h, [[0, '#050d22'], [.6, '#16305a'], [1, '#2c4d7e']]); stars(c, w, h, 240, 17, .75); glow(c, w * .78, h * .17, w * .3, '#bcd7ff', .5);
+      crescent(c, w * .78, h * .17, w * .07, '#f7f0cf'); ridge(c, w, h, h * .9, h * .025, '#0b1630', 9, 4);
+      mosque(c, w * .35, h * .96, w * .6, '#050b18', '#ffd27a'); c.fillStyle = '#050b18'; c.fillRect(0, h * .955, w, h * .045);
+    }},
+    {k: 'snow', ur: 'برف باری', ar: 'ثلج', en: 'Snowfall', dark: false, draw(c, w, h) {
+      sky(c, w, h, [[0, '#cfdbe8'], [.6, '#e9f0f7'], [1, '#f7fafc']]); ridge(c, w, h, h * .66, h * .09, '#c3d2e2', 31, 3); ridge(c, w, h, h * .72, h * .06, '#aebfd3', 14, 4);
+      const r = rng(5); for (let i = 0; i < 18; i++) pine(c, r() * w, h * (.74 + r() * .05), h * (.12 + r() * .08), '#8fa6bf');
+      c.fillStyle = '#f9fbfd'; c.beginPath(); c.moveTo(0, h * .82); c.quadraticCurveTo(w * .3, h * .76, w * .6, h * .83); c.quadraticCurveTo(w * .85, h * .87, w, h * .8); c.lineTo(w, h); c.lineTo(0, h); c.fill();
+      for (let i = 0; i < 9; i++) pine(c, w * (.06 + i * .115) + r() * 30, h * (.9 + r() * .06), h * (.2 + r() * .16), '#3f5f6a');
+      c.fillStyle = '#fff'; c.fillRect(0, h * .965, w, h * .035); c.save(); for (let i = 0; i < 220; i++) { c.globalAlpha = .55 + r() * .4; c.beginPath(); c.arc(r() * w, r() * h, (1.5 + r() * 4.5) * (w / 1080), 0, 7); c.fill(); } c.restore();
+    }},
+    {k: 'rain', ur: 'بارش', ar: 'مطر', en: 'Rain', dark: true, draw(c, w, h) {
+      sky(c, w, h, [[0, '#13242f'], [.6, '#2b4a5c'], [1, '#4a6f80']]); const r = rng(8);
+      for (let i = 0; i < 26; i++) glow(c, r() * w, h * (.55 + r() * .4), w * (.04 + r() * .07), r() > .5 ? '#ffd79a' : '#a9d6ff', .35);
+      mosque(c, w * .5, h * .9, w * .6, '#0d1a22', '#ffcf7a'); c.fillStyle = '#0d1a22'; c.fillRect(0, h * .9, w, h * .1);
+      c.fillStyle = lg(c, 0, h * .9, 0, h, [[0, 'rgba(255,214,150,.25)'], [1, 'rgba(255,214,150,0)']]); c.fillRect(0, h * .9, w, h * .1);
+      c.save(); c.strokeStyle = 'rgba(205,228,245,.4)'; c.lineWidth = Math.max(1.4, w / 700); for (let i = 0; i < 300; i++) { const x = r() * w, y = r() * h, l = h * (.03 + r() * .04); c.globalAlpha = .3 + r() * .5; c.beginPath(); c.moveTo(x, y); c.lineTo(x - l * .22, y + l); c.stroke(); } c.restore();
+    }},
+    {k: 'desert', ur: 'ریگستان', ar: 'صحراء', en: 'Desert', dark: false, draw(c, w, h) {
+      sky(c, w, h, [[0, '#f7c58d'], [.5, '#ffe0b3'], [1, '#fff1d6']]); glow(c, w * .72, h * .4, w * .5, '#fff3cf', .9); c.fillStyle = '#ffb45e'; c.beginPath(); c.arc(w * .72, h * .4, w * .07, 0, 7); c.fill();
+      ridge(c, w, h, h * .66, h * .08, '#efc08a', 41, 1.6); ridge(c, w, h, h * .76, h * .09, '#dba06a', 12, 1.8); ridge(c, w, h, h * .88, h * .08, '#bf7f48', 3, 1.5);
+    }},
+    {k: 'meadow', ur: 'سبزہ زار', ar: 'مرج', en: 'Green hills', dark: false, draw(c, w, h) {
+      sky(c, w, h, [[0, '#9fd3ec'], [.7, '#e4f4f4'], [1, '#f3fbef']]); glow(c, w * .25, h * .2, w * .4, '#ffffff', .8); const r = rng(6);
+      c.save(); c.fillStyle = '#fff'; for (let i = 0; i < 7; i++) { const x = r() * w, y = h * (.08 + r() * .3), s = w * (.06 + r() * .06); c.globalAlpha = .75; [0, .6, -.6, 1.2].forEach(o => { c.beginPath(); c.ellipse(x + o * s, y + Math.abs(o) * s * .1, s * .8, s * .38, 0, 0, 7); c.fill(); }); } c.restore();
+      ridge(c, w, h, h * .62, h * .1, '#a8d79a', 33, 2); ridge(c, w, h, h * .72, h * .08, '#6fb56f', 17, 2.4); ridge(c, w, h, h * .84, h * .07, '#3e9061', 2, 3);
+      c.save(); for (let i = 0; i < 90; i++) { c.fillStyle = ['#fff', '#ffe27a', '#ffd1e0'][i % 3]; c.globalAlpha = .8; c.beginPath(); c.arc(r() * w, h * (.88 + r() * .12), (2 + r() * 2.6) * w / 1080, 0, 7); c.fill(); } c.restore();
+    }},
+    {k: 'lake', ur: 'پہاڑ اور جھیل', ar: 'جبال وبحيرة', en: 'Mountain lake', dark: false, draw(c, w, h) {
+      const hz = h * .62; sky(c, w, hz, [[0, '#9cc4e4'], [.7, '#f5dcc0'], [1, '#fbe9d2']]); glow(c, w * .3, hz, w * .5, '#fff1d0', .8);
+      const peaks = [[.1, .3], [.3, .46], [.52, .36], [.74, .5], [.92, .3]];
+      const draw = (flip, col, snow) => { c.save(); if (flip) { c.translate(0, hz * 2); c.scale(1, -1); }
+        peaks.forEach(p => { const px = w * p[0], ph = h * p[1], bw = ph * 1.05; c.fillStyle = col; c.beginPath(); c.moveTo(px - bw, hz); c.lineTo(px, hz - ph); c.lineTo(px + bw, hz); c.fill();
+          c.fillStyle = snow; c.beginPath(); c.moveTo(px - bw * .26, hz - ph * .74); c.lineTo(px, hz - ph); c.lineTo(px + bw * .26, hz - ph * .74); c.lineTo(px + bw * .1, hz - ph * .68); c.lineTo(px, hz - ph * .76); c.lineTo(px - bw * .1, hz - ph * .68); c.fill(); }); c.restore(); };
+      draw(false, '#6f8fb0', '#f4f8fc'); c.fillStyle = '#4c7a62'; c.fillRect(0, hz - h * .02, w, h * .02);
+      c.save(); c.beginPath(); c.rect(0, hz, w, h - hz); c.clip(); c.fillStyle = lg(c, 0, hz, 0, h, [[0, '#8fb9cf'], [1, '#4f87a4']]); c.fillRect(0, hz, w, h - hz); c.globalAlpha = .45; draw(true, '#6f8fb0', '#f4f8fc'); c.restore();
+      c.save(); c.strokeStyle = 'rgba(255,255,255,.35)'; c.lineWidth = 2; const r = rng(9); for (let i = 0; i < 26; i++) { const y = hz + r() * (h - hz), x = r() * w, l = w * (.04 + r() * .1); c.beginPath(); c.moveTo(x, y); c.lineTo(x + l, y); c.stroke(); } c.restore();
+    }},
+    {k: 'sea', ur: 'سمندر کی صبح', ar: 'فجر البحر', en: 'Sea sunrise', dark: false, draw(c, w, h) {
+      const hz = h * .6; sky(c, w, hz, [[0, '#8ec5e8'], [.6, '#fde0b8'], [1, '#ffc08a']]); glow(c, w * .5, hz, w * .7, '#fff0c8', .9);
+      c.fillStyle = '#ffe7a8'; c.beginPath(); c.arc(w * .5, hz, w * .1, Math.PI, 0); c.fill();
+      c.fillStyle = lg(c, 0, hz, 0, h, [[0, '#f0b98c'], [.25, '#6fb3c9'], [1, '#2a7a98']]); c.fillRect(0, hz, w, h - hz);
+      const r = rng(12); c.save(); c.lineCap = 'round'; for (let i = 0; i < 70; i++) { const y = hz + Math.pow(r(), 1.6) * (h - hz), x = r() * w, l = w * (.03 + r() * .09) * (1 + (y - hz) / h); c.strokeStyle = 'rgba(255,255,255,' + (.2 + r() * .3) + ')'; c.lineWidth = 2 + (y - hz) / h * 3; c.beginPath(); c.moveTo(x, y); c.lineTo(x + l, y); c.stroke(); }
+      c.fillStyle = 'rgba(255,236,190,.4)'; for (let i = 0; i < 16; i++) { const y = hz + i * (h - hz) / 16; c.fillRect(w * .5 - w * (.03 + i * .008), y, w * (.06 + i * .016), 3 + i * .5); } c.restore();
+    }},
+    {k: 'stars', ur: 'تاروں بھرا آسمان', ar: 'سماء النجوم', en: 'Starry sky', dark: true, draw(c, w, h) {
+      sky(c, w, h, [[0, '#060b1d'], [.55, '#13244a'], [1, '#27406e']]); stars(c, w, h, 420, 23, .95); glow(c, w * .5, h * .3, w * .5, '#6c8fd8', .25);
+      crescent(c, w * .5, h * .22, w * .09, '#f9f2d2'); glow(c, w * .5, h * .22, w * .22, '#fff6cf', .25); ridge(c, w, h, h * .93, h * .04, '#070c1c', 5, 3);
+    }},
+    {k: 'geo1', ur: 'اسلامی نقش (سبز)', ar: 'زخرفة خضراء', en: 'Green pattern', dark: true, draw(c, w, h) {
+      pattern(c, w, h, '#0d4a3b', '#f0d27a', .2, w / 6); const g = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * .7); g.addColorStop(0, 'rgba(255,255,255,.08)'); g.addColorStop(1, 'rgba(0,0,0,.35)'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    }},
+    {k: 'geo2', ur: 'اسلامی نقش (کریم)', ar: 'زخرفة ذهبية', en: 'Cream pattern', dark: false, draw(c, w, h) {
+      pattern(c, w, h, '#f7f0de', '#b4862f', .24, w / 6); const g = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * .75); g.addColorStop(0, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(180,134,47,.18)'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    }}
+  ];
+
+  /* ---------- text fitting ---------- */
+  function wrap(c, text, font, maxW, rtl) {
+    c.font = font; c.direction = rtl ? 'rtl' : 'ltr'; const out = [];
+    text.split('\n').forEach(par => {
+      par = par.trim(); if (!par) return; let cur = '';
+      par.split(/\s+/).forEach(wd => { const t = cur ? cur + ' ' + wd : wd; if (cur && c.measureText(t).width > maxW) { out.push(cur); cur = wd; } else cur = t; });
+      if (cur) out.push(cur);
+    });
+    return out;
+  }
+  function fit(c, blocks, W, H, maxA, minA, s) {
+    const gap = .55;
+    const lay = A => { let tot = 0; const L = blocks.map(b => { const px = A * b.k, ls = wrap(c, b.text, (b.weight || '') + ' ' + px + 'px ' + b.fam, W, b.rtl); tot += ls.length * px * b.lh; return {b, px, ls}; }); tot += (blocks.length - 1) * A * gap; return {A, L, tot}; };
+    for (let A = maxA; A >= minA; A -= 1) { const r = lay(A); if (r.tot <= H) return r; }
+    let f = .9, cur = blocks;
+    for (let i = 0; i < 12; i++) {
+      cur = blocks.map(b => { const ws = b.text.split(/\s+/); const n = Math.max(6, Math.floor(ws.length * f)); return Object.assign({}, b, {text: ws.length > n ? ws.slice(0, n).join(' ') + ' …' : b.text}); });
+      const save = blocks; blocks = cur; const r = lay(minA); blocks = save; if (r.tot <= H) return r; f *= .85;
+    }
+    blocks = cur; return lay(minA);
+  }
+  const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
+
+  let LOGO = null;
+  const logo = () => LOGO || (LOGO = new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = 'icon-192.png'; }));
+  const fontsReady = () => Promise.all(['700 40px "Amiri"', '40px "Amiri"', '40px "Amiri Quran"', '40px "Jameel Noori Nastaleeq"', '40px "IndoPak Nastaleeq"'].map(f => document.fonts && document.fonts.load ? document.fonts.load(f, 'ابج').catch(() => {}) : 0));
+
+  async function paint(c, W, H, S) {
+    const sc = SCENES[S.bg] || SCENES[0], dark = sc.dark, s = Math.min(W / 1080, H / 1080 * 1.15);
+    sc.draw(c, W, H);
+    const m = W * .07, hdr = 118 * s, ftr = 160 * s, top = hdr, bot = H - ftr;
+    // frame
+    c.save(); c.strokeStyle = dark ? 'rgba(240,210,130,.7)' : 'rgba(150,110,40,.65)'; c.lineWidth = 3 * s; rr(c, 22 * s, 22 * s, W - 44 * s, H - 44 * s, 22 * s); c.stroke();
+    c.lineWidth = 1.2 * s; rr(c, 34 * s, 34 * s, W - 68 * s, H - 68 * s, 16 * s); c.stroke(); c.restore();
+    // text panel
+    const px = m, py = top, pw = W - 2 * m, ph = bot - top;
+    c.save(); rr(c, px, py, pw, ph, 30 * s); c.fillStyle = dark ? 'rgba(6,16,26,.72)' : 'rgba(255,253,247,.94)'; c.fill();
+    c.strokeStyle = dark ? 'rgba(240,210,130,.5)' : 'rgba(150,110,40,.4)'; c.lineWidth = 1.6 * s; c.stroke(); c.restore();
+    // watermark logo (faint, like a certificate)
+    const lg0 = await logo();
+    if (lg0) { c.save(); c.globalAlpha = dark ? .08 : .07; const d = Math.min(pw, ph) * .78; c.beginPath(); c.arc(W / 2, py + ph / 2, d / 2 * .98, 0, 7); c.clip(); c.drawImage(lg0, W / 2 - d / 2, py + ph / 2 - d / 2, d, d); c.restore(); }
+    // header: logo + name
+    c.save(); c.textBaseline = 'middle'; c.textAlign = 'center'; c.direction = 'rtl';
+    const bf = '700 ' + 40 * s + 'px ' + F_AR; c.font = bf; const tw = c.measureText(BRAND).width, ld = 66 * s, tot = ld + 16 * s + tw, x0 = W / 2 - tot / 2, cy = hdr / 2 + 6 * s;
+    if (lg0) { c.save(); c.beginPath(); c.arc(x0 + ld / 2, cy, ld / 2, 0, 7); c.clip(); c.drawImage(lg0, x0, cy - ld / 2, ld, ld); c.restore(); }
+    c.fillStyle = dark ? '#f6e7b8' : '#0f4d3a'; c.textAlign = 'right'; c.fillText(BRAND, x0 + tot, cy); c.restore();
+    // text
+    const d = S.data, mode = S.mode, qr = d.kind === 'ayah', arFam = qr ? (d.fontAr === 'indopak' ? '"IndoPak Nastaleeq","Amiri Quran",serif' : F_QR) : F_AR;
+    const cAr = dark ? '#f8eab9' : '#0d4636', cTr = dark ? '#e9f0f2' : '#2a2a2a';
+    const blocks = [{text: d.ar, fam: arFam, rtl: true, k: 1, lh: qr && d.fontAr === 'indopak' ? 2.1 : 1.85, col: cAr}];
+    if (mode === 'ur' && d.tr.ur) blocks.push({text: d.tr.ur.replace(/ﷺ/g, '(صلی اللہ علیہ وسلم)'), fam: F_UR, rtl: true, k: .6, lh: 2.1, col: cTr});
+    if (mode === 'en' && d.tr.en) blocks.push({text: d.tr.en.replace(/\s*ﷺ/g, ' (peace be upon him)'), fam: F_EN, rtl: false, k: .44, lh: 1.5, col: cTr});
+    const padX = 44 * s, padY = 34 * s, availW = pw - 2 * padX, availH = ph - 2 * padY;
+    const r = fit(c, blocks, availW, availH, (blocks.length > 1 ? 96 : 130) * s, 28 * s, s);
+    let y = py + padY + (availH - r.tot) / 2; c.save(); c.textBaseline = 'middle'; c.textAlign = 'center';
+    r.L.forEach((it, bi) => {
+      c.font = (it.b.weight || '') + ' ' + it.px + 'px ' + it.b.fam; c.direction = it.b.rtl ? 'rtl' : 'ltr'; c.fillStyle = it.b.col;
+      it.ls.forEach(line => { c.fillText(line, W / 2, y + it.px * it.b.lh / 2); y += it.px * it.b.lh; });
+      if (bi < r.L.length - 1) {
+        const gy = y + r.A * .27; c.strokeStyle = dark ? 'rgba(240,210,130,.7)' : 'rgba(160,120,50,.7)'; c.lineWidth = 1.6 * s;
+        c.beginPath(); c.moveTo(W / 2 - 110 * s, gy); c.lineTo(W / 2 - 14 * s, gy); c.moveTo(W / 2 + 14 * s, gy); c.lineTo(W / 2 + 110 * s, gy); c.stroke();
+        c.fillStyle = c.strokeStyle; c.beginPath(); c.moveTo(W / 2, gy - 7 * s); c.lineTo(W / 2 + 7 * s, gy); c.lineTo(W / 2, gy + 7 * s); c.lineTo(W / 2 - 7 * s, gy); c.fill(); y += r.A * .55;
+      }
+    });
+    c.restore();
+    // footer: grade + reference, and the site
+    const label = (d.grade ? d.grade + ': ' : '') + d.ref; c.save(); c.textBaseline = 'middle'; c.textAlign = 'center'; c.direction = 'rtl';
+    const ff = '700 ' + 36 * s + 'px ' + F_AR; c.font = ff; const lw = Math.min(W - 2 * m, c.measureText(label).width + 80 * s), lh2 = 62 * s, ly = bot + 24 * s;
+    rr(c, W / 2 - lw / 2, ly, lw, lh2, lh2 / 2); c.fillStyle = dark ? '#d6b25a' : '#1d6a52'; c.fill();
+    c.fillStyle = dark ? '#1a1a1a' : '#ffffff'; c.fillText(label, W / 2, ly + lh2 / 2 + 2 * s);
+    c.direction = 'ltr'; c.font = '600 ' + 26 * s + 'px ' + F_EN; c.fillStyle = dark ? 'rgba(255,255,255,.88)' : 'rgba(30,40,40,.78)'; c.fillText(SITE, W / 2, ly + lh2 + 30 * s); c.restore();
+  }
+
+  /* ---------- the sheet ---------- */
+  function css() {
+    if (document.getElementById('pstcss')) return;
+    const s = document.createElement('style'); s.id = 'pstcss';
+    s.textContent = '.pst-back{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}'
+      + '.pst-sheet{background:var(--card,#fff);color:var(--ink,#222);width:min(100%,720px);max-height:96vh;overflow:auto;border-radius:20px 20px 0 0;padding:14px 16px 18px;box-shadow:0 -6px 30px rgba(0,0,0,.3)}'
+      + '.pst-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}.pst-h b{flex:1;font-size:1.1rem}'
+      + '.pst-x{border:0;background:var(--wash,#eee);color:inherit;border-radius:50%;width:34px;height:34px;font-size:1.2rem;cursor:pointer}'
+      + '.pst-view{display:flex;justify-content:center;background:var(--wash,#f1f1f1);border-radius:14px;padding:10px;min-height:120px;align-items:center}'
+      + '.pst-view canvas{max-width:100%;max-height:46vh;width:auto;height:auto;border-radius:10px;box-shadow:0 2px 12px rgba(0,0,0,.25)}'
+      + '.pst-l{font-size:.82rem;color:var(--muted,#777);margin:12px 2px 5px}'
+      + '.pst-r{display:flex;flex-wrap:wrap;gap:7px}.pst-c{border:1px solid var(--line,#ccc);background:var(--card,#fff);color:inherit;border-radius:999px;padding:7px 14px;font:inherit;cursor:pointer}.pst-c small{display:block;font-size:.68rem;opacity:.7}'
+      + '.pst-c.on{background:var(--accent,#2f7fc0);border-color:var(--accent,#2f7fc0);color:#fff}'
+      + '.pst-bg{display:grid;grid-template-columns:repeat(auto-fill,minmax(82px,1fr));gap:8px}.pst-t{border:2px solid transparent;padding:0;background:none;border-radius:10px;cursor:pointer;overflow:hidden;text-align:center;font:inherit;color:inherit}'
+      + '.pst-t canvas{display:block;width:100%;height:auto;border-radius:8px}.pst-t span{display:block;font-size:.72rem;padding:2px 0}.pst-t.on{border-color:var(--accent,#2f7fc0)}'
+      + '.pst-go{display:flex;gap:10px;margin-top:14px}.pst-go button{flex:1;border:0;border-radius:12px;padding:12px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent,#2f7fc0);color:#fff}.pst-go button.alt{background:var(--wash,#eee);color:inherit}'
+      + '.pst-busy{opacity:.5;pointer-events:none}';
+    document.head.append(s);
+  }
+  const ui = () => (window.ui && ['ur', 'ar'].includes(window.ui)) ? window.ui : (document.documentElement.lang === 'ur' ? 'ur' : (typeof localStorage !== 'undefined' && ['ur', 'ar'].includes(localStorage.ui) ? localStorage.ui : 'en'));
+
+  async function open(data) {
+    css(); const L = ui(), T = TXT[L], dir = L === 'en' ? 'ltr' : 'rtl';
+    let saved = {}; try { saved = JSON.parse(localStorage.poster || '{}'); } catch (e) {}
+    const modes = [['ar', T.ar]]; if (data.tr && data.tr.en) modes.unshift(['en', T.aren]); if (data.tr && data.tr.ur) modes.unshift(['ur', T.arur]);
+    const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes.some(m => m[0] === saved.mode) ? saved.mode : modes[0][0]};
+    const el = (t, a, ...k) => { const e = document.createElement(t); if (a) for (const x in a) { if (x === 'class') e.className = a[x]; else if (x.startsWith('on')) e.addEventListener(x.slice(2), a[x]); else e.setAttribute(x, a[x]); } k.flat().forEach(n => n != null && e.append(n)); return e; };
+    const back = el('div', {class: 'pst-back'}), sheet = el('div', {class: 'pst-sheet', dir}), view = el('div', {class: 'pst-view'}), canvas = el('canvas'); view.append(canvas);
+    const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
+    const onKey = e => { if (e.key === 'Escape') close(); }; document.addEventListener('keydown', onKey);
+    back.addEventListener('click', e => { if (e.target === back) close(); });
+    const row1 = el('div', {class: 'pst-r'}), row2 = el('div', {class: 'pst-r'}), row3 = el('div', {class: 'pst-bg'});
+    let token = 0;
+    async function draw() {
+      const my = ++token, z = SIZES[S.size]; view.classList.add('pst-busy');
+      try { await fontsReady(); if (my !== token) return; canvas.width = z.w; canvas.height = z.h; await paint(canvas.getContext('2d'), z.w, z.h, S); } catch (e) { console.error(e); }
+      if (my === token) view.classList.remove('pst-busy');
+      try { localStorage.poster = JSON.stringify({size: S.size, bg: S.bg, mode: S.mode}); } catch (e) {}
+    }
+    const mark = () => { [...row1.children].forEach((b, i) => b.classList.toggle('on', i === S.size)); [...row2.children].forEach((b, i) => b.classList.toggle('on', modes[i][0] === S.mode)); [...row3.children].forEach((b, i) => b.classList.toggle('on', i === S.bg)); };
+    SIZES.forEach((z, i) => row1.append(el('button', {class: 'pst-c', type: 'button', onclick: () => { S.size = i; mark(); draw(); }}, z[L] || z.en, el('small', {}, z.hint[L] || z.hint.en))));
+    modes.forEach(m => row2.append(el('button', {class: 'pst-c', type: 'button', onclick: () => { S.mode = m[0]; mark(); draw(); }}, m[1])));
+    SCENES.forEach((sc, i) => {
+      const t = document.createElement('canvas'); t.width = 164; t.height = 124; try { sc.draw(t.getContext('2d'), 164, 124); } catch (e) {}
+      row3.append(el('button', {class: 'pst-t', type: 'button', onclick: () => { S.bg = i; mark(); draw(); }}, t, el('span', {}, sc[L] || sc.en)));
+    });
+    const blob = () => new Promise(r => canvas.toBlob(r, 'image/png'));
+    const fname = (data.name || 'poster') + '.png';
+    const doSave = async () => { const b = await blob(); if (!b) return toast(T.fail); const a = el('a', {href: URL.createObjectURL(b), download: fname}); document.body.append(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); toast(T.saved); };
+    const doShare = async () => {
+      const b = await blob(); if (!b) return toast(T.fail); const f = new File([b], fname, {type: 'image/png'});
+      if (navigator.canShare && navigator.canShare({files: [f]})) { try { await navigator.share({files: [f]}); return; } catch (e) { if (e && e.name === 'AbortError') return; } }
+      doSave();
+    };
+    function toast(m) { if (typeof window.toast === 'function') return window.toast(m); alert(m); }
+    sheet.append(el('div', {class: 'pst-h'}, el('b', {}, T.title), el('button', {class: 'pst-x', type: 'button', 'aria-label': T.close, onclick: close}, '×')), view,
+      el('div', {class: 'pst-l'}, T.size), row1, el('div', {class: 'pst-l'}, T.content), row2, el('div', {class: 'pst-l'}, T.bg), row3,
+      el('div', {class: 'pst-go'}, el('button', {type: 'button', onclick: doShare}, T.share), el('button', {type: 'button', class: 'alt', onclick: doSave}, T.save)));
+    back.append(sheet); document.body.append(back); mark(); draw();
+  }
+  window.POSTER = {open, SCENES, paint};
+})();
+
 </script>
 <script>
 // «سنیں» — audiobook mode: the phone's own voices (Text-to-Speech) read hadith, translation and commentary aloud,
@@ -2195,7 +2539,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: () => playFrom(i)}}, icon('play')), bm,
       el('button', {class: 'ab tafb', type: 'button', title: T('tafsir'), 'aria-label': T('tafsir'), on: {click: () => showTafsir(s, a)}}, icon('tafsir'), el('span', {}, T('tafsir'))),
       el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(ayahText(s, a), '#/q/s/' + s + '/' + a)) ? 'copied' : 'copyfail'))}}, icon('copy')),
+      el('button', {class: 'ab', type: 'button', title: T('poster'), 'aria-label': T('poster'), on: {click: () => ayahPoster(s, a)}}, icon('poster')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: () => shareAyah(s, a)}}, icon('share')), el('span', {class: 'sp'}));
+  }
+  async function ayahPoster(s, a) {
+    await need([AK(), 'ur_junagarhi', 'en_sahih']);
+    const clean = t => (t || '').replace(/<[^>]*>/g, '').trim();
+    const ar = verse(AK(), s, a), tr = {ur: clean(verse('ur_junagarhi', s, a)), en: clean(verse('en_sahih', s, a))};
+    const nm = Q.meta.surahs[s - 1];
+    POSTER.open({kind: 'ayah', ar: ar + ' ﴿' + (LTR() ? a : ad(a)) + '﴾', tr, grade: '', ref: (LTR() ? nm[0] : nm[1]) + ' (' + s + ':' + a + ')', name: 'quran-' + s + '-' + a, fontAr: QS.rasm === 'indopak' ? 'indopak' : 'quran'});
   }
   function ayahText(s, a) {
     const eds = QS.tr.map(k => Q.meta.editions.find(e => e.key === k)).filter(Boolean);
@@ -3713,7 +4065,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- Home cards ---------- */
   const card = (ic, title, body, href, extra) => el('a', {class: 'card moment tcard', href},
     el('h3', {class: 'mh'}, icon(ic), title), ...body, extra || null, el('span', {class: 'tmore'}, T('tMore'), ' ', icon(LTR() ? 'next' : 'prev')));
-  const trP = (t, l, cls) => el('p', {class: (cls || 'mtr') + ' ' + l, lang: l, dir: rtl(l) ? 'rtl' : 'ltr'}, t);
+  const trP = (t, l, cls) => el('p', {class: (cls || 'mtr') + ' ' + l, lang: l, dir: rtl(l) ? 'rtl' : 'ltr'}, ...(typeof rich === 'function' && (l === 'ur') ? rich(t, l) : [t]));
   const clip = (t, n) => t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + ' …' : t;
   async function homeCards(box) {
     if (!box) return;
