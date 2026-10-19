@@ -28,17 +28,17 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
     var strict by remember { mutableStateOf(s.prefs.mosqStrict) }
     var hidden by remember { mutableStateOf(s.prefs.hiddenMosques) }
     var state by remember { mutableIntStateOf(0) }          // 0 loading, 1 list, 2 error
-    var all by remember { mutableStateOf<List<Mosque>>(emptyList()) }
+    var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
     var reload by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) { if (!act.hasLocation()) { act.onPermResult = { reload++ }; act.askLocation() } }
-    LaunchedEffect(radius, reload) {
+    LaunchedEffect(reload) {
         state = 0
         val here = Mosques.here(act, s.prefs.place)
         if (here == null) { state = 2; return@LaunchedEffect }
-        val r = withContext(Dispatchers.IO) { runCatching { Mosques.fetch(here.first, here.second, radius * 1000) } }
+        val r = withContext(Dispatchers.IO) { runCatching { Mosques.find(act, here.first, here.second, 50) } }
         r.onSuccess { all = it; state = 1 }.onFailure { state = 2 }
     }
-    val shown = all.filter { it.id !in hidden && !it.bad && (!strict || it.sunni) }
+    val shown = all.filter { it.km <= radius + 0.5 && it.id !in hidden && (!strict || it.sunni) }
     Column(Modifier.fillMaxSize()) {
         TopBar(Tr["mosques"], back)
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -64,13 +64,13 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                         Column(Modifier.padding(14.dp)) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(m.name.ifEmpty { Tr["mosqUnnamed"] }, Modifier.weight(1f), fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                                Text(Tr.num("%.1f".format(m.dist)) + " " + Tr["km"], fontSize = 14.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
+                                Text(Tr.num("%.1f".format(m.km)) + " " + Tr["km"], fontSize = 14.sp, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Bold)
                             }
-                            if (m.addr.isNotEmpty()) Text(m.addr, Modifier.padding(top = 4.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .75f))
+                            if (m.address.isNotEmpty()) Text(m.address, Modifier.padding(top = 4.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .75f))
                             if (m.sunni) Text("✓ " + Tr["mosqSunni"], Modifier.padding(top = 4.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
                             Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                                 OutlinedButton(onClick = {
-                                    val txt = (m.name.ifEmpty { Tr["mosqUnnamed"] }) + "\n" + m.addr.ifEmpty { "%.5f, %.5f".format(m.lat, m.lng) }
+                                    val txt = (m.name.ifEmpty { Tr["mosqUnnamed"] }) + "\n" + m.address.ifEmpty { "%.5f, %.5f".format(m.lat, m.lng) }
                                     act.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("address", txt))
                                     Toast.makeText(act, Tr["mosqCopied"], Toast.LENGTH_SHORT).show()
                                 }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqCopy"], fontSize = 13.sp, maxLines = 1) }

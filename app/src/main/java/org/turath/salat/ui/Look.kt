@@ -224,9 +224,9 @@ fun ChoiceCard(modifier: Modifier, title: String, value: String?, selected: Bool
     Column(modifier.clip(sh)
         .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
         .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
-        .clickable(onClick = onClick).padding(vertical = 10.dp, horizontal = 12.dp),
+        .clickable(onClick = onClick).padding(vertical = if (value == null) 7.dp else 9.dp, horizontal = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text(title, fontSize = if (value == null) 15.sp else 12.sp, textAlign = TextAlign.Center,
+        Text(title, fontSize = if (value == null) 14.sp else 12.sp, textAlign = TextAlign.Center,
             fontWeight = if (value == null) FontWeight.Medium else FontWeight.Normal,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = if (value == null) 1f else .65f))
         if (value != null) Text(value, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, color = MaterialTheme.colorScheme.onSurface)
@@ -240,7 +240,7 @@ fun ChoiceChip(selected: Boolean, onClick: () -> Unit, label: @Composable () -> 
     Box(modifier.clip(sh)
         .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
         .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
-        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 9.dp), contentAlignment = Alignment.Center) { label() }
+        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 6.dp), contentAlignment = Alignment.Center) { label() }
 }
 
 /** a full-width choice box for a list of options (instead of a radio button) */
@@ -250,5 +250,5 @@ fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composable () ->
     Box(Modifier.fillMaxWidth().padding(vertical = 3.dp).clip(sh)
         .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
         .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
-        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 11.dp)) { content() }
+        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 9.dp)) { content() }
 }
