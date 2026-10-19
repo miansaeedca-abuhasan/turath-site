@@ -837,14 +837,14 @@ async function doShare(d,scope){
   try{window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener')}catch(e){}
 }
 async function hadithPoster(d){
-  const full=(await api('hadith/'+d.num+'?book=jami').catch(()=>null))||d;const tr={};
-  for(const l of ['ur','en']){try{const r=await api('hadith/'+d.num+'?book=jami_'+l);const c=((r&&r.content)||{}).translation||{};if(c[l])tr[l]=c[l].join('\n');}catch(e){}}
+  const tr={};
+  for(const l of ['ur','en','bn']){try{const r=await api('hadith/'+d.num+'?book=jami_'+l);const c=((r&&r.content)||{}).translation||{};if(c[l])tr[l]=c[l].join('\n');}catch(e){}}
   if(!tr.ur&&window.TODAY){const u=TODAY.urOf(d.num);if(u)tr.ur=u;}
   if(!tr.ur&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);if(u)tr.ur=u.text;}catch(e){}}
-  const strip=s=>(s||'').replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
+  const strip=s=>(s||'').replace(/[\ue000-\ue003]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
+  Object.keys(tr).forEach(l=>tr[l]=strip(tr[l]));
   const ar=strip((d.matn||[]).join('\n')).replace(/ﷺ/g,'صلى الله عليه وسلم');
-  const g=(d.grade||'').trim();
-  POSTER.open({kind:'hadith',ar,tr:{ur:strip(tr.ur),en:strip(tr.en)},grade:g,ref:'الجامع الكامل ('+d.num+')',name:'hadith-'+d.num});
+  POSTER.open({kind:'hadith',ar,tr,lang:ui,grade:(d.grade||'').trim(),ref:'الجامع الكامل ('+d.num+')',name:'hadith-'+d.num});
 }
 function actions(d,scope,withRead){
   const a=el('div',{class:'acts'});
@@ -1448,6 +1448,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'st', w: 1080, h: 1920, ur: 'اسٹیٹس', ar: 'ستوري', en: 'Story', hint: {ur: 'واٹس ایپ اسٹیٹس · اسٹوری', ar: 'حالة واتساب · ستوري', en: 'WhatsApp status · Story'}},
     {k: 'ls', w: 1200, h: 675, ur: 'افقی', ar: 'أفقي', en: 'Wide', hint: {ur: 'ٹوئٹر · فیس بک لنک', ar: 'تويتر · فيسبوك', en: 'Twitter · Facebook link'}}
   ];
+  const LN = {ur: {ur: 'اردو', ar: 'الأردية', en: 'Urdu'}, en: {ur: 'انگریزی', ar: 'الإنجليزية', en: 'English'}, bn: {ur: 'بنگالی', ar: 'البنغالية', en: 'Bengali'},
+    hi: {ur: 'ہندی', ar: 'الهندية', en: 'Hindi'}, gu: {ur: 'گجراتی', ar: 'الغوجاراتية', en: 'Gujarati'}, fr: {ur: 'فرانسیسی', ar: 'الفرنسية', en: 'French'}};
+  const FAM = {ur: [F_UR, true, 1, 2.1], en: [F_EN, false, .8, 1.5], fr: [F_EN, false, .8, 1.5], bn: ['"Noto Serif Bengali","Noto Sans Bengali","Vrinda",serif', false, .85, 1.7],
+    hi: ['"Noto Serif Devanagari","Noto Sans Devanagari","Mangal",serif', false, .85, 1.7], gu: ['"Noto Sans Gujarati","Shruti","Noto Serif Gujarati",sans-serif', false, .85, 1.7]};
   const TXT = {
     ur: {title: 'پوسٹر بنائیں', size: 'سائز', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
     ar: {title: 'صنع بطاقة', size: 'الحجم', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
@@ -1723,10 +1727,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // text
     const d = S.data, mode = S.mode, qr = d.kind === 'ayah', arFam = qr ? (d.fontAr === 'indopak' ? '"IndoPak Nastaleeq","Amiri Quran",serif' : F_QR) : F_AR;
     const cAr = dark ? '#f8eab9' : '#0d4636', cTr = dark ? '#e9f0f2' : '#2a2a2a';
-    const only = mode.endsWith('O'), m2 = mode.replace('O', '');
-    const trUr = d.tr.ur ? d.tr.ur.replace(/ﷺ/g, '(صلی اللہ علیہ وسلم)') : '', trEn = d.tr.en ? d.tr.en.replace(/\s*ﷺ/g, ' (peace be upon him)') : '';
+    const only = mode.endsWith('O'), m2 = mode.replace('O', ''), fm = FAM[m2], raw = (d.tr || {})[m2] || '';
+    const trT = raw.replace(/ﷺ/g, m2 === 'ur' ? '(صلی اللہ علیہ وسلم)' : m2 === 'en' ? ' (peace be upon him)' : 'ﷺ').replace(/\s+\(peace/, ' (peace');
     const bAr = {text: d.ar, fam: arFam, rtl: true, k: .74, lh: qr && d.fontAr === 'indopak' ? 2.1 : 1.8, col: cAr};
-    const bTr = m2 === 'ur' && trUr ? {text: trUr, fam: F_UR, rtl: true, k: 1, lh: 2.1, col: cTr} : m2 === 'en' && trEn ? {text: trEn, fam: F_EN, rtl: false, k: .8, lh: 1.5, col: cTr} : null;
+    const bTr = fm && trT ? {text: trT, fam: fm[0], rtl: fm[1], k: fm[2], lh: fm[3], col: cTr} : null;
     const padX = 44 * s, padY = 34 * s, availW = pw - 2 * padX, availH = ph - 2 * padY - 34 * s;
     let blocks = !bTr ? [bAr] : only ? [bTr] : [bAr, bTr], r = fit(c, blocks, availW, availH, (blocks.length > 1 ? 92 : 128) * s, blocks.length > 1 ? 40 * s : 28 * s, s);
     // a long text: the translation alone, in bigger letters, is better than two small blocks
@@ -1777,8 +1781,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function open(data) {
     css(); const L = ui(), T = TXT[L], dir = L === 'en' ? 'ltr' : 'rtl';
     let saved = {}; try { saved = JSON.parse(localStorage.poster || '{}'); } catch (e) {}
-    const modes = [['ar', T.ar]]; if (data.tr && data.tr.en) modes.unshift(['enO', T.onlyen], ['en', T.aren]); if (data.tr && data.tr.ur) modes.unshift(['urO', T.onlyur], ['ur', T.arur]);
-    const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes.some(m => m[0] === saved.mode) ? saved.mode : modes[0][0]};
+    const modes = [['ar', T.ar]], tl = Object.keys(data.tr || {}).filter(l => data.tr[l] && FAM[l]), pref = data.lang || L;
+    tl.sort((a, b) => (b === pref) - (a === pref));   // the reader's own language first
+    tl.slice().reverse().forEach(l => { const nm = (LN[l] || {})[L] || (LN[l] || {}).en || l; modes.unshift([l, (L === 'ur' ? 'عربی + ' + nm : L === 'ar' ? 'عربي + ' + nm : 'Arabic + ' + nm)], [l + 'O', (L === 'ur' ? 'صرف ' + nm : L === 'ar' ? nm + ' فقط' : nm + ' only')]); });
+    const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes[0][0]};
     const el = (t, a, ...k) => { const e = document.createElement(t); if (a) for (const x in a) { if (x === 'class') e.className = a[x]; else if (x.startsWith('on')) e.addEventListener(x.slice(2), a[x]); else e.setAttribute(x, a[x]); } k.flat().forEach(n => n != null && e.append(n)); return e; };
     const back = el('div', {class: 'pst-back'}), sheet = el('div', {class: 'pst-sheet', dir}), view = el('div', {class: 'pst-view'}), canvas = el('canvas'); view.append(canvas);
     const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
@@ -1790,7 +1796,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const my = ++token, z = SIZES[S.size]; view.classList.add('pst-busy');
       try { await fontsReady(); if (my !== token) return; canvas.width = z.w; canvas.height = z.h; await paint(canvas.getContext('2d'), z.w, z.h, S); } catch (e) { console.error(e); }
       if (my === token) view.classList.remove('pst-busy');
-      try { localStorage.poster = JSON.stringify({size: S.size, bg: S.bg, mode: S.mode}); } catch (e) {}
+      try { localStorage.poster = JSON.stringify({size: S.size, bg: S.bg}); } catch (e) {}
     }
     const mark = () => { [...row1.children].forEach((b, i) => b.classList.toggle('on', i === S.size)); [...row2.children].forEach((b, i) => b.classList.toggle('on', modes[i][0] === S.mode)); [...row3.children].forEach((b, i) => b.classList.toggle('on', i === S.bg)); };
     SIZES.forEach((z, i) => row1.append(el('button', {class: 'pst-c', type: 'button', onclick: () => { S.size = i; mark(); draw(); }}, z[L] || z.en, el('small', {}, z.hint[L] || z.hint.en))));
@@ -2610,11 +2616,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: () => shareAyah(s, a)}}, icon('share')), el('span', {class: 'sp'}));
   }
   async function ayahPoster(s, a) {
-    await need([AK(), 'ur_junagarhi', 'en_sahih']);
-    const clean = t => (t || '').replace(/<[^>]*>/g, '').trim();
-    const ar = verse(AK(), s, a), tr = {ur: clean(verse('ur_junagarhi', s, a)), en: clean(verse('en_sahih', s, a))};
-    const nm = Q.meta.surahs[s - 1];
-    POSTER.open({kind: 'ayah', ar: ar + ' ﴿' + (LTR() ? a : ad(a)) + '﴾', tr, grade: '', ref: (LTR() ? nm[0] : nm[1]) + ' (' + s + ':' + a + ')', name: 'quran-' + s + '-' + a, fontAr: QS.rasm === 'indopak' ? 'indopak' : 'quran'});
+    // one translation per language: the one the reader has chosen for it, else the default of that language
+    const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', fr: 'fr_hamidullah'}, keys = {};
+    Object.keys(DEF).forEach(l => { keys[l] = QS.tr.find(k => k.startsWith(l + '_')) || DEF[l]; });
+    await need([AK()].concat(Object.values(keys)));
+    const clean = x => (x || '').replace(/<[^>]*>/g, '').trim(), tr = {};
+    Object.keys(keys).forEach(l => { const x = clean(verse(keys[l], s, a)); if (x) tr[l] = x; });
+    const nm = Q.meta.surahs[s - 1], ar = verse(AK(), s, a);
+    POSTER.open({kind: 'ayah', ar: ar + ' ﴿' + (LTR() ? a : ad(a)) + '﴾', tr, lang: ui, grade: '', ref: (LTR() ? nm[0] : nm[1]) + ' (' + s + ':' + a + ')', name: 'quran-' + s + '-' + a, fontAr: QS.rasm === 'indopak' ? 'indopak' : 'quran'});
   }
   function ayahText(s, a) {
     const eds = QS.tr.map(k => Q.meta.editions.find(e => e.key === k)).filter(Boolean);
