@@ -3627,10 +3627,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     box.append(list, more);
     let at = s[2];
     const add = async () => {
-      const to = Math.min(s[3], at + 19);
-      await needRange(B, 'ar', at, to); if (lang) await needRange(B, lang, at, to);
-      for (let n = at; n <= to; n++) if (row(B, 'ar', n)) list.append(card(B, n, lang));
-      at = to + 1; if (at > s[3]) more.remove();
+      // numbers without a text in the book (e.g. most of Muslim's Introduction) are skipped: go on until something shows or the section ends
+      let got = 0;
+      while (!got && at <= s[3]) {
+        const to = Math.min(s[3], at + 19);
+        await needRange(B, 'ar', at, to); if (lang) await needRange(B, lang, at, to);
+        for (let n = at; n <= to; n++) if (row(B, 'ar', n)) { list.append(card(B, n, lang)); got++; }
+        at = to + 1;
+      }
+      if (at > s[3]) more.remove();
     };
     more.addEventListener('click', add); await add();
     // reading in order: the previous / next section (person, kitab) at the end
