@@ -182,6 +182,11 @@ body.withplayer .resume.float{display:none}
 @media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
 .agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--accent)}
+.rjhero h2{font:700 1.3rem/1.9 var(--urduhead,var(--serif));color:var(--accent);margin:.2rem .2rem .6rem;text-align:center}.rjmaster .rjfrom{font:600 .78rem/1.4 system-ui;color:var(--muted,#7a7468);text-align:center;margin-bottom:.2rem}
+.rjtable{border:1px solid var(--line,#d9d2c3);border-radius:12px;overflow:hidden;margin:.2rem 0 .7rem}.rjrow{display:flex;gap:.8rem;padding:.5rem .9rem;border-top:1px solid var(--line,#e6e0d2);font:1.05rem/1.9 var(--arabic)}.rjrow:first-child{border-top:0}.rjk{flex:0 0 7.5rem;color:var(--muted,#7a7468);font-weight:600}.rjv{flex:1}
+.rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
+.rjline{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.2rem}.rjbooks{font:.78rem/1.4 system-ui;color:var(--muted,#7a7468)}.rjbk{display:inline-block;margin-inline-start:.6rem;font:.72rem/1.6 system-ui;color:var(--muted,#7a7468);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .5rem}
+.rjbody{padding:.6rem .8rem}.rjinner{padding:.3rem .8rem .6rem}.newtag{display:inline-block;margin-inline-start:.5rem;font:700 .65rem/1.4 system-ui;background:#d4380d;color:#fff;border-radius:999px;padding:.05rem .5rem;vertical-align:middle}.newsbody{padding:.5rem .9rem}.newsitem{margin-bottom:.8rem}.newsul{margin:.2rem 0 .4rem;padding-inline-start:1.3rem}.newsul li{margin:.4rem 0;line-height:1.9}
 .rjsanad{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;padding:.2rem .7rem}.rjsanad>summary{cursor:pointer;font-weight:600;padding:.4rem 0;color:var(--accent)}.rjsanad .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .6rem}.rjsanad .btn{font:1.05rem/1.9 var(--arabic)}
 .rjchips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .8rem}.rjchips .chip{border:1px solid var(--line,#d9d2c3);background:transparent;color:inherit;border-radius:999px;padding:.25rem .8rem;font:inherit;cursor:pointer}.rjchips .chip.on{background:var(--accent,#0b5d4b);color:#fff;border-color:transparent}
 .rjcard{margin:.2rem 0 .6rem}.rjhead{text-align:center;padding:.5rem .4rem .8rem;border-bottom:1px solid var(--line,#d9d2c3);margin-bottom:.7rem}.rjname{font:700 1.4rem/2.1 var(--arabic);color:var(--accent,#0b5d4b)}
@@ -946,7 +951,7 @@ function hTiles(){
     hTile('bm0',T('bm'),null,'#/bm'),hTile('translate',T('hBooks'),pickBook),
     hTile('read',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
     hTile('layers',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
-    hTile('listen',T('hListen'),()=>LISTEN.settings()),hTile('hadith',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}),hTile('sahaba',window.RJT_TILE?RJT_TILE():'Narrators',null,'#/s/rijal'));
+    hTile('listen',T('hListen'),()=>LISTEN.settings()),hTile('hadith',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
   return el('div',{class:'card pad0'},g);
 }
 function findHadith(){
@@ -1028,14 +1033,14 @@ async function showBookList(){
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
-        el('span',{class:'sinfo'},el('span',{class:'ct'+(!EN()&&(ui==='ar'||r.ur===r.ar)?' arname':''),dir:'auto',lang:!EN()&&(ui==='ar'||r.ur===r.ar)?'ar':null},EN()?r.en:ui==='ar'?r.ar:r.ur),r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',el('span',{class:'cs'},T(r.key==='shadharat'?'cNas':'hbCount')(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
+        el('span',{class:'sinfo'},el('span',{class:'ct'+(!EN()&&(ui==='ar'||r.ur===r.ar)?' arname':''),dir:'auto',lang:!EN()&&(ui==='ar'||r.ur===r.ar)?'ar':null},EN()?r.en:ui==='ar'?r.ar:r.ur,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',el('span',{class:'cs'},T(r.key==='shadharat'?'cNas':'hbCount')(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
         !EN()&&(ui==='ar'||hbN(r.ar)===hbN(r.ur)||(r.full&&!r.key))?'':el('span',{class:'sar',lang:'ar'},r.ar),
         el('button',{class:'ab',type:'button',title:T('hbResume'),'aria-label':T('hbResume'),on:{click:e=>{e.preventDefault();e.stopPropagation();r.resume();}}},icon('history')));
       return a;};
   f.addEventListener('input',draw);draw();
   const g=el('div',{class:'tiles t4'});
   g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),
-    hTile('bm0',T('bm'),null,'#/bm'),hTile('compare',T('cmp'),null,'#/cmp'),hTile('sahaba',window.RJT_TILE?RJT_TILE():'Narrators',null,'#/s/rijal'));
+    hTile('bm0',T('bm'),null,'#/bm'),hTile('compare',T('cmp'),null,'#/cmp'));
   // total hadith in the app: al-Jami al-Kamil once (its Bengali text, Tuhfa and Fazail-e-Sahaba are taken from it),
   // the other books added; books of narrators' biographies and Hisn al-Muslim (du'as) are not counted
   const NOTH=new Set(['tahdhibkamal','sh149213','sh132965','sh26112','sh9863','shadharat','siyar','tarikhbukhari','thiqat','khaythama','sh10906','sh23764','hisn','atraf']);
@@ -1253,11 +1258,12 @@ function goBack(){
 $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
-function navBar(){const h=location.hash,sec=h.startsWith('#/quiz')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h==='#/k/54'?'dua':'b';
+const UL={ur:'علومِ حدیث',en:'Sciences',ar:'علوم الحديث',bn:'হাদীস বিজ্ঞান',hi:'हदीस विज्ञान',gu:'હદીસ વિજ્ઞાન',fr:'Sciences'};
+function navBar(){const h=location.hash,sec=h.startsWith('#/quiz')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
-  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
+  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['ul','#/s/rijal','hsearch',UL[ui]||UL.ur],['sh','#/s/shadharat','gem',T('navSh')]];
   $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:x[4]?{click:x[4]}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
 $('#hsbtn').addEventListener('click',()=>{location.hash='#/hs';});
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
@@ -1435,7 +1441,7 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   const h=location.hash;
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
-if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').then(reg=>{const upd=()=>{if(document.getElementById('updbar'))return;const M={ur:['اپڈیٹ آ گیا ہے: نئی کتب اور بہتریاں دیکھنے کے لیے تازہ کریں','تازہ کریں'],en:['An update is available: refresh to get the new books and improvements','Refresh'],ar:['يوجد تحديث جديد: حدّث الصفحة لترى الكتب والتحسينات','تحديث']}[ui]||['Update available','Refresh'];const b=document.createElement('div');b.id='updbar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:74px;z-index:9999;background:#0b5d4b;color:#fff;border-radius:12px;padding:.6rem .9rem;display:flex;gap:.7rem;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,.3);font:15px/1.6 system-ui';b.append(document.createTextNode(M[0]));const x=document.createElement('button');x.textContent=M[1];x.style.cssText='background:#fff;color:#0b5d4b;border:0;border-radius:8px;padding:.35rem .8rem;font:600 14px system-ui;cursor:pointer';x.onclick=()=>location.reload();b.append(x);document.body.append(b);};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)upd();});});try{reg.update();}catch(e){}}).catch(()=>{});
 </script>
 <script>
 /* Poster maker: a hadith or an ayah as a picture for WhatsApp / Facebook / Instagram.
@@ -3676,14 +3682,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== Narrators (رواة): search by name in the books of rijal; the names of the narrators in the isnad of a hadith open this search =====
   const RJT = {
-    ur: {title: 'راوی اور علومِ حدیث', ph: 'راوی کا نام لکھیں (مثلاً: ابو بکر بن ابی شیبہ)', src: 'کن کتب میں تلاش کریں؟', none: 'کوئی نتیجہ نہیں ملا۔ نام کے کم الفاظ لکھ کر دیکھیں۔', hint: 'اوپر نام لکھیں۔ نتیجے پر کلک کریں تو راوی کی پوری ترجمہ کھل جائے گی۔ ہم نام والی سند میں کئی راوی ایک سے ہو سکتے ہیں، اس لیے طبقہ اور شیوخ و تلامذہ دیکھ کر پہچانیں۔', books: 'رجال، جرح و تعدیل اور علومِ حدیث کی کتب', sanad: 'سند کے راوی', jarh: 'جرح و تعدیل اور اقوالِ ائمہ', teachers: 'اساتذہ (شیوخ)', students: 'شاگرد (تلامذہ)', sanadHint: 'راوی کے نام پر کلک کریں', more: n => 'مزید نتائج: ' + n + ' (نام مزید لکھ کر تنگ کریں)', loading: 'کتب کا ڈیٹا لوڈ ہو رہا ہے…', tile: 'راوی', count: n => n + ' تراجم'},
-    en: {title: 'Narrators & Hadith sciences', ph: 'Type the narrator’s name', src: 'Search in which books?', none: 'No result. Try fewer words of the name.', hint: 'Type a name above; tap a result to open the full biography. Several narrators can share the same name, so check the generation, teachers and students.', books: 'Books of narrators, criticism and hadith sciences', sanad: 'Narrators of the chain', jarh: 'Criticism and sayings of the imams', teachers: 'Teachers', students: 'Students', sanadHint: 'Tap a name', more: n => 'More results: ' + n + ' (type more of the name)', loading: 'Loading…', tile: 'Narrators', count: n => n + ' entries'},
-    ar: {title: 'الرواة وعلوم الحديث', ph: 'اكتب اسم الراوي', src: 'في أي الكتب تبحث؟', none: 'لا توجد نتائج. جرّب كلمات أقل من الاسم.', hint: 'اكتب الاسم ثم افتح الترجمة. قد يتشابه اسم أكثر من راوٍ فانظر في الطبقة والشيوخ والتلاميذ.', books: 'كتب الرجال والجرح والتعديل وعلوم الحديث', sanad: 'رواة السند', jarh: 'الجرح والتعديل وأقوال الأئمة', teachers: 'أساتذة الراوي', students: 'تلاميذ الراوي', sanadHint: 'اضغط على الاسم', more: n => 'نتائج أخرى: ' + n + ' (أكمل الاسم)', loading: 'جارٍ التحميل…', tile: 'الرواة', count: n => n + ' ترجمة'}
+    ur: {title: 'علومِ حدیث', rank: 'درجہ (تقریب التہذیب)', tab: 'طبقہ', death: 'وفات', books_n: n => 'کتب: ' + n, perbook: 'ہر کتاب میں راوی کے متعلق کیا ہے', openbook: 'کتاب میں کھولیں', loadtxt: 'متن دکھائیں', allnotes: 'تمام کتب سے جرح و تعدیل', loadnotes: 'تمام کتب سے اقوال جمع کریں', loadingq: 'لوڈ ہو رہا ہے…', fromTK: 'تراث خیرالقرون کا مرتب ذخیرہ', basis: 'نام کی مطابقت سے جوڑا گیا ہے؛ ہم نام راویوں میں کتاب کا متن دیکھ کر تصدیق کر لیں۔', bookwise: 'کتاب وار نتائج', news: 'نیا کیا ہے', newsAll: 'نئی کتب اور اپڈیٹس', rj_hero: 'راوی، جرح و تعدیل اور علومِ حدیث', ph: 'راوی کا نام لکھیں (مثلاً: ابو بکر بن ابی شیبہ)', src: 'کن کتب میں تلاش کریں؟', none: 'کوئی نتیجہ نہیں ملا۔ نام کے کم الفاظ لکھ کر دیکھیں۔', hint: 'اوپر نام لکھیں۔ نتیجے پر کلک کریں تو راوی کی پوری ترجمہ کھل جائے گی۔ ہم نام والی سند میں کئی راوی ایک سے ہو سکتے ہیں، اس لیے طبقہ اور شیوخ و تلامذہ دیکھ کر پہچانیں۔', books: 'رجال، جرح و تعدیل اور علومِ حدیث کی کتب', sanad: 'سند کے راوی', newtag: 'نئی',  g1: 'رجال: راویوں کے تراجم', g2: 'جرح و تعدیل اور ضعفاء', g3: 'تواریخ اور طبقات',  jarh: 'جرح و تعدیل اور اقوالِ ائمہ', teachers: 'اساتذہ (شیوخ)', students: 'شاگرد (تلامذہ)', sanadHint: 'راوی کے نام پر کلک کریں', more: n => 'مزید نتائج: ' + n + ' (نام مزید لکھ کر تنگ کریں)', loading: 'کتب کا ڈیٹا لوڈ ہو رہا ہے…', tile: 'راوی', count: n => n + ' تراجم'},
+    en: {title: 'Hadith sciences', rank: 'Rank (Taqrib at-Tahdhib)', tab: 'Generation', death: 'Death', books_n: n => 'Books: ' + n, perbook: 'What each book says about the narrator', openbook: 'Open in the book', loadtxt: 'Show text', allnotes: 'Criticism from all books', loadnotes: 'Gather sayings from all books', loadingq: 'Loading…', fromTK: 'Compiled narrator record of Turath Khair al-Quroon', basis: 'Linked by name match; for namesakes check the text of the book.', bookwise: 'Results by book', news: 'What’s new', newsAll: 'New books and updates', rj_hero: 'Narrators, criticism and hadith sciences', ph: 'Type the narrator’s name', src: 'Search in which books?', none: 'No result. Try fewer words of the name.', hint: 'Type a name above; tap a result to open the full biography. Several narrators can share the same name, so check the generation, teachers and students.', books: 'Books of narrators, criticism and hadith sciences', sanad: 'Narrators of the chain', newtag: 'New',  g1: 'Rijal: biographies of narrators', g2: 'Criticism and weak narrators', g3: 'Histories and generations',  jarh: 'Criticism and sayings of the imams', teachers: 'Teachers', students: 'Students', sanadHint: 'Tap a name', more: n => 'More results: ' + n + ' (type more of the name)', loading: 'Loading…', tile: 'Narrators', count: n => n + ' entries'},
+    ar: {title: 'علوم الحديث', rank: 'الرتبة (تقريب التهذيب)', tab: 'الطبقة', death: 'الوفاة', books_n: n => 'الكتب: ' + n, perbook: 'ما قيل في الراوي في كل كتاب', openbook: 'افتح في الكتاب', loadtxt: 'عرض النص', allnotes: 'الجرح والتعديل من جميع الكتب', loadnotes: 'اجمع الأقوال من جميع الكتب', loadingq: 'جارٍ التحميل…', fromTK: 'سجل الراوي المرتب في تراث خير القرون', basis: 'الربط بتطابق الاسم؛ عند تشابه الأسماء راجع نص الكتاب.', bookwise: 'النتائج حسب الكتاب', news: 'الجديد', newsAll: 'الكتب والتحديثات الجديدة', rj_hero: 'الرواة والجرح والتعديل وعلوم الحديث', ph: 'اكتب اسم الراوي', src: 'في أي الكتب تبحث؟', none: 'لا توجد نتائج. جرّب كلمات أقل من الاسم.', hint: 'اكتب الاسم ثم افتح الترجمة. قد يتشابه اسم أكثر من راوٍ فانظر في الطبقة والشيوخ والتلاميذ.', books: 'كتب الرجال والجرح والتعديل وعلوم الحديث', sanad: 'رواة السند', newtag: 'جديد',  g1: 'الرجال: تراجم الرواة', g2: 'الجرح والتعديل والضعفاء', g3: 'التواريخ والطبقات',  jarh: 'الجرح والتعديل وأقوال الأئمة', teachers: 'أساتذة الراوي', students: 'تلاميذ الراوي', sanadHint: 'اضغط على الاسم', more: n => 'نتائج أخرى: ' + n + ' (أكمل الاسم)', loading: 'جارٍ التحميل…', tile: 'الرواة', count: n => n + ' ترجمة'}
   };
   const rt = k => (RJT[ui] || RJT.en)[k] || RJT.en[k];
   window.RJT_TILE = () => rt('tile');
-  const RJ_BOOKS = ['tahdhibkamal', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764'], RJ_DEF = ['tahdhibkamal', 'sh10906', 'sh2170'];
-  const RJ_LIB = ['tahdhibkamal', 'sh149213', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764'];
+  const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632'], RJ_DEF = ['tahdhibkamal'];
+  const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71'];
   C.rj = {};
   const rtok = t => t === 'ابي' || t === 'ابا' ? 'ابو' : t === 'ابن' ? 'بن' : t;
   const rnorm = s => String(s).replace(/[\u064b-\u0652\u0670\u0640\u200c\u200d]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىیی]/g, 'ي').replace(/ة/g, 'ه').replace(/ک/g, 'ك').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').split(/[^\u0621-\u064a]+/).filter(Boolean).map(rtok).join(' ');
@@ -3714,7 +3720,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const RJS = {'خ': 'البخاري', 'م': 'مسلم', 'د': 'أبو داود', 'ت': 'الترمذي', 'س': 'النسائي', 'ق': 'ابن ماجه', 'ع': 'الستة', '٤': 'السنن الأربعة', '4': 'السنن الأربعة', 'بخ': 'الأدب المفرد', 'خت': 'البخاري تعليقاً', 'تم': 'الشمائل', 'سي': 'عمل اليوم والليلة', 'مق': 'مقدمة مسلم', 'مد': 'المراسيل', 'قد': 'القدر', 'ر': 'رفع اليدين', 'ي': 'القراءة خلف الإمام', 'عخ': 'خلق أفعال العباد'};
   const RJK = Object.keys(RJS).sort((a, b) => b.length - a.length);
   const rjSyms = str => { const out = []; String(str).replace(/[()\[\]*]/g, ' ').split(/\s+/).filter(Boolean).forEach(tok => { let t = tok.replace(/[ـ,:،]/g, ''); const part = []; while (t) { const k = RJK.find(k => t.startsWith(k)); if (!k) return; part.push(k); t = t.slice(k.length); } out.push(...part); }); return out; };
-  const RJ_STRUCT = ['tahdhibkamal', 'sh149213'];
+  const RJ_STRUCT = ['tahdhibkamal', 'sh149213', 'sh1290'];
   const rjNames = txt => { const out = []; let depth = 0, cur = '';
     for (const ch of txt + '،') { if (ch === '(') depth++; if (ch === ')') depth = Math.max(0, depth - 1); if ((ch === '،' || ch === ',') && !depth) { out.push(cur); cur = ''; } else cur += ch; }
     return out.map(x => { let nm = x.replace(/^[\s.]+|[\s.]+$/g, ''), sy = [];
@@ -3762,6 +3768,58 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       sec(rt('students'), x.S.length, false, pills(x.S))].filter(Boolean));
     return wrap;
   }
+
+  // ===== The master record of a narrator (Tahdhib al-Kamal entry + rank from Taqrib + links to the other books) =====
+  C.rl = null;
+  window.RLINK = o => { C.rl = o; };
+  const rlGet = async () => { if (!C.rl) await once('rlink', 'coll/rijal_link.js'); return C.rl || {keys: [], d: {}}; };
+  const rankCls = r => /كذاب|وضاع|متروك|متهم|ساقط|ليس بشيء|ضعيف جدا|ضعيف جداً|منكر الحديث/.test(r) ? 'bad' : /ضعيف|لين|ليس بالقوي|سيئ|مجهول|مستور|مقبول|ماتروك|فيه ضعف|وهم|يخطئ/.test(r) ? 'warn' : 'good';
+  const rankEl = r => r ? el('span', {class: 'rjrank ' + rankCls(r), lang: 'ar'}, r) : null;
+  async function showRijalMaster(n) {
+    const box = $('#list'); box.replaceChildren(el('p', {class: 'note'}, rt('loadingq')));
+    const tk = bookOf('tahdhibkamal'), rl = await rlGet(); await needRange(tk, 'ar', n, n);
+    const r0 = row(tk, 'ar', n); if (!r0) { box.replaceChildren(el('p', {class: 'note'}, T('cNotHere'))); return; }
+    const x = rjParse(r0[1]), m = (rl.d && rl.d[n]) || ['', '', '', []];
+    bar(rt('title'), '', true); box.replaceChildren();
+    const card = el('article', {class: 'card rjmaster'});
+    card.append(el('div', {class: 'rjfrom'}, rt('fromTK')));
+    if (x) {
+      const head = el('div', {class: 'rjhead', lang: 'ar', dir: 'rtl'}, el('div', {class: 'rjname'}, x.name || '—'));
+      if (x.sy.length) head.append(el('div', {class: 'rjsyms'}, ...x.sy.map(k => el('span', {class: 'rjsym', title: RJS[k] || ''}, RJS[k] || k))));
+      card.append(head);
+      const facts = el('div', {class: 'rjtable', lang: 'ar', dir: 'rtl'});
+      const fr = (k, v) => v ? facts.append(el('div', {class: 'rjrow'}, el('span', {class: 'rjk'}, k), el('span', {class: 'rjv'}, v))) : null;
+      fr(rt('rank'), rankEl(m[0])); fr(rt('tab'), m[1]); fr(rt('death'), m[2]);
+      if (x.facts) x.facts.split(/\.\s+/).filter(t => t.trim()).forEach(t => { const i = t.indexOf(':'); if (i > 0 && i < 20) fr(t.slice(0, i), t.slice(i + 1).replace(/\.$/, '')); else fr('', t.replace(/\.$/, '')); });
+      card.append(facts);
+      const sec = (title, cnt, open, body) => cnt ? el('details', {class: 'rjsec', open: open ? '' : null}, el('summary', {}, el('span', {class: 'rjst'}, title), el('span', {class: 'rjcnt'}, fmtN(cnt))), body) : null;
+      const pills = arr => el('div', {class: 'rjpills', lang: 'ar', dir: 'rtl'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n))}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
+      const notesBody = el('ul', {class: 'rjnotes', lang: 'ar', dir: 'rtl'}, ...x.notes.map(nt => el('li', {}, nt.w ? el('b', {class: 'rjwho'}, nt.w + ': ') : null, nt.t, el('span', {class: 'rjbk'}, bname(tk)))));
+      const allBtn = el('button', {type: 'button', class: 'btn lbtn', on: {click: async e => { const bt = e.currentTarget; bt.disabled = true; bt.textContent = rt('loadingq');
+        for (const [si, no] of m[3]) { const key = rl.keys[si]; if (!RJ_STRUCT.includes(key)) continue; const b = bookOf(key); await needRange(b, 'ar', no, no); const rr = row(b, 'ar', no); const px = rr && rjParse(rr[1]); if (!px) continue;
+          px.notes.filter(z => z.w).forEach(z => notesBody.append(el('li', {}, el('b', {class: 'rjwho'}, z.w + ': '), z.t, el('span', {class: 'rjbk'}, bname(b))))); }
+        bt.remove(); }}}, rt('loadnotes'));
+      const jb = el('div', {}, notesBody, m[3].some(e => RJ_STRUCT.includes(rl.keys[e[0]]) && rl.keys[e[0]] !== 'tahdhibkamal') ? allBtn : null);
+      card.append(...[sec(rt('jarh'), x.notes.length, true, jb), sec(rt('teachers'), x.T.length, false, pills(x.T)), sec(rt('students'), x.S.length, false, pills(x.S))].filter(Boolean));
+    } else card.append(el('div', {class: 'mt ar', lang: 'ar', dir: 'rtl'}, r0[1]));
+    // the other books: what each says
+    const others = m[3].filter(e => rl.keys[e[0]] !== 'tahdhibkamal');
+    if (others.length) {
+      card.append(el('h3', {class: 'grp'}, rt('perbook') + ' (' + fmtN(others.length) + ')'), el('p', {class: 'cs'}, rt('basis')));
+      others.forEach(([si, no]) => { const key = rl.keys[si], b = bookOf(key); if (!b) return;
+        const body = el('div', {class: 'rjbody'}), d = el('details', {class: 'rjsec rjbk2'}, el('summary', {}, el('span', {class: 'rjst', lang: 'ar'}, b.ar), el('span', {class: 'rjcnt'}, fmtN((b.an && b.an[no]) || no))), body);
+        let done = false;
+        d.addEventListener('toggle', async () => { if (!d.open || done) return; done = true; body.replaceChildren(el('p', {class: 'note'}, rt('loadingq')));
+          await needRange(b, 'ar', no, no); const rr = row(b, 'ar', no); body.replaceChildren();
+          if (!rr) { body.append(el('p', {class: 'note'}, T('cNotHere'))); return; }
+          const px = RJ_STRUCT.includes(key) ? rjParse(rr[1]) : null;
+          if (px) body.append(rjBlock(px)); else body.append(el('div', {class: 'mt ar rjplain', lang: 'ar', dir: 'rtl'}, ...rr[1].split('\n').filter(t => t.trim()).map(t => paraEl(t, 'ar'))));
+          body.append(el('a', {class: 'btn lbtn', href: '#/s/' + key + '/n/' + no}, rt('openbook'))); });
+        card.append(d); });
+    }
+    card.append(el('div', {class: 'nav'}, n > 1 ? el('a', {href: '#/s/rijal/' + (n - 1)}, T('prev')) : el('span'), n < tk.count ? el('a', {href: '#/s/rijal/' + (n + 1)}, T('next')) : el('span')));
+    box.append(card);
+  }
   const rjLegend = 'خ: البخاري، م: مسلم، د: أبو داود، ت: الترمذي، س: النسائي، ق: ابن ماجه، ع: أصحاب الكتب الستة، ٤: أصحاب السنن';
   async function showRijal(q) {
     const box = $('#list'); box.replaceChildren(); bar(rt('title'), '', true);
@@ -3772,7 +3830,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const draw = async () => {
       const my = ++tick, v = inp.value.trim(), qt = rnorm(v).split(' ').filter(Boolean);
       if (!qt.length) { out.replaceChildren(note); return; }
-      const rows = [], tot = {};
+      const rows = [], tot = {}; await rlGet();
       const asNum = /^[0-9٠-٩]+$/.test(v) ? parseInt(v.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)), 10) : null;
       out.replaceChildren(el('p', {class: 'note'}, rt('loading')));
       for (const k of RJ_BOOKS.filter(x => sel.has(x))) {
@@ -3786,16 +3844,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           if (ok) hits.push([(hay.startsWith(' ' + qt[0]) ? 0 : 2000) + (hay.startsWith(' ' + qt.join(' ')) ? 0 : ord ? 500 : 1000) + r.k.length / 4, r]);
         }
         hits.sort((a, b2) => a[0] - b2[0]); tot[k] = hits.length;
-        hits.slice(0, k === 'tahdhibkamal' ? 40 : 15).forEach(h => rows.push([k, b, h[1]]));
+        hits.slice(0, k === 'tahdhibkamal' ? 50 : 15).forEach(h => rows.push([k, b, h[1]]));
       }
       if (my !== tick) return;
       if (!rows.length) { out.replaceChildren(el('p', {class: 'note'}, rt('none'))); return; }
       const els = []; let cur = null;
       rows.forEach(([k, b, r]) => {
         if (cur !== k) { cur = k; els.push(el('h3', {class: 'grp', dir: 'auto'}, bname(b) + ' — ' + fmtN(tot[k]))); }
-        const pn = (b.an && b.an[r.n]) || r.n;
-        els.push(el('a', {class: 'card srow2', href: '#/s/' + k + '/n/' + r.n}, el('span', {class: 'snum'}, fmtN(pn)),
-          el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, r.h), r.s ? el('span', {class: 'cs', lang: 'ar', dir: 'rtl', title: rjLegend}, r.s) : null)));
+        const pn = (b.an && b.an[r.n]) || r.n, mm = k === 'tahdhibkamal' && C.rl && C.rl.d[r.n];
+        els.push(el('a', {class: 'card srow2', href: k === 'tahdhibkamal' ? '#/s/rijal/' + r.n : '#/s/' + k + '/n/' + r.n}, el('span', {class: 'snum'}, fmtN(pn)),
+          el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, r.h), el('span', {class: 'rjline'}, mm && mm[0] ? rankEl(mm[0]) : null, mm && mm[3].length ? el('span', {class: 'rjbooks'}, rt('books_n')(fmtN(mm[3].length + 1))) : null, r.s ? el('span', {class: 'cs', lang: 'ar', dir: 'rtl', title: rjLegend}, r.s) : null))));
       });
       out.replaceChildren(...els);
     };
@@ -3803,16 +3861,42 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const c = el('button', {type: 'button', class: 'chip' + (sel.has(k) ? ' on' : ''), 'aria-pressed': String(sel.has(k)), on: {click: () => { sel.has(k) ? sel.delete(k) : sel.add(k); if (!sel.size) sel.add('tahdhibkamal'); chips.querySelectorAll('button').forEach(x => { const on = sel.has(x.dataset.k); x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); }); save(); draw(); }}}, bname(b));
       c.dataset.k = k; chips.append(c); }
     inp.addEventListener('input', draw);
-    const lib = RJ_LIB.map(bookOf).filter(Boolean).map(b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, b.ar), el('span', {class: 'cs'}, rt('count')(fmtN(b.count))))));
-    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), inp), el('p', {class: 'cs'}, rt('src')), chips, out, el('h3', {class: 'grp'}, rt('books')), ...lib);
+    const GR = [['g1', ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965']], ['g2', ['sh2170', 'sh26112', 'sh9863', 'sh8632', 'sh12579']], ['g3', ['thiqat', 'tarikhbukhari', 'sh5782', 'sh23764', 'sh10906', 'sh71']]];
+    const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
+    const lib = GR.flatMap(([g, ks]) => [el('h3', {class: 'grp'}, rt(g)), ...ks.map(bookOf).filter(Boolean).map(bk)]);
+    const news = window.NEWS && window.NEWS.length ? el('details', {class: 'rjsec newsbox'}, el('summary', {}, el('span', {class: 'rjst'}, rt('newsAll'))), el('div', {class: 'newsbody'}, ...window.NEWS.map(nw => el('div', {class: 'newsitem'}, el('b', {}, (nw.t[ui] || nw.t.ur) + ' — ' + nw.d), el('ul', {}, ...(nw.i[ui] || nw.i.ur).map(t => el('li', {}, t))))))) : null;
+    const more = el('details', {class: 'rjsec'}, el('summary', {}, el('span', {class: 'rjst'}, rt('bookwise'))), el('div', {class: 'rjinner'}, el('p', {class: 'cs'}, rt('src')), chips));
+    box.append(el('div', {class: 'rjhero'}, el('h2', {}, rt('rj_hero'))), el('div', {class: 'card pad0 filterbox'}, icon('search'), inp), more, out, news, ...lib);
     draw(); if (q) setTimeout(() => out.scrollIntoView && 0, 0);
   }
+
+  // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
+  window.NEWS = [
+    {id: '20261019', d: '19-10-2026', keys: ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh26112', 'sh9863', 'sh5782', 'sh8632', 'sh71', 'muslimab', 'muslimtr'],
+      t: {ur: 'علومِ حدیث کا نیا زمرہ اور نئی کتب', en: 'New Hadith sciences section and new books', ar: 'قسم علوم الحديث وكتب جديدة'},
+      i: {ur: ['نیا بٹن «علومِ حدیث»: راوی کا نام لکھیں تو اس کا درجہ، طبقہ، شیوخ، تلامذہ اور تمام کتب کے اقوال ایک جگہ مل جاتے ہیں۔', 'حدیث کی سند میں راوی کے نام پر کلک کر کے اس کی معلومات دیکھیں۔', 'نئی کتب: تہذیب الکمال، تقریب التہذیب، تہذیب التہذیب، تذہیب التہذیب، لسان المیزان، التاریخ الاوسط، الضعفاء الصغیر، تاریخ دمشق، درۃ الحجال۔', 'صحیح مسلم کے دو نسخے: ترقیم عبدالباقی اور ترکی نسخہ۔'],
+        en: ['New “Hadith sciences” button: type a narrator’s name to see his rank, generation, teachers, students and what every book says about him.', 'Tap a narrator in the chain of a hadith to see his details.', 'New books: Tahdhib al-Kamal, Taqrib at-Tahdhib, Tahdhib at-Tahdhib, Tadhhib, Lisan al-Mizan, at-Tarikh al-Awsat, ad-Du‘afa as-Saghir, Tarikh Dimashq, Durrat al-Hijal.', 'Two editions of Sahih Muslim: Abd al-Baqi numbering and the Turkish edition.'],
+        ar: ['زر جديد «علوم الحديث»: اكتب اسم الراوي لترى رتبته وطبقته وشيوخه وتلاميذه وأقوال الكتب فيه.', 'اضغط على اسم الراوي في السند لتعرف ترجمته.', 'كتب جديدة: تهذيب الكمال، تقريب التهذيب، تهذيب التهذيب، تذهيب التهذيب، لسان الميزان، التاريخ الأوسط، الضعفاء الصغير، تاريخ دمشق، درة الحجال.', 'نسختان من صحيح مسلم: ترقيم عبد الباقي والطبعة التركية.']}}
+  ];
+  (() => { const cut = Date.now() - 45 * 864e5; window.NEWS_NEW = new Set(window.NEWS.filter(n => { const [dd, mm, yy] = n.d.split('-'); return new Date(+yy, mm - 1, +dd).getTime() > cut; }).flatMap(n => n.keys)); })();
+  setTimeout(() => { try {
+    const last = window.NEWS[0], seen = localStorage.newsSeen;
+    if (seen === last.id) return;
+    const existing = localStorage.length > 0;
+    localStorage.newsSeen = last.id;
+    if (!existing || !window.sheet) return;               // a new installation does not need the message
+    const L = k => k[ui] || k.ur;
+    window.sheet(rt('news'), [el('p', {class: 'grp', dir: 'auto'}, L(last.t)), el('ul', {class: 'newsul', dir: ui === 'en' ? 'ltr' : 'rtl'}, ...L(last.i).map(t => el('li', {}, t)))],
+      [[T('hClose') || 'OK', null], [rt('title'), () => { location.hash = '#/s/rijal'; }]]);
+    if (window.Notification && Notification.permission === 'granted' && navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(L(last.t), {body: L(last.i)[0], icon: 'icon-192.png', tag: 'news-' + last.id, data: {url: '#/s/rijal'}})).catch(() => {});
+  } catch (e) {} }, 3500);
 
   setTimeout(() => index().catch(() => {}), 0);
   window.COLL = {
     printed(key, n) { const b = C.idx && C.idx.find(x => x.key === key); return b ? (b.an && b.an[n]) || n : n; },
     async route(h) {
       await index();
+      { const rm = h.match(/^#\/s\/rijal\/(\d+)/); if (rm) return showRijalMaster(+rm[1]); }
       if (/^#\/s\/rijal(?:\?|$)/.test(h)) { const qq = h.match(/[?&]q=([^&]*)/); return showRijal(qq ? decodeURIComponent(qq[1]) : ''); }
       const m = h.match(/^#\/s\/([a-z0-9]+)(?:\/(n\/)?(\d+))?/), b = m && bookOf(m[1]);
       if (!b) { $('#list').replaceChildren(el('p', {class: 'note'}, T('nf'))); return; }
