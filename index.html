@@ -79,6 +79,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .en{font-family:var(--serif);direction:ltr;text-align:left;line-height:1.8}
 .bn{font-family:"Noto Serif Bengali","Noto Sans Bengali","Hind Siliguri",var(--serif);direction:ltr;text-align:left;line-height:1.9}
 .hi{font-family:"Noto Serif Devanagari","Noto Sans Devanagari",var(--serif);direction:ltr;text-align:left;line-height:1.9}
+.pa{font-family:"Noto Sans Gurmukhi","Noto Serif Gurmukhi","Raavi",var(--sans);direction:ltr;text-align:left;line-height:1.9}
 .gu{font-family:"Noto Sans Gujarati","Noto Serif Gujarati","Shruti",var(--sans);direction:ltr;text-align:left;line-height:1.9}
 .fr{font-family:var(--serif);direction:ltr;text-align:left;line-height:1.75}
 .phead{margin:.9rem 0 .2rem;font-size:.95rem;color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 25%,transparent);padding-bottom:.15rem}
@@ -1443,9 +1444,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'ls', w: 1200, h: 675, ur: 'افقی', ar: 'أفقي', en: 'Wide', hint: {ur: 'ٹوئٹر · فیس بک لنک', ar: 'تويتر · فيسبوك', en: 'Twitter · Facebook link'}}
   ];
   const LN = {ur: {ur: 'اردو', ar: 'الأردية', en: 'Urdu'}, en: {ur: 'انگریزی', ar: 'الإنجليزية', en: 'English'}, bn: {ur: 'بنگالی', ar: 'البنغالية', en: 'Bengali'},
-    hi: {ur: 'ہندی', ar: 'الهندية', en: 'Hindi'}, gu: {ur: 'گجراتی', ar: 'الغوجاراتية', en: 'Gujarati'}, fr: {ur: 'فرانسیسی', ar: 'الفرنسية', en: 'French'}};
+    hi: {ur: 'ہندی', ar: 'الهندية', en: 'Hindi'}, gu: {ur: 'گجراتی', ar: 'الغوجاراتية', en: 'Gujarati'}, fr: {ur: 'فرانسیسی', ar: 'الفرنسية', en: 'French'}, pa: {ur: 'پنجابی', ar: 'البنجابية', en: 'Punjabi'}};
   const FAM = {ur: [F_UR, true, 1, 2.1], en: [F_EN, false, .8, 1.5], fr: [F_EN, false, .8, 1.5], bn: ['"Noto Serif Bengali","Noto Sans Bengali","Vrinda",serif', false, .85, 1.7],
-    hi: ['"Noto Serif Devanagari","Noto Sans Devanagari","Mangal",serif', false, .85, 1.7], gu: ['"Noto Sans Gujarati","Shruti","Noto Serif Gujarati",sans-serif', false, .85, 1.7]};
+    hi: ['"Noto Serif Devanagari","Noto Sans Devanagari","Mangal",serif', false, .85, 1.7], pa: ['"Noto Sans Gurmukhi","Raavi","Noto Serif Gurmukhi",sans-serif', false, .85, 1.7],
+    gu: ['"Noto Sans Gujarati","Shruti","Noto Serif Gujarati",sans-serif', false, .85, 1.7]};
   const TXT = {
     ur: {title: 'پوسٹر بنائیں', size: 'سائز', cnt: 'آیات کی تعداد', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
     ar: {title: 'صنع بطاقة', size: 'الحجم', cnt: 'عدد الآيات', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
@@ -2131,7 +2133,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const qsave = () => { try { localStorage.qset = JSON.stringify(QS); } catch (e) {} applyVars(); };
   // Uthmani text (Madinah Mushaf) in the King Fahd Complex Hafs font; Indo-Pak text in Noto Naskh or Scheherazade (both draw every Indo-Pak sign)
   if (QS.font === 'amiri') QS.font = 'naskh';
-  { const ok = new Set(['ur_junagarhi','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','fr_hamidullah']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
+  { const ok = new Set(['ur_junagarhi','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','fr_hamidullah','pa_arif']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
     QS.tr = fx(QS.tr); if (!QS.tr.length) QS.tr = ['ur_junagarhi']; if (QS.trBy) Object.keys(QS.trBy).forEach(u => { QS.trBy[u] = fx(QS.trBy[u]); if (!QS.trBy[u].length) delete QS.trBy[u]; }); }
   if (QS.fontv !== 2) { QS.fontv = 2; if (!QS.font || QS.font === 'naskh') QS.font = 'indo'; }   // the Indo-Pak script now has its own real Indo-Pak font
   const FONTS = {indo: ['IndoPak Nastaleeq', 'Indo-Pak (Nastaleeq)'], naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
@@ -2617,7 +2619,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   async function ayahPoster(s, a) {
     // one translation per language: the one the reader has chosen for it, else the default of that language
-    const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', fr: 'fr_hamidullah'}, keys = {};
+    const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', fr: 'fr_hamidullah', pa: 'pa_arif'}, keys = {};
     Object.keys(DEF).forEach(l => { keys[l] = QS.tr.find(k => k.startsWith(l + '_')) || DEF[l]; });
     await need([AK()].concat(Object.values(keys)));
     const clean = x => (x || '').replace(/<[^>]*>/g, '').trim(), last = Q.meta.surahs[s - 1][4], nm = Q.meta.surahs[s - 1];
@@ -3040,7 +3042,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     Q.meta.editions.filter(e => e.lang === 'ur').forEach(e => boxes.push([e, add(e)]));
     Q.meta.missing.forEach(e => add(e, true));
     Q.meta.editions.filter(e => e.lang === 'en').forEach(e => boxes.push([e, add(e)]));
-    ['bn', 'hi', 'gu', 'fr'].forEach(lg => Q.meta.editions.filter(e => e.lang === lg).forEach(e => boxes.push([e, add(e)])));
+    ['bn', 'hi', 'gu', 'fr', 'pa'].forEach(lg => Q.meta.editions.filter(e => e.lang === lg).forEach(e => boxes.push([e, add(e)])));
     // the tafsirs, listed separately below the translations: the chosen one opens with the «Tafsir» button of each ayah
     if (!Q.tafsirs) { try { await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js'))); } catch (e) {} }
     const tl = (Q.tafsirs && Q.tafsirs.list) || [], tcur = tl.some(t => t.key === QS.tafsir) ? QS.tafsir : (tl.find(t => t.lang === ui) || tl.find(t => t.lang === 'ur') || tl[0] || {}).key; let tsel = tcur;
@@ -4558,7 +4560,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const X = {ur: ['صحیح سیرت مصطفیٰ صلی اللہ علیہ وسلم', 'کوئز'], en: ['Sahih Seerah', 'Quiz'], ar: ['صحيح السيرة النبوية', 'المسابقة'],
     bn: ['সহীহ সীরাতুল মুস্তফা', 'কুইজ'], hi: ['सहीह सीरत-ए-मुस्तफ़ा', 'क्विज़'], gu: ['સહીહ સીરતે મુસ્તફા', 'ક્વિઝ'], fr: ['La Sîra authentique', 'Quiz']};
   for (const l in X) if (I[l]) Object.assign(I[l], {seerahT: X[l][0], quizT: X[l][1]});
-  ['ur', 'en', 'ar', 'bn'].forEach(l => { if (I[l] && I[l].langs) Object.assign(I[l].langs, {gu: 'ગુજરાતી', fr: 'Français', hi: I[l].langs.hi || 'हिन्दी'}); });
+  ['ur', 'en', 'ar', 'bn'].forEach(l => { if (I[l] && I[l].langs) Object.assign(I[l].langs, {pa: 'ਪੰਜਾਬੀ', gu: 'ગુજરાતી', fr: 'Français', hi: I[l].langs.hi || 'हिन्दी'}); });
 })();
 
 </script>
