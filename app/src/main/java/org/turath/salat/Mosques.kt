@@ -94,7 +94,7 @@ object Mosques {
             val ecs = java.util.concurrent.ExecutorCompletionService<String>(pool)
             var s = ""
             try {
-                urls.forEach { u -> ecs.submit<String> { ask(u) } }
+                urls.forEach { u -> ecs.submit(java.util.concurrent.Callable<String> { ask(u) }) }
                 for (i in urls.indices) { val r = runCatching { ecs.take().get() }.getOrDefault(""); if (good(r)) { s = r; break } }
             } finally { pool.shutdownNow() }
             if (!good(s)) s = runCatching {
