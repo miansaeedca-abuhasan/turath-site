@@ -148,11 +148,17 @@ class Prefs(ctx: Context) {
     fun sound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("snd_" + p.name, null) ?: "") }.getOrElse { defaultSound(p) }
     fun setSound(p: P, s: Snd) { sp.edit().putString("snd_" + p.name, s.name).apply(); if (s.raw != null) sp.edit().putString("lastsnd_" + p.name, s.name).apply() }
     /** the last real sound chosen for a prayer (to go back to it from «notification only» / «silent») */
-    fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p == P.MAGHRIB) Snd.ADHAN_DAGHRIRI else if (p in FIVE) Snd.ADHAN_MAKKAH else Snd.NIGHTINGALE }
+    fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p in FIVE) defaultSound(p) else Snd.NIGHTINGALE }
+    /** the adhan of Friday's Dhuhr (Jumu'ah): Shaikh Hamad al-Daghriri unless the user chose another */
+    var jumuahSound: Snd get() = runCatching { Snd.valueOf(sp.getString("snd_JUMUAH", null) ?: "") }.getOrElse { Snd.ADHAN_DAGHRIRI }
+        set(v) = sp.edit().putString("snd_JUMUAH", v.name).apply()
     private fun defaultSound(p: P) = when (p) {
-        // Shaikh Ali Ahmad Mulla (Makkah) for all, Shaikh Hamad al-Daghriri for Maghrib
+        // Fajr: Shaikh Ali Ahmad Mulla; Dhuhr: Abdul Basit; Asr: Nur ad-Din al-Maghribi; Maghrib: Hamad al-Daghriri; Isha: Saleh al-Nabet
+        P.FAJR -> Snd.ADHAN_MAKKAH
+        P.DHUHR -> Snd.ADHAN_BASIT
+        P.ASR -> Snd.ADHAN_MAGHRIBI
         P.MAGHRIB -> Snd.ADHAN_DAGHRIRI
-        P.FAJR, P.DHUHR, P.ASR, P.ISHA -> Snd.ADHAN_MAKKAH
+        P.ISHA -> Snd.ADHAN_NABET
         P.ISHRAQ -> Snd.NIGHTINGALE
         P.CHASHT -> Snd.BLACKBIRD
         else -> Snd.SILENT

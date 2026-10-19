@@ -101,7 +101,7 @@ fun CalendarScreen(s: AppState) {
                 for (i in 0 until 7) {
                     val v = (ws - 1 + i) % 7 + 1
                     Text(if (fits) Tr.dayName(v) else Tr.dayShort(v), Modifier.weight(1f), style = style, maxLines = 1, softWrap = false,
-                        color = if (v == 5) Gold else MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+                        color = if (v == 5) Color(0xFF2E9E5B) else tickerInk(s.prefs), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
                 }
             }
         }

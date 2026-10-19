@@ -54,7 +54,7 @@ fun HomeScreen(s: AppState) {
         val line = remember(now.toLocalDate(), now.hour < 12, s.version, forb?.first) { Widget.ticker(s.prefs, place, now, today) }
         Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
             Text(line, Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE, velocity = 40.dp), maxLines = 1,
-                fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+                fontSize = 13.sp, color = tickerInk(s.prefs))
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { s.page = "city"; s.sub = "city" }) {
             Icon(if (s.prefs.placeByGps) Icons.Outlined.MyLocation else Icons.Outlined.PushPin, null, tint = MaterialTheme.colorScheme.primary)

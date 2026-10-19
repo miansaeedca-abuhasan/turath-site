@@ -20,6 +20,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -252,3 +253,9 @@ fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composable () ->
         .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
         .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 5.dp)) { content() }
 }
+
+/** the colour of the moving message and of the day names: the one chosen for the widget's moving line, else cyan (a deeper cyan on a light screen) */
+@Composable
+fun tickerInk(pr: Prefs): Color =
+    if (pr.widgetTicker >= 0) Color(Pal.ink(pr.widgetTicker))
+    else if (MaterialTheme.colorScheme.surface.luminance() < .5f) Color(0xFF26C6DA) else Color(0xFF00838F)

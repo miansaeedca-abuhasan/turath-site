@@ -25,7 +25,7 @@ import org.turath.salat.*
 fun MosquesPage(s: AppState, back: () -> Unit) {
     val act = s.act
     var radius by remember { mutableIntStateOf(s.prefs.mosqRadius) }
-    var strict by remember { mutableStateOf(s.prefs.mosqStrict) }
+    val place = s.prefs.place
     var hidden by remember { mutableStateOf(s.prefs.hiddenMosques) }
     var state by remember { mutableIntStateOf(0) }          // 0 loading, 1 list, 2 error
     var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
@@ -38,7 +38,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
         val r = withContext(Dispatchers.IO) { runCatching { Mosques.find(act, here.first, here.second, if (radius > 50) 100 else 50) } }
         r.onSuccess { all = it; state = 1 }.onFailure { state = 2 }
     }
-    val shown = all.filter { it.km <= radius + 0.5 && it.id !in hidden && (!strict || it.sunni) }
+    val shown = all.filter { it.km <= radius + 0.5 && it.id !in hidden }
     Column(Modifier.fillMaxSize()) {
         TopBar(Tr["mosques"], back)
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -48,7 +48,16 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                     for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
                 Spacer(Modifier.height(8.dp))
-                ChoiceRow(strict, { strict = !strict; s.prefs.mosqStrict = strict }) { Text(Tr["mosqStrict"], fontSize = 14.sp) }
+                // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    for ((q, k) in listOf("masjid" to "gmapsNearby", "prayer room" to "gmapsPrayer")) OutlinedButton(onClick = {
+                        val la = place?.lat ?: 0.0; val ln = place?.lng ?: 0.0
+                        val u = Uri.parse("geo:$la,$ln?q=" + Uri.encode(q))
+                        runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, u)) }.onFailure {
+                            runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/" + Uri.encode(q) + "/@$la,$ln,14z"))) }
+                        }
+                    }, Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)) { Text(Tr[k], fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+                }
             }
             if (state == 1) item { Text(Tr["mosqCount"] + ": " + Tr.num(shown.size) + "  (" + Tr.num(all.size) + ")", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
             when {
@@ -89,6 +98,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
             }
             if (hidden.isNotEmpty()) item { TextButton(onClick = { hidden = emptySet(); s.prefs.hiddenMosques = hidden }) { Text(Tr["mosqRestore"] + " (" + Tr.num(hidden.size) + ")", fontSize = 13.sp) } }
             if (Mosques.info.isNotEmpty()) item { Text(Tr.num(shown.size) + " / " + Mosques.info, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .45f)) }
+            if (Mosques.skipped.isNotEmpty()) item { Text(Tr["mosqHidden"] + " (" + Tr.num(Mosques.skipped.size) + "): " + Mosques.skipped.take(12).joinToString("، "), fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .45f)) }
             item { Text(Tr["mosqNote"], fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(vertical = 10.dp)) }
         }
     }

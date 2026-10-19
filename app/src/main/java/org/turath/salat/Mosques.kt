@@ -64,6 +64,8 @@ object Mosques {
 
     /** where the last list came from (shown small under the list, to help to find a problem) */
     @Volatile var info = ""
+    /** names of the places left out because of their group (shown, so that a wrong one can be found) */
+    @Volatile var skipped: List<String> = emptyList()
 
     private fun count(s: String) = if (good(s)) runCatching { JSONObject(s).getJSONArray("elements").length() }.getOrDefault(0) else 0
 
@@ -95,7 +97,7 @@ object Mosques {
             val qa = "[out:json][timeout:40];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
                 "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"=\"prayer_room\"]($bb);nwr[\"room\"=\"prayer\"]($bb););out center tags;"
             val qb = "[out:json][timeout:55];(nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship|events_venue\"][\"name\"~\"$nm\",i]($bb);" +
-                "nwr[\"name\"~\"masjid|mosque|musall|islamic cent|islamic assoc|muslim assoc|markaz\",i]($bb););out center tags;"
+                "nwr[\"name\"~\"masjid|mosque|musall|musolla|islamic cent|islamic assoc|muslim assoc|markaz|prayer room|prayer hall|prayer space|salah room|مصلى|مسجد\",i]($bb););out center tags;"
             fun ask(u: String, q: String, ms: Int): String = runCatching {
                 val c = URL(u).openConnection() as HttpURLConnection
                 c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = ms
@@ -138,15 +140,16 @@ object Mosques {
         val hidden = hiddenSet(pr)
         val els: JSONArray = JSONObject(json).optJSONArray("elements") ?: JSONArray()
         val out = mutableListOf<M>()
+        val skip = mutableListOf<String>()
         for (i in 0 until els.length()) {
             val e = els.getJSONObject(i)
             val t = e.optJSONObject("tags") ?: continue
             val id = e.optString("type") + "/" + e.optLong("id")
             if (id in hidden) continue
-            if (DENOM.containsMatchIn(t.optString("denomination") + " " + t.optString("religious_affiliation"))) continue
+            if (DENOM.containsMatchIn(t.optString("denomination") + " " + t.optString("religious_affiliation"))) { skip += t.optString("name").ifEmpty { id }; continue }
             val text = listOf("name", "name:en", "name:ar", "name:ur", "official_name", "alt_name", "operator", "description", "website")
                 .joinToString(" ") { t.optString(it) }
-            if (NAME.containsMatchIn(text)) continue
+            if (NAME.containsMatchIn(text)) { skip += t.optString("name").ifEmpty { id }; continue }
             // only places to pray: mosques, musallas, Islamic centres (not a Muslim graveyard, school, shop …)
             val am = t.optString("amenity")
             val rel = t.optString("religion")
@@ -164,6 +167,7 @@ object Mosques {
                 .filter { it.isNotEmpty() }.joinToString(", ")
             out += M(id, name, la, lo, Cities.dist(lat, lng, la, lo), addr, SUNNI.containsMatchIn(t.optString("denomination") + " " + t.optString("religious_affiliation")))
         }
+        skipped = skip.distinct()
         return out.filter { it.km <= km + 0.5 }.sortedBy { it.km }
     }
 

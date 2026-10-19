@@ -78,7 +78,7 @@ class Widget : AppWidgetProvider() {
             else if (pr.widgetLight) Color.parseColor("#99000000") else Color.parseColor("#CCFFFFFF")
         fun accent(pr: Prefs) = Pal.COLORS[pr.widgetAccent]
         /** the moving line: clearly readable on the background (bright amber on dark, deep amber on light) unless the user chose a colour */
-        fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#7A4A00") else Color.parseColor("#FFD54F")
+        fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#00838F") else Color.parseColor("#26C6DA")
         /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
         fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
         private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
@@ -203,6 +203,7 @@ class WidgetCal : AppWidgetProvider() {
             for (i in 0 until 7) {
                 val d = (ws - 1 + i) % 7 + 1
                 v.setTextViewText(HEADS[i], Tr.dayWidget(d))
+                v.setTextColor(HEADS[i], tickerColor(pr))
                 if (Tr.lang != "en") v.setTextViewTextSize(HEADS[i], android.util.TypedValue.COMPLEX_UNIT_SP, 8.5f)
             }
             for (r in ROWS) v.removeAllViews(r)

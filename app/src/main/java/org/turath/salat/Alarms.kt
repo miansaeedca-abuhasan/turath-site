@@ -30,7 +30,8 @@ object Events {
             // in Ramadan the night after this day's maghrib is Ramadan when the next day is (taraweeh after Isha)
             val ramadanNight = Schedule.hijriOf(pr, d.plusDays(1)).month == 9
             for (p in FIVE) {
-                val s = pr.sound(p)
+                // Friday's Dhuhr is Jumu'ah: its own adhan, unless Dhuhr is set to silent / notification only
+                val s = pr.sound(p).let { if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY && it != Snd.SILENT && it != Snd.NOTIFY) pr.jumuahSound else it }
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
                 // the phone on vibrate for this prayer (on Fridays Dhuhr's own setting is replaced by the Jumu'ah one)
                 val vk = if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY) "JUMUAH" else p.name
@@ -339,7 +340,7 @@ class SoundService : Service() {
         val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this))
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
-            .setContentIntent(open).setDeleteIntent(stop)
+            .setContentIntent(if (alarm) open else stop).setAutoCancel(true).setDeleteIntent(stop)
             .addAction(Notification.Action.Builder(null, Tr["stop"], stop).build())
             .apply { if (alarm) setFullScreenIntent(open, true).setCategory(Notification.CATEGORY_ALARM) }
             .build()

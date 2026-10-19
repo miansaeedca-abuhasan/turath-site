@@ -26,6 +26,7 @@ fun TimesScreen(s: AppState) {
     val place = s.prefs.place ?: return
     var offset by remember { mutableIntStateOf(0) }
     var pick by remember { mutableStateOf<P?>(null) }
+    var pickJum by remember { mutableStateOf(false) }
     val date = s.now.withZoneSameInstant(Schedule.zone(place)).toLocalDate().plusDays(offset.toLong())
     val t = Schedule.day(s.prefs, place, date)
     val loc = Locale(Tr.lang)
@@ -62,6 +63,12 @@ fun TimesScreen(s: AppState) {
                 }
                 if (p == P.ISHA || p == P.SUNRISE) HorizontalDivider(Modifier.padding(vertical = 4.dp))
             }
+            // Friday: the adhan of Jumu'ah (Dhuhr on Fridays)
+            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(Tr["JUMUAH"], Modifier.weight(1f).padding(start = 112.dp), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                IconButton(onClick = { pickJum = true }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = MaterialTheme.colorScheme.primary) }
+                Spacer(Modifier.width(76.dp))
+            }
             // the middle of the night (from Maghrib to the next Fajr)
             val nf = Schedule.day(s.prefs, place, date.plusDays(1))[P.FAJR]
             val mid = t[P.MAGHRIB].plusSeconds(java.time.Duration.between(t[P.MAGHRIB], nf).seconds / 2)
@@ -72,6 +79,7 @@ fun TimesScreen(s: AppState) {
         }
         Text(Tr["hijriChange"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
     }
+    if (pickJum) SoundPicker(s, Tr["JUMUAH"], s.prefs.jumuahSound, SoundService.choices(s.act, SndUse.PRAYER, false)) { v -> if (v != null) { s.prefs.jumuahSound = v; s.changed() }; pickJum = false }
     pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, if (p in FIVE) SndUse.PRAYER else SndUse.NAFL, p == P.FAJR), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
 }
 
