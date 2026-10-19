@@ -130,10 +130,7 @@ private fun Buzz(on: Boolean, ctx: Context) {
 @Composable
 fun QiblaScreen(s: AppState) {
     var mode by remember { mutableIntStateOf(0) }
-    // a trail for finding why the camera view closes by itself (read in the emulator's log)
-    LaunchedEffect(mode) { android.util.Log.w("salatQ", "mode=" + mode) }
-    DisposableEffect(Unit) { android.util.Log.w("salatQ", "QiblaScreen shown"); onDispose { android.util.Log.w("salatQ", "QiblaScreen left") } }
-    androidx.activity.compose.BackHandler(mode == 1) { android.util.Log.w("salatQ", "BACK pressed"); mode = 0 }
+    androidx.activity.compose.BackHandler(mode == 1) { mode = 0 }
     var calib by remember { mutableStateOf(false) }
     Column(Modifier.fillMaxSize().statusBarsPadding()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -146,7 +143,7 @@ fun QiblaScreen(s: AppState) {
         }
         // the compass and the camera are drawn the same way in every language (the qibla must not depend on the language)
         CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
-            if (mode == 0) QiblaCompass(s) else QiblaCamera(s) { android.util.Log.w("salatQ", "close button", Throwable()); mode = 0 }
+            if (mode == 0) QiblaCompass(s) else QiblaCamera(s) { mode = 0 }
         }
     }
     if (calib) AlertDialog(onDismissRequest = { calib = false }, confirmButton = { TextButton(onClick = { calib = false }) { Text(Tr["ok"]) } },
@@ -231,7 +228,7 @@ fun QiblaCompass(s: AppState) {
 
 /** the camera view: hold the phone upright, the Ka'bah appears over the picture in the qibla direction */
 @Composable
-fun QiblaCamera(s: AppState, close: () -> Unit) {
+fun QiblaCamera(s: AppState, onClose: () -> Unit) {
     val place = s.prefs.place ?: return
     val act = s.act
     var granted by remember { mutableStateOf(ContextCompat.checkSelfPermission(act, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) }
@@ -283,7 +280,7 @@ fun QiblaCamera(s: AppState, close: () -> Unit) {
         })
         camErr?.let { Text(it, Modifier.align(Alignment.TopCenter).padding(top = 56.dp, start = 16.dp, end = 16.dp).background(Color.Black.copy(alpha = .7f)).padding(8.dp), color = Color(0xFFFF8A80), fontSize = 12.sp) }
         // close the camera: back to the compass
-        IconButton(onClick = close, Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color.Black.copy(alpha = .55f), androidx.compose.foundation.shape.CircleShape)) {
+        IconButton(onClick = onClose, Modifier.align(Alignment.TopEnd).padding(8.dp).background(Color.Black.copy(alpha = .55f), androidx.compose.foundation.shape.CircleShape)) {
             Icon(Icons.Outlined.Close, Tr["close"], tint = Color.White)
         }
         Canvas(Modifier.fillMaxSize()) {
@@ -309,7 +306,7 @@ fun QiblaCamera(s: AppState, close: () -> Unit) {
                 val right = diff > 0
                 val ax = if (right) size.width - 30.dp.toPx() else 30.dp.toPx()
                 val d = if (right) 1 else -1
-                val p = Path().apply { moveTo(ax + d * 18.dp.toPx(), cy); lineTo(ax - d * 10.dp.toPx(), cy - 22.dp.toPx()); lineTo(ax - d * 10.dp.toPx(), cy + 22.dp.toPx()); close() }
+                val p = Path().apply { moveTo(ax + d * 18.dp.toPx(), cy); lineTo(ax - d * 10.dp.toPx(), cy - 22.dp.toPx()); lineTo(ax - d * 10.dp.toPx(), cy + 22.dp.toPx()); this.close() }
                 drawPath(p, Color(0xFFE0B54A))
             }
         }
