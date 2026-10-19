@@ -4,9 +4,11 @@ import android.content.Intent
 import android.net.Uri
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
@@ -14,6 +16,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,6 +45,19 @@ fun LookPage(s: AppState, back: () -> Unit) {
     var alpha by remember { mutableIntStateOf(pr.widgetAlpha) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["look"], back)
+        SectionTitle(Tr["clockStyle"])
+        Card0 { ClockPicker(pr, s.now) { s.changed() } }
+        SectionTitle(Tr["background"])
+        Card0 { BackgroundPicker(pr, isDark(s, androidx.compose.foundation.isSystemInDarkTheme())) { s.changed() } }
+        SectionTitle(Tr["dateFmt"])
+        Card0 {
+            val today = java.time.LocalDate.now()
+            for ((k, n) in listOf(0 to "dfDMY", 1 to "dfMDY", 2 to "dfYMD", 3 to "dfPhone"))
+                Row(Modifier.fillMaxWidth().clickable { pr.dateFmt = k; Widget.update(s.act); s.changed() }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                    RadioButton(pr.dateFmt == k, { pr.dateFmt = k; Widget.update(s.act); s.changed() })
+                    Column { Text(Tr[n], fontSize = 15.sp); Text(DateFmt.sample(s.act, k, today), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)) }
+                }
+        }
         SectionTitle(Tr["theme"])
         Card0 {
             for ((k, n) in listOf("time" to "themeTime", "light" to "themeLight", "dark" to "themeDark", "phone" to "themePhone"))
@@ -177,13 +193,16 @@ fun AboutPage(s: AppState, back: () -> Unit) {
 @Composable
 fun WorldList(s: AppState, now: ZonedDateTime) {
     val myOff = now.offset.totalSeconds
-    for (c in s.prefs.worldCities) {
+    for (c in s.prefs.worldCities) key(c.name, c.lat) {
+        var open by remember { mutableStateOf(true) }
         val z = Schedule.zone(c)
         val there = now.withZoneSameInstant(z)
         val st = Schedule.state(s.prefs, c, there)
         val diff = (there.offset.totalSeconds - myOff) / 3600.0
+        val t = Schedule.day(s.prefs, c, there.toLocalDate())
+        val cd = Countdown(there, st, t)
         Card0 {
-            Row(verticalAlignment = Alignment.CenterVertically) {
+            Row(Modifier.fillMaxWidth().clickable { open = !open }, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(when (c.name) { "Makkah" -> Tr["wMakkah"]; "Madinah" -> Tr["wMadinah"]; "Al-Quds" -> Tr["wQuds"]; else -> c.name }, fontSize = 19.sp, fontWeight = FontWeight.Bold)
                     Text(when { diff > 0 -> Tr.num(fmtH(diff)) + " " + Tr["hoursAhead"]; diff < 0 -> Tr.num(fmtH(-diff)) + " " + Tr["hoursBehind"]; else -> Tr["sameTime"] },
@@ -191,12 +210,24 @@ fun WorldList(s: AppState, now: ZonedDateTime) {
                 }
                 Text(s.fmt(there), fontSize = 18.sp, fontWeight = FontWeight.Medium)
                 if (s.prefs.fixedCities.none { it.name == c.name }) IconButton(onClick = { s.prefs.worldCities = s.prefs.worldCities.filter { it != c }; s.changed() }) { Icon(Icons.Outlined.Close, Tr["delete"]) }
+                Icon(if (open) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
             }
-            val t = Schedule.day(s.prefs, c, there.toLocalDate())
-            val cd = Countdown(there, st, t)
-            Row(Modifier.padding(top = 6.dp)) {
+            if (!open) Row(Modifier.padding(top = 8.dp)) {
                 Text(Tr.p(cd.prayer).substringBefore(" (") + "  " + s.fmt(if (cd.up) st.currentAt!! else st.nextAt), Modifier.weight(1f), color = MaterialTheme.colorScheme.primary)
                 Text(cd.text, fontFamily = FontFamily.Monospace)
+            } else {
+                Spacer(Modifier.height(8.dp))
+                // the five prayers of that city today; the next (or just-begun) one is marked with its count
+                for (p in listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) {
+                    val on = p == cd.prayer
+                    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp).clip(RoundedCornerShape(10.dp))
+                        .background(if (on) MaterialTheme.colorScheme.secondaryContainer else androidx.compose.ui.graphics.Color.Transparent)
+                        .padding(horizontal = 12.dp, vertical = 9.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(s.fmt(t[p]), Modifier.width(100.dp), fontSize = 16.sp, fontWeight = if (on) FontWeight.Bold else FontWeight.Normal)
+                        Text(Tr.p(p).substringBefore(" ("), Modifier.weight(1f), fontSize = 16.sp, fontWeight = if (on) FontWeight.Bold else FontWeight.Normal)
+                        if (on) Text(cd.text, fontFamily = FontFamily.Monospace, fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
             }
         }
     }

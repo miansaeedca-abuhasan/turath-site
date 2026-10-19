@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -51,7 +52,7 @@ fun qiblaBearing(lat: Double, lng: Double): Double {
     return (Math.toDegrees(b) + 360) % 360
 }
 
-class Heading { var deg by mutableFloatStateOf(Float.NaN); var acc by mutableIntStateOf(3); var has by mutableStateOf(true) }
+class Heading { var raw by mutableStateOf(""); var deg by mutableFloatStateOf(Float.NaN); var acc by mutableIntStateOf(3); var has by mutableStateOf(true) }
 
 /** the direction the phone points to (true north): lying flat — its top; held upright — its camera */
 @Composable
@@ -67,24 +68,38 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
         val acc = sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         val mag = sm.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         h.has = rv != null || (acc != null && mag != null)
-        val m = FloatArray(9); val r = FloatArray(9); val o = FloatArray(3)
-        val g = FloatArray(3); val b = FloatArray(3); var hasG = false; var hasB = false
+        val grv = sm.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR)
+        val mR = FloatArray(9); val mG = FloatArray(9); val mA = FloatArray(9); val r = FloatArray(9); val o = FloatArray(3)
+        var hasR = false; var hasGv = false; var hasAm = false
+        val g = FloatArray(3); val b = FloatArray(3); var hasG = false
         var smooth = Float.NaN
-        fun push() {
-            if (upright) SensorManager.remapCoordinateSystem(m, SensorManager.AXIS_X, SensorManager.AXIS_Z, r) else System.arraycopy(m, 0, r, 0, 9)
+        var n = 0
+        // the direction the phone points to, in degrees from magnetic north, from one of the three matrices
+        fun azOf(mx: FloatArray): Float {
+            if (upright) SensorManager.remapCoordinateSystem(mx, SensorManager.AXIS_X, SensorManager.AXIS_Z, r) else System.arraycopy(mx, 0, r, 0, 9)
             SensorManager.getOrientation(r, o)
-            val az = ((Math.toDegrees(o[0].toDouble()) + decl + corr.qiblaOffset + 720) % 360).toFloat()
+            return ((Math.toDegrees(o[0].toDouble()) + 720) % 360).toFloat()
+        }
+        fun push() {
+            val want = corr.compassSrc
+            val use = when { want == 1 && hasGv -> mG; want == 2 && hasAm -> mA; hasR -> mR; hasGv -> mG; else -> mA }
+            val az = ((azOf(use) + decl + corr.qiblaOffset + 720) % 360).toFloat()
             smooth = if (smooth.isNaN()) az else { var d = az - smooth; if (d > 180) d -= 360; if (d < -180) d += 360; (smooth + d * .12f + 360) % 360 }
             h.deg = smooth
+            if (++n % 12 == 0) {
+                fun f(ok: Boolean, mx: FloatArray) = if (ok) "%.0f°".format(azOf(mx)) else "—"
+                h.raw = "RV " + f(hasR, mR) + "  ·  GRV " + f(hasGv, mG) + "  ·  A+M " + f(hasAm, mA) + "  ·  " + "%.0f°".format(decl)
+            }
         }
         val l = object : SensorEventListener {
             override fun onSensorChanged(e: SensorEvent) {
                 when (e.sensor.type) {
-                    Sensor.TYPE_ROTATION_VECTOR -> { SensorManager.getRotationMatrixFromVector(m, e.values); push() }
+                    Sensor.TYPE_ROTATION_VECTOR -> { SensorManager.getRotationMatrixFromVector(mR, e.values); hasR = true; push() }
+                    Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR -> { SensorManager.getRotationMatrixFromVector(mG, e.values); hasGv = true; if (!hasR) push() }
                     Sensor.TYPE_ACCELEROMETER -> { System.arraycopy(e.values, 0, g, 0, 3); hasG = true }
                     Sensor.TYPE_MAGNETIC_FIELD -> {
-                        System.arraycopy(e.values, 0, b, 0, 3); hasB = true
-                        if (rv == null && hasG && SensorManager.getRotationMatrix(m, null, g, b)) push()
+                        System.arraycopy(e.values, 0, b, 0, 3)
+                        if (hasG && SensorManager.getRotationMatrix(mA, null, g, b)) { hasAm = true; if (!hasR && !hasGv) push() }
                     }
                 }
             }
@@ -94,8 +109,9 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
         fun start() {
             if (on) return; on = true
             rv?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
+            grv?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
             mag?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
-            if (rv == null) acc?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
+            acc?.let { sm.registerListener(l, it, SensorManager.SENSOR_DELAY_GAME) }
         }
         fun stop() { if (on) { on = false; sm.unregisterListener(l); h.deg = Float.NaN } }
         val obs = androidx.lifecycle.LifecycleEventObserver { _, e ->
@@ -222,6 +238,12 @@ fun QiblaCompass(s: AppState) {
         OutlinedButton(onClick = {
             if (!h.deg.isNaN()) { var n = (q - (head - s.prefs.qiblaOffset)).roundToInt(); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n }
         }) { Text(Tr["setQibla"]) }
+        var src by remember { mutableIntStateOf(s.prefs.compassSrc) }
+        Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(Tr["compassSrc"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
+            for ((i, n) in listOf("RV", "GRV", "A+M").withIndex()) FilterChip(src == i, { src = i; s.prefs.compassSrc = i }, { Text(n, fontSize = 12.sp) })
+        }
+        if (h.raw.isNotEmpty()) Text(h.raw, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
 }
@@ -285,22 +307,37 @@ fun QiblaCamera(s: AppState, onClose: () -> Unit) {
         }
         Canvas(Modifier.fillMaxSize()) {
             val fov = 60f                                  // about the width a phone camera sees
-            val cx = size.width / 2; val cy = size.height * .42f
-            if (on) {
-                // found: the Ka'bah held in the middle with a green frame, no more searching
-                val k = 34.dp.toPx()
-                drawRoundRect(green.copy(alpha = .25f), Offset(cx - k - 14.dp.toPx(), cy - k - 14.dp.toPx()), Size(2 * k + 28.dp.toPx(), 2 * k + 28.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(18.dp.toPx()))
-                drawRoundRect(green, Offset(cx - k - 14.dp.toPx(), cy - k - 14.dp.toPx()), Size(2 * k + 28.dp.toPx(), 2 * k + 28.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(18.dp.toPx()), style = Stroke(6.dp.toPx()))
-                kaaba(Offset(cx, cy), k)
-                return@Canvas
-            }
-            // the aim in the middle
-            drawCircle(Color.White, 34.dp.toPx(), Offset(cx, cy), style = Stroke(3.dp.toPx()))
-            drawLine(Color.White.copy(alpha = .8f), Offset(cx, cy - 50.dp.toPx()), Offset(cx, cy + 50.dp.toPx()), 1.5.dp.toPx())
-            val x = cx + diff / fov * size.width
-            if (abs(diff) < fov / 2 + 5) {
-                kaaba(Offset(x, cy), (if (on) 30 else 24).dp.toPx())
-                drawLine(Color(0xFFE0B54A), Offset(x, cy + 34.dp.toPx()), Offset(x, size.height * .8f), 3.dp.toPx())
+            val cx = size.width / 2; val cy = size.height * .34f
+            val ring = if (on) green else Color.White
+            val r0 = 34.dp.toPx()
+            // the aim in the middle: the marker comes into this ring
+            drawCircle(ring.copy(alpha = .9f), r0 + 14.dp.toPx(), Offset(cx, cy), style = Stroke(3.dp.toPx()))
+            val inView = on || abs(diff) < fov / 2 + 5
+            if (inView) {
+                val x = if (on) cx else cx + diff / fov * size.width
+                val rr = (if (on) 36 else 30).dp.toPx()
+                val tip = Offset(x, cy + rr * 2.05f)
+                val col = if (on) green else Color(0xFFE0B54A)
+                // the path on the ground, from the bottom of the picture up to the marker
+                val way = Path().apply {
+                    moveTo(cx - 44.dp.toPx(), size.height); lineTo(cx + 44.dp.toPx(), size.height)
+                    lineTo(x + 7.dp.toPx(), tip.y); lineTo(x - 7.dp.toPx(), tip.y); this.close()
+                }
+                drawPath(way, Brush.verticalGradient(listOf(col.copy(alpha = .6f), col.copy(alpha = .08f)), startY = tip.y, endY = size.height))
+                // the marker: a dark drop with the Ka'bah in it
+                val drop = Path().apply {
+                    moveTo(x - rr * .82f, cy + rr * .55f); lineTo(x, tip.y); lineTo(x + rr * .82f, cy + rr * .55f); this.close()
+                }
+                drawPath(drop, Color(0xFF22252B))
+                drawCircle(Color(0xFF22252B), rr, Offset(x, cy))
+                drawCircle(col, rr, Offset(x, cy), style = Stroke(3.dp.toPx()))
+                kaaba(Offset(x, cy), rr * .62f)
+                // the distance, like a label hung under the marker
+                val km = Tr.num("%,d".format(Cities.dist(place.lat, place.lng, 21.422487, 39.826206).roundToInt())) + " " + Tr["km"]
+                val pt = android.graphics.Paint().apply { color = android.graphics.Color.WHITE; textSize = 13.sp.toPx(); isAntiAlias = true; textAlign = android.graphics.Paint.Align.CENTER }
+                val w = pt.measureText(km) + 20.dp.toPx()
+                drawRoundRect(Color.Black.copy(alpha = .6f), Offset(x - w / 2, tip.y + 10.dp.toPx()), Size(w, 26.dp.toPx()), androidx.compose.ui.geometry.CornerRadius(13.dp.toPx()))
+                drawContext.canvas.nativeCanvas.drawText(km, x, tip.y + 28.dp.toPx(), pt)
             } else {
                 // an arrow at the side the qibla is on
                 val right = diff > 0

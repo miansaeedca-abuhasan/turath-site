@@ -38,7 +38,7 @@ import java.util.Locale
 import kotlin.math.cos
 import kotlin.math.sin
 
-@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(s: AppState) {
     val place = s.prefs.place ?: return
@@ -65,7 +65,14 @@ fun HomeScreen(s: AppState) {
         Text(now.dayOfWeek.getDisplayName(TextStyle.FULL, loc) + " · " + Tr.hijri(Schedule.hijriNow(s.prefs, place, now)), fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
         Text(Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", loc))), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
         Spacer(Modifier.height(16.dp))
-        Clock(now, st, cd)
+        var pickClock by remember { mutableStateOf(false) }
+        Box(Modifier.clip(androidx.compose.foundation.shape.CircleShape).clickable { pickClock = true }) { ClockFace(s.prefs.clockStyle, now, st, cd, 230.dp) }
+        if (pickClock) ModalBottomSheet(onDismissRequest = { pickClock = false }) {
+            Column(Modifier.padding(horizontal = 16.dp).padding(bottom = 28.dp)) {
+                Text(Tr["pickClock"], fontWeight = FontWeight.Bold, fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                ClockPicker(s.prefs, now) { s.changed() }
+            }
+        }
         Spacer(Modifier.height(12.dp))
         Text(Tr.p(cd.prayer).substringBefore(" ("), fontSize = 30.sp, fontWeight = FontWeight.Bold)
         Text(s.fmt(if (cd.up) st.currentAt!! else st.nextAt), fontSize = 17.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .65f))

@@ -244,6 +244,13 @@ class Prefs(ctx: Context) {
         set(v) = sp.edit().putString("plabels", JSONArray().apply { v.forEach { put(JSONObject().put("n", it.name).put("c", it.country).put("lat", it.lat).put("lng", it.lng).put("tz", it.tz)) } }.toString()).apply()
     fun addLabel(p: Place) { labels = (listOf(p) + labels.filter { it.name != p.name }).take(12) }
 
+    /** 0 day-month-year (as the widget), 1 month-day-year, 2 year-month-day, 3 as the phone is set */
+    var dateFmt: Int get() = sp.getInt("dfmt", 0); set(v) = sp.edit().putInt("dfmt", v).apply()
+    var clockStyle: Int get() = sp.getInt("clk", 0); set(v) = sp.edit().putInt("clk", v).apply()
+    var bgStyle: Int get() = sp.getInt("bgs", 0); set(v) = sp.edit().putInt("bgs", v).apply()
+    /** the compass reading: 0 the phone's fused sensor, 1 the magnetic one, 2 raw magnetometer + accelerometer */
+    var compassSrc: Int get() = sp.getInt("csrc", 0); set(v) = sp.edit().putInt("csrc", v).apply()
+
     var worldCities: List<Place>
         get() = fixedCities + (sp.getString("world", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { val o = a.getJSONObject(it); Place(o.getString("n"), o.getString("c"), o.getDouble("lat"), o.getDouble("lng"), o.getString("tz")) } } ?: emptyList())
             .filter { c -> fixedCities.none { it.name == c.name } }

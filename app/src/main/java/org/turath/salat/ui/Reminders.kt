@@ -87,6 +87,7 @@ private fun Days(bits: Int) {
 }
 
 /** a reminder on a page of its own: name, prayers, how long before / after, days, sound */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
     var r by remember { mutableStateOf(r0) }
@@ -116,24 +117,23 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                     OutlinedTextField(r.label, { r = r.copy(label = it) }, placeholder = { Text(Tr["remName"]) }, singleLine = true, modifier = Modifier.fillMaxWidth(), textStyle = androidx.compose.ui.text.TextStyle(fontSize = 20.sp))
                     Spacer(Modifier.height(10.dp))
                     Text(Tr["prayersFor"], fontWeight = FontWeight.Bold)
-                    Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) {
                             val on = p in r.bases
-                            FilterChip(on, { r = r.copy(bases = if (on) r.bases - p else r.bases + p) }, { Text(Tr.p(p).substringBefore(" (")) }); Spacer(Modifier.width(6.dp))
+                            FilterChip(on, { r = r.copy(bases = if (on) r.bases - p else r.bases + p) }, { Text(Tr.p(p).substringBefore(" (")) })
                         }
                     }
                     Spacer(Modifier.height(14.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Schedule, null); Text("  " + Tr["timing"], fontWeight = FontWeight.Bold) }
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 6.dp)) {
-                        OutlinedTextField(num, { num = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(90.dp), singleLine = true,
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        OutlinedTextField(num, { num = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(96.dp), singleLine = true,
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
-                        Spacer(Modifier.width(10.dp))
-                        FilterChip(!hours, { hours = false }, { Text(Tr["minutes"]) }); Spacer(Modifier.width(6.dp))
-                        FilterChip(hours, { hours = true }, { Text(Tr["hours"]) })
+                        ChoiceCard(Modifier.weight(1f), Tr["minutes"], null, !hours) { hours = false }
+                        ChoiceCard(Modifier.weight(1f), Tr["hours"], null, hours) { hours = true }
                     }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(before, { before = true }); Text(Tr["beforeT"]); Spacer(Modifier.width(16.dp))
-                        RadioButton(!before, { before = false }); Text(Tr["afterT"])
+                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ChoiceCard(Modifier.weight(1f), Tr["beforeT"], null, before) { before = true }
+                        ChoiceCard(Modifier.weight(1f), Tr["afterT"], null, !before) { before = false }
                     }
                     Spacer(Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Repeat, null); Text("  " + Tr["repeatOn"], fontWeight = FontWeight.Bold) }

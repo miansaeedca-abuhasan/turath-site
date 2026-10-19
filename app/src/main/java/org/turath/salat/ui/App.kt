@@ -71,15 +71,18 @@ fun App(act: MainActivity) {
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
     val acc = s.prefs.appAccent.takeIf { it >= 0 }?.let { Color(Pal.COLORS[it]) }
     val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
-        surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED))
-    else lightColorScheme(primary = acc ?: Blue, secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF))
+        surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED),
+        secondaryContainer = Color(0xFF363B43), onSecondaryContainer = Color(0xFFEDEDED), primaryContainer = Color(0xFF363B43), onPrimaryContainer = Color(0xFFEDEDED))
+    else lightColorScheme(primary = acc ?: Blue, secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF),
+        secondaryContainer = Color(0xFFE3E5E9), onSecondaryContainer = Color(0xFF1B1F27), primaryContainer = Color(0xFFE3E5E9), onPrimaryContainer = Color(0xFF1B1F27))
     val baseDensity = androidx.compose.ui.platform.LocalDensity.current
     MaterialTheme(colorScheme = scheme) {
         CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr,
             androidx.compose.ui.platform.LocalDensity provides androidx.compose.ui.unit.Density(baseDensity.density, baseDensity.fontScale * s.prefs.appFont / 100f)) {
             Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
               // the app's logo, faint, behind every screen
-              Box(Modifier.fillMaxSize()) {
+              val bg = bgBrush(s.prefs.bgStyle, dark)
+              Box(Modifier.fillMaxSize().then(if (bg != null) Modifier.background(bg) else Modifier)) {
                 androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null,
                     Modifier.align(Alignment.Center).fillMaxWidth(0.85f), alpha = if (dark) 0.07f else 0.09f)
                 key(Tr.lang) {

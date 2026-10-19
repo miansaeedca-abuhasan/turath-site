@@ -135,7 +135,7 @@ class Widget : AppWidgetProvider() {
                 val h = Schedule.hijriNow(pr, place, now)
                 val loc = Locale(Tr.lang)
                 v.setTextViewText(R.id.date, now.dayOfWeek.getDisplayName(TextStyle.FULL, loc))
-                v.setTextViewText(R.id.date2, Tr.hijri(h) + "   ·   " + Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d-M-yyyy"))))
+                v.setTextViewText(R.id.date2, Tr.hijri(h) + "   ·   " + org.turath.salat.ui.DateFmt.greg(ctx, pr, now.toLocalDate()))
                 v.setTextColor(R.id.date, ink); v.setTextColor(R.id.date2, dim)
                 size(v, R.id.date, 15f, pr); size(v, R.id.date2, 11f, pr)
             }

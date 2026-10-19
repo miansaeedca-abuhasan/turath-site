@@ -175,6 +175,7 @@ fun whenText(e: CalEvent): String = if (e.base != null)
 else Tr.num("%d:%02d".format(e.atMin / 60, e.atMin % 60))
 
 /** an event on a page of its own: name, date (hijri or gregorian), repeat, time (of the clock or with a prayer), sound */
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
     var e by remember { mutableStateOf(e0) }
@@ -207,41 +208,46 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                         textStyle = androidx.compose.ui.text.TextStyle(fontSize = 20.sp))
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Event, null); Text("  " + Tr["date"], fontWeight = FontWeight.Bold) }
-                    Row(Modifier.padding(vertical = 4.dp)) {
-                        FilterChip(e.hijri, { if (h != null) { e = e.copy(hijri = true, y = h.year, m = h.month, d = h.day); hdlg = true } }, { Text(Tr.num(h?.day ?: 0) + " " + (h?.let { Tr.hijriMonth(it.month) } ?: "") + " " + Tr.num(h?.year ?: 0)) })
-                        Spacer(Modifier.width(8.dp))
-                        FilterChip(!e.hijri, { if (g != null) {
-                            e = e.copy(hijri = false, y = g.year, m = g.monthValue, d = g.dayOfMonth)
-                            // a calendar opens to pick the day
-                            android.app.DatePickerDialog(s.act, { _, yy, mm, dd -> e = e.copy(hijri = false, y = yy, m = mm + 1, d = dd) }, g.year, g.monthValue - 1, g.dayOfMonth).show()
-                        } }, { Text(Tr.num(g?.toString() ?: "")) })
+                    // the date written as on the widget: the Hijri one in figures, the Gregorian one as chosen in the settings; a tap opens the picker
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ChoiceCard(Modifier.weight(1f), Tr["hijriDate"], h?.let { DateFmt.hijri(s.act, s.prefs, it) } ?: "", e.hijri) {
+                            if (h != null) { e = e.copy(hijri = true, y = h.year, m = h.month, d = h.day); hdlg = true }
+                        }
+                        ChoiceCard(Modifier.weight(1f), Tr["gregDate"], g?.let { DateFmt.greg(s.act, s.prefs, it) } ?: "", !e.hijri) {
+                            if (g != null) {
+                                e = e.copy(hijri = false, y = g.year, m = g.monthValue, d = g.dayOfMonth)
+                                // a calendar opens to pick the day
+                                android.app.DatePickerDialog(s.act, { _, yy, mm, dd -> e = e.copy(hijri = false, y = yy, m = mm + 1, d = dd) }, g.year, g.monthValue - 1, g.dayOfMonth).show()
+                            }
+                        }
                     }
-                    Row(Modifier.horizontalScroll(rememberScrollState())) {
-                        for ((k, n) in listOf("once" to "repOnce", "month" to "repMonth", "year" to "repYear")) { FilterChip(e.repeat == k, { e = e.copy(repeat = k) }, { Text(Tr[n]) }); Spacer(Modifier.width(6.dp)) }
+                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        for ((k, n) in listOf("once" to "repOnce", "month" to "repMonth", "year" to "repYear")) FilterChip(e.repeat == k, { e = e.copy(repeat = k) }, { Text(Tr[n]) })
                     }
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Schedule, null); Text("  " + Tr["timing"], fontWeight = FontWeight.Bold) }
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(!withPrayer, { withPrayer = false }); Text(Tr["atClock"]); Spacer(Modifier.width(12.dp))
-                        RadioButton(withPrayer, { withPrayer = true }); Text(Tr["withPrayer"])
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        ChoiceCard(Modifier.weight(1f), Tr["atClock"], null, !withPrayer) { withPrayer = false }
+                        ChoiceCard(Modifier.weight(1f), Tr["withPrayer"], null, withPrayer) { withPrayer = true }
                     }
                     if (!withPrayer) OutlinedButton(onClick = {
                         TimePickerDialog(s.act, { _, hh, mm -> e = e.copy(atMin = hh * 60 + mm) }, maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60, s.prefs.h24).show()
-                    }) { Text(Tr.num("%d:%02d".format(maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60)), fontSize = 20.sp) }
+                    }, Modifier.fillMaxWidth().height(52.dp)) { Text(Tr.num("%d:%02d".format(maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60)), fontSize = 20.sp) }
                     else {
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA))
+                                FilterChip((e.base ?: P.FAJR) == p, { e = e.copy(base = p) }, { Text(Tr.p(p).substringBefore(" (")) })
+                        }
+                        Spacer(Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            OutlinedTextField(mins, { mins = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(90.dp), singleLine = true,
+                            OutlinedTextField(mins, { mins = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(96.dp), singleLine = true,
                                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
                             Text("  " + Tr["minutes"])
-                        }
-                        // before / after, one under the other
-                        Column {
-                            FilterChip(before, { before = true }, { Text(Tr["beforeT"]) })
-                            FilterChip(!before, { before = false }, { Text(Tr["afterT"]) })
-                        }
-                        Row(Modifier.horizontalScroll(rememberScrollState())) {
-                            for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) {
-                                FilterChip((e.base ?: P.FAJR) == p, { e = e.copy(base = p) }, { Text(Tr.p(p).substringBefore(" (")) }); Spacer(Modifier.width(6.dp))
+                            Spacer(Modifier.weight(1f))
+                            // before / after, one under the other
+                            Column(Modifier.width(120.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                ChoiceCard(Modifier.fillMaxWidth(), Tr["beforeT"], null, before) { before = true }
+                                ChoiceCard(Modifier.fillMaxWidth(), Tr["afterT"], null, !before) { before = false }
                             }
                         }
                     }
