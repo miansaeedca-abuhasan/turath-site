@@ -62,11 +62,26 @@ object Mosques {
     private fun good(s: String) = s.contains("\"elements\"") && !Regex("\"remark\"\\s*:\\s*\"[^\"]*(error|timed out|timeout)", RegexOption.IGNORE_CASE).containsMatchIn(s) &&
         !Regex("\"elements\"\\s*:\\s*\\[\\s*\\]").containsMatchIn(s)
 
+    /** where the last list came from (shown small under the list, to help to find a problem) */
+    @Volatile var info = ""
+
+    private fun count(s: String) = if (good(s)) runCatching { JSONObject(s).getJSONArray("elements").length() }.getOrDefault(0) else 0
+
+    private fun merge(a: String, b: String): String {
+        val out = JSONArray(); val seen = HashSet<String>()
+        for (x in listOf(a, b)) {
+            if (!good(x)) continue
+            val arr = runCatching { JSONObject(x).getJSONArray("elements") }.getOrNull() ?: continue
+            for (i in 0 until arr.length()) { val e = arr.getJSONObject(i); if (seen.add(e.optString("type") + e.optLong("id"))) out.put(e) }
+        }
+        return if (out.length() > 0) JSONObject().put("elements", out).toString() else ""
+    }
+
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
         val big = km > 50
-        val key = (if (big) "mq6b_" else "mq6_") + "%.3f_%.3f".format(lat, lng)
+        val key = (if (big) "mq7b_" else "mq7_") + "%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
@@ -75,41 +90,51 @@ object Mosques {
             val half = if (big) 1.0 else 0.5
             val dLat = half; val dLng = half / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
             val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
-            // mosques and musallas, and Islamic centres (often mapped as a community centre, an office of the religion or only by their name)
-            // mosques, musallas (prayer rooms, also those with no religion written), Islamic centres, and anything named like a mosque
+            // A: places tagged as a mosque / prayer room (quick for the server). B: places only named like one (slow, so asked on its own)
             val nm = "masjid|mosque|musall|musolla|islamic|muslim|jamia|jamiah|jami |markaz|prayer room|prayer hall|prayer space|salah"
-            val q = "[out:json][timeout:60];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
-                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"=\"prayer_room\"]($bb);nwr[\"room\"=\"prayer\"]($bb);" +
-                "nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship\"][\"name\"~\"$nm\",i]($bb);nwr[\"name\"~\"masjid|mosque|musall|islamic cent|islamic assoc|muslim assoc|markaz\",i]($bb););out center tags;"
-            // the Overpass servers all at once (the first good answer wins), then the site's copy
-            fun ask(u: String): String = runCatching {
+            val qa = "[out:json][timeout:40];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
+                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"=\"prayer_room\"]($bb);nwr[\"room\"=\"prayer\"]($bb););out center tags;"
+            val qb = "[out:json][timeout:55];(nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship|events_venue\"][\"name\"~\"$nm\",i]($bb);" +
+                "nwr[\"name\"~\"masjid|mosque|musall|islamic cent|islamic assoc|muslim assoc|markaz\",i]($bb););out center tags;"
+            fun ask(u: String, q: String, ms: Int): String = runCatching {
                 val c = URL(u).openConnection() as HttpURLConnection
-                c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = 40_000
+                c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = ms
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
                 c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
             }.getOrDefault("")
             val urls = listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter")
-            val pool = java.util.concurrent.Executors.newFixedThreadPool(urls.size)
-            val ecs = java.util.concurrent.ExecutorCompletionService<String>(pool)
-            var s = ""
-            try {
-                urls.forEach { u -> ecs.submit(java.util.concurrent.Callable<String> { ask(u) }) }
-                for (i in urls.indices) { val r = runCatching { ecs.take().get() }.getOrDefault(""); if (good(r)) { s = r; break } }
-            } finally { pool.shutdownNow() }
-            if (!good(s)) s = runCatching {
+            // all the servers at once; the first good answer wins
+            fun race(q: String, ms: Int): String {
+                val pool = java.util.concurrent.Executors.newFixedThreadPool(urls.size)
+                val ecs = java.util.concurrent.ExecutorCompletionService<String>(pool)
+                try {
+                    urls.forEach { u -> ecs.submit(java.util.concurrent.Callable<String> { ask(u, q, ms) }) }
+                    for (i in urls.indices) { val r = runCatching { ecs.take().get() }.getOrDefault(""); if (good(r)) return r }
+                } finally { pool.shutdownNow() }
+                return ""
+            }
+            var ra = ""; var rb = ""
+            val ta = Thread { ra = race(qa, 45_000) }; val tb = Thread { rb = race(qb, 65_000) }
+            ta.start(); tb.start(); ta.join(); tb.join()
+            val na = count(ra); val nb = count(rb)
+            var s = merge(ra, rb)
+            var src = "OpenStreetMap A$na B$nb"
+            // the site's copy, then the map search of Photon and Nominatim (only when the servers gave nothing)
+            if (!good(s)) { s = runCatching {
                 val c = URL("https://turathkhairalquroon.com/api/mosques?v=4&bb=$bb").openConnection() as HttpURLConnection
                 c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
-            }.getOrDefault("")
-            // the map servers busy: OpenStreetMap's own search (Nominatim) for mosques in the same box
-            if (!good(s)) s = photon(lat, lng)
-            if (!good(s)) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
+            }.getOrDefault(""); src = "site" }
+            if (!good(s)) { s = photon(lat, lng); src = "Photon" }
+            if (!good(s)) { s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng); src = "Nominatim" }
             if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
-            pr.sp.edit().putString(key, s).putLong(key + "_t", System.currentTimeMillis()).apply()
+            info = src
+            pr.sp.edit().putString(key, s).putString(key + "_i", src).putLong(key + "_t", System.currentTimeMillis()).apply()
             s
         }
+        if (cached != null) info = pr.sp.getString(key + "_i", "") ?: ""
         val hidden = hiddenSet(pr)
         val els: JSONArray = JSONObject(json).optJSONArray("elements") ?: JSONArray()
         val out = mutableListOf<M>()

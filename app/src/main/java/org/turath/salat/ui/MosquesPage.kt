@@ -87,6 +87,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                 }
             }
             if (hidden.isNotEmpty()) item { TextButton(onClick = { hidden = emptySet(); s.prefs.hiddenMosques = hidden }) { Text(Tr["mosqRestore"] + " (" + Tr.num(hidden.size) + ")", fontSize = 13.sp) } }
+            if (Mosques.info.isNotEmpty()) item { Text(Tr.num(shown.size) + " / " + Mosques.info, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .45f)) }
             item { Text(Tr["mosqNote"], fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(vertical = 10.dp)) }
         }
     }
