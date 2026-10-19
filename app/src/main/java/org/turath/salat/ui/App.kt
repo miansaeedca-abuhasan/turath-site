@@ -135,7 +135,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 @Composable
 fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.Home), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
-        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("world", Icons.Outlined.Public))
+        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosques", Icons.Outlined.LocationOn))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
         Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -174,7 +174,7 @@ fun Main(s: AppState) {
                     2 -> RemindersScreen(s)
                     3 -> CalendarScreen(s)
                     4 -> QiblaScreen(s)
-                    else -> WorldPage(s) { s.tab = 0 }
+                    else -> MosquesPage(s) { s.tab = 0 }
                 }
                 // the menu button (top corner, as in the other screens)
                 // the prayer times of other cities (Makkah, Madinah, al-Quds …) from the Today screen
