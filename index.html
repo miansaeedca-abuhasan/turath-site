@@ -182,6 +182,7 @@ body.withplayer .resume.float{display:none}
 @media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
 .agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--accent)}
+.babbox{font-family:var(--arabic);font-size:1.15rem;line-height:1.9;font-weight:700;text-align:center;color:var(--accent);background:var(--card2,rgba(127,127,127,.1));border:1px solid var(--line,rgba(127,127,127,.3));border-radius:12px;padding:.6rem .8rem;margin:0 0 .7rem}
 .grpbox{padding:0;overflow:hidden}.grpbox>summary{cursor:pointer;list-style:none;padding:.9rem 1.1rem;display:block;border-inline-start:4px solid var(--accent)}
 .grpbox>summary::-webkit-details-marker{display:none}.grpbox[open]>summary{background:var(--wash)}
 .grpbox .gt{display:block;font:600 1.15rem/2 var(--urdu);color:var(--accent)}.grpbox summary .ca{font-size:1.1rem;color:var(--ink)}
@@ -3290,12 +3291,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const d = hobj(b, n, lang), c = el('article', {class: 'card'});
     // Arabic library books (turath.io) show the book's own printed number; the others show the app number and the printed one beside it
     const own = b.grp === 'ar' || !!b.jami, pn = b.an[n] || n;
-    const mus = b.key === 'muslim' && b.an[n] && !(b.nn && b.nn[n]);
+    const mus = (b.key === 'muslim' || b.abno) && b.an[n] && !(b.nn && b.nn[n]);
     const printed = mus ? el('span', {class: 'cs'}, '  (' + (typeof ui !== 'undefined' && ui === 'ar' ? 'ترقيم عبد الباقي: ' + fmtN(pn) + ' ، الرقم العام: ' + fmtN(n) : 'ترقیم عبد الباقی: ' + fmtN(pn) + ' ، عام نمبر: ' + fmtN(n)) + ')')
       : !own && b.an[n] && String(b.an[n]) !== String(n) ? el('span', {class: 'cs'}, '، ' + T('cPrinted')(b.an[n])) : null;
     // a note of the book (text between the hadith, e.g. in the Seerah) has no number: a small star instead
     const note = b.nn && b.nn[n];
-    c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own ? pn : n)), printed,
+    if (b.bab && b.bab[n]) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, b.bab[n]));
+    c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
     if (arParas.length) c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar'))));
