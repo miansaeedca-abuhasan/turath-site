@@ -840,7 +840,6 @@ async function hadithPoster(d){
   const tr={};
   for(const l of ['ur','en','bn']){try{const r=await api('hadith/'+d.num+'?book=jami_'+l);const c=((r&&r.content)||{}).translation||{};if(c[l])tr[l]=c[l].join('\n');}catch(e){}}
   if(!tr.ur&&window.TODAY){const u=TODAY.urOf(d.num);if(u)tr.ur=u;}
-  if(!tr.ur&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);if(u)tr.ur=u.text;}catch(e){}}
   const strip=s=>(s||'').replace(/[\ue000-\ue003]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
   Object.keys(tr).forEach(l=>tr[l]=strip(tr[l]));
   const ar=strip((d.matn||[]).join('\n')).replace(/ﷺ/g,'صلى الله عليه وسلم');
@@ -897,8 +896,6 @@ function hadithCard(d,scope){
   c.append(mt,fb);
   const tr=trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
-  else if(ui==='ur'&&scope==='jami'&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){const box=el('div',{class:'tr urfrom',hidden:true});c.append(box);
-    COLL.urFor(d.refs).then(u=>{if(!u)return;box.append(el('p',{class:'cs'},'اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے'),el('p',{class:'ur',lang:'ur',dir:'rtl'},...rich(u.text,'ur')));box.hidden=false;}).catch(()=>{});}
   c.append(actions(d,scope,true));return c;
 }
 /* ---------- lists ---------- */
@@ -1369,9 +1366,6 @@ async function showHadith(num){
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
   v.append(...refBlock(d));
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
-  // until al-Jami's own Urdu translation is ready: the Urdu of the first takhrij book that has one (marked with its source)
-  if(ui==='ur'&&scope==='jami'&&!(d.content.translation&&d.content.translation.ur)&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);
-    if(u){d.content.translation=Object.assign({},d.content.translation,{ur:['(اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے)',u.text]});}}catch(e){}}
   const kinds=KIND_ORDER.filter(k=>d.content[k]);
   if(kinds.length){
     const pref=(TL()?[TL()]:[]).concat(ui==='bn'?['bn','en','ar','ur']:ui==='ar'?['ar','ur','en']:LTR()?['en','ar','ur']:['ur','en','ar']);
