@@ -31,11 +31,11 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
     var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
     var reload by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) { if (!act.hasLocation()) { act.onPermResult = { reload++ }; act.askLocation() } }
-    LaunchedEffect(reload) {
+    LaunchedEffect(reload, radius > 50) {
         state = 0
         val here = Mosques.here(act, s.prefs.place)
         if (here == null) { state = 2; return@LaunchedEffect }
-        val r = withContext(Dispatchers.IO) { runCatching { Mosques.find(act, here.first, here.second, 50) } }
+        val r = withContext(Dispatchers.IO) { runCatching { Mosques.find(act, here.first, here.second, if (radius > 50) 100 else 50) } }
         r.onSuccess { all = it; state = 1 }.onFailure { state = 2 }
     }
     val shown = all.filter { it.km <= radius + 0.5 && it.id !in hidden && (!strict || it.sunni) }
@@ -45,7 +45,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
             item {
                 Text(Tr["mosqRadius"], fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
-                    for (v in listOf(1, 2, 5, 10, 25)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
+                    for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
                 Spacer(Modifier.height(8.dp))
                 ChoiceRow(strict, { strict = !strict; s.prefs.mosqStrict = strict }) { Text(Tr["mosqStrict"], fontSize = 14.sp) }

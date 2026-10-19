@@ -65,13 +65,15 @@ object Mosques {
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
-        val key = "mq5_%.3f_%.3f".format(lat, lng)
+        val big = km > 50
+        val key = (if (big) "mq6b_" else "mq6_") + "%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
             // the box centre on a 0.05° grid, so that nearby phones ask for the same box (kept a week on the site)
             val cLat = Math.round(lat * 20) / 20.0; val cLng = Math.round(lng * 20) / 20.0
-            val dLat = 0.5; val dLng = 0.5 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
+            val half = if (big) 1.0 else 0.5
+            val dLat = half; val dLng = half / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
             val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             // mosques and musallas, and Islamic centres (often mapped as a community centre, an office of the religion or only by their name)
             // mosques, musallas (prayer rooms, also those with no religion written), Islamic centres, and anything named like a mosque
