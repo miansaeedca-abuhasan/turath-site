@@ -686,7 +686,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=ca184863b3", "data/d2.js?h=0d63e4c046", "data/d3.js?h=cb3a07b281", "data/d4.js?h=e77575f0fc", "data/d5.js?h=134ffcd8bc", "data/d6.js?h=6fb38c5d4d", "data/d7.js?h=2e2e206719", "data/d8.js?h=84a09e3a2d", "data/d9.js?h=12616121bc", "data/d10.js?h=4aeb558dec"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=d2cca9d0fc", "data/d2.js?h=f87c91787c", "data/d3.js?h=958f1be5a4", "data/d4.js?h=9942485354", "data/d5.js?h=249a4b4e28", "data/d6.js?h=dd9295fe4f", "data/d7.js?h=92b90e40b1", "data/d8.js?h=a24e60cdb8", "data/d9.js?h=aaa369d46f", "data/d10.js?h=846ddb853a"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -840,6 +840,7 @@ async function hadithPoster(d){
   const full=(await api('hadith/'+d.num+'?book=jami').catch(()=>null))||d;const tr={};
   for(const l of ['ur','en']){try{const r=await api('hadith/'+d.num+'?book=jami_'+l);const c=((r&&r.content)||{}).translation||{};if(c[l])tr[l]=c[l].join('\n');}catch(e){}}
   if(!tr.ur&&window.TODAY){const u=TODAY.urOf(d.num);if(u)tr.ur=u;}
+  if(!tr.ur&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);if(u)tr.ur=u.text;}catch(e){}}
   const strip=s=>(s||'').replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
   const ar=strip((d.matn||[]).join('\n')).replace(/ﷺ/g,'صلى الله عليه وسلم');
   const g=(d.grade||'').trim();
@@ -896,6 +897,8 @@ function hadithCard(d,scope){
   c.append(mt,fb);
   const tr=trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
+  else if(ui==='ur'&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){const box=el('div',{class:'tr urfrom',hidden:true});c.append(box);
+    COLL.urFor(d.refs).then(u=>{if(!u)return;box.append(el('p',{class:'cs'},'اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے'),el('p',{class:'ur',lang:'ur',dir:'rtl'},...rich(u.text,'ur')));box.hidden=false;}).catch(()=>{});}
   c.append(actions(d,scope,true));return c;
 }
 /* ---------- lists ---------- */
@@ -1306,7 +1309,7 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
       // the salawat as al-Jami writes it: «صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ» in a text with harakat, «صلى الله عليه وسلم» otherwise (no «وآله»)
       if(w==='ﷺ')w=L==='ar'?(voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم'):L==='ur'?'صلی اللہ علیہ وسلم':'ﷺ';
       else if(L==='ur'&&!/[\u064B-\u0652]/.test(w))w=/آل/.test(w)?'صلی اللہ علیہ وسلم':w;
-      else w=voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم';
+      else if(!/[\u064B-\u0652]/.test(w))w=voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم';
       const sp=document.createElement('span');sp.className='saw';if(w!=='ﷺ'&&L!=='ar'&&L!=='ur')sp.lang='ar';sp.textContent=w;f.append(sp);if(nc&&/[\u0600-\u06ff]/.test(nc))f.append(' ');last=m.index+m[0].length;}
     f.append(t.slice(last));tn.replaceWith(f);}
   function walk(root){if(root.nodeType===3){fix(root);return;}if(root.nodeType!==1||SKIP.test(root.tagName))return;
@@ -1366,6 +1369,9 @@ async function showHadith(num){
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
   v.append(...refBlock(d));
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
+  // until al-Jami's own Urdu translation is ready: the Urdu of the first takhrij book that has one (marked with its source)
+  if(ui==='ur'&&!(d.content.translation&&d.content.translation.ur)&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);
+    if(u){d.content.translation=Object.assign({},d.content.translation,{ur:['(اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے)',u.text]});}}catch(e){}}
   const kinds=KIND_ORDER.filter(k=>d.content[k]);
   if(kinds.length){
     const pref=(TL()?[TL()]:[]).concat(ui==='bn'?['bn','en','ar','ur']:ui==='ar'?['ar','ur','en']:LTR()?['en','ar','ur']:['ur','en','ar']);
@@ -1432,7 +1438,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
    All pictures are drawn here with the canvas (no downloaded images, no people): mosques, the Ka'bah, Madinah, snow, rain, nature, patterns. */
 (function () {
   'use strict';
-  const BRAND = 'تراثِ خیرالقرون', SITE = 'turathkhairalquroon.com';
+  const BRAND = 'تراث خیرالقرون', SITE = 'turathkhairalquroon.com';
   const F_AR = '"Amiri","Scheherazade New","Noto Naskh Arabic",serif', F_QR = '"Amiri Quran","Amiri","Scheherazade New",serif';
   const F_UR = '"Jameel Noori Nastaleeq","Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif';
   const F_EN = 'Georgia,"Times New Roman","Noto Serif",serif';
@@ -3657,6 +3663,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // the text of one row (null when the book or language is not here)
     async text(key, lang, n) { await index(); const b = bookOf(key); if (!b || b.ext || !b.langs.includes(lang)) return null; await needRange(b, lang, n, n); const r = row(b, lang, n); return r ? r[1] : null; },
     async count(key) { await index(); const b = bookOf(key); return b ? b.count : 0; },
+    // an Urdu translation for a Jami hadith from the first of its takhrij books that has one in the app: {text, book, num} or null
+    async urFor(refs) {
+      await index();
+      for (const r of (refs || [])) {
+        const kk = r.key.split('/')[0]; if (kk !== r.key && kk !== 'bukhari') continue;   // «مسلم/الامارہ 73» counts inside its kitab: not a safe number
+        const b = bookOf(kk); if (!b || b.ext || !b.langs.includes('ur')) continue;
+        const printed = parseInt(r.number, 10); if (!printed) continue;
+        const n = (C.rev[kk] && C.rev[kk][printed]) || (Object.keys(b.an || {}).length ? 0 : printed); if (!n) continue;
+        await needRange(b, 'ur', n, n); const x = row(b, 'ur', n); if (x && x[1]) return {text: x[1], book: bname(b), num: fmtN(b.an[n] || n)};
+      }
+      return null;
+    },
     has: k => ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik', 'hakim'].includes(k) || !!bookOf(k),
     name: b => { if (typeof b === 'string') { b = bookOf(b); if (!b) return ''; } return bname(b); },
     // reference chip in a Jami hadith (e.g. «مسلم 1907»): show that hadith from the book, by its printed number
