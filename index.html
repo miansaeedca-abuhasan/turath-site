@@ -3337,7 +3337,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (rjx) c.append(rjBlock(rjx));
     else if (arParas.length) c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar'))));
     if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail') { const sn = sanadNames(arParas.join(' '));
-      if (sn.length > 1) c.append(el('details', {class: 'rjsanad'}, el('summary', {}, rt('sanad') + ' (' + fmtN(sn.length) + ')'), el('p', {class: 'cs'}, rt('sanadHint')), el('div', {class: 'chips'}, ...sn.map(x => el('a', {class: 'btn', lang: 'ar', dir: 'rtl', href: '#/s/rijal?q=' + encodeURIComponent(x.q)}, x.d))))); }
+      if (sn.length > 1) c.append(el('details', {class: 'rjsanad'}, el('summary', {}, rt('sanad') + ' (' + fmtN(sn.length) + ')'), el('p', {class: 'cs'}, rt('sanadHint')), el('div', {class: 'chips'}, ...sn.map((x, i) => el('a', {class: 'btn', lang: 'ar', dir: 'rtl', href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))}, x.d))))); }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null;
@@ -3717,6 +3717,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const rjGet = async key => { if (!C.rj[key]) await once('rj_' + key, 'coll/rijal_' + key + '.js'); return C.rj[key] || []; };
   const rjSel = () => { try { const v = JSON.parse(localStorage.rjsrc || 'null'); if (Array.isArray(v) && v.length) return v.filter(k => RJ_BOOKS.includes(k)); } catch (e) {} return RJ_DEF.slice(); };
   // the names of the narrators in the isnad: the text before the matn, cut at the words of transmission
+  // names near the narrator (his neighbours in the isnad, or the narrator whose page we come from) tell the same name of two narrators apart
+  const rjCtx = arr => { const c = arr.map(q => String(q).split(' ').slice(0, 4).join(' ')).filter(q => q.split(' ').length >= 2); return c.length ? '&c=' + encodeURIComponent(c.join('|')) : ''; };
   const TSH = /[\u064b-\u0652\u0670\u0640]/;
   function sanadNames(txt) {
     const map = []; let s = '';
@@ -3781,7 +3783,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     wrap.append(head);
     if (x.facts) wrap.append(el('div', {class: 'rjfacts'}, ...x.facts.split(/\.\s+/).filter(t => t.trim()).map(t => { const i = t.indexOf(':'); return i > 0 && i < 20 ? el('p', {}, el('b', {}, t.slice(0, i) + ': '), t.slice(i + 1).replace(/\.$/, '')) : el('p', {}, t.replace(/\.$/, '')); })));
     const sec = (title, n, open, body) => n ? el('details', {class: 'rjsec', open: open ? '' : null}, el('summary', {}, el('span', {class: 'rjst'}, title), el('span', {class: 'rjcnt'}, fmtN(n))), body) : null;
-    const pills = arr => el('div', {class: 'rjpills'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n))}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
+    const pills = arr => el('div', {class: 'rjpills'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n)) + rjCtx([rnorm(x.name || '')])}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
     wrap.append(...[
       sec(rt('jarh'), x.notes.length, true, el('ul', {class: 'rjnotes'}, ...x.notes.map(n => el('li', {}, n.w ? el('b', {class: 'rjwho'}, n.w + ': ') : null, n.t)))),
       sec(rt('teachers'), x.T.length, false, pills(x.T)),
@@ -3813,7 +3815,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (x.facts) x.facts.split(/\.\s+/).filter(t => t.trim()).forEach(t => { const i = t.indexOf(':'); if (i > 0 && i < 20) fr(t.slice(0, i), t.slice(i + 1).replace(/\.$/, '')); else fr('', t.replace(/\.$/, '')); });
       card.append(facts);
       const sec = (title, cnt, open, body) => cnt ? el('details', {class: 'rjsec', open: open ? '' : null}, el('summary', {}, el('span', {class: 'rjst'}, title), el('span', {class: 'rjcnt'}, fmtN(cnt))), body) : null;
-      const pills = arr => el('div', {class: 'rjpills', lang: 'ar', dir: 'rtl'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n))}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
+      const pills = arr => el('div', {class: 'rjpills', lang: 'ar', dir: 'rtl'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n)) + rjCtx([rnorm(x.name || '')])}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
       const notesBody = el('ul', {class: 'rjnotes', lang: 'ar', dir: 'rtl'}, ...x.notes.map(nt => el('li', {}, nt.w ? el('b', {class: 'rjwho'}, nt.w + ': ') : null, nt.t, el('span', {class: 'rjbk'}, bname(tk)))));
       const allBtn = el('button', {type: 'button', class: 'btn lbtn', on: {click: async e => { const bt = e.currentTarget; bt.disabled = true; bt.textContent = rt('loadingq');
         for (const [si, no] of m[3]) { const key = rl.keys[si]; if (!RJ_STRUCT.includes(key)) continue; const b = bookOf(key); await needRange(b, 'ar', no, no); const rr = row(b, 'ar', no); const px = rr && rjParse(rr[1]); if (!px) continue;
@@ -3841,16 +3843,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     box.append(card);
   }
   const rjLegend = 'خ: البخاري، م: مسلم، د: أبو داود، ت: الترمذي، س: النسائي، ق: ابن ماجه، ع: أصحاب الكتب الستة، ٤: أصحاب السنن';
-  async function showRijal(q) {
+  async function showRijal(q, ctx) {
     const box = $('#list'); box.replaceChildren(); bar(rt('title'), '', true);
     const sel = new Set(rjSel()), inp = el('input', {type: 'search', class: 'filter', placeholder: rt('ph'), 'aria-label': rt('ph'), id: 'rjq', value: q || '', dir: 'rtl', lang: 'ar', autocomplete: 'off', enterkeyhint: 'search'});
     const chips = el('div', {class: 'chips rjchips'}), out = el('div'), note = el('p', {class: 'note'}, rt('hint'));
     const save = () => { try { localStorage.rjsrc = JSON.stringify([...sel]); } catch (e) {} };
-    let tick = 0;
+    let tick = 0, ctxDone = false;
     const draw = async () => {
       const my = ++tick, v = inp.value.trim(), qt = rnorm(v).split(' ').filter(Boolean);
       if (!qt.length) { out.replaceChildren(note); return; }
-      const rows = [], tot = {}; await rlGet();
+      let rows = [], tot = {}; const HS = new Map(); await rlGet();
       const asNum = /^[0-9٠-٩]+$/.test(v) ? parseInt(v.replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)), 10) : null;
       out.replaceChildren(el('p', {class: 'note'}, rt('loading')));
       for (const k of RJ_BOOKS.filter(x => sel.has(x))) {
@@ -3863,10 +3865,28 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           for (const t of qt) { const i = hay.indexOf(' ' + t); if (i < 0) { ok = false; break; } if (i <= prev) ord = false; prev = i; }
           if (ok) hits.push([(hay.startsWith(' ' + qt[0]) ? 0 : 2000) + (hay.startsWith(' ' + qt.join(' ')) ? 0 : ord ? 500 : 1000) + r.k.length / 4, r]);
         }
+        if (!hits.length && asNum == null && qt.length > 3) { const q3 = qt.slice(0, 3); for (const r of data) if (q3.every(t => (' ' + r.k).indexOf(' ' + t) >= 0)) hits.push([3000 + r.k.length / 4, r]); }   // a longer name than the book's: the first words
         hits.sort((a, b2) => a[0] - b2[0]); tot[k] = hits.length;
-        hits.slice(0, k === 'tahdhibkamal' ? 50 : 15).forEach(h => rows.push([k, b, h[1]]));
+        hits.slice(0, k === 'tahdhibkamal' ? (ctx && ctx.length ? 150 : 50) : 15).forEach(h => { rows.push([k, b, h[1]]); HS.set(k + '|' + h[1].n, h[0]); });
       }
       if (my !== tick) return;
+      // the same short name may belong to several narrators: the neighbours of the name (isnad / teachers and students) decide
+      if (ctx && ctx.length && !ctxDone && asNum == null) {
+        ctxDone = true; const tkb = bookOf('tahdhibkamal'), cand = rows.filter(x => x[0] === 'tahdhibkamal');
+        if (tkb && cand.length > 1 && cand.length <= 150) {
+          for (const x of cand) await needRange(tkb, 'ar', x[2].n, x[2].n);
+          if (my !== tick) return;
+          const sc = cand.map(x => { const t = ' ' + rnorm((row(tkb, 'ar', x[2].n) || [])[1] || ''); return [ctx.reduce((a, c) => a + (t.includes(' ' + c) || t.includes(' و' + c) ? 1 : 0), 0), x]; }), mx = Math.max(...sc.map(a => a[0]));
+          if (mx > 0) {
+            const best = sc.filter(a => a[0] === mx);
+            const pre = best.filter(a => (HS.get('tahdhibkamal|' + a[1][2].n) ?? 9e3) < 500);   // the name itself begins the headline
+            if (best.length === 1 || pre.length === 1) { location.replace('#/s/rijal/' + (best.length === 1 ? best[0] : pre[0])[1][2].n); return; }
+            const ordered = sc.map((a, i) => [a[0], i, a[1]]).sort((a, b2) => b2[0] - a[0] || a[1] - b2[1]).map(a => a[2]), pos = rows.map((r, i) => r[0] === 'tahdhibkamal' ? i : -1).filter(i => i >= 0);
+            pos.forEach((p, i) => { rows[p] = ordered[i]; });
+          }
+        }
+      }
+      { let c50 = 0; rows = rows.filter(r => r[0] !== 'tahdhibkamal' || ++c50 <= 50); }
       if (!rows.length) { out.replaceChildren(el('p', {class: 'note'}, rt('none'))); return; }
       const els = []; let cur = null;
       rows.forEach(([k, b, r]) => {
@@ -3951,7 +3971,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     async route(h) {
       await index();
       { const rm = h.match(/^#\/s\/rijal\/(\d+)/); if (rm) return showRijalMaster(+rm[1]); }
-      if (/^#\/s\/rijal(?:\?|$)/.test(h)) { const qq = h.match(/[?&]q=([^&]*)/); return showRijal(qq ? decodeURIComponent(qq[1]) : ''); }
+      if (/^#\/s\/rijal(?:\?|$)/.test(h)) { const qq = h.match(/[?&]q=([^&]*)/); const cc = h.match(/[?&]c=([^&]*)/); return showRijal(qq ? decodeURIComponent(qq[1]) : '', cc ? decodeURIComponent(cc[1]).split('|') : null); }
       const m = h.match(/^#\/s\/([a-z0-9]+)(?:\/(n\/)?(\d+))?/), b = m && bookOf(m[1]);
       if (!b) { $('#list').replaceChildren(el('p', {class: 'note'}, T('nf'))); return; }
       if (b.ext) { bar(bname(b), '', true); $('#list').replaceChildren(el('div', {class: 'card'}, el('p', {}, T('cExt')), el('a', {class: 'btn lbtn', href: b.ext + '#/s/' + b.key, target: '_blank', rel: 'noopener'}, T('cOpenExt')))); return; }
