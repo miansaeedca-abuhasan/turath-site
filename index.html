@@ -686,7 +686,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=ca184863b3", "data/d2.js?h=89595ee14d", "data/d3.js?h=cd08afff54", "data/d4.js?h=83a2250ab6", "data/d5.js?h=d9134420cb", "data/d6.js?h=7df0e5ef69", "data/d7.js?h=ce9d857b04", "data/d8.js?h=839d2871be", "data/d9.js?h=01666f5f68", "data/d10.js?h=ea1e74ed39"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=ca184863b3", "data/d2.js?h=0d63e4c046", "data/d3.js?h=cb3a07b281", "data/d4.js?h=e77575f0fc", "data/d5.js?h=134ffcd8bc", "data/d6.js?h=6fb38c5d4d", "data/d7.js?h=2e2e206719", "data/d8.js?h=84a09e3a2d", "data/d9.js?h=12616121bc", "data/d10.js?h=4aeb558dec"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1432,7 +1432,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
    All pictures are drawn here with the canvas (no downloaded images, no people): mosques, the Ka'bah, Madinah, snow, rain, nature, patterns. */
 (function () {
   'use strict';
-  const BRAND = 'تراث خيرالقرون', SITE = 'turathkhairalquroon.com';
+  const BRAND = 'تراثِ خیرالقرون', SITE = 'turathkhairalquroon.com';
   const F_AR = '"Amiri","Scheherazade New","Noto Naskh Arabic",serif', F_QR = '"Amiri Quran","Amiri","Scheherazade New",serif';
   const F_UR = '"Jameel Noori Nastaleeq","Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif';
   const F_EN = 'Georgia,"Times New Roman","Noto Serif",serif';
@@ -1443,9 +1443,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'ls', w: 1200, h: 675, ur: 'افقی', ar: 'أفقي', en: 'Wide', hint: {ur: 'ٹوئٹر · فیس بک لنک', ar: 'تويتر · فيسبوك', en: 'Twitter · Facebook link'}}
   ];
   const TXT = {
-    ur: {title: 'پوسٹر بنائیں', size: 'سائز', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
-    ar: {title: 'صنع بطاقة', size: 'الحجم', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
-    en: {title: 'Make a poster', size: 'Size', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
+    ur: {title: 'پوسٹر بنائیں', size: 'سائز', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
+    ar: {title: 'صنع بطاقة', size: 'الحجم', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
+    en: {title: 'Make a poster', size: 'Size', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', onlyur: 'Urdu only', onlyen: 'English only', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
   };
 
   /* ---------- drawing helpers ---------- */
@@ -1613,6 +1613,61 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }}
   ];
 
+  /* ---------- more pictures: other times of day, and other places, made from the ones above ---------- */
+  const by = k => SCENES.find(s => s.k === k);
+  const tint = (k, nk, ur, ar, en, dark, fn) => { const b = by(k); SCENES.push({k: nk, ur, ar, en, dark, draw(c, w, h) { b.draw(c, w, h); fn(c, w, h); }}); };
+  const wash = (c, w, h, st) => { c.fillStyle = lg(c, 0, 0, 0, h, st); c.fillRect(0, 0, w, h); };
+  tint('madinah', 'madinah2', 'مدینہ کی رات', 'المدينة ليلا', 'Madinah at night', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(3,8,38,.82)'], [.7, 'rgba(8,24,60,.6)'], [1, 'rgba(20,40,60,.3)']]); stars(c, w, h, 170, 31, .6); crescent(c, w * .2, h * .16, w * .05, '#f7f0cf'); glow(c, w * .5, h * .8, w * .25, '#ffe29a', .35); });
+  tint('kaaba', 'kaaba2', 'بیت اللہ کی رات', 'بيت الله ليلا', 'The Ka\'bah at night', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(2,6,30,.88)'], [.7, 'rgba(10,26,64,.65)'], [1, 'rgba(40,36,30,.4)']]); stars(c, w, h, 190, 41, .6); crescent(c, w * .84, h * .13, w * .045, '#f7f0cf'); });
+  tint('kaaba', 'kaaba3', 'بیت اللہ (غروب)', 'بيت الله عند الغروب', 'The Ka\'bah at dusk', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(80,30,100,.55)'], [.6, 'rgba(255,120,60,.25)'], [1, 'rgba(255,200,120,.1)']]); });
+  tint('snow', 'snow2', 'برفانی رات', 'ليل ثلجي', 'Snowy night', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(8,18,52,.86)'], [.8, 'rgba(30,50,90,.7)'], [1, 'rgba(70,90,130,.5)']]); stars(c, w, h, 120, 51, .5); crescent(c, w * .78, h * .15, w * .05, '#fbf6dc'); });
+  tint('snow', 'snow3', 'برفیلی صبح', 'صباح ثلجي', 'Snowy sunrise', false, (c, w, h) => { wash(c, w, h, [[0, 'rgba(255,170,120,.12)'], [.5, 'rgba(255,200,150,.35)'], [1, 'rgba(255,255,255,0)']]); glow(c, w * .5, h * .6, w * .5, '#ffd9a8', .45); });
+  tint('desert', 'desert2', 'ریگستان کی رات', 'صحراء ليلا', 'Desert night', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(6,10,44,.9)'], [.7, 'rgba(26,30,80,.75)'], [1, 'rgba(60,40,70,.55)']]); stars(c, w, h, 220, 61, .6); crescent(c, w * .72, h * .4, w * .08, '#fbf3d0'); });
+  tint('lake', 'lake2', 'جھیل کا شام', 'بحيرة المساء', 'Lake at dusk', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(60,30,100,.55)'], [.55, 'rgba(255,120,80,.3)'], [1, 'rgba(20,40,80,.4)']]); });
+  tint('lake', 'fog', 'دھند میں پہاڑ', 'جبال الضباب', 'Misty mountains', false, (c, w, h) => { wash(c, w, h, [[0, 'rgba(255,255,255,.35)'], [.5, 'rgba(255,255,255,.55)'], [1, 'rgba(235,245,250,.3)']]); });
+  tint('meadow', 'meadow2', 'سبزہ زار کی بارش', 'مرج ماطر', 'Rainy green hills', false, (c, w, h) => { wash(c, w, h, [[0, 'rgba(70,90,110,.55)'], [1, 'rgba(60,100,90,.25)']]); const r = rng(77); c.save(); c.strokeStyle = 'rgba(235,245,255,.55)'; c.lineWidth = Math.max(1.4, w / 700); for (let i = 0; i < 260; i++) { const x = r() * w, y = r() * h, l = h * (.03 + r() * .04); c.globalAlpha = .3 + r() * .5; c.beginPath(); c.moveTo(x, y); c.lineTo(x - l * .2, y + l); c.stroke(); } c.restore(); });
+  tint('meadow', 'meadow3', 'سبزہ زار کی شام', 'مرج الغروب', 'Hills at sunset', false, (c, w, h) => { wash(c, w, h, [[0, 'rgba(120,60,140,.35)'], [.6, 'rgba(255,150,70,.3)'], [1, 'rgba(255,200,100,.1)']]); glow(c, w * .75, h * .5, w * .4, '#ffcf8a', .6); });
+  tint('sea', 'sea2', 'سمندر کی شام', 'البحر عند الغروب', 'Sea at sunset', false, (c, w, h) => { wash(c, w, h, [[0, 'rgba(120,40,110,.4)'], [.6, 'rgba(255,110,70,.28)'], [1, 'rgba(10,50,90,.2)']]); });
+  tint('sea', 'sea3', 'سمندر کی رات', 'البحر ليلا', 'Sea at night', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(4,10,44,.86)'], [.6, 'rgba(10,36,80,.7)'], [1, 'rgba(6,30,60,.6)']]); stars(c, w, h, 200, 71, .55); crescent(c, w * .3, h * .2, w * .06, '#fbf4d6'); });
+  tint('sunset', 'dawn', 'فجر کی مسجد', 'مسجد الفجر', 'Mosque at dawn', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(30,25,90,.5)'], [.6, 'rgba(160,60,120,.25)'], [1, 'rgba(255,200,150,0)']]); stars(c, w, h, 60, 81, .3); });
+  tint('night', 'bluehour', 'نیلگوں شام کی مسجد', 'مسجد الساعة الزرقاء', 'Mosque at blue hour', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(30,80,160,.25)'], [.7, 'rgba(120,170,230,.3)'], [1, 'rgba(255,210,160,.2)']]); });
+  tint('rain', 'rain2', 'مسجد پر بارش (دن)', 'مطر على المسجد', 'Rain over the mosque', true, (c, w, h) => { wash(c, w, h, [[0, 'rgba(120,150,175,.3)'], [1, 'rgba(120,150,175,.05)']]); });
+  const pat = (k, ur, ar, en, bg, line, a, dark, glowc) => SCENES.push({k, ur, ar, en, dark, draw(c, w, h) { pattern(c, w, h, bg, line, a, w / 6); const g = c.createRadialGradient(w / 2, h / 2, 0, w / 2, h / 2, Math.max(w, h) * .72); g.addColorStop(0, glowc || 'rgba(255,255,255,.1)'); g.addColorStop(1, dark ? 'rgba(0,0,0,.38)' : 'rgba(120,90,40,.16)'); c.fillStyle = g; c.fillRect(0, 0, w, h); }});
+  pat('geo3', 'اسلامی نقش (نیلا)', 'زخرفة زرقاء', 'Navy pattern', '#10264f', '#e8c870', .22, true);
+  pat('geo4', 'اسلامی نقش (فیروزی)', 'زخرفة فيروزية', 'Turquoise pattern', '#0f5e63', '#ffffff', .18, true);
+  pat('geo5', 'اسلامی نقش (عنابی)', 'زخرفة عنابية', 'Maroon pattern', '#5a1f2c', '#f0d08a', .22, true);
+  pat('geo6', 'اسلامی نقش (بنفشی)', 'زخرفة بنفسجية', 'Violet pattern', '#efeaf8', '#6d5a9c', .26, false);
+  pat('geo7', 'اسلامی نقش (ہلکا سبز)', 'زخرفة خضراء فاتحة', 'Sage pattern', '#e5f0e6', '#2e7d5b', .26, false);
+  SCENES.push({k: 'arch', ur: 'محراب', ar: 'محراب', en: 'Mihrab arch', dark: true, draw(c, w, h) {
+    sky(c, w, h, [[0, '#0b3d34'], [1, '#06231f']]); const cx = w / 2, aw = w * .42, top = h * .08;
+    const arch = (r, col, lw) => { c.beginPath(); c.moveTo(cx - r, h * .96); c.lineTo(cx - r, h * .4); c.quadraticCurveTo(cx - r, top + h * .12, cx, top); c.quadraticCurveTo(cx + r, top + h * .12, cx + r, h * .4); c.lineTo(cx + r, h * .96); c.lineWidth = lw; c.strokeStyle = col; c.stroke(); };
+    c.fillStyle = lg(c, 0, 0, 0, h, [[0, '#14604f'], [1, '#0a3a31']]); c.beginPath(); c.moveTo(cx - aw, h); c.lineTo(cx - aw, h * .4); c.quadraticCurveTo(cx - aw, top + h * .12, cx, top); c.quadraticCurveTo(cx + aw, top + h * .12, cx + aw, h * .4); c.lineTo(cx + aw, h); c.fill();
+    arch(aw, '#e2c16a', 6); arch(aw * .93, 'rgba(226,193,106,.6)', 2); arch(aw * 1.08, 'rgba(226,193,106,.35)', 2); glow(c, cx, h * .45, w * .5, '#ffe9a8', .18);
+    pattern(c, w, h, 'rgba(0,0,0,0)', '#e2c16a', .08, w / 8);
+  }});
+  SCENES.push({k: 'lanterns', ur: 'قندیلیں', ar: 'فوانيس', en: 'Lanterns', dark: true, draw(c, w, h) {
+    sky(c, w, h, [[0, '#120a2c'], [.6, '#2a1650'], [1, '#4a2a62']]); stars(c, w, h, 120, 91, .6); const r = rng(14);
+    for (let i = 0; i < 9; i++) { const x = w * (.08 + i * .105 + (r() - .5) * .03), len = h * (.08 + r() * .26), s = w * (.025 + r() * .02);
+      c.strokeStyle = 'rgba(230,200,120,.7)'; c.lineWidth = 2; c.beginPath(); c.moveTo(x, 0); c.lineTo(x, len); c.stroke(); glow(c, x, len + s * 1.4, s * 6, '#ffc060', .5);
+      c.fillStyle = '#e8b04a'; c.beginPath(); c.moveTo(x - s * .5, len + s * .2); c.lineTo(x + s * .5, len + s * .2); c.lineTo(x + s * .8, len + s * 1.2); c.lineTo(x, len + s * 2.6); c.lineTo(x - s * .8, len + s * 1.2); c.fill();
+      c.fillStyle = 'rgba(255,230,150,.85)'; c.beginPath(); c.ellipse(x, len + s * 1.3, s * .45, s * .8, 0, 0, 7); c.fill(); }
+    mosque(c, w * .5, h * .97, w * .6, '#0a0518', '#ffcf7a'); c.fillStyle = '#0a0518'; c.fillRect(0, h * .965, w, h * .035);
+  }});
+  SCENES.push({k: 'oasis', ur: 'نخلستان', ar: 'واحة النخيل', en: 'Date-palm oasis', dark: false, draw(c, w, h) {
+    sky(c, w, h, [[0, '#7cc3e6'], [.6, '#fde9c4'], [1, '#ffe2a8']]); glow(c, w * .3, h * .3, w * .4, '#fff6d8', .8); ridge(c, w, h, h * .7, h * .06, '#efc98e', 7, 1.6);
+    c.fillStyle = lg(c, 0, h * .72, 0, h, [[0, '#6cc4d8'], [1, '#2f8fa8']]); c.beginPath(); c.ellipse(w * .5, h * .86, w * .55, h * .1, 0, 0, 7); c.fill();
+    ridge(c, w, h, h * .96, h * .05, '#d9a867', 2, 1.8); [[.12, .5], [.2, .36], [.82, .46], [.9, .34], [.3, .26]].forEach(p => palm(c, w * p[0], h * .84, h * p[1] * .8, '#1f5f3a'));
+  }});
+  SCENES.push({k: 'autumn', ur: 'خزاں کے رنگ', ar: 'ألوان الخريف', en: 'Autumn hills', dark: false, draw(c, w, h) {
+    sky(c, w, h, [[0, '#b7d6ea'], [.7, '#fbe9cf'], [1, '#fff3de']]); ridge(c, w, h, h * .6, h * .09, '#d9a066', 3, 2); ridge(c, w, h, h * .7, h * .08, '#c2703a', 4, 2.4);
+    const r = rng(19), cols = ['#c0392b', '#e67e22', '#f1c40f', '#a04000', '#d35400']; for (let i = 0; i < 38; i++) { const x = r() * w, y = h * (.66 + r() * .3), s = h * (.03 + r() * .05); c.fillStyle = '#5a3a22'; c.fillRect(x - s * .08, y, s * .16, s * .9); c.fillStyle = cols[i % 5]; c.beginPath(); c.arc(x, y, s * .7, 0, 7); c.arc(x - s * .4, y + s * .3, s * .5, 0, 7); c.arc(x + s * .4, y + s * .3, s * .5, 0, 7); c.fill(); }
+  }});
+  SCENES.push({k: 'aurora', ur: 'قطبی روشنی', ar: 'الشفق القطبي', en: 'Northern lights', dark: true, draw(c, w, h) {
+    sky(c, w, h, [[0, '#040a1c'], [1, '#0c2a3a']]); stars(c, w, h, 200, 99, .7); c.save(); c.globalCompositeOperation = 'lighter';
+    [['#2dffa0', .22, 0], ['#3aa0ff', .3, 2], ['#a06aff', .38, 4]].forEach(a => { c.beginPath(); c.moveTo(0, h * a[1]); for (let x = 0; x <= w; x += w / 40) c.lineTo(x, h * a[1] + Math.sin(x / w * 7 + a[2]) * h * .06); c.lineTo(w, h * (a[1] + .3)); c.lineTo(0, h * (a[1] + .3)); c.closePath(); c.fillStyle = lg(c, 0, h * a[1] - h * .08, 0, h * (a[1] + .3), [[0, a[0] + '00'], [.3, a[0] + '66'], [1, a[0] + '00']]); c.fill(); }); c.restore();
+    ridge(c, w, h, h * .82, h * .1, '#06121c', 13, 3); const r = rng(3); for (let i = 0; i < 14; i++) pine(c, r() * w, h * (.9 + r() * .1), h * (.12 + r() * .1), '#030a10');
+  }});
+
   /* ---------- text fitting ---------- */
   function wrap(c, text, font, maxW, rtl) {
     c.font = font; c.direction = rtl ? 'rtl' : 'ltr'; const out = [];
@@ -1638,7 +1693,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   let LOGO = null;
   const logo = () => LOGO || (LOGO = new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = 'icon-192.png'; }));
-  const fontsReady = () => Promise.all(['700 40px "Amiri"', '40px "Amiri"', '40px "Amiri Quran"', '40px "Jameel Noori Nastaleeq"', '40px "IndoPak Nastaleeq"'].map(f => document.fonts && document.fonts.load ? document.fonts.load(f, 'ابج').catch(() => {}) : 0));
+  const fontsReady = () => Promise.all(['700 40px "Amiri"', '40px "Amiri"', '40px "Amiri Quran"', '40px "Jameel Noori Nastaleeq"', '40px "Jameel Noori Kasheeda"', '40px "IndoPak Nastaleeq"'].map(f => document.fonts && document.fonts.load ? document.fonts.load(f, 'ابج').catch(() => {}) : 0));
 
   async function paint(c, W, H, S) {
     const sc = SCENES[S.bg] || SCENES[0], dark = sc.dark, s = Math.min(W / 1080, H / 1080 * 1.15);
@@ -1656,17 +1711,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (lg0) { c.save(); c.globalAlpha = dark ? .08 : .07; const d = Math.min(pw, ph) * .78; c.beginPath(); c.arc(W / 2, py + ph / 2, d / 2 * .98, 0, 7); c.clip(); c.drawImage(lg0, W / 2 - d / 2, py + ph / 2 - d / 2, d, d); c.restore(); }
     // header: logo + name
     c.save(); c.textBaseline = 'middle'; c.textAlign = 'center'; c.direction = 'rtl';
-    const bf = '700 ' + 40 * s + 'px ' + F_AR; c.font = bf; const tw = c.measureText(BRAND).width, ld = 66 * s, tot = ld + 16 * s + tw, x0 = W / 2 - tot / 2, cy = hdr / 2 + 6 * s;
+    const bf = (58 * s) + 'px "Jameel Noori Kasheeda","Jameel Noori Nastaleeq","Gulzar",serif'; c.font = bf; const tw = c.measureText(BRAND).width, ld = 66 * s, tot = ld + 16 * s + tw, x0 = W / 2 - tot / 2, cy = hdr / 2 + 6 * s;
     if (lg0) { c.save(); c.beginPath(); c.arc(x0 + ld / 2, cy, ld / 2, 0, 7); c.clip(); c.drawImage(lg0, x0, cy - ld / 2, ld, ld); c.restore(); }
     c.fillStyle = dark ? '#f6e7b8' : '#0f4d3a'; c.textAlign = 'right'; c.fillText(BRAND, x0 + tot, cy); c.restore();
     // text
     const d = S.data, mode = S.mode, qr = d.kind === 'ayah', arFam = qr ? (d.fontAr === 'indopak' ? '"IndoPak Nastaleeq","Amiri Quran",serif' : F_QR) : F_AR;
     const cAr = dark ? '#f8eab9' : '#0d4636', cTr = dark ? '#e9f0f2' : '#2a2a2a';
-    const blocks = [{text: d.ar, fam: arFam, rtl: true, k: 1, lh: qr && d.fontAr === 'indopak' ? 2.1 : 1.85, col: cAr}];
-    if (mode === 'ur' && d.tr.ur) blocks.push({text: d.tr.ur.replace(/ﷺ/g, '(صلی اللہ علیہ وسلم)'), fam: F_UR, rtl: true, k: .6, lh: 2.1, col: cTr});
-    if (mode === 'en' && d.tr.en) blocks.push({text: d.tr.en.replace(/\s*ﷺ/g, ' (peace be upon him)'), fam: F_EN, rtl: false, k: .44, lh: 1.5, col: cTr});
-    const padX = 44 * s, padY = 34 * s, availW = pw - 2 * padX, availH = ph - 2 * padY;
-    const r = fit(c, blocks, availW, availH, (blocks.length > 1 ? 96 : 130) * s, 28 * s, s);
+    const only = mode.endsWith('O'), m2 = mode.replace('O', '');
+    const trUr = d.tr.ur ? d.tr.ur.replace(/ﷺ/g, '(صلی اللہ علیہ وسلم)') : '', trEn = d.tr.en ? d.tr.en.replace(/\s*ﷺ/g, ' (peace be upon him)') : '';
+    const bAr = {text: d.ar, fam: arFam, rtl: true, k: .74, lh: qr && d.fontAr === 'indopak' ? 2.1 : 1.8, col: cAr};
+    const bTr = m2 === 'ur' && trUr ? {text: trUr, fam: F_UR, rtl: true, k: 1, lh: 2.1, col: cTr} : m2 === 'en' && trEn ? {text: trEn, fam: F_EN, rtl: false, k: .8, lh: 1.5, col: cTr} : null;
+    const padX = 44 * s, padY = 34 * s, availW = pw - 2 * padX, availH = ph - 2 * padY - 34 * s;
+    let blocks = !bTr ? [bAr] : only ? [bTr] : [bAr, bTr], r = fit(c, blocks, availW, availH, (blocks.length > 1 ? 92 : 128) * s, blocks.length > 1 ? 40 * s : 28 * s, s);
+    // a long text: the translation alone, in bigger letters, is better than two small blocks
+    if (bTr && !only && r.A < 46 * s) { blocks = [bTr]; r = fit(c, blocks, availW, availH, 128 * s, 28 * s, s); }
     let y = py + padY + (availH - r.tot) / 2; c.save(); c.textBaseline = 'middle'; c.textAlign = 'center';
     r.L.forEach((it, bi) => {
       c.font = (it.b.weight || '') + ' ' + it.px + 'px ' + it.b.fam; c.direction = it.b.rtl ? 'rtl' : 'ltr'; c.fillStyle = it.b.col;
@@ -1680,10 +1738,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     c.restore();
     // footer: grade + reference, and the site
     const label = (d.grade ? d.grade + ': ' : '') + d.ref; c.save(); c.textBaseline = 'middle'; c.textAlign = 'center'; c.direction = 'rtl';
-    const ff = '700 ' + 36 * s + 'px ' + F_AR; c.font = ff; const lw = Math.min(W - 2 * m, c.measureText(label).width + 80 * s), lh2 = 62 * s, ly = bot + 24 * s;
-    rr(c, W / 2 - lw / 2, ly, lw, lh2, lh2 / 2); c.fillStyle = dark ? '#d6b25a' : '#1d6a52'; c.fill();
+    const ff = '700 ' + 38 * s + 'px ' + F_AR; c.font = ff; const lw = Math.min(W - 2 * m, c.measureText(label).width + 90 * s), lh2 = 70 * s, ly = bot - lh2 / 2;
+    c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 10 * s; c.shadowOffsetY = 3 * s;
+    rr(c, W / 2 - lw / 2, ly, lw, lh2, lh2 / 2); c.fillStyle = dark ? '#d6b25a' : '#1d6a52'; c.fill(); c.shadowColor = 'transparent';
+    c.lineWidth = 3 * s; c.strokeStyle = dark ? '#fff3c4' : '#ffffff'; c.stroke();
     c.fillStyle = dark ? '#1a1a1a' : '#ffffff'; c.fillText(label, W / 2, ly + lh2 / 2 + 2 * s);
-    c.direction = 'ltr'; c.font = '600 ' + 26 * s + 'px ' + F_EN; c.fillStyle = dark ? 'rgba(255,255,255,.88)' : 'rgba(30,40,40,.78)'; c.fillText(SITE, W / 2, ly + lh2 + 30 * s); c.restore();
+    c.direction = 'ltr'; c.font = '800 ' + 50 * s + 'px ' + F_EN; c.fillStyle = dark ? '#fff6d6' : '#0f4d3a';
+    c.shadowColor = dark ? 'rgba(0,0,0,.7)' : 'rgba(255,255,255,.9)'; c.shadowBlur = 8 * s; c.fillText(SITE, W / 2, bot + lh2 / 2 + 50 * s); c.restore();
   }
 
   /* ---------- the sheet ---------- */
@@ -1710,7 +1771,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function open(data) {
     css(); const L = ui(), T = TXT[L], dir = L === 'en' ? 'ltr' : 'rtl';
     let saved = {}; try { saved = JSON.parse(localStorage.poster || '{}'); } catch (e) {}
-    const modes = [['ar', T.ar]]; if (data.tr && data.tr.en) modes.unshift(['en', T.aren]); if (data.tr && data.tr.ur) modes.unshift(['ur', T.arur]);
+    const modes = [['ar', T.ar]]; if (data.tr && data.tr.en) modes.unshift(['enO', T.onlyen], ['en', T.aren]); if (data.tr && data.tr.ur) modes.unshift(['urO', T.onlyur], ['ur', T.arur]);
     const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes.some(m => m[0] === saved.mode) ? saved.mode : modes[0][0]};
     const el = (t, a, ...k) => { const e = document.createElement(t); if (a) for (const x in a) { if (x === 'class') e.className = a[x]; else if (x.startsWith('on')) e.addEventListener(x.slice(2), a[x]); else e.setAttribute(x, a[x]); } k.flat().forEach(n => n != null && e.append(n)); return e; };
     const back = el('div', {class: 'pst-back'}), sheet = el('div', {class: 'pst-sheet', dir}), view = el('div', {class: 'pst-view'}), canvas = el('canvas'); view.append(canvas);
