@@ -3339,6 +3339,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const text = () => [bname(b) + (note ? '' : ' — ' + n + (b.an[n] ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', lang && d.content.translation ? d.content.translation[lang][0] : '', d.grade ? '\n' + d.grade : '', xpart ? '\n' + xpart : '', foot ? '\n' + foot : ''].join('\n').replace(/^§\s*/gm, '').trim();
     acts.append(bm, window.CMP ? CMP.button({k: b.key, n}) : '',
       el('button', {class: 'ab', type: 'button', title: T('listen'), 'aria-label': T('listen'), on: {click: () => LISTEN.playHadiths([{d, node: c}])}}, icon('listen')),
+      el('button', {class: 'ab', type: 'button', title: T('poster'), 'aria-label': T('poster'), on: {click: () => {
+        const strip = x => (x || '').replace(/[\ue000-\ue003]|\ue010[^\ue011]*\ue011/g, '').replace(/<[^>]*>/g, '').replace(/^§\s*/gm, '').trim();
+        const tr = {}; ['ur', 'en', 'bn', 'hi', 'gu', 'fr', 'pa'].forEach(l => { const r = row(b, l, n); if (r && r[1] && !(l === 'ar')) tr[l] = strip(r[1]); });
+        POSTER.open({kind: 'hadith', ar: strip(d.matn[0]).replace(/ﷺ/g, 'صلى الله عليه وسلم'), tr, lang: lang || ui, grade: (d.grade || '').trim(), ref: bname(b) + (note ? '' : ' (' + n + ')'), name: b.key + '-' + n}); }}}, icon('poster')),
       el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(text(), '#/s/' + b.key + '/n/' + n)) ? 'copied' : 'copyfail'))}}, icon('copy')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: async () => { const t = withLink(text(), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share')),
       el('span', {class: 'sp'}));
