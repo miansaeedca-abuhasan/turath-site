@@ -1453,9 +1453,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const FAM = {ur: [F_UR, true, 1, 2.1], en: [F_EN, false, .8, 1.5], fr: [F_EN, false, .8, 1.5], bn: ['"Noto Serif Bengali","Noto Sans Bengali","Vrinda",serif', false, .85, 1.7],
     hi: ['"Noto Serif Devanagari","Noto Sans Devanagari","Mangal",serif', false, .85, 1.7], gu: ['"Noto Sans Gujarati","Shruti","Noto Serif Gujarati",sans-serif', false, .85, 1.7]};
   const TXT = {
-    ur: {title: 'پوسٹر بنائیں', size: 'سائز', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
-    ar: {title: 'صنع بطاقة', size: 'الحجم', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
-    en: {title: 'Make a poster', size: 'Size', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', onlyur: 'Urdu only', onlyen: 'English only', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
+    ur: {title: 'پوسٹر بنائیں', size: 'سائز', cnt: 'آیات کی تعداد', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
+    ar: {title: 'صنع بطاقة', size: 'الحجم', cnt: 'عدد الآيات', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
+    en: {title: 'Make a poster', size: 'Size', cnt: 'Number of ayahs', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', onlyur: 'Urdu only', onlyen: 'English only', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
   };
 
   /* ---------- drawing helpers ---------- */
@@ -1787,10 +1787,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes[0][0]};
     const el = (t, a, ...k) => { const e = document.createElement(t); if (a) for (const x in a) { if (x === 'class') e.className = a[x]; else if (x.startsWith('on')) e.addEventListener(x.slice(2), a[x]); else e.setAttribute(x, a[x]); } k.flat().forEach(n => n != null && e.append(n)); return e; };
     const back = el('div', {class: 'pst-back'}), sheet = el('div', {class: 'pst-sheet', dir}), view = el('div', {class: 'pst-view'}), canvas = el('canvas'); view.append(canvas);
-    const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
+    // the phone's Back button closes the window and nothing behind it changes: the window has its own history step
+    let isOpen = true; try { history.pushState({pst: 1}, '', location.href); } catch (e) {}
+    const gone = () => { if (!isOpen) return; isOpen = false; back.remove(); document.removeEventListener('keydown', onKey); window.removeEventListener('popstate', gone); };
+    const close = () => { if (!isOpen) return; if (history.state && history.state.pst) history.back(); else gone(); };
+    window.addEventListener('popstate', gone);
     const onKey = e => { if (e.key === 'Escape') close(); }; document.addEventListener('keydown', onKey);
     back.addEventListener('click', e => { if (e.target === back) close(); });
-    const row1 = el('div', {class: 'pst-r'}), row2 = el('div', {class: 'pst-r'}), row3 = el('div', {class: 'pst-bg'});
+    const row1 = el('div', {class: 'pst-r'}), row2 = el('div', {class: 'pst-r'}), row3 = el('div', {class: 'pst-bg'}), rowC = el('div', {class: 'pst-r'});
+    S.count = 1; const nC = data.build ? Math.min(data.maxCount || 1, 5) : 1;
+    for (let i = 1; i <= nC; i++) rowC.append(el('button', {class: 'pst-c' + (i === 1 ? ' on' : ''), type: 'button', onclick: async () => { S.count = i; [...rowC.children].forEach((b, k) => b.classList.toggle('on', k === i - 1)); Object.assign(S.data, await data.build(i)); draw(); }}, String(i)));
     let token = 0;
     async function draw() {
       const my = ++token, z = SIZES[S.size]; view.classList.add('pst-busy');
@@ -1815,7 +1821,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     function toast(m) { if (typeof window.toast === 'function') return window.toast(m); alert(m); }
     sheet.append(el('div', {class: 'pst-h'}, el('b', {}, T.title), el('button', {class: 'pst-x', type: 'button', 'aria-label': T.close, onclick: close}, '×')), view,
-      el('div', {class: 'pst-l'}, T.size), row1, el('div', {class: 'pst-l'}, T.content), row2, el('div', {class: 'pst-l'}, T.bg), row3,
+      ...(nC > 1 ? [el('div', {class: 'pst-l'}, T.cnt), rowC] : []), el('div', {class: 'pst-l'}, T.size), row1, el('div', {class: 'pst-l'}, T.content), row2, el('div', {class: 'pst-l'}, T.bg), row3,
       el('div', {class: 'pst-go'}, el('button', {type: 'button', onclick: doShare}, T.share), el('button', {type: 'button', class: 'alt', onclick: doSave}, T.save)));
     back.append(sheet); document.body.append(back); mark(); draw();
   }
@@ -2620,10 +2626,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', fr: 'fr_hamidullah'}, keys = {};
     Object.keys(DEF).forEach(l => { keys[l] = QS.tr.find(k => k.startsWith(l + '_')) || DEF[l]; });
     await need([AK()].concat(Object.values(keys)));
-    const clean = x => (x || '').replace(/<[^>]*>/g, '').trim(), tr = {};
-    Object.keys(keys).forEach(l => { const x = clean(verse(keys[l], s, a)); if (x) tr[l] = x; });
-    const nm = Q.meta.surahs[s - 1], ar = verse(AK(), s, a);
-    POSTER.open({kind: 'ayah', ar: ar + ' ﴿' + (LTR() ? a : ad(a)) + '﴾', tr, lang: ui, grade: '', ref: (LTR() ? nm[0] : nm[1]) + ' (' + s + ':' + a + ')', name: 'quran-' + s + '-' + a, fontAr: QS.rasm === 'indopak' ? 'indopak' : 'quran'});
+    const clean = x => (x || '').replace(/<[^>]*>/g, '').trim(), last = Q.meta.surahs[s - 1][4], nm = Q.meta.surahs[s - 1];
+    // n ayahs from this one: a number in brackets after each only when there is more than one
+    const build = async n => {
+      n = Math.max(1, Math.min(n, last - a + 1)); const ids = Array.from({length: n}, (_, i) => a + i);
+      await need([AK()].concat(Object.values(keys)));
+      const ar = ids.map(k => verse(AK(), s, k) + (n > 1 ? ' (' + ad(k) + ')' : '')).join(' '), tr = {};
+      Object.keys(keys).forEach(l => { const parts = ids.map(k => clean(verse(keys[l], s, k))); if (parts.every(Boolean)) tr[l] = n > 1 ? parts.map((x, i) => '(' + (LTR() && ui !== 'ur' ? ids[i] : (ui === 'ar' ? ad(ids[i]) : ids[i])) + ') ' + x).join(' ') : parts[0]; });
+      return {ar, tr, ref: (LTR() ? nm[0] : nm[1]) + ' (\u2066' + s + ':' + a + (n > 1 ? '\u2013' + (a + n - 1) : '') + '\u2069)', name: 'quran-' + s + '-' + a + (n > 1 ? '-' + (a + n - 1) : '')};
+    };
+    POSTER.open(Object.assign({kind: 'ayah', lang: ui, grade: '', fontAr: QS.rasm === 'indopak' ? 'indopak' : 'quran', build, maxCount: last - a + 1}, await build(1)));
   }
   function ayahText(s, a) {
     const eds = QS.tr.map(k => Q.meta.editions.find(e => e.key === k)).filter(Boolean);
