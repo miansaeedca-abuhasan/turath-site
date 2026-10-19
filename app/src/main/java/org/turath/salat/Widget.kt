@@ -203,7 +203,7 @@ class WidgetCal : AppWidgetProvider() {
             for (i in 0 until 7) {
                 val d = (ws - 1 + i) % 7 + 1
                 v.setTextViewText(HEADS[i], Tr.dayWidget(d))
-                v.setTextColor(HEADS[i], tickerColor(pr))
+                v.setTextColor(HEADS[i], Widget.tickerColor(pr))
                 if (Tr.lang != "en") v.setTextViewTextSize(HEADS[i], android.util.TypedValue.COMPLEX_UNIT_SP, 8.5f)
             }
             for (r in ROWS) v.removeAllViews(r)
