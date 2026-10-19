@@ -186,7 +186,7 @@ body.withplayer .resume.float{display:none}
 .rjtable{border:1px solid var(--line,#d9d2c3);border-radius:12px;overflow:hidden;margin:.2rem 0 .7rem}.rjrow{display:flex;gap:.8rem;padding:.5rem .9rem;border-top:1px solid var(--line,#e6e0d2);font:1.05rem/1.9 var(--arabic)}.rjrow:first-child{border-top:0}.rjk{flex:0 0 7.5rem;color:var(--muted,#7a7468);font-weight:600}.rjv{flex:1}
 .rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
 .rjline{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.2rem}.rjbooks{font:.78rem/1.4 system-ui;color:var(--muted,#7a7468)}.rjbk{display:inline-block;margin-inline-start:.6rem;font:.72rem/1.6 system-ui;color:var(--muted,#7a7468);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .5rem}
-.rjbody{padding:.6rem .8rem}.rjinner{padding:.3rem .8rem .6rem}.newtag{display:inline-block;margin-inline-start:.5rem;font:700 .65rem/1.4 system-ui;background:#d4380d;color:#fff;border-radius:999px;padding:.05rem .5rem;vertical-align:middle}.newsbody{padding:.5rem .9rem}.newsitem{margin-bottom:.8rem}.newsul{margin:.2rem 0 .4rem;padding-inline-start:1.3rem}.newsul li{margin:.4rem 0;line-height:1.9}
+.rjbody{padding:.6rem .8rem}.rjinner{padding:.3rem .8rem .6rem}.bkno{display:inline-block;min-width:1.6rem;text-align:center;margin-inline-end:.5rem;font:700 .72rem/1.6 system-ui;background:var(--wash,#e6eef6);color:var(--accent,#2f7fc0);border-radius:999px;padding:0 .35rem}.newtag{display:inline-block;margin-inline-start:.5rem;font:700 .65rem/1.4 system-ui;background:#d4380d;color:#fff;border-radius:999px;padding:.05rem .5rem;vertical-align:middle}.newsbody{padding:.5rem .9rem}.newsitem{margin-bottom:.8rem}.newsul{margin:.2rem 0 .4rem;padding-inline-start:1.3rem}.newsul li{margin:.4rem 0;line-height:1.9}
 .rjsanad{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;padding:.2rem .7rem}.rjsanad>summary{cursor:pointer;font-weight:600;padding:.4rem 0;color:var(--accent)}.rjsanad .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .6rem}.rjsanad .btn{font:1.05rem/1.9 var(--arabic)}
 .rjchips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .8rem}.rjchips .chip{border:1px solid var(--line,#d9d2c3);background:transparent;color:inherit;border-radius:999px;padding:.25rem .8rem;font:inherit;cursor:pointer}.rjchips .chip.on{background:var(--accent,#0b5d4b);color:#fff;border-color:transparent}
 .rjcard{margin:.2rem 0 .6rem}.rjhead{text-align:center;padding:.5rem .4rem .8rem;border-bottom:1px solid var(--line,#d9d2c3);margin-bottom:.7rem}.rjname{font:700 1.4rem/2.1 var(--arabic);color:var(--accent,#0b5d4b)}
@@ -3881,9 +3881,26 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const c = el('button', {type: 'button', class: 'chip' + (sel.has(k) ? ' on' : ''), 'aria-pressed': String(sel.has(k)), on: {click: () => { sel.has(k) ? sel.delete(k) : sel.add(k); if (!sel.size) sel.add('tahdhibkamal'); chips.querySelectorAll('button').forEach(x => { const on = sel.has(x.dataset.k); x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); }); save(); draw(); }}}, bname(b));
       c.dataset.k = k; chips.append(c); }
     inp.addEventListener('input', draw);
-    const GR = [['g1', ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965']], ['g2', ['sh2170', 'sh26112', 'sh9863', 'sh8632', 'sh12579']], ['g3', ['thiqat', 'tarikhbukhari', 'sh5782', 'sh23764', 'sh10906', 'sh71']]];
-    const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
-    const lib = GR.flatMap(([g, ks]) => [el('h3', {class: 'grp'}, rt(g)), ...ks.map(bookOf).filter(Boolean).map(bk)]);
+    // the books of the section: one heading for each scholar (all the books of one scholar together), numbered from 1; by the death of the scholar
+    const AU = [
+      ['saad', ['sh146'], {ur: 'ابن سعد', en: 'Ibn Sa‘d', ar: 'ابن سعد'}],
+      ['bukhari', ['tarikhbukhari', 'sh5782', 'sh8632'], {ur: 'امام بخاری', en: 'Imam al-Bukhari', ar: 'الإمام البخاري'}],
+      ['uqayli', ['sh13041'], {ur: 'امام عقیلی', en: 'al-‘Uqayli', ar: 'العقيلي'}],
+      ['razi', ['sh2170'], {ur: 'ابن ابی حاتم الرازی', en: 'Ibn Abi Hatim ar-Razi', ar: 'ابن أبي حاتم الرازي'}],
+      ['hibban', ['thiqat'], {ur: 'ابن حبان', en: 'Ibn Hibban', ar: 'ابن حبان'}],
+      ['adi', ['sh12579'], {ur: 'ابن عدی', en: 'Ibn ‘Adi', ar: 'ابن عدي'}],
+      ['daraqutni', ['sh9082'], {ur: 'امام دارقطنی', en: 'ad-Daraqutni', ar: 'الدارقطني'}],
+      ['khatib', ['sh23764'], {ur: 'خطیب بغدادی', en: 'al-Khatib al-Baghdadi', ar: 'الخطيب البغدادي'}],
+      ['asakir', ['sh71'], {ur: 'ابن عساکر', en: 'Ibn ‘Asakir', ar: 'ابن عساكر'}],
+      ['jawzi', ['sh7351'], {ur: 'ابن الجوزی', en: 'Ibn al-Jawzi', ar: 'ابن الجوزي'}],
+      ['mundhiri', ['sh9863'], {ur: 'امام منذری', en: 'al-Mundhiri', ar: 'المنذري'}],
+      ['mizzi', ['tahdhibkamal'], {ur: 'امام مزی', en: 'al-Mizzi', ar: 'المزي'}],
+      ['dhahabi', ['sh10906', 'sh1692', 'sh149213', 'sh26112'], {ur: 'امام ذہبی', en: 'adh-Dhahabi', ar: 'الذهبي'}],
+      ['hajar', ['sh8609', 'sh1290', 'sh36357', 'sh9767'], {ur: 'حافظ ابن حجر', en: 'Ibn Hajar al-‘Asqalani', ar: 'الحافظ ابن حجر'}],
+      ['qadi', ['sh132965'], {ur: 'ابن القاضی المکناسی', en: 'Ibn al-Qadi al-Miknasi', ar: 'ابن القاضي المكناسي'}]];
+    let bkn = 0;
+    const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, el('span', {class: 'bkno'}, fmtN(++bkn)), b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
+    const lib = AU.flatMap(([k, ks, nm]) => { const bs = ks.map(bookOf).filter(Boolean); return bs.length ? [el('h3', {class: 'grp'}, nm[ui] || nm.en, bs.length > 1 ? ' (' + fmtN(bs.length) + ')' : ''), ...bs.map(bk)] : []; });
     const news = window.NEWS && window.NEWS.length ? el('details', {class: 'rjsec newsbox'}, el('summary', {}, el('span', {class: 'rjst'}, rt('newsAll'))), el('div', {class: 'newsbody'}, ...window.NEWS.map(nw => el('div', {class: 'newsitem'}, el('b', {}, (nw.t[ui] || nw.t.ur) + ' — ' + nw.d), el('ul', {}, ...(nw.i[ui] || nw.i.ur).map(t => el('li', {}, t))))))) : null;
     const more = el('details', {class: 'rjsec'}, el('summary', {}, el('span', {class: 'rjst'}, rt('bookwise'))), el('div', {class: 'rjinner'}, el('p', {class: 'cs'}, rt('src')), chips));
     box.append(el('div', {class: 'rjhero'}, el('h2', {}, rt('rj_hero'))), el('div', {class: 'card pad0 filterbox'}, icon('search'), inp), more, out, news, ...lib);
