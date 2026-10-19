@@ -50,6 +50,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 ChoiceRow(strict, { strict = !strict; s.prefs.mosqStrict = strict }) { Text(Tr["mosqStrict"], fontSize = 14.sp) }
             }
+            if (state == 1) item { Text(Tr["mosqCount"] + ": " + Tr.num(shown.size) + "  (" + Tr.num(all.size) + ")", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
             when {
                 state == 0 -> item { Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
                 state == 2 -> item {
