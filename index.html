@@ -3708,8 +3708,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   };
   const rt = k => (RJT[ui] || RJT.en)[k] || RJT.en[k];
   window.RJT_TILE = () => rt('tile');
-  const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632'], RJ_DEF = ['tahdhibkamal'];
-  const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71'];
+  const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632', 'sh10802', 'sh816'], RJ_DEF = ['tahdhibkamal'];
+  const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71', 'sh10802', 'sh816'];
   C.rj = {};
   const rtok = t => t === 'ابي' || t === 'ابا' ? 'ابو' : t === 'ابن' ? 'بن' : t;
   const rnorm = s => String(s).replace(/[\u064b-\u0652\u0670\u0640\u200c\u200d]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىیی]/g, 'ي').replace(/ة/g, 'ه').replace(/ک/g, 'ك').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').split(/[^\u0621-\u064a]+/).filter(Boolean).map(rtok).join(' ');
@@ -3885,11 +3885,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const AU = [
       ['bukhari', ['tarikhbukhari', 'sh5782', 'sh8632'], {ur: 'امام بخاری', en: 'Imam al-Bukhari', ar: 'الإمام البخاري'}],
       ['main', ['sh3508', 'sh12698'], {ur: 'امام یحییٰ بن معین', en: 'Yahya ibn Ma‘in', ar: 'الإمام يحيى بن معين'}],
+      ['zura', ['sh816'], {ur: 'امام ابو زرعہ رازی', en: 'Abu Zur‘a ar-Razi', ar: 'أبو زرعة الرازي'}],
       ['uqayli', ['sh13041'], {ur: 'امام عقیلی', en: 'al-‘Uqayli', ar: 'العقيلي'}],
       ['razi', ['sh2170'], {ur: 'ابن ابی حاتم الرازی', en: 'Ibn Abi Hatim ar-Razi', ar: 'ابن أبي حاتم الرازي'}],
       ['hibban', ['thiqat'], {ur: 'ابن حبان', en: 'Ibn Hibban', ar: 'ابن حبان'}],
       ['adi', ['sh12579'], {ur: 'ابن عدی', en: 'Ibn ‘Adi', ar: 'ابن عدي'}],
-      ['daraqutni', ['sh9082'], {ur: 'امام دارقطنی', en: 'ad-Daraqutni', ar: 'الدارقطني'}],
+      ['daraqutni', ['sh9082', 'sh10802'], {ur: 'امام دارقطنی', en: 'ad-Daraqutni', ar: 'الدارقطني'}],
       ['khatib', ['sh23764'], {ur: 'خطیب بغدادی', en: 'al-Khatib al-Baghdadi', ar: 'الخطيب البغدادي'}],
       ['asakir', ['sh71'], {ur: 'ابن عساکر', en: 'Ibn ‘Asakir', ar: 'ابن عساكر'}],
       ['jawzi', ['sh7351'], {ur: 'ابن الجوزی', en: 'Ibn al-Jawzi', ar: 'ابن الجوزي'}],
@@ -3910,6 +3911,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261021', d: '19-10-2026', keys: ['sh10802', 'sh816', 'sh8238', 'sh3525'],
+      t: {ur: 'چار نئی کتب', en: 'Four new books', ar: 'أربعة كتب جديدة'},
+      i: {ur: ['رواة الحدیث میں: الضعفاء والمتروکون (دارقطنی) اور اسامی الضعفاء (ابو زرعہ رازی)۔', 'کتبِ حدیث میں: فضائل الصحابہ (دارقطنی) اور الزہد (ابو حاتم رازی)۔'],
+        en: ['In the narrators section: ad-Du‘afa wal-Matrukun (ad-Daraqutni) and Asami ad-Du‘afa (Abu Zur‘a ar-Razi).', 'In the hadith books: Fada’il as-Sahabah (ad-Daraqutni) and az-Zuhd (Abu Hatim ar-Razi).'],
+        ar: ['في قسم الرواة: الضعفاء والمتروكون للدارقطني وأسامي الضعفاء لأبي زرعة الرازي.', 'وفي كتب الحديث: فضائل الصحابة للدارقطني والزهد لأبي حاتم الرازي.']}},
     {id: '20261020', d: '19-10-2026', keys: ['sh3508', 'sh12698'],
       t: {ur: 'امام یحییٰ بن معین کی دو کتب', en: 'Two books of Yahya ibn Ma‘in', ar: 'كتابان ليحيى بن معين'},
       i: {ur: ['تاریخ ابن معین (روایت الدوری) اور سؤالات ابن الجنید شامل کی گئی ہیں۔', 'رواة الحدیث کی فہرست میں امام بخاری کو پہلے نمبر پر اور ہر اہل علم کی کتب کو ایک ساتھ رکھا گیا ہے۔'],
