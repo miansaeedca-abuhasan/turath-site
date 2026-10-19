@@ -120,7 +120,7 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) {
                             val on = p in r.bases
-                            FilterChip(on, { r = r.copy(bases = if (on) r.bases - p else r.bases + p) }, { Text(Tr.p(p).substringBefore(" (")) })
+                            ChoiceChip(on, { r = r.copy(bases = if (on) r.bases - p else r.bases + p) }, { Text(Tr.p(p).substringBefore(" (")) })
                         }
                     }
                     Spacer(Modifier.height(14.dp))
@@ -137,7 +137,7 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                     }
                     Spacer(Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Repeat, null); Text("  " + Tr["repeatOn"], fontWeight = FontWeight.Bold) }
-                    Row(Modifier.padding(vertical = 6.dp)) { Days2(r.days) { r = r.copy(days = it) } }
+                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp)) { Days2(r.days) { r = r.copy(days = it) } }
                     Spacer(Modifier.height(10.dp))
                     Row(Modifier.fillMaxWidth().clickable { r = r.copy(sound = if (r.sound == Snd.NOTIFY) Snd.NIGHTINGALE else Snd.NOTIFY) }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                         Checkbox(r.sound == Snd.NOTIFY, { c -> r = r.copy(sound = if (c) Snd.NOTIFY else Snd.NIGHTINGALE) }); Text(Tr["NOTIFY"])
@@ -154,10 +154,10 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
 }
 
 @Composable
-private fun Days2(bits: Int, set: (Int) -> Unit) {
+private fun RowScope.Days2(bits: Int, set: (Int) -> Unit) {
     val en = Tr.lang == "en"
     dayLabels().forEachIndexed { i, n ->
         val on = (bits shr i) and 1 == 1
-        Text(n, Modifier.clickable { set(bits xor (1 shl i)) }.padding(horizontal = if (en) 8.dp else 4.dp, vertical = 6.dp), color = if (on) MaterialTheme.colorScheme.primary else Color.Gray, fontWeight = FontWeight.Bold, fontSize = if (en) 18.sp else 14.sp, maxLines = 1)
+        ChoiceChip(on, { set(bits xor (1 shl i)) }, { Text(n, fontWeight = FontWeight.Bold, fontSize = if (en) 15.sp else 13.sp, maxLines = 1) }, Modifier.weight(1f).padding(horizontal = 2.dp))
     }
 }

@@ -261,9 +261,7 @@ fun VolumeDialog(s: AppState, close: () -> Unit) {
             Column {
                 Text(Tr["volSource"], fontSize = 14.sp)
                 for ((k, n) in listOf("media" to "volMedia", "ring" to "volRing", "alarm" to "volAlarm"))
-                    Row(Modifier.fillMaxWidth().clickable { src = k; s.prefs.volStream = k }, verticalAlignment = Alignment.CenterVertically) {
-                        RadioButton(src == k, { src = k; s.prefs.volStream = k }); Text(Tr[n], fontSize = 15.sp)
-                    }
+                    ChoiceRow(src == k, { src = k; s.prefs.volStream = k }) { Text(Tr[n], fontSize = 15.sp) }
                 Slider(v, { v = it; runCatching { am.setStreamVolume(stream, it.toInt(), 0) } }, valueRange = 0f..max.toFloat(), steps = (max - 1).coerceAtLeast(0))
                 TextButton(onClick = {
                     if (playing) Preview.stop() else Preview.play(ctx, s.prefs.sound(P.DHUHR).takeIf { it.raw != null } ?: Snd.SHORT_HAYYA) { playing = false }

@@ -232,3 +232,23 @@ fun ChoiceCard(modifier: Modifier, title: String, value: String?, selected: Bool
         if (value != null) Text(value, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 1, color = MaterialTheme.colorScheme.onSurface)
     }
 }
+
+/** a small choice box: the chosen one is grey with a blue line round it, the others have a thin grey line */
+@Composable
+fun ChoiceChip(selected: Boolean, onClick: () -> Unit, label: @Composable () -> Unit, modifier: Modifier = Modifier) {
+    val sh = RoundedCornerShape(12.dp)
+    Box(modifier.clip(sh)
+        .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
+        .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
+        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 9.dp), contentAlignment = Alignment.Center) { label() }
+}
+
+/** a full-width choice box for a list of options (instead of a radio button) */
+@Composable
+fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composable () -> Unit) {
+    val sh = RoundedCornerShape(14.dp)
+    Box(Modifier.fillMaxWidth().padding(vertical = 3.dp).clip(sh)
+        .background(if (selected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent)
+        .border(if (selected) 2.dp else 1.dp, if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = .45f), sh)
+        .clickable(onClick = onClick).padding(horizontal = 14.dp, vertical = 11.dp)) { content() }
+}

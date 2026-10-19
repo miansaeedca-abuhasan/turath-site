@@ -243,12 +243,12 @@ fun QiblaCompass(s: AppState) {
         var src by remember { mutableIntStateOf(s.prefs.compassSrc) }
         Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(Tr["compassSrc"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
-            for ((i, n) in listOf("RV", "GRV", "A+M").withIndex()) FilterChip(src == i, { src = i; s.prefs.compassSrc = i }, { Text(n, fontSize = 12.sp) })
+            for ((i, n) in listOf("RV", "GRV", "A+M").withIndex()) ChoiceChip(src == i, { src = i; s.prefs.compassSrc = i }, { Text(n, fontSize = 12.sp) })
         }
         var dm by remember { mutableIntStateOf(s.prefs.declMode) }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(Tr["declMode"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
-            for ((i, k) in listOf("dmNormal", "dmRev", "dmOff").withIndex()) FilterChip(dm == i, { dm = i; s.prefs.declMode = i }, { Text(Tr[k], fontSize = 12.sp) })
+            for ((i, k) in listOf("dmNormal", "dmRev", "dmOff").withIndex()) ChoiceChip(dm == i, { dm = i; s.prefs.declMode = i }, { Text(Tr[k], fontSize = 12.sp) })
         }
         if (h.raw.isNotEmpty()) Text(h.raw, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))

@@ -35,8 +35,8 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
                 if (on) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(Tr["vibFromAdhan"], Modifier.weight(1f), fontSize = 14.sp)
-                        FilterChip(!pr.vibAfter(k), { pr.setVibAfter(k, false); ver++; s.changed() }, { Text(Tr["before"]) }, Modifier.padding(end = 6.dp))
-                        FilterChip(pr.vibAfter(k), { pr.setVibAfter(k, true); ver++; s.changed() }, { Text(Tr["after"]) })
+                        ChoiceChip(!pr.vibAfter(k), { pr.setVibAfter(k, false); ver++; s.changed() }, { Text(Tr["before"]) }, Modifier.padding(end = 6.dp))
+                        ChoiceChip(pr.vibAfter(k), { pr.setVibAfter(k, true); ver++; s.changed() }, { Text(Tr["after"]) })
                     }
                     var from by remember(k) { mutableFloatStateOf(pr.vibFrom(k).toFloat()) }
                     Text(Tr.num(from.toInt()) + " " + Tr["min"] + " " + (if (pr.vibAfter(k)) Tr["after"] else Tr["before"]), fontWeight = FontWeight.Bold, fontSize = 15.sp)

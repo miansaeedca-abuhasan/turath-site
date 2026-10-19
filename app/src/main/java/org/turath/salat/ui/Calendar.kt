@@ -222,7 +222,7 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                         }
                     }
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        for ((k, n) in listOf("once" to "repOnce", "month" to "repMonth", "year" to "repYear")) FilterChip(e.repeat == k, { e = e.copy(repeat = k) }, { Text(Tr[n]) })
+                        for ((k, n) in listOf("once" to "repOnce", "month" to "repMonth", "year" to "repYear")) ChoiceChip(e.repeat == k, { e = e.copy(repeat = k) }, { Text(Tr[n]) })
                     }
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Schedule, null); Text("  " + Tr["timing"], fontWeight = FontWeight.Bold) }
@@ -236,7 +236,7 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                     else {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA))
-                                FilterChip((e.base ?: P.FAJR) == p, { e = e.copy(base = p) }, { Text(Tr.p(p).substringBefore(" (")) })
+                                ChoiceChip((e.base ?: P.FAJR) == p, { e = e.copy(base = p) }, { Text(Tr.p(p).substringBefore(" (")) })
                         }
                         Spacer(Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.CenterVertically) {

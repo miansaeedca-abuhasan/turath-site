@@ -53,17 +53,14 @@ fun LookPage(s: AppState, back: () -> Unit) {
         Card0 {
             val today = java.time.LocalDate.now()
             for ((k, n) in listOf(0 to "dfDMY", 1 to "dfMDY", 2 to "dfYMD", 3 to "dfPhone"))
-                Row(Modifier.fillMaxWidth().clickable { pr.dateFmt = k; Widget.update(s.act); s.changed() }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(pr.dateFmt == k, { pr.dateFmt = k; Widget.update(s.act); s.changed() })
+                ChoiceRow(pr.dateFmt == k, { pr.dateFmt = k; Widget.update(s.act); s.changed() }) {
                     Column { Text(Tr[n], fontSize = 15.sp); Text(DateFmt.sample(s.act, k, today), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)) }
                 }
         }
         SectionTitle(Tr["theme"])
         Card0 {
             for ((k, n) in listOf("time" to "themeTime", "light" to "themeLight", "dark" to "themeDark", "phone" to "themePhone"))
-                Row(Modifier.fillMaxWidth().clickable { pr.theme = k; s.changed() }.padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-                    RadioButton(pr.theme == k, { pr.theme = k; s.changed() }); Text(Tr[n], fontSize = 15.sp)
-                }
+                ChoiceRow(pr.theme == k, { pr.theme = k; s.changed() }) { Text(Tr[n], fontSize = 15.sp) }
         }
         Card0 { AppLook(s) }
         SectionTitle(Tr["widgets"])
@@ -73,7 +70,7 @@ fun LookPage(s: AppState, back: () -> Unit) {
             Text(Tr["transparency"] + ": " + Tr.num(alpha) + "%", fontWeight = FontWeight.Bold)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 for (v in listOf(0, 20, 40, 60, 80, 100)) {
-                    FilterChip(alpha == v, { alpha = v; pr.widgetAlpha = v; Widget.update(s.act) }, { Text(Tr.num(v)) }, Modifier.padding(end = 4.dp))
+                    ChoiceChip(alpha == v, { alpha = v; pr.widgetAlpha = v; Widget.update(s.act) }, { Text(Tr.num(v)) }, Modifier.padding(end = 4.dp))
                 }
             }
             SwitchRow(Tr["widgetLight"], pr.widgetLight) { pr.widgetLight = it; Widget.update(s.act); s.changed() }
@@ -194,7 +191,7 @@ fun AboutPage(s: AppState, back: () -> Unit) {
 fun WorldList(s: AppState, now: ZonedDateTime) {
     val myOff = now.offset.totalSeconds
     for (c in s.prefs.worldCities) key(c.name, c.lat) {
-        var open by remember { mutableStateOf(true) }
+        var open by remember { mutableStateOf(false) }
         val z = Schedule.zone(c)
         val there = now.withZoneSameInstant(z)
         val st = Schedule.state(s.prefs, c, there)

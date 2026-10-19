@@ -36,9 +36,7 @@ fun TopBar(title: String, back: () -> Unit) {
 
 @Composable
 private fun Choice(label: String, sel: Boolean, onClick: () -> Unit) {
-    Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-        RadioButton(selected = sel, onClick = onClick); Text(label, fontSize = 15.sp)
-    }
+    ChoiceRow(sel, onClick) { Text(label, fontSize = 15.sp) }
 }
 
 @Composable
@@ -114,7 +112,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         SectionTitle(Tr["weekStart"])
         Card0 {
             Row(Modifier.horizontalScroll(rememberScrollState())) {
-                for (v in listOf(1, 6, 7)) FilterChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
+                for (v in listOf(1, 6, 7)) ChoiceChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
             }
         }
         Spacer(Modifier.height(30.dp))

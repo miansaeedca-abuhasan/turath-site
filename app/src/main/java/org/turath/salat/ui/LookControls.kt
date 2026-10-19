@@ -24,7 +24,7 @@ import org.turath.salat.*
 fun Swatches(selected: Int, count: Int, auto: Boolean, black: Boolean, onPick: (Int) -> Unit) {
     val ring = MaterialTheme.colorScheme.onSurface
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
-        if (auto) { FilterChip(selected == -1, { onPick(-1) }, { Text(Tr["autoCol"]) }); Spacer(Modifier.width(10.dp)) }
+        if (auto) { ChoiceChip(selected == -1, { onPick(-1) }, { Text(Tr["autoCol"]) }); Spacer(Modifier.width(10.dp)) }
         val all = (0 until count).toList() + (if (black) listOf(Pal.COLORS.size) else emptyList())
         for (i in all) {
             val c = Color(Pal.ink(i))
@@ -56,7 +56,7 @@ fun WidgetLook(pr: Prefs, changed: () -> Unit) {
         Label(Tr["wFontSize"] + ": " + Tr.num(size) + "%")
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
             for (v in listOf(80, 90, 100, 115, 130, 150)) {
-                FilterChip(size == v, { size = v; pr.widgetSize = v; changed() }, { Text(Tr.num(v)) }, Modifier.padding(end = 6.dp))
+                ChoiceChip(size == v, { size = v; pr.widgetSize = v; changed() }, { Text(Tr.num(v)) }, Modifier.padding(end = 6.dp))
             }
         }
     }
@@ -74,7 +74,7 @@ fun AppLook(s: AppState) {
         Label(Tr["appFontSize"] + ": " + Tr.num(size) + "%")
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())) {
             for (v in listOf(85, 100, 115, 130, 150)) {
-                FilterChip(size == v, { size = v; pr.appFont = v; s.changed() }, { Text(Tr.num(v)) }, Modifier.padding(end = 6.dp))
+                ChoiceChip(size == v, { size = v; pr.appFont = v; s.changed() }, { Text(Tr.num(v)) }, Modifier.padding(end = 6.dp))
             }
         }
     }

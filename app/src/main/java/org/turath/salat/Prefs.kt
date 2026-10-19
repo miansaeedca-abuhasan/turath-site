@@ -102,7 +102,7 @@ class Prefs(ctx: Context) {
     var placeByGps: Boolean get() = sp.getBoolean("gps", false); set(v) = sp.edit().putBoolean("gps", v).apply()
 
     /** "hanafi" or "shafii" (Shafi'i / Maliki / Hanbali / Salafi — the same times) */
-    var school: String get() = sp.getString("school", "hanafi") ?: "hanafi"; set(v) = sp.edit().putString("school", v).apply()
+    var school: String get() = sp.getString("school", "shafii") ?: "shafii"; set(v) = sp.edit().putString("school", v).apply()
     /** "" = the country's usual method */
     var method: String get() = sp.getString("method", "") ?: ""; set(v) = sp.edit().putString("method", v).apply()
     /** "auto" (the country's rules), "on" (+1 hour), "off" */
