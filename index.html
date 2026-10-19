@@ -3883,8 +3883,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     inp.addEventListener('input', draw);
     // the books of the section: one heading for each scholar (all the books of one scholar together), numbered from 1; by the death of the scholar
     const AU = [
-      ['saad', ['sh146'], {ur: 'ابن سعد', en: 'Ibn Sa‘d', ar: 'ابن سعد'}],
       ['bukhari', ['tarikhbukhari', 'sh5782', 'sh8632'], {ur: 'امام بخاری', en: 'Imam al-Bukhari', ar: 'الإمام البخاري'}],
+      ['main', ['sh3508', 'sh12698'], {ur: 'امام یحییٰ بن معین', en: 'Yahya ibn Ma‘in', ar: 'الإمام يحيى بن معين'}],
       ['uqayli', ['sh13041'], {ur: 'امام عقیلی', en: 'al-‘Uqayli', ar: 'العقيلي'}],
       ['razi', ['sh2170'], {ur: 'ابن ابی حاتم الرازی', en: 'Ibn Abi Hatim ar-Razi', ar: 'ابن أبي حاتم الرازي'}],
       ['hibban', ['thiqat'], {ur: 'ابن حبان', en: 'Ibn Hibban', ar: 'ابن حبان'}],
@@ -3897,7 +3897,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       ['mizzi', ['tahdhibkamal'], {ur: 'امام مزی', en: 'al-Mizzi', ar: 'المزي'}],
       ['dhahabi', ['sh10906', 'sh1692', 'sh149213', 'sh26112'], {ur: 'امام ذہبی', en: 'adh-Dhahabi', ar: 'الذهبي'}],
       ['hajar', ['sh8609', 'sh1290', 'sh36357', 'sh9767'], {ur: 'حافظ ابن حجر', en: 'Ibn Hajar al-‘Asqalani', ar: 'الحافظ ابن حجر'}],
-      ['qadi', ['sh132965'], {ur: 'ابن القاضی المکناسی', en: 'Ibn al-Qadi al-Miknasi', ar: 'ابن القاضي المكناسي'}]];
+      ['qadi', ['sh132965'], {ur: 'ابن القاضی المکناسی', en: 'Ibn al-Qadi al-Miknasi', ar: 'ابن القاضي المكناسي'}],
+      ['saad', ['sh146'], {ur: 'ابن سعد', en: 'Ibn Sa‘d', ar: 'ابن سعد'}]];
     let bkn = 0;
     const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, el('span', {class: 'bkno'}, fmtN(++bkn)), b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
     const lib = AU.flatMap(([k, ks, nm]) => { const bs = ks.map(bookOf).filter(Boolean); return bs.length ? [el('h3', {class: 'grp'}, nm[ui] || nm.en, bs.length > 1 ? ' (' + fmtN(bs.length) + ')' : ''), ...bs.map(bk)] : []; });
@@ -3909,6 +3910,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261020', d: '19-10-2026', keys: ['sh3508', 'sh12698'],
+      t: {ur: 'امام یحییٰ بن معین کی دو کتب', en: 'Two books of Yahya ibn Ma‘in', ar: 'كتابان ليحيى بن معين'},
+      i: {ur: ['تاریخ ابن معین (روایت الدوری) اور سؤالات ابن الجنید شامل کی گئی ہیں۔', 'رواة الحدیث کی فہرست میں امام بخاری کو پہلے نمبر پر اور ہر اہل علم کی کتب کو ایک ساتھ رکھا گیا ہے۔'],
+        en: ['Added Tarikh Ibn Ma‘in (riwayat ad-Duri) and Su’alat Ibn al-Junayd.', 'In the narrators section Imam al-Bukhari now comes first and the books of each scholar are together.'],
+        ar: ['أضيف: تاريخ ابن معين (رواية الدوري) وسؤالات ابن الجنيد.', 'في قسم الرواة صار الإمام البخاري أولًا وكتب كل عالم مجتمعة.']}},
     {id: '20261019', d: '19-10-2026', keys: ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh26112', 'sh9863', 'sh5782', 'sh8632', 'sh71', 'muslimab', 'muslimtr'],
       t: {ur: 'رواة الحدیث کا نیا زمرہ اور نئی کتب', en: 'New Hadith narrators section and new books', ar: 'قسم رواة الحديث وكتب جديدة'},
       i: {ur: ['نیا بٹن «رواة الحدیث»: راوی کا نام لکھیں تو اس کا درجہ، طبقہ، شیوخ، تلامذہ اور تمام کتب کے اقوال ایک جگہ مل جاتے ہیں۔', 'حدیث کی سند میں راوی کے نام پر کلک کر کے اس کی معلومات دیکھیں۔', 'نئی کتب: تہذیب الکمال، تقریب التہذیب، تہذیب التہذیب، تذہیب التہذیب، لسان المیزان، التاریخ الاوسط، الضعفاء الصغیر، تاریخ دمشق، درۃ الحجال۔', 'صحیح مسلم کے دو نسخے: ترقیم عبدالباقی اور ترکی نسخہ۔'],
