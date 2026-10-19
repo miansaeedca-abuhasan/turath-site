@@ -3708,8 +3708,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   };
   const rt = k => (RJT[ui] || RJT.en)[k] || RJT.en[k];
   window.RJT_TILE = () => rt('tile');
-  const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632', 'sh10802', 'sh816'], RJ_DEF = ['tahdhibkamal'];
-  const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71', 'sh10802', 'sh816'];
+  const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632', 'sh10802', 'sh816', 'sh3508', 'sh12698'], RJ_DEF = ['tahdhibkamal'];
+  const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71', 'sh10802', 'sh816', 'sh3508', 'sh12698'];
   C.rj = {};
   const rtok = t => t === 'ابي' || t === 'ابا' ? 'ابو' : t === 'ابن' ? 'بن' : t;
   const rnorm = s => String(s).replace(/[\u064b-\u0652\u0670\u0640\u200c\u200d]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىیی]/g, 'ي').replace(/ة/g, 'ه').replace(/ک/g, 'ك').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').split(/[^\u0621-\u064a]+/).filter(Boolean).map(rtok).join(' ');
