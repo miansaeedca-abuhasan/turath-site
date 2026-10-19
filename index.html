@@ -1258,12 +1258,12 @@ function goBack(){
 $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
-const UL={ur:'علومِ حدیث',en:'Sciences',ar:'علوم الحديث',bn:'হাদীস বিজ্ঞান',hi:'हदीस विज्ञान',gu:'હદીસ વિજ્ઞાન',fr:'Sciences'};
+const UL={ur:'علومِ حدیث',en:'Sciences',ar:'علوم الحديث',bn:'হাদীস বিজ্ঞান',hi:'हदीस विज्ञान',gu:'હદીસ વિજ્ઞાન',fr:'Sciences'};window.UL=UL;
 function navBar(){const h=location.hash,sec=h.startsWith('#/quiz')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
-  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['ul','#/s/rijal','hsearch',UL[ui]||UL.ur],['sh','#/s/shadharat','gem',T('navSh')]];
+  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
   $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:x[4]?{click:x[4]}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
 $('#hsbtn').addEventListener('click',()=>{location.hash='#/hs';});
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
@@ -1465,9 +1465,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     hi: ['"Noto Serif Devanagari","Noto Sans Devanagari","Mangal",serif', false, .85, 1.7], pa: ['"Noto Sans Gurmukhi","Raavi","Noto Serif Gurmukhi",sans-serif', false, .85, 1.7],
     gu: ['"Noto Sans Gujarati","Shruti","Noto Serif Gujarati",sans-serif', false, .85, 1.7]};
   const TXT = {
-    ur: {title: 'پوسٹر بنائیں', size: 'سائز', cnt: 'آیات کی تعداد', content: 'متن', bg: 'بیک گراؤنڈ', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
-    ar: {title: 'صنع بطاقة', size: 'الحجم', cnt: 'عدد الآيات', content: 'النص', bg: 'الخلفية', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
-    en: {title: 'Make a poster', size: 'Size', cnt: 'Number of ayahs', content: 'Text', bg: 'Background', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', onlyur: 'Urdu only', onlyen: 'English only', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
+    ur: {title: 'پوسٹر بنائیں', size: 'سائز', cnt: 'آیات کی تعداد', content: 'متن', bg: 'بیک گراؤنڈ', tooLong: 'یہ حدیث پوسٹر کے لیے بہت طویل ہے، اس لیے پوسٹر نہیں بن سکتا۔', share: 'شیئر', save: 'تصویر محفوظ کریں', close: 'بند کریں', ar: 'عربی', aren: 'عربی + انگریزی', arur: 'عربی + اردو', onlyur: 'صرف اردو', onlyen: 'صرف انگریزی', working: 'تیار ہو رہا ہے…', saved: 'تصویر محفوظ ہو گئی', fail: 'تصویر نہیں بن سکی'},
+    ar: {title: 'صنع بطاقة', size: 'الحجم', cnt: 'عدد الآيات', content: 'النص', bg: 'الخلفية', tooLong: 'هذا الحديث أطول من أن يُصنع له بطاقة.', share: 'مشاركة', save: 'حفظ الصورة', close: 'إغلاق', ar: 'عربي', aren: 'عربي + إنجليزي', arur: 'عربي + أردو', onlyur: 'أردو فقط', onlyen: 'الإنجليزية فقط', working: 'جارٍ التجهيز…', saved: 'تم حفظ الصورة', fail: 'تعذّر إنشاء الصورة'},
+    en: {title: 'Make a poster', size: 'Size', cnt: 'Number of ayahs', content: 'Text', bg: 'Background', tooLong: 'This hadith is too long for a poster.', share: 'Share', save: 'Save picture', close: 'Close', ar: 'Arabic', aren: 'Arabic + English', arur: 'Arabic + Urdu', onlyur: 'Urdu only', onlyen: 'English only', working: 'Preparing…', saved: 'Picture saved', fail: 'Could not make the picture'}
   };
 
   /* ---------- drawing helpers ---------- */
@@ -1707,9 +1707,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let f = .9, cur = blocks;
     for (let i = 0; i < 12; i++) {
       cur = blocks.map(b => { const ws = b.text.split(/\s+/); const n = Math.max(6, Math.floor(ws.length * f)); return Object.assign({}, b, {text: ws.length > n ? ws.slice(0, n).join(' ') + ' …' : b.text}); });
-      const save = blocks; blocks = cur; const r = lay(minA); blocks = save; if (r.tot <= H) return r; f *= .85;
+      const save = blocks; blocks = cur; const r = lay(minA); blocks = save; if (r.tot <= H) { r.trunc = true; return r; } f *= .85;
     }
-    blocks = cur; return lay(minA);
+    blocks = cur; const r2 = lay(minA); r2.trunc = true; return r2;
   }
   const rr = (c, x, y, w, h, r) => { c.beginPath(); c.moveTo(x + r, y); c.arcTo(x + w, y, x + w, y + h, r); c.arcTo(x + w, y + h, x, y + h, r); c.arcTo(x, y + h, x, y, r); c.arcTo(x, y, x + w, y, r); c.closePath(); };
 
@@ -1746,7 +1746,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const padX = 44 * s, padY = 34 * s, availW = pw - 2 * padX, availH = ph - 2 * padY - 34 * s;
     let blocks = !bTr ? [bAr] : only ? [bTr] : [bAr, bTr], r = fit(c, blocks, availW, availH, (blocks.length > 1 ? 92 : 128) * s, blocks.length > 1 ? 40 * s : 28 * s, s);
     // a long text: the translation alone, in bigger letters, is better than two small blocks
-    if (bTr && !only && r.A < 46 * s) { blocks = [bTr]; r = fit(c, blocks, availW, availH, 128 * s, 28 * s, s); }
+    if (bTr && !only && (r.trunc || r.A < 46 * s)) { blocks = [bTr]; r = fit(c, blocks, availW, availH, 128 * s, 28 * s, s); }
+    S.tooLong = false;
+    if (d.kind === 'hadith' && r.trunc) {   // even the translation alone does not fit: no poster is made
+      S.tooLong = true; c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; c.direction = 'rtl'; c.fillStyle = dark ? '#f8eab9' : '#0d4636'; c.font = '700 ' + 40 * s + 'px ' + F_AR;
+      const msg = TXT[ui()].tooLong; wrap(c, msg, c.font, availW * .9, true).forEach((ln, i, a) => c.fillText(ln, W / 2, py + ph / 2 + (i - (a.length - 1) / 2) * 62 * s)); c.restore(); return;
+    }
     let y = py + padY + (availH - r.tot) / 2; c.save(); c.textBaseline = 'middle'; c.textAlign = 'center';
     r.L.forEach((it, bi) => {
       c.font = (it.b.weight || '') + ' ' + it.px + 'px ' + it.b.fam; c.direction = it.b.rtl ? 'rtl' : 'ltr'; c.fillStyle = it.b.col;
@@ -1765,8 +1770,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     rr(c, W / 2 - lw / 2, ly, lw, lh2, lh2 / 2); c.fillStyle = dark ? '#d6b25a' : '#1d6a52'; c.fill(); c.shadowColor = 'transparent';
     c.lineWidth = 3 * s; c.strokeStyle = dark ? '#fff3c4' : '#ffffff'; c.stroke();
     c.fillStyle = dark ? '#1a1a1a' : '#ffffff'; c.fillText(label, W / 2, ly + lh2 / 2 + 2 * s);
-    c.direction = 'ltr'; c.font = '800 ' + 50 * s + 'px ' + F_EN; c.fillStyle = dark ? '#fff6d6' : '#0f4d3a';
-    c.shadowColor = dark ? 'rgba(0,0,0,.7)' : 'rgba(255,255,255,.9)'; c.shadowBlur = 8 * s; c.fillText(SITE, W / 2, bot + lh2 / 2 + 50 * s); c.restore();
+    // the site name: the colour is chosen from what is really behind it (best contrast, a different one on different pictures) and it has an outline
+    c.direction = 'ltr'; c.font = '800 ' + 56 * s + 'px ' + F_EN; const sy = bot + lh2 / 2 + 52 * s, sw = c.measureText(SITE).width;
+    let lum = dark ? .1 : .6; try { const x0 = Math.max(0, Math.floor(W / 2 - sw / 2)), y0 = Math.max(0, Math.floor(sy - 34 * s)), d0 = c.getImageData(x0, y0, Math.min(Math.ceil(sw), W - x0), Math.max(1, Math.min(Math.ceil(68 * s), H - y0))).data; let t = 0, n = 0;
+      const lin = v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+      for (let i = 0; i < d0.length; i += 16) { t += .2126 * lin(d0[i]) + .7152 * lin(d0[i + 1]) + .0722 * lin(d0[i + 2]); n++; } if (n) lum = t / n; } catch (e) {}
+    const hexL = h => { const v = [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4)); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
+    const POOL = ['#ffffff', '#ffe27a', '#b9f5dc', '#bfe6ff', '#ffd3bd', '#fff1b8', '#0b3d2e', '#12285a', '#6b0f1f', '#4a2f00', '#1d1d1d', '#00506b'];
+    const ok = POOL.filter(h => { const L2 = hexL(h), r = (Math.max(lum, L2) + .05) / (Math.min(lum, L2) + .05); return r >= 5; });
+    const seed = ((S.bg || 0) * 7 + (d.ref || '').length * 3 + (d.num || 0)) % Math.max(1, ok.length), col = (ok.length ? ok : [lum > .35 ? '#0b2a20' : '#ffffff'])[seed], light = hexL(col) > .4;
+    c.lineJoin = 'round'; c.lineWidth = 9 * s; c.strokeStyle = light ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.85)'; c.strokeText(SITE, W / 2, sy);
+    c.fillStyle = col; c.fillText(SITE, W / 2, sy); c.restore();
   }
 
   /* ---------- the sheet ---------- */
@@ -1795,7 +1809,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let saved = {}; try { saved = JSON.parse(localStorage.poster || '{}'); } catch (e) {}
     const modes = [['ar', T.ar]], tl = Object.keys(data.tr || {}).filter(l => data.tr[l] && FAM[l]), pref = data.lang || L;
     tl.sort((a, b) => (b === pref) - (a === pref));   // the reader's own language first
-    tl.slice().reverse().forEach(l => { const nm = (LN[l] || {})[L] || (LN[l] || {}).en || l; modes.unshift([l, (L === 'ur' ? 'عربی + ' + nm : L === 'ar' ? 'عربي + ' + nm : 'Arabic + ' + nm)], [l + 'O', (L === 'ur' ? 'صرف ' + nm : L === 'ar' ? nm + ' فقط' : nm + ' only')]); });
+    tl.slice().reverse().forEach(l => { const nm = (LN[l] || {})[L] || (LN[l] || {}).en || l; modes.unshift([l, (L === 'ur' ? 'عربی + ' + nm : L === 'ar' ? 'عربي + ' + nm : 'Arabic + ' + nm)]); });
+    if (tl.length && data.kind === 'hadith') modes.pop();   // a hadith poster is always the Arabic text with a translation (or the translation alone when too long)
     const S = {data, size: Math.min(saved.size ?? 0, SIZES.length - 1), bg: Math.min(saved.bg ?? 0, SCENES.length - 1), mode: modes[0][0]};
     const el = (t, a, ...k) => { const e = document.createElement(t); if (a) for (const x in a) { if (x === 'class') e.className = a[x]; else if (x.startsWith('on')) e.addEventListener(x.slice(2), a[x]); else e.setAttribute(x, a[x]); } k.flat().forEach(n => n != null && e.append(n)); return e; };
     const back = el('div', {class: 'pst-back'}), sheet = el('div', {class: 'pst-sheet', dir}), view = el('div', {class: 'pst-view'}), canvas = el('canvas'); view.append(canvas);
@@ -1809,11 +1824,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const row1 = el('div', {class: 'pst-r'}), row2 = el('div', {class: 'pst-r'}), row3 = el('div', {class: 'pst-bg'}), rowC = el('div', {class: 'pst-r'});
     S.count = 1; const nC = data.build ? Math.min(data.maxCount || 1, 5) : 1;
     for (let i = 1; i <= nC; i++) rowC.append(el('button', {class: 'pst-c' + (i === 1 ? ' on' : ''), type: 'button', onclick: async () => { S.count = i; [...rowC.children].forEach((b, k) => b.classList.toggle('on', k === i - 1)); Object.assign(S.data, await data.build(i)); draw(); }}, String(i)));
-    let token = 0;
+    let token = 0; const goBtns = [];
     async function draw() {
       const my = ++token, z = SIZES[S.size]; view.classList.add('pst-busy');
       try { await fontsReady(); if (my !== token) return; canvas.width = z.w; canvas.height = z.h; await paint(canvas.getContext('2d'), z.w, z.h, S); } catch (e) { console.error(e); }
       if (my === token) view.classList.remove('pst-busy');
+      if (my === token) { goBtns.forEach(b => b.disabled = !!S.tooLong); goBtns.forEach(b => b.style.opacity = S.tooLong ? .4 : ''); }
       try { localStorage.poster = JSON.stringify({size: S.size, bg: S.bg}); } catch (e) {}
     }
     const mark = () => { [...row1.children].forEach((b, i) => b.classList.toggle('on', i === S.size)); [...row2.children].forEach((b, i) => b.classList.toggle('on', modes[i][0] === S.mode)); [...row3.children].forEach((b, i) => b.classList.toggle('on', i === S.bg)); };
@@ -1832,9 +1848,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       doSave();
     };
     function toast(m) { if (typeof window.toast === 'function') return window.toast(m); alert(m); }
+    goBtns.push(el('button', {type: 'button', onclick: doShare}, T.share), el('button', {type: 'button', class: 'alt', onclick: doSave}, T.save));
     sheet.append(el('div', {class: 'pst-h'}, el('b', {}, T.title), el('button', {class: 'pst-x', type: 'button', 'aria-label': T.close, onclick: close}, '×')), view,
       ...(nC > 1 ? [el('div', {class: 'pst-l'}, T.cnt), rowC] : []), el('div', {class: 'pst-l'}, T.size), row1, el('div', {class: 'pst-l'}, T.content), row2, el('div', {class: 'pst-l'}, T.bg), row3,
-      el('div', {class: 'pst-go'}, el('button', {type: 'button', onclick: doShare}, T.share), el('button', {type: 'button', class: 'alt', onclick: doSave}, T.save)));
+      el('div', {class: 'pst-go'}, ...goBtns));
     back.append(sheet); document.body.append(back); mark(); draw();
   }
   window.POSTER = {open, SCENES, paint};
@@ -2266,6 +2283,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('hadith', T('hbBooks'), '#/hb'),
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
+      tile('hsearch', ui === 'en' ? 'Hadith sciences' : (window.UL || {})[ui] || 'Hadith sciences', '#/s/rijal'),
       tile('quiz', T('quizT'), '#/quiz'));
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     tickerBar(v);
