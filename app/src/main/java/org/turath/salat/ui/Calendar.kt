@@ -226,9 +226,9 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                     }
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Schedule, null); Text("  " + Tr["timing"], fontWeight = FontWeight.Bold) }
-                    Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        ChoiceCard(Modifier.weight(1f), Tr["atClock"], null, !withPrayer) { withPrayer = false }
-                        ChoiceCard(Modifier.weight(1f), Tr["withPrayer"], null, withPrayer) { withPrayer = true }
+                    Row(Modifier.padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ChoiceChip(!withPrayer, { withPrayer = false }, { Text(Tr["atClock"], fontSize = 14.sp) })
+                        ChoiceChip(withPrayer, { withPrayer = true }, { Text(Tr["withPrayer"], fontSize = 14.sp) })
                     }
                     if (!withPrayer) OutlinedButton(onClick = {
                         TimePickerDialog(s.act, { _, hh, mm -> e = e.copy(atMin = hh * 60 + mm) }, maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60, s.prefs.h24).show()
@@ -245,9 +245,9 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                             Text("  " + Tr["minutes"])
                             Spacer(Modifier.weight(1f))
                             // before / after, one under the other
-                            Column(Modifier.width(120.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                                ChoiceCard(Modifier.fillMaxWidth(), Tr["beforeT"], null, before) { before = true }
-                                ChoiceCard(Modifier.fillMaxWidth(), Tr["afterT"], null, !before) { before = false }
+                            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                ChoiceChip(before, { before = true }, { Text(Tr["beforeT"], fontSize = 14.sp) })
+                                ChoiceChip(!before, { before = false }, { Text(Tr["afterT"], fontSize = 14.sp) })
                             }
                         }
                     }

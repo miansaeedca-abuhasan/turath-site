@@ -128,12 +128,12 @@ private fun ReminderEditor(s: AppState, r0: Reminder, close: () -> Unit) {
                     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         OutlinedTextField(num, { num = it.filter { c -> c.isDigit() }.take(3) }, Modifier.width(96.dp), singleLine = true,
                             keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number))
-                        ChoiceCard(Modifier.weight(1f), Tr["minutes"], null, !hours) { hours = false }
-                        ChoiceCard(Modifier.weight(1f), Tr["hours"], null, hours) { hours = true }
+                        ChoiceChip(!hours, { hours = false }, { Text(Tr["minutes"], fontSize = 14.sp) })
+                        ChoiceChip(hours, { hours = true }, { Text(Tr["hours"], fontSize = 14.sp) })
                     }
-                    Row(Modifier.fillMaxWidth().padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        ChoiceCard(Modifier.weight(1f), Tr["beforeT"], null, before) { before = true }
-                        ChoiceCard(Modifier.weight(1f), Tr["afterT"], null, !before) { before = false }
+                    Row(Modifier.padding(vertical = 8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        ChoiceChip(before, { before = true }, { Text(Tr["beforeT"], fontSize = 14.sp) })
+                        ChoiceChip(!before, { before = false }, { Text(Tr["afterT"], fontSize = 14.sp) })
                     }
                     Spacer(Modifier.height(10.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Outlined.Repeat, null); Text("  " + Tr["repeatOn"], fontWeight = FontWeight.Bold) }

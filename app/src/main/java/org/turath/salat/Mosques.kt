@@ -65,7 +65,7 @@ object Mosques {
     fun find(ctx: Context, lat: Double, lng: Double, km: Int): List<M> {
         val pr = Prefs(ctx)
         // one request for 50 km around the place (kept for a day); a smaller circle is taken from it at once
-        val key = "mq4_%.3f_%.3f".format(lat, lng)
+        val key = "mq5_%.3f_%.3f".format(lat, lng)
         val cached = pr.sp.getString(key, null)?.takeIf { pr.sp.getLong(key + "_t", 0) > System.currentTimeMillis() - 86_400_000 }
         val json = cached ?: run {
             // a box of about 50 km each way (much quicker for the server than a circle); the circle is drawn here
@@ -74,25 +74,33 @@ object Mosques {
             val dLat = 0.5; val dLng = 0.5 / kotlin.math.cos(Math.toRadians(lat)).coerceAtLeast(0.2)
             val bb = "%.2f,%.2f,%.2f,%.2f".format(Locale.US, cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
             // mosques and musallas, and Islamic centres (often mapped as a community centre, an office of the religion or only by their name)
+            // mosques, musallas (prayer rooms, also those with no religion written), Islamic centres, and anything named like a mosque
+            val nm = "masjid|mosque|musall|musolla|islamic|muslim|jamia|jamiah|jami |markaz|prayer room|prayer hall|prayer space|salah"
             val q = "[out:json][timeout:60];(nwr[\"amenity\"=\"place_of_worship\"][\"religion\"=\"muslim\"]($bb);nwr[\"religion\"=\"muslim\"][\"amenity\"]($bb);" +
-                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship\"][\"name\"~\"islam|muslim|masjid|mosque|musall\",i]($bb););out center tags;"
-            // the site first (it keeps the answer a week), then the main Overpass server and its mirrors
-            var s = runCatching {
+                "nwr[\"religion\"=\"muslim\"][\"office\"]($bb);nwr[\"building\"=\"mosque\"]($bb);nwr[\"amenity\"=\"prayer_room\"]($bb);nwr[\"room\"=\"prayer\"]($bb);" +
+                "nwr[\"amenity\"~\"community_centre|social_centre|place_of_worship\"][\"name\"~\"$nm\",i]($bb);nwr[\"name\"~\"masjid|mosque|musall|islamic cent|islamic assoc|muslim assoc|markaz\",i]($bb););out center tags;"
+            // the Overpass servers all at once (the first good answer wins), then the site's copy
+            fun ask(u: String): String = runCatching {
+                val c = URL(u).openConnection() as HttpURLConnection
+                c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = 40_000
+                c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
+                c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
+                if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
+            }.getOrDefault("")
+            val urls = listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter")
+            val pool = java.util.concurrent.Executors.newFixedThreadPool(urls.size)
+            val ecs = java.util.concurrent.ExecutorCompletionService<String>(pool)
+            var s = ""
+            try {
+                urls.forEach { u -> ecs.submit<String> { ask(u) } }
+                for (i in urls.indices) { val r = runCatching { ecs.take().get() }.getOrDefault(""); if (good(r)) { s = r; break } }
+            } finally { pool.shutdownNow() }
+            if (!good(s)) s = runCatching {
                 val c = URL("https://turathkhairalquroon.com/api/mosques?v=4&bb=$bb").openConnection() as HttpURLConnection
                 c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
             }.getOrDefault("")
-            if (!good(s)) for (u in listOf("https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter")) {
-                s = runCatching {
-                    val c = URL(u).openConnection() as HttpURLConnection
-                    c.requestMethod = "POST"; c.doOutput = true; c.connectTimeout = 8_000; c.readTimeout = 25_000
-                    c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
-                    c.outputStream.use { it.write(("data=" + URLEncoder.encode(q, "UTF-8")).toByteArray()) }
-                    if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
-                }.getOrDefault("")
-                if (good(s)) break
-            }
             // the map servers busy: OpenStreetMap's own search (Nominatim) for mosques in the same box
             if (!good(s)) s = photon(lat, lng)
             if (!good(s)) s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng)
@@ -114,8 +122,11 @@ object Mosques {
             if (NAME.containsMatchIn(text)) continue
             // only places to pray: mosques, musallas, Islamic centres (not a Muslim graveyard, school, shop …)
             val am = t.optString("amenity")
-            val isPlace = am == "place_of_worship" || am in setOf("community_centre", "social_centre", "social_facility") || t.optString("building") == "mosque" ||
-                t.has("office") || Regex("masjid|mosque|musall|islamic cent|مسجد|جامع|مصلى", RegexOption.IGNORE_CASE).containsMatchIn(t.optString("name"))
+            val rel = t.optString("religion")
+            val notPlace = t.has("shop") || t.has("cuisine") || am in setOf("restaurant", "cafe", "fast_food", "food_court", "pharmacy", "bank", "school", "college", "university", "kindergarten", "doctors", "clinic", "dentist", "library", "car_wash", "parking") ||
+                (rel.isNotEmpty() && rel != "muslim")
+            val isPlace = !notPlace && (am == "place_of_worship" || am == "prayer_room" || t.optString("room") == "prayer" || am in setOf("community_centre", "social_centre", "social_facility") || t.optString("building") == "mosque" ||
+                t.has("office") || Regex("masjid|mosque|musall|musolla|islamic|muslim|jamia|markaz|prayer (room|hall|space)|مسجد|جامع|مصلى", RegexOption.IGNORE_CASE).containsMatchIn(t.optString("name")))
             if (!isPlace) continue
             val la = if (e.has("lat")) e.getDouble("lat") else e.optJSONObject("center")?.optDouble("lat") ?: continue
             val lo = if (e.has("lon")) e.getDouble("lon") else e.optJSONObject("center")?.optDouble("lon") ?: continue
