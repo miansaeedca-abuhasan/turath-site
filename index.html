@@ -897,7 +897,7 @@ function hadithCard(d,scope){
   c.append(mt,fb);
   const tr=trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
-  else if(ui==='ur'&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){const box=el('div',{class:'tr urfrom',hidden:true});c.append(box);
+  else if(ui==='ur'&&scope==='jami'&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){const box=el('div',{class:'tr urfrom',hidden:true});c.append(box);
     COLL.urFor(d.refs).then(u=>{if(!u)return;box.append(el('p',{class:'cs'},'اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے'),el('p',{class:'ur',lang:'ur',dir:'rtl'},...rich(u.text,'ur')));box.hidden=false;}).catch(()=>{});}
   c.append(actions(d,scope,true));return c;
 }
@@ -1370,7 +1370,7 @@ async function showHadith(num){
   v.append(...refBlock(d));
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
   // until al-Jami's own Urdu translation is ready: the Urdu of the first takhrij book that has one (marked with its source)
-  if(ui==='ur'&&!(d.content.translation&&d.content.translation.ur)&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);
+  if(ui==='ur'&&scope==='jami'&&!(d.content.translation&&d.content.translation.ur)&&d.refs&&d.refs.length&&window.COLL&&COLL.urFor){try{const u=await COLL.urFor(d.refs);
     if(u){d.content.translation=Object.assign({},d.content.translation,{ur:['(اردو ترجمہ — '+u.book+'، حدیث '+u.num+' سے)',u.text]});}}catch(e){}}
   const kinds=KIND_ORDER.filter(k=>d.content[k]);
   if(kinds.length){
