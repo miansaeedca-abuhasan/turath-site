@@ -249,6 +249,7 @@ class Prefs(ctx: Context) {
     var clockStyle: Int get() = sp.getInt("clk", 0); set(v) = sp.edit().putInt("clk", v).apply()
     var bgStyle: Int get() = sp.getInt("bgs", 0); set(v) = sp.edit().putInt("bgs", v).apply()
     /** the compass reading: 0 the phone's fused sensor, 1 the magnetic one, 2 raw magnetometer + accelerometer */
+    var declMode: Int get() = sp.getInt("dmode", 1); set(v) = sp.edit().putInt("dmode", v).apply()
     var compassSrc: Int get() = sp.getInt("csrc", 0); set(v) = sp.edit().putInt("csrc", v).apply()
 
     var worldCities: List<Place>

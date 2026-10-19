@@ -52,7 +52,7 @@ fun qiblaBearing(lat: Double, lng: Double): Double {
     return (Math.toDegrees(b) + 360) % 360
 }
 
-class Heading { var raw by mutableStateOf(""); var deg by mutableFloatStateOf(Float.NaN); var acc by mutableIntStateOf(3); var has by mutableStateOf(true) }
+class Heading { var raw by mutableStateOf(""); var deg by mutableFloatStateOf(Float.NaN); var elev by mutableFloatStateOf(0f); var acc by mutableIntStateOf(3); var has by mutableStateOf(true) }
 
 /** the direction the phone points to (true north): lying flat — its top; held upright — its camera */
 @Composable
@@ -83,7 +83,9 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
         fun push() {
             val want = corr.compassSrc
             val use = when { want == 1 && hasGv -> mG; want == 2 && hasAm -> mA; hasR -> mR; hasGv -> mG; else -> mA }
-            val az = ((azOf(use) + decl + corr.qiblaOffset + 720) % 360).toFloat()
+            val dd = when (corr.declMode) { 0 -> decl; 1 -> -decl; else -> 0f }
+            val az = ((azOf(use) + dd + corr.qiblaOffset + 720) % 360).toFloat()
+            h.elev = Math.toDegrees(Math.asin((-use[8]).toDouble().coerceIn(-1.0, 1.0))).toFloat()
             smooth = if (smooth.isNaN()) az else { var d = az - smooth; if (d > 180) d -= 360; if (d < -180) d += 360; (smooth + d * .12f + 360) % 360 }
             h.deg = smooth
             if (++n % 12 == 0) {
@@ -243,6 +245,11 @@ fun QiblaCompass(s: AppState) {
             Text(Tr["compassSrc"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
             for ((i, n) in listOf("RV", "GRV", "A+M").withIndex()) FilterChip(src == i, { src = i; s.prefs.compassSrc = i }, { Text(n, fontSize = 12.sp) })
         }
+        var dm by remember { mutableIntStateOf(s.prefs.declMode) }
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            Text(Tr["declMode"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
+            for ((i, k) in listOf("dmNormal", "dmRev", "dmOff").withIndex()) FilterChip(dm == i, { dm = i; s.prefs.declMode = i }, { Text(Tr[k], fontSize = 12.sp) })
+        }
         if (h.raw.isNotEmpty()) Text(h.raw, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
@@ -307,7 +314,10 @@ fun QiblaCamera(s: AppState, onClose: () -> Unit) {
         }
         Canvas(Modifier.fillMaxSize()) {
             val fov = 60f                                  // about the width a phone camera sees
-            val cx = size.width / 2; val cy = size.height * .34f
+            val cx = size.width / 2
+            // the Ka'bah hangs at the horizon: held upright it is straight ahead, tilting the phone moves it
+            val ppd = size.width / fov
+            val cy = (size.height * .38f + h.elev * ppd).coerceIn(size.height * .16f, size.height * .66f)
             val ring = if (on) green else Color.White
             val r0 = 34.dp.toPx()
             // the aim in the middle: the marker comes into this ring
