@@ -1,6 +1,16 @@
 // Reads the text of a picture (a screenshot of a WhatsApp/Facebook post) with Google Gemini, for the «تحقیق و تصدیق» page.
 // The key stays here as a secret (GEMINI_API_KEY); the browser only calls POST /api/ocr {image: base64, mime}. Optional variables: GEMINI_MODEL, OCR_DAILY.
-const MODEL = 'gemini-flash-latest';
+const MODEL = 'gemini-flash-lite-latest';             // fast model; falls back to MODELS[1] if it fails
+const MODELS = ['gemini-flash-lite-latest', 'gemini-flash-latest'];
+const TIMEOUT = 40000;
+async function gem(env, model, parts, ms) {
+  const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
+  for (const think of [true, false]) {
+    const gc = think ? {temperature: 0, thinkingConfig: {thinkingBudget: 0}} : {temperature: 0};
+    const r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY}, body: JSON.stringify({contents: [{parts}], generationConfig: gc}), signal: AbortSignal.timeout(ms || TIMEOUT)});
+    if (r.status !== 400 || !think) return r;
+  }
+}
 const DAILY = 300;                                   // pictures per day for the whole site (override with OCR_DAILY)
 const PER_USER = 5;                                  // pictures per person (per network address) per day (override with OCR_USER)
 const PROMPT = 'Extract ALL the text visible in this image exactly as written, in its original language (Arabic, Urdu, English …). Keep Arabic diacritics (tashkeel) and the line breaks. Do not translate, explain, correct or add anything. If there is no readable text, answer with an empty string.';
@@ -14,10 +24,12 @@ async function handle({request, env}) {
   if (request.method === 'GET' && q.has('ping')) {      // diagnosis: open /api/ocr?ping=1 (function alive?) and /api/ocr?ping=2 (does the Gemini key and model answer?)
     const o = {ok: true, key: !!env.GEMINI_API_KEY, db: !!env.DB, model: env.GEMINI_MODEL || MODEL};
     if (q.get('ping') === '2' && env.GEMINI_API_KEY) {
-      try {
-        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + o.model + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY}, body: JSON.stringify({contents: [{parts: [{text: 'Say OK'}]}]})});
-        o.gemini = r.status; if (!r.ok) o.detail = (await r.text()).slice(0, 300);
-      } catch (e) { o.gemini = 'fetch failed: ' + String(e && e.message || e).slice(0, 120); }
+      o.tests = [];
+      for (const m of [env.GEMINI_MODEL || MODELS[0], MODELS[1]]) {
+        const t0 = Date.now(), x = {model: m};
+        try { const r = await gem(env, m, [{text: 'Say OK'}], 20000); x.status = r.status; if (!r.ok) x.detail = (await r.text()).slice(0, 200); } catch (e) { x.status = 'failed: ' + String(e && e.message || e).slice(0, 80); }
+        x.ms = Date.now() - t0; o.tests.push(x);
+      }
     }
     return new Response(JSON.stringify(o), {headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
   }
@@ -59,13 +71,14 @@ async function handle({request, env}) {
       await env.DB.prepare('INSERT INTO ocr_use (day, n) VALUES (?, 1) ON CONFLICT(day) DO UPDATE SET n = n + 1').bind(day).run();
     } catch (e) {}
   }
-  let r;
-  try {
-    r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + (env.GEMINI_MODEL || MODEL) + ':generateContent', {
-      method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY},
-      body: JSON.stringify({contents: [{parts: [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}]}], generationConfig: {temperature: 0}})
-    });
-  } catch (e) { await refund(); return new Response(JSON.stringify({error: 'upstream fetch', detail: String(e && e.message || e).slice(0, 120)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
+  let r, lastErr = '';
+  for (const m of [env.GEMINI_MODEL || MODELS[0], MODELS[1]]) {
+    try {
+      r = await gem(env, m, [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}]);
+      if (r.ok || r.status === 429) break;
+    } catch (e) { lastErr = String(e && e.message || e).slice(0, 120); r = null; }
+  }
+  if (!r) { await refund(); return new Response(JSON.stringify({error: 'upstream fetch', detail: lastErr}), {status: 504, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
   if (r.status === 429) { await refund(); return err(429, 'busy'); }
   if (!r.ok) { await refund(); let d = ''; try { d = ((await r.json()).error || {}).message || ''; } catch (e) {} return new Response(JSON.stringify({error: 'upstream ' + r.status, detail: d.slice(0, 160)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
   const j = await r.json(), t = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
