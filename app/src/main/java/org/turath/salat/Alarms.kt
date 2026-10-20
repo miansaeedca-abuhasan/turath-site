@@ -234,7 +234,7 @@ object Preview {
             MediaPlayer().apply {
                 setAudioAttributes(Audio.attrs(ctx)); setDataSource(ctx, u)
                 setOnCompletionListener { stop(); done() }
-                prepare(); start(); playing = true
+                prepare(); start()
             }
         }.getOrNull()
     }
@@ -369,7 +369,7 @@ class SoundService : Service() {
                 isLooping = alarm || own == 0
                 setOnCompletionListener { stopSelf() }
                 setOnErrorListener { _, _, _ -> stopSelf(); true }
-                prepare(); start()
+                prepare(); start(); SoundService.playing = true
             }
             Thread { while (mp != null && System.currentTimeMillis() < until) Thread.sleep(500); if (mp != null) stopSelf() }.start()
         } catch (e: Exception) { stopSelf() }
