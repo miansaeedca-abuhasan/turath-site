@@ -506,6 +506,9 @@ details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .vgo{display:inline-flex;align-items:center;gap:.35rem;height:34px;padding:0 .9rem;border-radius:17px;border:0;background:var(--accent);color:#fff;font:inherit;font-size:.85rem;cursor:pointer}.vgo svg{width:16px;height:16px;fill:#fff}
 .vtry{margin:.6rem .2rem .2rem;font-size:.78rem}.vch{margin:.2rem 0 .8rem}.vch .chip{font-size:.78rem;padding:.25rem .6rem}
 .vout{margin-top:.6rem}
+.vmid{color:#a15c00;font-weight:700;margin:.4rem 0}.vpct{font-weight:400;font-size:.8rem;opacity:.8}
+.vyour,.vsrc{line-height:2;margin:.2rem 0 .6rem}.vyour mark{background:rgba(179,38,30,.18);color:#b3261e;border-radius:4px;padding:0 .15rem}
+body.vfpage .appbar{position:static}
 </style>
 </head>
 <body>
@@ -1468,6 +1471,7 @@ function route(){
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',quran=sec==='q'||sec==='home'||td||qz||vf;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb',home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
+  document.body.classList.toggle('vfpage',vf);
   if(vf)VERIFY.route();
   else if(qz)QUIZ.route(h);
   else if(td)TODAY.route(h);
@@ -4115,6 +4119,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     async list() { return index(); },
     showSearch,
     showHadithSearch, hsEmbed: (q, out) => showHadithSearch({q, out}),
+    dorarList: async q => { try { const r = await fetch('/api/dorar?q=' + encodeURIComponent(q) + '&page=1'); if (!r.ok) return null; return dorarParse((await r.json()).html || ''); } catch (e) { return null; } },
     // one hadith for the compare page: {title, text, grade, href} (or {title, ext} for a book in the other link)
     async item(key, printed, n) {
       await index(); const b = bookOf(key); if (!b) return null;
@@ -5564,7 +5569,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 // It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
 (function () {
   const S = {
-    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے… (رش ہو تو آدھا منٹ لگ سکتا ہے)', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'اس وقت رش بہت زیادہ ہے۔ چند منٹ بعد دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔',  ocrUser: 'آج کے لیے تصاویر کی حد (5) پوری ہو گئی۔ کل دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrLeft: n => 'آج کی باقی تصاویر: ' + n,
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے… (رش ہو تو آدھا منٹ لگ سکتا ہے)', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'اس وقت رش بہت زیادہ ہے۔ چند منٹ بعد دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔',  ocrUser: 'آج کے لیے تصاویر کی حد (5) پوری ہو گئی۔ کل دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrLeft: n => 'آج کی باقی تصاویر: ' + n, vTitle: "نتیجہ", vFull: "✓ پوری عبارت اس حدیث سے مطابقت رکھتی ہے۔", vMost: "عبارت زیادہ تر اس حدیث سے ملتی ہے، مگر کچھ الفاظ مختلف ہیں۔", vPart: "اس حدیث کا کچھ حصہ ملتا ہے؛ پوری عبارت کی مطابقت نہیں ملی۔", vNone: "اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔", vPct: "مطابقت", vYour: "آپ کا متن (سرخ: وہ الفاظ جو نہیں ملے)", vSrc: "ماخذ کی عبارت", vGrade: "حکم", vOpen: "حدیث کھولیں", vOthers: "دیگر ملتے جلتے نتائج", vJami: n=>"الجامع الکامل، حدیث "+n, vRawi: "راوی", vMuh: "محدث", vBook: "کتاب", vDiff: "مختلف الفاظ: ",
       intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
       ph: 'یہاں متن ڈالیں…', go: 'تحقیق', clear: 'حذف', paste: 'پیسٹ',
       short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
@@ -5575,7 +5580,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
       hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
       howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
-    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.', ocrUser: 'انتهى الحد اليومي للصور (5). حاول غدًا أو أدخل النص يدويًا.', ocrLeft: n => 'الصور المتبقية اليوم: ' + n,
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.', ocrUser: 'انتهى الحد اليومي للصور (5). حاول غدًا أو أدخل النص يدويًا.', ocrLeft: n => 'الصور المتبقية اليوم: ' + n, vTitle: "النتيجة", vFull: "✓ النص كاملًا موافق لهذا الحديث.", vMost: "النص موافق في أكثره، مع اختلاف في بعض الألفاظ.", vPart: "يوافق جزءًا من هذا الحديث؛ ولم نجد مطابقة للنص كاملًا.", vNone: "لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية.", vPct: "نسبة المطابقة", vYour: "نصك (بالأحمر: الألفاظ غير الموجودة)", vSrc: "نص المصدر", vGrade: "الحكم", vOpen: "افتح الحديث", vOthers: "نتائج مشابهة أخرى", vJami: n=>"الجامع الكامل، حديث "+n, vRawi: "الراوي", vMuh: "المحدث", vBook: "المصدر", vDiff: "ألفاظ مختلفة: ",
       intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
       ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
       short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
@@ -5586,7 +5591,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
       hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
       howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
-    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.', ocrUser: 'You have used today’s limit of 5 pictures. Try tomorrow or paste the text.', ocrLeft: n => 'Pictures left today: ' + n,
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.', ocrUser: 'You have used today’s limit of 5 pictures. Try tomorrow or paste the text.', ocrLeft: n => 'Pictures left today: ' + n, vTitle: "Result", vFull: "✓ The whole text matches this hadith.", vMost: "The text mostly matches this hadith, with some different words.", vPart: "Only part of this hadith matches; the whole text was not matched.", vNone: "No match for this text in our books or in Dorar.", vPct: "Match", vYour: "Your text (red: words not found)", vSrc: "Text of the source", vGrade: "Grade", vOpen: "Open the hadith", vOthers: "Other similar results", vJami: n=>"Al-Jami al-Kamil, hadith "+n, vRawi: "Narrator", vMuh: "Muhaddith", vBook: "Source", vDiff: "Different words: ",
       intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
       ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
       short: 'The text is too short. Enter at least three Arabic words.',
@@ -5660,12 +5665,48 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
     return null;
   }
+  const plain = s => nrm(s).split(/[^ء-ي]+/).filter(Boolean);
+  async function hadithMatch(raw) {
+    const iw = plain(raw), sk = iw.map(skel), n = iw.length;
+    if (n < 3) return null;
+    const K = Math.min(4, n), wins = [...new Set([0, .33, .66, 1].map(f => { const st = Math.min(n - K, Math.floor((n - K) * f)); return iw.slice(st, st + K).join(' '); }))];
+    const votes = new Map(), cands = [];
+    await Promise.all(wins.map(async w => { try { const d = await api('search?q=' + encodeURIComponent(w) + '&book=jami&mode=all'); (d.results || []).slice(0, 8).forEach(r => votes.set(r.num, (votes.get(r.num) || 0) + 1)); } catch (e) {} }));
+    const top = [...votes].sort((a, b) => b[1] - a[1]).slice(0, 5).map(x => x[0]);
+    await Promise.all([
+      ...top.map(async num => { try { const d = await api('hadith/' + num + '?book=jami'); cands.push({src: 'jami', num, txt: [d.sanad || '', ...(d.matn || [])].join(' '), grade: typeof d.grade === 'string' ? d.grade : ''}); } catch (e) {} }),
+      (async () => { const dl = window.COLL && COLL.dorarList ? await COLL.dorarList(iw.slice(0, 10).join(' ')) : null; (dl || []).slice(0, 10).forEach(x => cands.push({src: 'dorar', txt: x.text, grade: x.f['خلاصة حكم المحدث'] || x.f['الحكم'] || '', muh: x.f['المحدث'], book: x.f['المصدر'], rawi: x.f['الراوي'], no: x.f['الصفحة أو الرقم'], links: x.links || []})); })()
+    ]);
+    let best = null;
+    for (const c of cands) { const pr = lcs(sk, plain(c.txt).map(skel)); c.cov = pr.length / n; c.hit = new Set(pr.map(p => p[0])); if (!best || c.cov > best.cov) best = c; }
+    return {best, iw};
+  }
+  function hadithCard(h, T) {
+    const b = h && h.best, pct = b ? Math.round(b.cov * 100) : 0;
+    if (!b || pct < 35) return el('div', {class: 'card pad'}, el('h3', {class: 'grp'}, T.vTitle), el('p', {class: 'vbad'}, T.vNone), el('p', {class: 'cs'}, T.hNote));
+    const full = b.cov >= .995, cls = full ? 'vok' : pct >= 70 ? 'vmid' : 'vbad', verdict = full ? T.vFull : pct >= 70 ? T.vMost : T.vPart;
+    const toks = ta0().split(/\s+/).filter(Boolean); let i = 0;
+    const yours = el('p', {class: 'ar vyour', lang: 'ar', dir: 'rtl'}), diff = [];
+    toks.forEach(t => { const m = plain(t).length, ids = []; for (let k = 0; k < m; k++) ids.push(i + k); i += m; const ok = !m || ids.every(x => b.hit.has(x)); if (!ok) diff.push(t); yours.append(ok ? t + ' ' : el('mark', {}, t), ' '); });
+    const meta = [];
+    if (b.src === 'jami') meta.push(el('span', {class: 'hsm'}, T.vJami(b.num)));
+    else [[T.vBook, b.book], [T.vMuh, b.muh], [T.vRawi, b.rawi]].filter(x => x[1]).forEach(([l, v]) => meta.push(el('span', {class: 'hsm'}, el('span', {class: 'cs'}, l + ': '), el('span', {lang: 'ar', dir: 'rtl'}, v))));
+    return el('div', {class: 'card pad'}, el('h3', {class: 'grp'}, T.vTitle),
+      el('p', {class: cls}, verdict, el('span', {class: 'vpct'}, ' ' + T.vPct + ': ' + pct + '%')),
+      el('p', {class: 'cs'}, T.vYour), yours, diff.length ? el('p', {class: 'vbad'}, T.vDiff, el('b', {lang: 'ar'}, diff.join(' ، '))) : '',
+      el('p', {class: 'cs'}, T.vSrc), el('p', {class: 'ar vsrc', lang: 'ar', dir: 'rtl'}, b.txt),
+      el('div', {class: 'hsmeta'}, ...meta),
+      b.grade ? el('p', {class: 'hsg'}, el('span', {class: 'cs'}, T.vGrade + ': '), el('b', {lang: 'ar', dir: 'rtl'}, b.grade)) : '',
+      b.src === 'jami' ? el('a', {class: 'btn lbtn', href: '#/h/' + b.num}, T.vOpen) : '',
+      b.links && b.links.length ? el('div', {class: 'chips hslinks'}, ...b.links.map(l => el('a', {class: 'chip', href: l.u, target: '_blank', rel: 'noopener', lang: 'ar', dir: 'rtl'}, l.t))) : '');
+  }
+  let TA = null; const ta0 = () => (TA ? TA.value : '').trim();
   function show() {
     const T = L();
     bar(T.title, T.sub, true);
     const v = qv(); v.replaceChildren();
     const ta = el('textarea', {class: 'vfta', rows: '3', maxlength: '5000', placeholder: T.ph, 'aria-label': T.ph, dir: 'auto', enterkeyhint: 'search'});
-    const out = el('div', {class: 'vout'});
+    const out = el('div', {class: 'vout'}); TA = ta;
     const cnt = el('span', {class: 'vcnt', dir: 'ltr'}, '0 / 5000');
     const upd = () => { cnt.textContent = ta.value.length + ' / 5000'; };
     const ib = (ic, title, fn, cls) => el('button', {type: 'button', class: 'vib' + (cls ? ' ' + cls : ''), title, 'aria-label': title, on: {click: fn}}, icon(ic));
@@ -5724,20 +5765,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           parts.push(el('p', {class: 'qar sm', lang: 'ar', dir: 'rtl'}, txt.join(' ')));
           parts.push(ok ? el('p', {class: 'vok'}, T.qOk) : el('div', {}, q.extra.length ? el('p', {class: 'vbad'}, T.qExtra, el('b', {lang: 'ar'}, q.extra.join(' '))) : '', q.miss.length ? el('p', {class: 'vbad'}, T.qMiss, el('b', {lang: 'ar'}, q.miss.join(' '))) : ''));
           parts.push(el('a', {class: 'btn lbtn', href: '#/q/s/' + s1 + '/' + a1}, T.qOpen));
-          { const c = el('div', {class: 'card pad'}, ...parts); if (ok) c.dataset.strong = '1'; box.push(c); }
+          { const c = el('div', {class: 'card pad'}, ...parts); c.dataset.sc = String(q.sc); box.push(c); }
         }
       }
       const base = inW.length >= 3 ? inW : rawW, hq = base.slice(0, 7).join(' ');
+      const h = await hadithMatch(raw).catch(() => null);
+      if (my !== tk) return;
+      const qc = box.length ? +(box[0].dataset.sc || 0) : 0, hc = h && h.best ? h.best.cov : 0;
+      const main = (box.length && qc >= .75 && qc >= hc) ? [box[0]] : [hadithCard(h, T)];
       const hout = el('div');
-      const strong = box.length && box[0].dataset.strong === '1';
-      const hd = el('details', {class: 'card gsres'}, el('summary', {}, T.hHead), hout, el('p', {class: 'cs'}, T.hNote));
-      hd.open = !strong;
-      box.push(hd);
-      if (extra) box.unshift(el('p', {class: 'cs'}, extra));
-      out.replaceChildren(...box);
-      try { await COLL.hsEmbed(hq, hout); } catch (e) { hout.append(el('p', {class: 'note'}, T.hNone)); }
-      return;
-      out.replaceChildren(...box);
+      const hd = el('details', {class: 'card gsres'}, el('summary', {}, T.vOthers), hout, el('p', {class: 'cs'}, T.hNote));
+      if (extra) main.unshift(el('p', {class: 'cs'}, extra));
+      out.replaceChildren(...main, hd);
+      out.scrollIntoView({block: 'start', behavior: 'smooth'});
+      hd.addEventListener('toggle', () => { if (hd.open && !hout.firstChild) COLL.hsEmbed(hq, hout).catch(() => hout.append(el('p', {class: 'note'}, T.hNone))); });
     }
     let pre = ''; try { pre = sessionStorage.vtext || ''; sessionStorage.removeItem('vtext'); } catch (e) {}
     if (pre) { ta.value = pre; run(); }
