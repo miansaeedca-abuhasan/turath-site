@@ -156,7 +156,16 @@ fun QiblaScreen(s: AppState) {
             Text(Tr["tQibla"], fontSize = 26.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
             TextButton(onClick = { calib = true }) { Text(Tr["calibrate"]) }
         }
-        s.prefs.place?.let { Text(it.name, Modifier.padding(horizontal = 12.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary) }
+        // the place chosen on the Home screen (so a complaint shows from which city the qibla was seen)
+        s.prefs.place?.let { pl ->
+            Column(Modifier.fillMaxWidth().clickable { s.page = "city"; s.sub = "city" }.padding(horizontal = 12.dp, vertical = 2.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(if (s.prefs.placeByGps) Icons.Outlined.MyLocation else Icons.Outlined.PushPin, null, tint = MaterialTheme.colorScheme.primary)
+                    Text(" " + pl.name, fontSize = 22.sp, fontWeight = FontWeight.Bold)
+                }
+                Text(if (s.prefs.placeByGps) Tr["placeGps"] else Tr["placeManual"], fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f))
+            }
+        }
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             SegmentedButton(mode == 0, { mode = 0 }, SegmentedButtonDefaults.itemShape(0, 2), icon = { Icon(Icons.Outlined.Explore, null) }) { Text(Tr["compass"]) }
             SegmentedButton(mode == 1, { mode = 1 }, SegmentedButtonDefaults.itemShape(1, 2), icon = { Icon(Icons.Outlined.PhotoCamera, null) }) { Text(Tr["camera"]) }
