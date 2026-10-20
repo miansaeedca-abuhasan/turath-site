@@ -524,6 +524,12 @@ body.vfpage .appbar{position:static}
 @keyframes vspin{to{transform:rotate(360deg)}}
 .vthumb{display:block;max-width:100%;max-height:9rem;margin:.4rem auto;border-radius:10px;border:1px solid var(--line);object-fit:contain}
 .vocrtxt{max-height:16rem;overflow:auto;line-height:2;padding:.5rem .7rem;border:1px solid var(--line);border-radius:10px;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:.4rem 0}
+
+.vshare{max-height:calc(100vh - 1rem)}.vshare .sbody{padding-bottom:.6rem}
+.vchk{display:flex;align-items:center;gap:.6rem;padding:.4rem 0;font-size:.92rem;border-bottom:1px solid var(--line)}.vchk input{width:18px;height:18px;flex:none}
+.vprev{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.82rem;line-height:1.7;background:var(--wash);border-radius:10px;padding:.6rem .7rem;margin:.3rem 0;max-height:12rem;overflow:auto}
+.vsharebar{display:flex;flex-wrap:wrap;gap:.4rem;padding:.6rem .8rem;align-items:center}.vsharebar .tbtn{margin-inline-start:auto}
+.vcard{max-width:100%;border-radius:10px;border:1px solid var(--line);margin:.4rem 0}
 </style>
 </head>
 <body>
@@ -5683,15 +5689,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const plain = s => nrm(s).split(/[^ء-ي]+/).filter(Boolean);
   /* ---- labels (Urdu / Arabic / English; other languages use English) ---- */
   const LB = {
-    ur: {nomatch: "مکمل مطابقت نہیں ملی (ملتی جلتی روایات نیچے ہیں)", ok: 'مقبول (صحیح یا حسن)', weak: 'ضعیف', bad: 'شدید ضعیف یا بے اصل', mix: 'علماء کا اختلاف ہے', unk: 'حکم نہیں ملا', full: 'پوری عبارت مطابق ہے', most: 'زیادہ تر مطابق، کچھ الفاظ مختلف', part: 'عبارت کا کچھ حصہ مطابق ہے', none: 'اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔ یہ اس بات کا ثبوت نہیں کہ یہ بے اصل ہے۔',
+    ur: {shTitle: "کیا شیئر کریں؟", shQuote: "متن (اقتباس)", shPct: "مطابقت کا فیصد", shTr: "حکم اور محدث کا اردو ترجمہ", shAr: "ماخذ کی عربی عبارت", shLink: "لنک", shShort: "مختصر", shLong: "تفصیلی", shWa: "واٹس ایپ", shTg: "ٹیلیگرام", shPrev: "پیش منظر", shClose: "بند کریں", shSrcs: "ماخذ (جو چاہیں چنیں)", shSave: "تصویر محفوظ کریں", shSaveHint: "تصویر کو دبا کر رکھیں تو بھی محفوظ ہو جاتی ہے۔", nomatch: "مکمل مطابقت نہیں ملی (ملتی جلتی روایات نیچے ہیں)", ok: 'مقبول (صحیح یا حسن)', weak: 'ضعیف', bad: 'شدید ضعیف یا بے اصل', mix: 'علماء کا اختلاف ہے', unk: 'حکم نہیں ملا', full: 'پوری عبارت مطابق ہے', most: 'زیادہ تر مطابق، کچھ الفاظ مختلف', part: 'عبارت کا کچھ حصہ مطابق ہے', none: 'اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔ یہ اس بات کا ثبوت نہیں کہ یہ بے اصل ہے۔',
       match: 'مطابقت', took: 'وقت', secs: 's', src: 'ماخذ', book: 'کتاب', muh: 'محدث', rawi: 'راوی', gr: 'حکم', summ: 'خلاصہ', open: 'حدیث کھولیں', share: 'شیئر', copy: 'کاپی', copied: 'کاپی ہو گیا', another: 'کوئی اور متن جانچیں', yours: 'آپ کا متن (سرخ: جو الفاظ نہیں ملے)', diff: 'مختلف الفاظ: ', others: 'دیگر ملتے جلتے نتائج',
       steps: ['متن پڑھنا', 'قرآن سے ملانا', 'ماخذ میں تلاش', 'نتائج تیار کرنا'], working: 'تحقیق ہو رہی ہے…',
       ocrQ: 'کیا یہ وہی متن ہے؟', ocrSub: 'تصویر سے پڑھا گیا متن؛ غلطی ہو تو درست کر لیں۔', go: 'تصدیق کر کے آگے بڑھیں', edit: 'متن میں تبدیلی', brand: 'تراث خیرالقرون — تحقیق و تصدیق', more: 'مزید تحقیق کے لیے', jami: 'الجامع الکامل', pg: 'صفحہ/نمبر', dorar: 'الدرر السنیۃ', jamiGr: 'الجامع الکامل میں درج حکم', note: 'حکم وہی ہے جو اہلِ علم نے اپنی کتابوں میں لکھا؛ یہاں صرف نقل کیا گیا ہے۔'},
-    ar: {nomatch: "لم نجد مطابقة كاملة (الروايات المشابهة أدناه)", ok: 'مقبول (صحيح أو حسن)', weak: 'ضعيف', bad: 'شديد الضعف أو لا أصل له', mix: 'اختلاف العلماء', unk: 'لم نجد حكمًا', full: 'النص كاملًا موافق', most: 'موافق في أكثره مع اختلاف في بعض الألفاظ', part: 'يوافق جزءًا من النص', none: 'لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية، وهذا لا يعني أنه لا أصل له.',
+    ar: {shTitle: "ماذا تريد أن تشارك؟", shQuote: "النص (المقتبس)", shPct: "نسبة المطابقة", shTr: "", shAr: "نص المصدر", shLink: "الرابط", shShort: "مختصر", shLong: "مفصّل", shWa: "واتساب", shTg: "تيليجرام", shPrev: "معاينة", shClose: "إغلاق", shSrcs: "المصادر (اختر ما تشاء)", shSave: "حفظ الصورة", shSaveHint: "اضغط مطولًا على الصورة لحفظها.", nomatch: "لم نجد مطابقة كاملة (الروايات المشابهة أدناه)", ok: 'مقبول (صحيح أو حسن)', weak: 'ضعيف', bad: 'شديد الضعف أو لا أصل له', mix: 'اختلاف العلماء', unk: 'لم نجد حكمًا', full: 'النص كاملًا موافق', most: 'موافق في أكثره مع اختلاف في بعض الألفاظ', part: 'يوافق جزءًا من النص', none: 'لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية، وهذا لا يعني أنه لا أصل له.',
       match: 'المطابقة', took: 'الزمن', secs: 'ث', src: 'المصدر', book: 'الكتاب', muh: 'المحدث', rawi: 'الراوي', gr: 'الحكم', summ: 'خلاصة الحكم', open: 'افتح الحديث', share: 'مشاركة', copy: 'نسخ', copied: 'تم النسخ', another: 'تحقق من نص آخر', yours: 'نصك (بالأحمر: الألفاظ غير الموجودة)', diff: 'ألفاظ مختلفة: ', others: 'نتائج مشابهة أخرى',
       steps: ['قراءة النص', 'المطابقة مع القرآن', 'البحث في المصادر', 'تجهيز النتائج'], working: 'جارٍ التحقق…',
       ocrQ: 'هل هذا هو النص؟', ocrSub: 'النص المقروء من الصورة؛ صحّحه إن وجدت خطأ.', go: 'تأكيد والمتابعة', edit: 'تعديل النص', brand: 'تراث خير القرون — تحقيق وتصديق', more: 'للمزيد', jami: 'الجامع الكامل', pg: 'الصفحة/الرقم', dorar: 'الدرر السنية', jamiGr: 'الحكم المذكور في الجامع الكامل', note: 'الحكم هو ما نقله أهل العلم في كتبهم، وهو منقول هنا.'},
-    en: {nomatch: "No full match (similar narrations below)", ok: 'Accepted (sahih or hasan)', weak: 'Weak', bad: 'Very weak or baseless', mix: 'Scholars differ', unk: 'No ruling found', full: 'The whole text matches', most: 'Mostly matches; some words differ', part: 'Part of the text matches', none: 'No match for this text in our books or Dorar. This does not prove it has no basis.',
+    en: {shTitle: "What to share?", shQuote: "The text (quotation)", shPct: "Match percentage", shTr: "Translated ruling and muhaddith", shAr: "Arabic text of the source", shLink: "Link", shShort: "Short", shLong: "Detailed", shWa: "WhatsApp", shTg: "Telegram", shPrev: "Preview", shClose: "Close", shSrcs: "Sources (choose)", shSave: "Save the picture", shSaveHint: "Or press and hold the picture to save it.", nomatch: "No full match (similar narrations below)", ok: 'Accepted (sahih or hasan)', weak: 'Weak', bad: 'Very weak or baseless', mix: 'Scholars differ', unk: 'No ruling found', full: 'The whole text matches', most: 'Mostly matches; some words differ', part: 'Part of the text matches', none: 'No match for this text in our books or Dorar. This does not prove it has no basis.',
       match: 'Match', took: 'Time', secs: 's', src: 'Sources', book: 'Book', muh: 'Muhaddith', rawi: 'Narrator', gr: 'Ruling', summ: 'Summary', open: 'Open the hadith', share: 'Share', copy: 'Copy', copied: 'Copied', another: 'Check another text', yours: 'Your text (red: words not found)', diff: 'Different words: ', others: 'Other similar results',
       steps: ['Reading the text', 'Comparing with the Quran', 'Searching the sources', 'Preparing the results'], working: 'Checking…',
       ocrQ: 'Is this the right text?', ocrSub: 'Text read from the picture; correct it if there is a mistake.', go: 'Confirm and continue', edit: 'Edit the text', brand: 'Turath Khair Al-Quroon — Verify', more: 'More', jami: 'Al-Jami al-Kamil', pg: 'Page/No.', dorar: 'Dorar as-Saniyyah', jamiGr: 'Ruling given in al-Jami al-Kamil', note: 'The ruling is what scholars wrote in their books; it is only quoted here.'}
@@ -5740,11 +5746,82 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const L = LB[ui] || LB.en;
     return ['*' + L.brand + '*', '', '«' + quote + '»', EMO[kind.k] + ' *' + kind.label + '*', ...srcLines, '', L.more + ':', link].join('\n');
   }
-  function actions(txt, T) {
+  function actions(c) {
+    const L = LB[ui] || LB.en, toast = m => { const t = el('div', {class: 'vtoast'}, m); document.body.append(t); setTimeout(() => t.remove(), 1800); };
+    const cp = async () => { try { await navigator.clipboard.writeText(buildMsg(c, {quote: true, pct: true, tr: ui !== 'ar', ar: false, link: true, src: c.srcs.map(() => true)})); toast(L.copied); } catch (e) {} };
+    return el('div', {class: 'vact'}, el('button', {type: 'button', class: 'vgo', on: {click: () => openShare(c)}}, icon('share'), L.share), el('button', {type: 'button', class: 'vgo vsec', on: {click: cp}}, icon('copy'), L.copy));
+  }
+  /* ---------- share sheet: choose what goes into the message; WhatsApp / Telegram / system share / copy / picture card ---------- */
+  function buildMsg(c, o) {
+    const L = LB[ui] || LB.en, lines = ['*' + L.brand + '*', ''];
+    if (o.quote && c.quote) lines.push('«' + c.quote + '»');
+    lines.push(EMO[c.k] + ' *' + c.label + '*' + (o.pct && c.pct ? ' (' + L.match + ': ' + c.pct + '%)' : ''));
+    const chosen = c.srcs.filter((s, i) => o.src[i]);
+    if (chosen.length) lines.push('');
+    chosen.forEach(s => {
+      lines.push('• ' + s.title + (s.muh ? ' — ' + s.muh + (o.tr && s.mtU ? ' (' + s.mtU + ')' : '') : '') + (s.grade ? ': ' + (o.tr && s.gradeU ? s.gradeU + ' — ' : '') + s.grade : ''));
+      if (o.ar && s.txt) lines.push('   ' + s.txt.replace(/\s+/g, ' ').slice(0, 260) + (s.txt.length > 260 ? ' …' : ''));
+    });
+    if (o.link) lines.push('', L.more + ':', c.link);
+    return lines.join('\n');
+  }
+  const wrap = (cx, text, w) => { const ws = text.split(/\s+/), out = []; let ln = ''; for (const x of ws) { const t = ln ? ln + ' ' + x : x; if (cx.measureText(t).width > w && ln) { out.push(ln); ln = x; } else ln = t; } if (ln) out.push(ln); return out; };
+  async function cardBlob(c, o) {
+    try { await Promise.all(['44px Amiri', '30px "Jameel Noori Nastaleeq"', '700 30px "Jameel Noori Nastaleeq"'].map(f => document.fonts.load(f, 'ابج'))); } catch (e) {}
+    const W = 1080, P = 70, cv = document.createElement('canvas'), cx = cv.getContext('2d'), col = {ok: '#1b7a46', weak: '#c46a00', bad: '#b3261e', mix: '#9a7b00', unk: '#6b7a85'}[c.k], L = LB[ui] || LB.en;
+    const UF = '"Jameel Noori Nastaleeq","Noto Nastaliq Urdu","Amiri",serif', AF = 'Amiri,"Noto Naskh Arabic",serif';
+    const items = [];   // [font, color, text, lineHeight, gapAfter]
+    cx.direction = 'rtl'; cx.textAlign = 'right';
+    const add = (font, color, text, lh, gap) => { cx.font = font; wrap(cx, text, W - 2 * P).forEach(l => items.push([font, color, l, lh, 0])); if (items.length) items[items.length - 1][4] = gap || 0; };
+    if (o.quote && c.quote) add('44px ' + AF, '#16222c', '«' + c.quote + '»', 80, 30);
+    add('700 40px ' + UF, col, c.label + (o.pct && c.pct ? ' (' + L.match + ': ' + c.pct + '%)' : ''), 90, 20);
+    c.srcs.filter((s, i) => o.src[i]).forEach(s => {
+      add('34px ' + UF, '#16222c', '• ' + s.title + (s.muh ? ' — ' + s.muh : '') + (s.grade ? ': ' + (o.tr && s.gradeU ? s.gradeU + ' — ' : '') + s.grade : ''), 72, 8);
+      if (o.ar && s.txt) add('34px ' + AF, '#444', s.txt.replace(/\s+/g, ' ').slice(0, 220), 60, 14);
+    });
+    const H = 170 + items.reduce((a, x) => a + x[3] + x[4], 0) + 190;
+    cv.width = W; cv.height = H;
+    cx.fillStyle = '#f7f3e8'; cx.fillRect(0, 0, W, H); cx.fillStyle = '#0c5c6e'; cx.fillRect(0, 0, W, 130);
+    cx.direction = 'rtl'; cx.textAlign = 'center'; cx.fillStyle = '#fff'; cx.font = '700 48px ' + UF; cx.fillText(L.brand, W / 2, 82);
+    cx.fillStyle = col; cx.fillRect(0, 130, W, 10);
+    let y = 150; cx.textAlign = 'right'; cx.direction = 'rtl';
+    items.forEach(([f, colr, t, lh, g]) => { cx.font = f; cx.fillStyle = colr; y += lh; cx.fillText(t, W - P, y - lh * .25); y += g; });
+    cx.fillStyle = '#0c5c6e'; cx.fillRect(P, H - 140, W - 2 * P, 3);
+    cx.textAlign = 'center'; cx.direction = 'ltr'; cx.font = '34px sans-serif'; cx.fillStyle = '#0c5c6e'; cx.fillText('turathkhairalquroon.com', W / 2, H - 80);
+    return await new Promise(r => cv.toBlob(r, 'image/png'));
+  }
+  function openShare(c) {
+    const L = LB[ui] || LB.en, close = () => document.querySelectorAll('.sheetbg').forEach(x => x.remove());
+    const o = {quote: true, pct: true, tr: ui !== 'ar', ar: false, link: true, src: c.srcs.map(() => true)};
+    const pre = el('pre', {class: 'vprev', dir: 'auto'}), upd = () => { pre.textContent = buildMsg(c, o); };
+    const chk = (label, key, idx) => { const i = el('input', {type: 'checkbox'}); i.checked = idx == null ? o[key] : o.src[idx]; i.addEventListener('change', () => { if (idx == null) o[key] = i.checked; else o.src[idx] = i.checked; upd(); }); return el('label', {class: 'vchk'}, i, el('span', {}, label)); };
+    const rows = [chk(L.shQuote, 'quote'), chk(L.shPct, 'pct')];
+    if (ui !== 'ar') rows.push(chk(L.shTr, 'tr'));
+    rows.push(chk(L.shAr, 'ar'), chk(L.shLink, 'link'));
+    const srcRows = c.srcs.map((s, i) => chk(s.title + (s.muh ? ' — ' + s.muh : ''), null, i));
+    const preset = (short) => { o.quote = true; o.pct = true; o.link = true; o.ar = false; c.srcs.forEach((s, i) => o.src[i] = short ? i === 0 : true); sheetEl.querySelectorAll('.vchk input').forEach((inp, k) => { const keys = ['quote', 'pct', ui !== 'ar' ? 'tr' : null, 'ar', 'link'].filter(Boolean); inp.checked = k < keys.length ? o[keys[k]] : o.src[k - keys.length]; }); upd(); };
+    const img = el('div', {class: 'vimg'});
     const toast = m => { const t = el('div', {class: 'vtoast'}, m); document.body.append(t); setTimeout(() => t.remove(), 1800); };
-    const cp = async () => { try { await navigator.clipboard.writeText(txt); toast(N('copied')); } catch (e) { const a = el('textarea', {}, txt); document.body.append(a); a.select(); try { document.execCommand('copy'); toast(N('copied')); } catch (x) {} a.remove(); } };
-    const sh = async () => { if (navigator.share) { try { await navigator.share({text: txt}); } catch (e) {} } else cp(); };
-    return el('div', {class: 'vact'}, el('button', {type: 'button', class: 'vgo', on: {click: sh}}, icon('share'), N('share')), el('button', {type: 'button', class: 'vgo vsec', on: {click: cp}}, icon('copy'), N('copy')));
+    const copyTxt = async () => { try { await navigator.clipboard.writeText(buildMsg(c, o)); toast(L.copied); } catch (e) { toast('✗'); } };
+    const btn = (ic, t, fn) => el('button', {type: 'button', class: 'vgo vsec', on: {click: fn}}, ic ? icon(ic) : '', t);
+    const sheetEl = el('div', {class: 'sheet vshare', role: 'dialog'}, el('h2', {class: 'stitle'}, L.shTitle),
+      el('div', {class: 'sbody'},
+        el('div', {class: 'vact'}, btn(null, L.shShort, () => preset(true)), btn(null, L.shLong, () => preset(false))),
+        ...rows, el('p', {class: 'cs'}, L.shSrcs), ...srcRows, el('p', {class: 'cs'}, L.shPrev), pre, img),
+      el('div', {class: 'vsharebar'},
+        el('button', {type: 'button', class: 'vgo', on: {click: async () => { const m = buildMsg(c, o); if (navigator.share) { try { await navigator.share({text: m}); } catch (e) {} } else copyTxt(); }}}, icon('share'), L.share),
+        btn(null, L.shWa, () => window.open('https://wa.me/?text=' + encodeURIComponent(buildMsg(c, o)), '_blank', 'noopener')),
+        btn(null, L.shTg, () => window.open('https://t.me/share/url?url=' + encodeURIComponent(c.link) + '&text=' + encodeURIComponent(buildMsg(c, o)), '_blank', 'noopener')),
+        btn('copy', L.copy, copyTxt),
+        btn('poster', L.shImg, async () => {
+          img.replaceChildren(el('p', {class: 'cs'}, '…'));
+          const b = await cardBlob(c, o), f = new File([b], 'tahqeeq.png', {type: 'image/png'});
+          if (navigator.canShare && navigator.canShare({files: [f]})) { try { await navigator.share({files: [f]}); img.replaceChildren(); return; } catch (e) { if (e && e.name === 'AbortError') { img.replaceChildren(); return; } } }
+          const u = URL.createObjectURL(b); img.replaceChildren(el('img', {class: 'vcard', src: u, alt: ''}), el('a', {class: 'btn lbtn', href: u, download: 'tahqeeq.png'}, L.shSave), el('p', {class: 'cs'}, L.shSaveHint)); img.scrollIntoView({block: 'nearest'});
+        }),
+        el('button', {type: 'button', class: 'tbtn', on: {click: close}}, L.shClose)));
+    const bg = el('div', {class: 'sheetbg', on: {click: e => { if (e.target === bg) close(); }}}, sheetEl);
+    document.body.append(bg); upd();
   }
   function secLabel(secs) { return N('took') + ': ' + secs + ' ' + N('secs'); }
   function hadithResult(h, raw, secs, quoteFull) {
@@ -5770,6 +5847,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       lines.push('• ' + title + (c.muh ? ' — ' + c.muh : '') + (g ? ': ' + (gt || g) : ''));
     });
     const q = quoteFull ? raw : raw.split(/\s+/).slice(0, 14).join(' ') + (raw.split(/\s+/).length > 14 ? ' …' : '');
+    const ctx = {k: kind, label, pct: strong.length ? pct : 0, quote: q, link, srcs: matched.map(c => ({title: c.src === 'jami' ? N('jami') + ' — ' + c.num : [c.book, c.no].filter(Boolean).join(' ، '), muh: c.src === 'jami' ? '' : c.muh, mtU: c.src === 'jami' ? '' : trMuh(c.muh), grade: c.grade || '', gradeU: trGrade(c.grade || ''), txt: c.txt}))};
     return el('div', {class: 'card pad'},
       el('p', {class: 'vpill ' + CLS[kind]}, label),
       el('p', {class: 'cs'}, (full ? N('full') : pct >= 70 ? N('most') : N('part')) + ' — ' + N('match') + ': ' + pct + '% · ' + secLabel(secs)),
@@ -5777,7 +5855,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('p', {class: 'ar vsrc', lang: 'ar', dir: 'rtl'}, best.txt),
       el('p', {class: 'ct'}, N('src')), ...cards,
       el('p', {class: 'cs'}, N('note')),
-      actions(shareText({k: kind, label}, q, lines, link)));
+      actions(ctx));
   }
   function progress() {
     const n = N('steps'), rows = n.map(t => el('div', {class: 'vstp'}, el('span', {class: 'vdot'}), t)), tm = el('div', {class: 'cs vtm'}, '0.0 ' + N('secs'));
@@ -5849,7 +5927,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (!ok) parts.push(el('div', {}, q.extra.length ? el('p', {class: 'vbad'}, T.qExtra, el('b', {lang: 'ar'}, q.extra.join(' '))) : '', q.miss.length ? el('p', {class: 'vbad'}, T.qMiss, el('b', {lang: 'ar'}, q.miss.join(' '))) : ''));
       parts.push(el('a', {class: 'btn lbtn', href: '#/q/s/' + s1 + '/' + a1}, T.qOpen));
       const quote = raw.split(/\s+/).slice(0, 14).join(' ') + (raw.split(/\s+/).length > 14 ? ' …' : '');
-      parts.push(actions(shareText({k: ok ? 'ok' : 'mix', label}, quote, ['• ' + name], 'https://turathkhairalquroon.com/#/verify')));
+      parts.push(actions({k: ok ? 'ok' : 'mix', label, pct: Math.round(q.sc * 100), quote, link: 'https://turathkhairalquroon.com/#/verify', srcs: [{title: name, muh: '', grade: '', txt: txt.join(' ')}]}));
       return el('div', {class: 'card pad'}, ...parts);
     }
     async function run0(extra) {
