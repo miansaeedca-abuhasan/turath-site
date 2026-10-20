@@ -1945,9 +1945,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- voices ---------- */
   const SS = window.speechSynthesis;
-  const S = {rate: 1, voice: {}, sanad: false, arabic: false, tr: true, uplift: true};
+  const S = {rate: 1, voice: {}, sanad: false, arabic: false, tr: true, uplift: false};
   try { Object.assign(S, JSON.parse(localStorage.tts || '{}')); } catch (e) {}
-  if (!S.v2) { S.v2 = 1; S.arabic = false; S.sanad = false; S.uplift = true; }   // Arabic reading by the phone voice is not accurate: off by default
+  if (!S.v3) { S.v3 = 1; S.arabic = false; S.sanad = false; S.uplift = false; }   // the special voice uses limited credits: off unless the user turns it on   // Arabic reading by the phone voice is not accurate: off by default
   const save = () => { try { localStorage.tts = JSON.stringify(S); } catch (e) {} };
   let VOICES = [];
   const loadVoices = () => { VOICES = SS ? SS.getVoices() : []; };
