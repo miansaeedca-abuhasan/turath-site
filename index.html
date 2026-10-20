@@ -493,6 +493,7 @@ details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .rjmaster .rjnotes li{color:#37878a}.rjmaster .rjwho{color:var(--text,#222)}
 
 .vfta{width:100%;min-height:8rem;resize:vertical;font-size:1.05rem;line-height:1.7;padding:.7rem;border-radius:12px;box-sizing:border-box}
+.vch{margin:.4rem 0 .8rem}.vcnt{display:block;text-align:end;margin:.2rem .3rem}
 .vok{color:#0a7a3d;font-weight:700;margin:.4rem 0}.vbad{color:#b3261e;margin:.4rem 0}.vbad b{background:rgba(179,38,30,.1);padding:0 .25rem;border-radius:4px}
 </style>
 </head>
@@ -3630,14 +3631,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return out;
   }
   const gradeCls = g => /ضعيف|منكر|موضوع|باطل|لا أصل|كذب|شاذ|مرسل|منقطع|لا يصح|لا يثبت/.test(g) ? 'gbad' : /صحيح|حسن|ثابت|جيد|قوي/.test(g) ? 'ggood' : '';
-  async function showHadithSearch() {
+  async function showHadithSearch(emb) {
     await index();
+    let q, go, out;
+    if (emb) { q = {value: emb.q}; out = emb.out; }
+    else {
     bar(T('hsTitle'), '', true);
     const box = $('#list'); box.replaceChildren();
-    const q = el('input', {type: 'search', class: 'filter', placeholder: T('hsPlace'), 'aria-label': T('hsPlace'), id: 'hsq'});
-    const go = el('button', {class: 'btn lbtn', type: 'button'}, icon('search'), T('gsGo'));
-    const out = el('div');
+    q = el('input', {type: 'search', class: 'filter', placeholder: T('hsPlace'), 'aria-label': T('hsPlace'), id: 'hsq'});
+    go = el('button', {class: 'btn lbtn', type: 'button'}, icon('search'), T('gsGo'));
+    out = el('div');
     box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), el('div', {class: 'gsbar'}, go), el('p', {class: 'note'}, T('hsHint')), out);
+    }
     let run = 0;
     const search = async () => {
       const v = q.value.trim(); if (!v) return;
@@ -3706,6 +3711,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       else dsec.append(link);
       if (page === 1) dsec.append(el('p', {class: 'note'}, T('hsDorarSrc')));
     };
+    if (emb) return search();
     go.addEventListener('click', search);
     q.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
     try { if (localStorage.hsq) q.value = localStorage.hsq; } catch (e) {}
@@ -4094,7 +4100,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     },
     async list() { return index(); },
     showSearch,
-    showHadithSearch,
+    showHadithSearch, hsEmbed: (q, out) => showHadithSearch({q, out}),
     // one hadith for the compare page: {title, text, grade, href} (or {title, ext} for a book in the other link)
     async item(key, printed, n) {
       await index(); const b = bookOf(key); if (!b) return null;
@@ -5544,7 +5550,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 // It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
 (function () {
   const S = {
-    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ',
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]],
       intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
       ph: 'یہاں متن ڈالیں…', go: 'تحقیق کریں', clear: 'صاف کریں', paste: 'کلپ بورڈ سے ڈالیں',
       short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
@@ -5555,7 +5561,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
       hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
       howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
-    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث',
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]],
       intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
       ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
       short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
@@ -5566,7 +5572,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
       hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
       howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
-    en: {title: 'Verify', sub: 'Quick check of a verse or hadith',
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]],
       intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
       ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
       short: 'The text is too short. Enter at least three Arabic words.',
@@ -5649,9 +5655,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const go = el('button', {type: 'button', class: 'btn', on: {click: () => run()}}, icon('verify'), ' ', T.go);
     const clr = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { ta.value = ''; out.replaceChildren(); ta.focus(); }}}, T.clear);
     const pst = navigator.clipboard && navigator.clipboard.readText ? el('button', {type: 'button', class: 'btn lbtn', on: {click: async () => { try { ta.value = await navigator.clipboard.readText(); run(); } catch (e) {} }}}, T.paste) : null;
+    ta.maxLength = 5000;
+    const cnt = el('span', {class: 'cs vcnt'}, '0 / 5000'); ta.addEventListener('input', () => { cnt.textContent = ta.value.length + ' / 5000'; });
+    const chips = el('div', {class: 'chips vch'}, ...T.ex.map(([l, t]) => el('button', {type: 'button', class: 'chip on', on: {click: () => { ta.value = t; cnt.textContent = t.length + ' / 5000'; run(); }}}, l)));
     v.append(el('div', {class: 'quiz', lang: ui, dir: RTL() ? 'rtl' : 'ltr'},
       el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('verify')), el('h2', {}, T.title), el('p', {class: 'cs'}, T.intro)),
-      ta, el('div', {class: 'gsbar'}, go, pst, clr), out,
+      ta, cnt, el('div', {class: 'gsbar'}, go, pst, clr), el('p', {class: 'cs'}, T.try), chips, out,
       el('details', {class: 'card gsres'}, el('summary', {}, T.how), el('p', {class: 'note'}, T.howT))));
     let tk = 0;
     async function run() {
@@ -5672,19 +5681,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           parts.push(el('p', {class: 'qar sm', lang: 'ar', dir: 'rtl'}, txt.join(' ')));
           parts.push(ok ? el('p', {class: 'vok'}, T.qOk) : el('div', {}, q.extra.length ? el('p', {class: 'vbad'}, T.qExtra, el('b', {lang: 'ar'}, q.extra.join(' '))) : '', q.miss.length ? el('p', {class: 'vbad'}, T.qMiss, el('b', {lang: 'ar'}, q.miss.join(' '))) : ''));
           parts.push(el('a', {class: 'btn lbtn', href: '#/q/s/' + s1 + '/' + a1}, T.qOpen));
-          box.push(el('div', {class: 'card pad'}, ...parts));
+          { const c = el('div', {class: 'card pad'}, ...parts); if (ok) c.dataset.strong = '1'; box.push(c); }
         }
       }
-      const h = await hadithCheck(inW, rawW);
-      if (my !== tk) return;
-      const parts = [el('h3', {class: 'grp'}, T.hHead)];
-      if (h) {
-        parts.push(el('p', {class: 'ct'}, T.hFound(h.n)));
-        const list = el('div'); (h.d.results || []).slice(0, 5).forEach(r => { try { list.append(row(r)); } catch (e) {} }); parts.push(list);
-      } else parts.push(el('p', {class: 'note'}, T.hNone));
-      parts.push(el('p', {class: 'cs'}, T.hNote));
-      parts.push(el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { try { sessionStorage.hsauto = (h ? h.q : ta.value.trim().slice(0, 80)); } catch (e) {} location.hash = '#/hs'; }}}, icon('search'), ' ', T.hMore));
-      box.push(el('div', {class: 'card pad'}, ...parts));
+      const base = inW.length >= 3 ? inW : rawW, hq = base.slice(0, 7).join(' ');
+      const hout = el('div');
+      const strong = box.length && box[0].dataset.strong === '1';
+      const hd = el('details', {class: 'card gsres'}, el('summary', {}, T.hHead), hout, el('p', {class: 'cs'}, T.hNote));
+      hd.open = !strong;
+      box.push(hd);
+      out.replaceChildren(...box);
+      try { await COLL.hsEmbed(hq, hout); } catch (e) { hout.append(el('p', {class: 'note'}, T.hNone)); }
+      return;
       out.replaceChildren(...box);
     }
     let pre = ''; try { pre = sessionStorage.vtext || ''; sessionStorage.removeItem('vtext'); } catch (e) {}
