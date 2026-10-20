@@ -480,6 +480,9 @@ details.dirasa>summary{cursor:pointer;padding:.6rem .8rem;font:700 1.15rem/1.8 v
 details.dirasa>summary::before{content:'▸ ';}details.dirasa[open]>summary::before{content:'▾ ';}
 details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .drbody{padding:.2rem .9rem .6rem;font:1.08rem/2 var(--arabic);text-align:justify}.drbody p{margin:.45rem 0}.drbody p.q{color:var(--muted)}
+.snlink{color:var(--link,#1a5fb4);border-bottom:1px dotted currentColor;text-decoration:none;border-radius:3px}.snlink:hover{background:rgba(26,95,180,.1)}
+.rjtbl{border:1px solid var(--line,#d9d2c3);border-radius:10px;margin:.5rem .6rem .7rem;overflow:hidden}.rjth,.rjtr{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.4rem .8rem}.rjth{background:var(--wash,rgba(11,93,75,.1));font:700 1rem var(--arabic);color:var(--accent,#0b5d4b)}.rjtr{border-top:1px solid var(--line,#e6e0d2);text-decoration:none;color:inherit;font:1.05rem/1.8 var(--arabic)}.rjtr:nth-child(even){background:rgba(127,127,127,.05)}.rjtr:active{background:var(--wash)}.rjtn{flex:1}.rjtk{flex:0 0 auto}.rjnone{color:var(--muted,#999)}.rjtbl .btn{margin:.5rem}
+.rjcd{display:flex;gap:.7rem;align-items:flex-start;text-decoration:none;color:inherit;padding:.7rem .9rem;margin:.45rem 0}.rjcd .sinfo{flex:1;display:flex;flex-direction:column;gap:.15rem}.rjcn{font:700 1.2rem/1.9 var(--arabic);color:var(--accent,#0b5d4b)}.rjck{font:.95rem/1.8 var(--arabic);color:var(--muted,#7a7468)}.rjcd .rjline{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.2rem}.rjchip{font:.9rem/1.7 var(--arabic);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .6rem;color:var(--muted,#6b665a)}
 </style>
 </head>
 <body>
@@ -898,7 +901,12 @@ async function fullHadith(d,box){
   if(!best||best.hit<3||best.raw.length<jt.length*1.15){box.append(el('p',{class:'note'},'اس حدیث کا اس سے طویل مکمل متن ہماری کتب میں نہیں ملا۔'));return;}
   box.append(el('b',{},(COLL.name(best.r.key)||best.r.label)+' ('+best.r.number+')'));
   const p=el('p',{class:'ar fullh',lang:'ar'});
-  best.raw.forEach((w,i)=>p.append(el('span',{class:best.inn[i]?'':'dimw'},w),' '));
+  let sn=[];try{sn=(COLL.sanad&&COLL.sanad(best.it.text))||[]}catch(e){}
+  let pos=0,cur=null;
+  best.raw.forEach((w,i)=>{const st=best.it.text.indexOf(w,pos);pos=st<0?pos:st+w.length;
+    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
+    if(x){if(!cur||cur.x!==x){cur={x,a:el('a',{class:'snlink',href:x.href})};p.append(cur.a);}cur.a.append(sp,' ');}
+    else{cur=null;p.append(sp,' ');}});
   box.append(p,el('a',{href:best.it.href||'#'},T('open')));
 }
 window.fullHadith=fullHadith;
@@ -1341,6 +1349,8 @@ function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{}
   det.addEventListener('toggle',async()=>{if(!det.open||done)return;body.replaceChildren(el('p',{class:'note'},'…'));
     try{await drLoad(d.num);const ps=(window.DRDATA||{})[d.num]||[];done=true;
       body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...refRich(t))));
+      try{const seen=new Set(),chips=[];ps.forEach(t=>{const pt=t.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'');if(!/(?:حدثنا|أخبرنا|اخبرنا|حدثني|عن)\s/.test(pt))return;const sn=COLL.sanad(pt);if(sn.length<2)return;sn.forEach(z=>{const nm=pt.slice(z.a,z.b).trim();if(!nm||seen.has(nm)||nm.split(/\s+/).length>6)return;seen.add(nm);chips.push(el('a',{class:'btn',lang:'ar',dir:'rtl',href:z.href},nm));});});
+        if(chips.length)body.append(el('details',{class:'rjsanad'},el('summary',{},'رواة الدراسة ('+chips.length+')'),el('p',{class:'cs'},'اضغط على الاسم'),el('div',{class:'chips'},...chips.slice(0,40))));}catch(e){}
       if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps.map(x=>x.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g,'')),'ar',body)}},icon('listen'),T('listenPart')));}
     catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
   return det;}
@@ -3704,9 +3714,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const RJT = {
     ur: {title: 'رواة الحدیث', rank: 'درجہ (تقریب التہذیب)', tab: 'طبقہ', death: 'وفات', books_n: n => 'کتب: ' + n, perbook: 'ہر کتاب میں راوی کے متعلق کیا ہے', openbook: 'کتاب میں کھولیں', loadtxt: 'متن دکھائیں', allnotes: 'تمام کتب سے جرح و تعدیل', loadnotes: 'تمام کتب سے اقوال جمع کریں', loadingq: 'لوڈ ہو رہا ہے…', fromTK: 'تراث خیرالقرون کا مرتب ذخیرہ', basis: 'نام کی مطابقت سے جوڑا گیا ہے؛ ہم نام راویوں میں کتاب کا متن دیکھ کر تصدیق کر لیں۔', bookwise: 'کتاب وار نتائج', news: 'نیا کیا ہے', newsAll: 'نئی کتب اور اپڈیٹس', rj_hero: 'رواة الحدیث اور جرح و تعدیل', ph: 'راوی کا نام لکھیں (مثلاً: ابو بکر بن ابی شیبہ)', src: 'کن کتب میں تلاش کریں؟', none: 'کوئی نتیجہ نہیں ملا۔ نام کے کم الفاظ لکھ کر دیکھیں۔', hint: 'اوپر نام لکھیں۔ نتیجے پر کلک کریں تو راوی کی پوری ترجمہ کھل جائے گی۔ ہم نام والی سند میں کئی راوی ایک سے ہو سکتے ہیں، اس لیے طبقہ اور شیوخ و تلامذہ دیکھ کر پہچانیں۔', books: 'رجال، جرح و تعدیل اور علومِ حدیث کی کتب', sanad: 'سند کے راوی', newtag: 'نئی',  g1: 'رجال: راویوں کے تراجم', g2: 'جرح و تعدیل اور ضعفاء', g3: 'تواریخ اور طبقات',  jarh: 'جرح و تعدیل اور اقوالِ ائمہ', teachers: 'اساتذہ (شیوخ)', students: 'شاگرد (تلامذہ)', sanadHint: 'راوی کے نام پر کلک کریں', more: n => 'مزید نتائج: ' + n + ' (نام مزید لکھ کر تنگ کریں)', loading: 'کتب کا ڈیٹا لوڈ ہو رہا ہے…', tile: 'راوی', count: n => n + ' تراجم'},
     en: {title: 'Hadith narrators', rank: 'Rank (Taqrib at-Tahdhib)', tab: 'Generation', death: 'Death', books_n: n => 'Books: ' + n, perbook: 'What each book says about the narrator', openbook: 'Open in the book', loadtxt: 'Show text', allnotes: 'Criticism from all books', loadnotes: 'Gather sayings from all books', loadingq: 'Loading…', fromTK: 'Compiled narrator record of Turath Khair al-Quroon', basis: 'Linked by name match; for namesakes check the text of the book.', bookwise: 'Results by book', news: 'What’s new', newsAll: 'New books and updates', rj_hero: 'Narrators, criticism and hadith sciences', ph: 'Type the narrator’s name', src: 'Search in which books?', none: 'No result. Try fewer words of the name.', hint: 'Type a name above; tap a result to open the full biography. Several narrators can share the same name, so check the generation, teachers and students.', books: 'Books of narrators, criticism and hadith sciences', sanad: 'Narrators of the chain', newtag: 'New',  g1: 'Rijal: biographies of narrators', g2: 'Criticism and weak narrators', g3: 'Histories and generations',  jarh: 'Criticism and sayings of the imams', teachers: 'Teachers', students: 'Students', sanadHint: 'Tap a name', more: n => 'More results: ' + n + ' (type more of the name)', loading: 'Loading…', tile: 'Narrators', count: n => n + ' entries'},
-    ar: {title: 'رواة الحديث', rank: 'الرتبة (تقريب التهذيب)', tab: 'الطبقة', death: 'الوفاة', books_n: n => 'الكتب: ' + n, perbook: 'ما قيل في الراوي في كل كتاب', openbook: 'افتح في الكتاب', loadtxt: 'عرض النص', allnotes: 'الجرح والتعديل من جميع الكتب', loadnotes: 'اجمع الأقوال من جميع الكتب', loadingq: 'جارٍ التحميل…', fromTK: 'سجل الراوي المرتب في تراث خير القرون', basis: 'الربط بتطابق الاسم؛ عند تشابه الأسماء راجع نص الكتاب.', bookwise: 'النتائج حسب الكتاب', news: 'الجديد', newsAll: 'الكتب والتحديثات الجديدة', rj_hero: 'الرواة الحديث والجرح والتعديل', ph: 'اكتب اسم الراوي', src: 'في أي الكتب تبحث؟', none: 'لا توجد نتائج. جرّب كلمات أقل من الاسم.', hint: 'اكتب الاسم ثم افتح الترجمة. قد يتشابه اسم أكثر من راوٍ فانظر في الطبقة والشيوخ والتلاميذ.', books: 'كتب الرجال والجرح والتعديل وعلوم الحديث', sanad: 'رواة السند', newtag: 'جديد',  g1: 'الرجال: تراجم الرواة', g2: 'الجرح والتعديل والضعفاء', g3: 'التواريخ والطبقات',  jarh: 'الجرح والتعديل وأقوال الأئمة', teachers: 'أساتذة الراوي', students: 'تلاميذ الراوي', sanadHint: 'اضغط على الاسم', more: n => 'نتائج أخرى: ' + n + ' (أكمل الاسم)', loading: 'جارٍ التحميل…', tile: 'الرواة', count: n => n + ' ترجمة'}
+    ar: {life: 'عن حياة الراوي', nm: 'الراوي', rk: 'الرتبة', showall: n => 'عرض الكل (' + n + ')', kunya: 'الكنية واللقب', sy_h: 'روى له', title: 'رواة الحديث', rank: 'الرتبة (تقريب التهذيب)', tab: 'الطبقة', death: 'الوفاة', books_n: n => 'الكتب: ' + n, perbook: 'ما قيل في الراوي في كل كتاب', openbook: 'افتح في الكتاب', loadtxt: 'عرض النص', allnotes: 'الجرح والتعديل من جميع الكتب', loadnotes: 'اجمع الأقوال من جميع الكتب', loadingq: 'جارٍ التحميل…', fromTK: 'سجل الراوي المرتب في تراث خير القرون', basis: 'الربط بتطابق الاسم؛ عند تشابه الأسماء راجع نص الكتاب.', bookwise: 'النتائج حسب الكتاب', news: 'الجديد', newsAll: 'الكتب والتحديثات الجديدة', rj_hero: 'الرواة الحديث والجرح والتعديل', ph: 'اكتب اسم الراوي', src: 'في أي الكتب تبحث؟', none: 'لا توجد نتائج. جرّب كلمات أقل من الاسم.', hint: 'اكتب الاسم ثم افتح الترجمة. قد يتشابه اسم أكثر من راوٍ فانظر في الطبقة والشيوخ والتلاميذ.', books: 'كتب الرجال والجرح والتعديل وعلوم الحديث', sanad: 'رواة السند', newtag: 'جديد',  g1: 'الرجال: تراجم الرواة', g2: 'الجرح والتعديل والضعفاء', g3: 'التواريخ والطبقات',  jarh: 'الجرح والتعديل وأقوال الأئمة', teachers: 'أساتذة الراوي', students: 'تلاميذ الراوي', sanadHint: 'اضغط على الاسم', more: n => 'نتائج أخرى: ' + n + ' (أكمل الاسم)', loading: 'جارٍ التحميل…', tile: 'الرواة', count: n => n + ' ترجمة'}
   };
-  const rt = k => (RJT[ui] || RJT.en)[k] || RJT.en[k];
+  const RT_UI = new Set(['tile', 'news', 'newsAll', 'sanad', 'sanadHint', 'newtag', 'count']);
+  const rt = k => RT_UI.has(k) ? ((RJT[ui] || RJT.en)[k] || RJT.en[k]) : (RJT.ar[k] || (RJT[ui] || RJT.en)[k] || RJT.en[k]);
   window.RJT_TILE = () => rt('tile');
   const RJ_BOOKS = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh10906', 'sh2170', 'thiqat', 'tarikhbukhari', 'sh12579', 'sh23764', 'sh36357', 'sh8632', 'sh10802', 'sh816', 'sh3508', 'sh12698'], RJ_DEF = ['tahdhibkamal'];
   const RJ_LIB = ['tahdhibkamal', 'sh8609', 'sh1290', 'sh149213', 'sh36357', 'sh132965', 'sh2170', 'sh26112', 'sh9863', 'sh10906', 'thiqat', 'tarikhbukhari', 'sh5782', 'sh8632', 'sh12579', 'sh23764', 'sh71', 'sh10802', 'sh816', 'sh3508', 'sh12698'];
@@ -3726,12 +3737,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const e = s.search(/(?:قال|يقول|سمعت|ان|أن|عن)\s+(?:رسول\s+الله|النبي|نبي\s+الله)|ﷺ|صلى\s+الله\s+عليه|\s:\s*["«“]/);
     let sn = e > 0 ? s.slice(0, e) : s.slice(0, 350); if (sn.length > 700) sn = sn.slice(0, 700);
     if (!/(?:حدثنا|حدثني|اخبرنا|أخبرنا|اخبرني|أخبرني|انبانا|أنبأنا|ثنا|عن)\s/.test(sn)) return [];
-    const out = [], seen = new Set(), SEP = /(?:^|[\s،,.:؛])(?:و|ف)?(?:حدثنا|حدثني|أخبرنا|اخبرنا|أخبرني|اخبرني|أنبأنا|انبانا|أنبأني|أنا|ثنا|نا|حدثناه|أخبرناه|عن|قال|قالا|قالوا|قالت|سمعت|يقول|يعني|ح|أنه|انه|أنها|انها|أن|ان|هو|جميعا|كلاهما|كلهم|في|عنه|عنها)(?=[\s،,.:؛]|$)|\s[-–ـ]+(?=\s)/g;
+    const out = [], seen = new Set(), SEP = /(?:^|[\s،,.:؛])(?:و|ف)?(?:حدثنا|حدثني|أخبرنا|اخبرنا|أخبرني|اخبرني|أنبأنا|انبانا|أنبأني|أنا|ثنا|نا|حدثناه|أخبرناه|عن|قال|قالا|قالوا|قالت|سمعت|يقول|يعني|ح|أنه|انه|أنها|انها|أن|ان|هو|جميعا|كلاهما|كلهم|في|عنه|عنها)(?=[\s،,.:؛]|$)|\s[-–ـ]+(?=\s)|[،,](?=\s)/g;
     let last = 0, m; const cut = (a, b) => {
       let nm = sn.slice(a, b).replace(/\s*[-–ـ]?\s*(?:رضي|رضى)\s+الله\s+(?:تعالى\s+)?عن(?:ه|ها|هما|هم)\s*[-–ـ]?/g, '').replace(/^(?:رواه|رووه)\s+/, '').replace(/^[\s،,.:؛]+|[\s،,.:؛]+$/g, '').replace(/^(?:و|ف)(?=\S+\s)/, '');
       const w = nm.split(/\s+/).length; if (out.stop) return; if (/(?:^|\s)(?:كنت|كان|كانت|اراد|أراد|ارادت|أرادت|ذكر|ذكرت|يدخل|فزعمت|فذكرت|رأيت|رايت|دخلت|خرجت|نزلت|مررت|قلت|اخبرته|أخبرته)(?:\s|$)/.test(nm) || w > 7) { out.stop = 1; return; } if (nm.length < 3 || w > 8 || /^(?:كان|ما|لا|من|ثم|إذا|اذا|هذا|هذه|في|به|بمثله)\s/.test(nm) || /[0-9٠-٩]/.test(nm)) return;
-      const key = rnorm(nm); if (!key || seen.has(key)) return; seen.add(key);
-      out.push({d: txt.slice(map[a + (sn.slice(a, b).length - sn.slice(a, b).trimStart().length)] ?? 0, (map[Math.min(b, map.length) - 1] ?? txt.length - 1) + 1).replace(/^[\s،,.:؛]+|[\s،,.:؛]+$/g, ''), q: key});
+      const key = rnorm(nm); if (!key || seen.has(key)) return; if (/(?:^| )(?:النبي|رسول|نبي)(?: |$)/.test(key)) { out.stop = 1; return; } if (/^(?:لي|له|لنا|لها)( |$)/.test(key)) return; seen.add(key);
+      const A0 = map[a + (sn.slice(a, b).length - sn.slice(a, b).trimStart().length)] ?? 0, B0 = (map[Math.min(b, map.length) - 1] ?? txt.length - 1) + 1; out.push({d: txt.slice(A0, B0).replace(/^[\s،,.:؛]+|[\s،,.:؛]+$/g, ''), q: key, a: A0, b: B0});
     };
     while ((m = SEP.exec(sn))) { if (m.index > last) cut(last, m.index); last = m.index + m[0].length; }
     if (last < sn.length) cut(last, sn.length);
@@ -3794,9 +3805,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // ===== The master record of a narrator (Tahdhib al-Kamal entry + rank from Taqrib + links to the other books) =====
   C.rl = null;
   window.RLINK = o => { C.rl = o; };
+  C.rel = {};
+  window.RREL = o => { Object.assign(C.rel, o); };
+  const relGet = async n => { const k = Math.floor((n - 1) / 500); if (!C.rel[n]) { try { await once('rel_' + k, 'coll/rel_' + k + '.js'); } catch (e) {} } return C.rel[n] || null; };
   const rlGet = async () => { if (!C.rl) await once('rlink', 'coll/rijal_link.js'); return C.rl || {keys: [], d: {}}; };
   const rankCls = r => /كذاب|وضاع|متروك|متهم|ساقط|ليس بشيء|ضعيف جدا|ضعيف جداً|منكر الحديث/.test(r) ? 'bad' : /ضعيف|لين|ليس بالقوي|سيئ|مجهول|مستور|مقبول|ماتروك|فيه ضعف|وهم|يخطئ/.test(r) ? 'warn' : 'good';
-  const rankEl = r => r ? el('span', {class: 'rjrank ' + rankCls(r), lang: 'ar'}, r) : null;
+  const rankEl = r => r && r.length <= 24 && !/(?:^| )ابن(?: |$)/.test(r) ?  el('span', {class: 'rjrank ' + rankCls(r), lang: 'ar'}, r) : null;
   async function showRijalMaster(n) {
     const box = $('#list'); box.replaceChildren(el('p', {class: 'note'}, rt('loadingq')));
     const tk = bookOf('tahdhibkamal'), rl = await rlGet(); await needRange(tk, 'ar', n, n);
@@ -3813,16 +3827,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const fr = (k, v) => v ? facts.append(el('div', {class: 'rjrow'}, el('span', {class: 'rjk'}, k), el('span', {class: 'rjv'}, v))) : null;
       fr(rt('rank'), rankEl(m[0])); fr(rt('tab'), m[1]); fr(rt('death'), m[2]);
       if (x.facts) x.facts.split(/\.\s+/).filter(t => t.trim()).forEach(t => { const i = t.indexOf(':'); if (i > 0 && i < 20) fr(t.slice(0, i), t.slice(i + 1).replace(/\.$/, '')); else fr('', t.replace(/\.$/, '')); });
-      card.append(facts);
-      const sec = (title, cnt, open, body) => cnt ? el('details', {class: 'rjsec', open: open ? '' : null}, el('summary', {}, el('span', {class: 'rjst'}, title), el('span', {class: 'rjcnt'}, fmtN(cnt))), body) : null;
+      const sec = (title, cnt, open, body) => cnt ? el('details', {class: 'rjsec', open: open ? '' : null}, el('summary', {}, el('span', {class: 'rjst'}, title), cnt === true ? null : el('span', {class: 'rjcnt'}, fmtN(cnt))), body) : null;
+      const rel = await relGet(n);
+      const trow = (p, id) => { const m2 = id && rl.d[id]; return el('a', {class: 'rjtr', href: id ? '#/s/rijal/' + id : '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n)) + rjCtx([rnorm(x.name || '')])}, el('span', {class: 'rjtn'}, p.n), el('span', {class: 'rjtk'}, m2 && m2[0] ? rankEl(m2[0]) : el('span', {class: 'rjnone'}, '—'))); };
+      const table = (arr, ids) => { const w = el('div', {class: 'rjtbl', lang: 'ar', dir: 'rtl'}, el('div', {class: 'rjth'}, el('span', {}, rt('nm')), el('span', {}, rt('rk')))), ok = ids && ids.length === arr.length, rws = arr.map((p, i) => trow(p, ok ? ids[i] : 0)); rws.slice(0, 60).forEach(r => w.append(r)); if (rws.length > 60) w.append(el('button', {type: 'button', class: 'btn lbtn', on: {click: e => { rws.slice(60).forEach(r => w.insertBefore(r, e.currentTarget)); e.currentTarget.remove(); }}}, rt('showall')(fmtN(rws.length)))); return w; };
       const pills = arr => el('div', {class: 'rjpills', lang: 'ar', dir: 'rtl'}, ...arr.map(p => el('a', {class: 'rjpill', href: '#/s/rijal?q=' + encodeURIComponent(rnorm(p.n)) + rjCtx([rnorm(x.name || '')])}, p.n, p.s.length ? el('small', {}, p.s.join(' ')) : null)));
-      const notesBody = el('ul', {class: 'rjnotes', lang: 'ar', dir: 'rtl'}, ...x.notes.map(nt => el('li', {}, nt.w ? el('b', {class: 'rjwho'}, nt.w + ': ') : null, nt.t, el('span', {class: 'rjbk'}, bname(tk)))));
+      const notesBody = el('ul', {class: 'rjnotes', lang: 'ar', dir: 'rtl'}, ...x.notes.map(nt => el('li', {}, nt.w ? el('b', {class: 'rjwho'}, nt.w + ': ') : null, nt.t, el('span', {class: 'rjbk'}, (tk.ar || bname(tk))))));
       const allBtn = el('button', {type: 'button', class: 'btn lbtn', on: {click: async e => { const bt = e.currentTarget; bt.disabled = true; bt.textContent = rt('loadingq');
         for (const [si, no] of m[3]) { const key = rl.keys[si]; if (!RJ_STRUCT.includes(key)) continue; const b = bookOf(key); await needRange(b, 'ar', no, no); const rr = row(b, 'ar', no); const px = rr && rjParse(rr[1]); if (!px) continue;
-          px.notes.filter(z => z.w).forEach(z => notesBody.append(el('li', {}, el('b', {class: 'rjwho'}, z.w + ': '), z.t, el('span', {class: 'rjbk'}, bname(b))))); }
+          px.notes.filter(z => z.w).forEach(z => notesBody.append(el('li', {}, el('b', {class: 'rjwho'}, z.w + ': '), z.t, el('span', {class: 'rjbk'}, (b.ar || bname(b)))))); }
         bt.remove(); }}}, rt('loadnotes'));
       const jb = el('div', {}, notesBody, m[3].some(e => RJ_STRUCT.includes(rl.keys[e[0]]) && rl.keys[e[0]] !== 'tahdhibkamal') ? allBtn : null);
-      card.append(...[sec(rt('jarh'), x.notes.length, true, jb), sec(rt('teachers'), x.T.length, false, pills(x.T)), sec(rt('students'), x.S.length, false, pills(x.S))].filter(Boolean));
+      card.append(...[sec(rt('life'), true, true, facts), sec(rt('jarh'), x.notes.length, true, jb), sec(rt('teachers'), x.T.length, true, table(x.T, rel && rel[0])), sec(rt('students'), x.S.length, false, table(x.S, rel && rel[1]))].filter(Boolean));
     } else card.append(el('div', {class: 'mt ar', lang: 'ar', dir: 'rtl'}, r0[1]));
     // the other books: what each says
     const others = m[3].filter(e => rl.keys[e[0]] !== 'tahdhibkamal');
@@ -3890,15 +3906,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (!rows.length) { out.replaceChildren(el('p', {class: 'note'}, rt('none'))); return; }
       const els = []; let cur = null;
       rows.forEach(([k, b, r]) => {
-        if (cur !== k) { cur = k; els.push(el('h3', {class: 'grp', dir: 'auto'}, bname(b) + ' — ' + fmtN(tot[k]))); }
+        if (cur !== k) { cur = k; els.push(el('h3', {class: 'grp', dir: 'auto'}, (b.ar || bname(b)) + ' — ' + fmtN(tot[k]))); }
         const pn = (b.an && b.an[r.n]) || r.n, mm = k === 'tahdhibkamal' && C.rl && C.rl.d[r.n];
-        els.push(el('a', {class: 'card srow2', href: k === 'tahdhibkamal' ? '#/s/rijal/' + r.n : '#/s/' + k + '/n/' + r.n}, el('span', {class: 'snum'}, fmtN(pn)),
-          el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, r.h), el('span', {class: 'rjline'}, mm && mm[0] ? rankEl(mm[0]) : null, mm && mm[3].length ? el('span', {class: 'rjbooks'}, rt('books_n')(fmtN(mm[3].length + 1))) : null, r.s ? el('span', {class: 'cs', lang: 'ar', dir: 'rtl', title: rjLegend}, r.s) : null))));
+        const hd = String(r.h).replace(/\s+/g, ' ').trim(), cut = hd.search(/(?<!\sبن|\sابن)\s(?:أبو|أبي|أبا|ابو|ابي|المعروف|نزيل|يقال|ويقال|مولى)\s|[،,.*]/), nmx = (cut > 3 ? hd.slice(0, cut) : hd).replace(/\s*\(\s*[0-9٠-٩]+\s*\)/g, ''), sub = cut > 3 ? hd.slice(cut).replace(/^[\s،,.*]+/, '').replace(/\s*\(\s*[0-9٠-٩]+\s*\)/g, '').slice(0, 110) : '';
+        els.push(el('a', {class: 'card rjcd', href: k === 'tahdhibkamal' ? '#/s/rijal/' + r.n : '#/s/' + k + '/n/' + r.n},
+          el('span', {class: 'snum'}, fmtN(pn)),
+          el('span', {class: 'sinfo', lang: 'ar', dir: 'rtl'}, el('span', {class: 'rjcn'}, nmx), sub ? el('span', {class: 'rjck'}, sub) : null,
+            el('span', {class: 'rjline'}, mm && mm[0] ? rankEl(mm[0]) : null, mm && mm[2] ? el('span', {class: 'rjchip'}, 'ت ' + mm[2]) : null, mm && mm[1] ? el('span', {class: 'rjchip'}, mm[1]) : null, mm && mm[3].length ? el('span', {class: 'rjbooks'}, rt('books_n')(fmtN(mm[3].length + 1))) : null, r.s ? el('span', {class: 'cs', title: rjLegend}, r.s) : null))));
       });
       out.replaceChildren(...els);
     };
     for (const k of RJ_BOOKS) { const b = bookOf(k); if (!b) continue;
-      const c = el('button', {type: 'button', class: 'chip' + (sel.has(k) ? ' on' : ''), 'aria-pressed': String(sel.has(k)), on: {click: () => { sel.has(k) ? sel.delete(k) : sel.add(k); if (!sel.size) sel.add('tahdhibkamal'); chips.querySelectorAll('button').forEach(x => { const on = sel.has(x.dataset.k); x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); }); save(); draw(); }}}, bname(b));
+      const c = el('button', {type: 'button', class: 'chip' + (sel.has(k) ? ' on' : ''), 'aria-pressed': String(sel.has(k)), on: {click: () => { sel.has(k) ? sel.delete(k) : sel.add(k); if (!sel.size) sel.add('tahdhibkamal'); chips.querySelectorAll('button').forEach(x => { const on = sel.has(x.dataset.k); x.classList.toggle('on', on); x.setAttribute('aria-pressed', String(on)); }); save(); draw(); }}}, (b.ar || bname(b)));
       c.dataset.k = k; chips.append(c); }
     inp.addEventListener('input', draw);
     // the books of the section: one heading for each scholar (all the books of one scholar together), numbered from 1; by the death of the scholar
@@ -3922,7 +3941,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       ['saad', ['sh146'], {ur: 'ابن سعد', en: 'Ibn Sa‘d', ar: 'ابن سعد'}]];
     let bkn = 0;
     const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, el('span', {class: 'bkno'}, fmtN(++bkn)), b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
-    const lib = AU.flatMap(([k, ks, nm]) => { const bs = ks.map(bookOf).filter(Boolean); return bs.length ? [el('h3', {class: 'grp'}, nm[ui] || nm.en, bs.length > 1 ? ' (' + fmtN(bs.length) + ')' : ''), ...bs.map(bk)] : []; });
+    const lib = AU.flatMap(([k, ks, nm]) => { const bs = ks.map(bookOf).filter(Boolean); return bs.length ? [el('h3', {class: 'grp', lang: 'ar'}, nm.ar, bs.length > 1 ? ' (' + fmtN(bs.length) + ')' : ''), ...bs.map(bk)] : []; });
     const news = window.NEWS && window.NEWS.length ? el('details', {class: 'rjsec newsbox'}, el('summary', {}, el('span', {class: 'rjst'}, rt('newsAll'))), el('div', {class: 'newsbody'}, ...window.NEWS.map(nw => el('div', {class: 'newsitem'}, el('b', {}, (nw.t[ui] || nw.t.ur) + ' — ' + nw.d), el('ul', {}, ...(nw.i[ui] || nw.i.ur).map(t => el('li', {}, t))))))) : null;
     const more = el('details', {class: 'rjsec'}, el('summary', {}, el('span', {class: 'rjst'}, rt('bookwise'))), el('div', {class: 'rjinner'}, el('p', {class: 'cs'}, rt('src')), chips));
     box.append(el('div', {class: 'rjhero'}, el('h2', {}, rt('rj_hero'))), el('div', {class: 'card pad0 filterbox'}, icon('search'), inp), more, out, news, ...lib);
@@ -4014,6 +4033,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }
       return null;
     },
+    sanad: txt => { const sn = sanadNames(txt); return sn.map((x, i) => ({a: x.a, b: x.b, href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))})); },
     has: k => ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik', 'hakim'].includes(k) || !!bookOf(k),
     name: b => { if (typeof b === 'string') { b = bookOf(b); if (!b) return ''; } return bname(b); },
     // reference chip in a Jami hadith (e.g. «مسلم 1907»): show that hadith from the book, by its printed number
