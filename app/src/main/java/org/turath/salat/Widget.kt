@@ -24,7 +24,7 @@ class Widget : AppWidgetProvider() {
         private val NAMES = intArrayOf(R.id.n0, R.id.n1, R.id.n2, R.id.n3, R.id.n4, R.id.n5)
         private val COLS = intArrayOf(R.id.c0, R.id.c1, R.id.c2, R.id.c3, R.id.c4, R.id.c5)
         private val SIX = listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
-        const val GOLD = 0xFFE0B54A.toInt()
+        const val GOLD = 0xFF26C6DA.toInt()
 
         /** all the app's widgets */
         fun update(ctx: Context) {

@@ -19,7 +19,7 @@ object Tr {
         "tHome" to arrayOf("ہوم", "الرئيسية", "Home"), "tTimes" to arrayOf("اوقات", "المواقيت", "Times"),
         "tRem" to arrayOf("یاد دہانی", "التنبيهات", "Reminders"), "tCal" to arrayOf("کیلنڈر", "التقويم", "Calendar"),
                 "mosqCount" to arrayOf("نتائج", "النتائج", "Results"),
-        "gmapsPrayer" to arrayOf("گوگل میپس میں قریبی مصلے", "اعرض المصليات القريبة في خرائط Google", "See nearby prayer rooms in Google Maps"),
+        "gmapsPrayer" to arrayOf("گوگل میپس میں قریبی مسلم مصلے", "اعرض مصليات المسلمين القريبة في خرائط Google", "See near by Muslim prayer room"),
         "mosqHidden" to arrayOf("گروہی چھانٹی سے ہٹائے گئے", "المستبعدة بالتصفية", "Left out by the group filter"),
         "tMosques" to arrayOf("مساجد", "المساجد", "Masjids"),
         "mosques" to arrayOf("قریبی مساجد", "المساجد القريبة", "Masjids nearby"),

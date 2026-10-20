@@ -44,7 +44,7 @@ class AppState(val act: MainActivity) {
     fun fmt(t: ZonedDateTime) = Alarms.fmt(prefs, t)
 }
 
-val Gold = Color(0xFFE0B54A)
+val Gold = Color(0xFF26C6DA)
 val Ink = Color(0xFF14213D)
 val Teal = Color(0xFF0E6F78)
 val Blue = Color(0xFF1F8FD1)
@@ -73,7 +73,7 @@ fun App(act: MainActivity) {
     val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
         surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED),
         secondaryContainer = Color(0xFF363B43), onSecondaryContainer = Color(0xFFEDEDED), primaryContainer = Color(0xFF363B43), onPrimaryContainer = Color(0xFFEDEDED))
-    else lightColorScheme(primary = acc ?: Blue, secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF),
+    else lightColorScheme(primary = acc ?: Color(0xFF00838F), secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF),
         secondaryContainer = Color(0xFFE3E5E9), onSecondaryContainer = Color(0xFF1B1F27), primaryContainer = Color(0xFFE3E5E9), onPrimaryContainer = Color(0xFF1B1F27))
     val baseDensity = androidx.compose.ui.platform.LocalDensity.current
     MaterialTheme(colorScheme = scheme) {

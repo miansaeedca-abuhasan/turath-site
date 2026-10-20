@@ -131,8 +131,8 @@ fun angleDiff(a: Double, b: Float): Float { var d = (a - b).toFloat(); while (d 
 /** the Ka'bah: a black cube with its golden band */
 fun DrawScope.kaaba(c: Offset, k: Float) {
     drawRoundRect(Color(0xFF151515), Offset(c.x - k, c.y - k), Size(2 * k, 2 * k), androidx.compose.ui.geometry.CornerRadius(k * .12f))
-    drawRect(Color(0xFFE0B54A), Offset(c.x - k, c.y - k * .5f), Size(2 * k, k * .26f))
-    drawRect(Color(0xFFE0B54A).copy(alpha = .8f), Offset(c.x + k * .25f, c.y - k * .05f), Size(k * .35f, k * .7f))
+    drawRect(Color(0xFF26C6DA), Offset(c.x - k, c.y - k * .5f), Size(2 * k, k * .26f))
+    drawRect(Color(0xFF26C6DA).copy(alpha = .8f), Offset(c.x + k * .25f, c.y - k * .05f), Size(k * .35f, k * .7f))
 }
 
 @Composable
@@ -219,13 +219,13 @@ fun QiblaCompass(s: AppState) {
                 // the line to the Ka'bah, and the Ka'bah just outside the dial
                 val a = Math.toRadians(diff - 90.0)
                 val end = Offset(c.x + r * cos(a).toFloat(), c.y + r * sin(a).toFloat())
-                drawLine(Color(0xFFE0B54A), c, end, 5.dp.toPx(), StrokeCap.Round)
+                drawLine(Color(0xFF26C6DA), c, end, 5.dp.toPx(), StrokeCap.Round)
                 val kc = Offset(c.x + (r + 24.dp.toPx()) * cos(a).toFloat(), c.y + (r + 24.dp.toPx()) * sin(a).toFloat())
                 kaaba(kc, 16.dp.toPx())
                 // where the phone points: a fixed line to the top
                 drawLine(if (on) green else ink.copy(alpha = .8f), c, Offset(c.x, c.y - r - 8.dp.toPx()), 3.dp.toPx(), StrokeCap.Round,
                     pathEffect = if (on) null else PathEffect.dashPathEffect(floatArrayOf(12f, 10f)))
-                drawCircle(if (on) green else Color(0xFFE0B54A), 9.dp.toPx(), c)
+                drawCircle(if (on) green else Color(0xFF26C6DA), 9.dp.toPx(), c)
                 drawCircle(Color.White, 4.dp.toPx(), c)
             }
         }
@@ -327,7 +327,7 @@ fun QiblaCamera(s: AppState, onClose: () -> Unit) {
                 val x = if (on) cx else cx + diff / fov * size.width
                 val rr = (if (on) 36 else 30).dp.toPx()
                 val tip = Offset(x, cy + rr * 2.05f)
-                val col = if (on) green else Color(0xFFE0B54A)
+                val col = if (on) green else Color(0xFF26C6DA)
                 // the path on the ground, from the bottom of the picture up to the marker
                 val way = Path().apply {
                     moveTo(cx - 44.dp.toPx(), size.height); lineTo(cx + 44.dp.toPx(), size.height)
@@ -354,7 +354,7 @@ fun QiblaCamera(s: AppState, onClose: () -> Unit) {
                 val ax = if (right) size.width - 30.dp.toPx() else 30.dp.toPx()
                 val d = if (right) 1 else -1
                 val p = Path().apply { moveTo(ax + d * 18.dp.toPx(), cy); lineTo(ax - d * 10.dp.toPx(), cy - 22.dp.toPx()); lineTo(ax - d * 10.dp.toPx(), cy + 22.dp.toPx()); this.close() }
-                drawPath(p, Color(0xFFE0B54A))
+                drawPath(p, Color(0xFF26C6DA))
             }
         }
         Column(Modifier.align(Alignment.BottomCenter).padding(16.dp).clip(RoundedCornerShape(16.dp)).background(Color.Black.copy(alpha = .55f)).padding(14.dp),

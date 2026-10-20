@@ -35,7 +35,7 @@ class WidgetSettings : ComponentActivity() {
         setContent {
             var alpha by remember { mutableIntStateOf(pr.widgetAlpha) }
             var light by remember { mutableStateOf(pr.widgetLight) }
-            MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFFE0B54A))) {
+            MaterialTheme(colorScheme = darkColorScheme(primary = Color(0xFF26C6DA))) {
                 CompositionLocalProvider(LocalLayoutDirection provides if (Tr.rtl) LayoutDirection.Rtl else LayoutDirection.Ltr) {
                     Surface(Modifier.fillMaxSize(), color = Color(0xFF121212)) {
                         Column(Modifier.fillMaxSize().statusBarsPadding().verticalScroll(rememberScrollState()).padding(20.dp)) {
