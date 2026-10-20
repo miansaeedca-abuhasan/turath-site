@@ -9,6 +9,15 @@
  "orientation": "portrait",
  "lang": "ur",
  "dir": "rtl",
+ "share_target": {
+  "action": "./",
+  "method": "GET",
+  "params": {
+   "title": "title",
+   "text": "text",
+   "url": "url"
+  }
+ },
  "background_color": "#f4ecd6",
  "theme_color": "#0c5c6e",
  "categories": [

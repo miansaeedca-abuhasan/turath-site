@@ -491,6 +491,9 @@ details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .rjmaster .rjtable{border:0;border-radius:0;margin:0;padding:.5rem .9rem}.rjmaster .rjrow{display:block;border:0;padding:.15rem 0;font:1.08rem/1.9 var(--arabic)}.rjmaster .rjk{display:inline;color:inherit;font-weight:400}.rjmaster .rjk::after{content:' : '}.rjmaster .rjv{display:inline;color:#37878a}
 .rjmaster .rjtbl{margin:0;border:0}.rjmaster .rjth{background:#f6f6f6;color:inherit;font:400 1.05rem var(--arabic)}.rjmaster .rjtn{color:#37878a}.rjrk{font:700 1.05rem var(--arabic);color:var(--text,#222)}.rjrk.warn{color:#9a6200}.rjrk.bad{color:#a4161a}
 .rjmaster .rjnotes li{color:#37878a}.rjmaster .rjwho{color:var(--text,#222)}
+
+.vfta{width:100%;min-height:8rem;resize:vertical;font-size:1.05rem;line-height:1.7;padding:.7rem;border-radius:12px;box-sizing:border-box}
+.vok{color:#0a7a3d;font-weight:700;margin:.4rem 0}.vbad{color:#b3261e;margin:.4rem 0}.vbad b{background:rgba(179,38,30,.1);padding:0 .25rem;border-radius:4px}
 </style>
 </head>
 <body>
@@ -736,6 +739,7 @@ const ICON={
  copy:'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
  poster:'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z',
  share:'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z',
+ verify:'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z',
  quiz:'M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5.99 13c-.59 0-1.05-.47-1.05-1.05 0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04-.01.58-.45 1.05-1.04 1.05zm2.5-6.17c-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c0-.41-.06-1.08.26-1.65.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.61.58 1.73.01 2.57z',
  dua:'M18.4 18.4L5.6 18.4L5.6 5.6L18.4 5.6zM12.0 21.0L3.0 12.0L12.0 3.0L21.0 12.0zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',seerah:'M12 2c-1.7 0-3 1.4-3 3.2V7H8v2H5v2h14V9h-3V7h-1V5.2C15 3.4 13.7 2 12 2zM3 12v10h7v-4.5c0-1.1.9-2 2-2s2 .9 2 2V22h7V12H3z',
  globe:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26zm.81 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.07 16zm2.95-8H5.07a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.02 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38z',
@@ -1282,7 +1286,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=h.startsWith('#/quiz')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -1446,10 +1450,11 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),quran=sec==='q'||sec==='home'||td||qz;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',quran=sec==='q'||sec==='home'||td||qz||vf;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb',home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
-  if(qz)QUIZ.route(h);
+  if(vf)VERIFY.route();
+  else if(qz)QUIZ.route(h);
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
   else if(sc)COLL.route(h);
@@ -1468,7 +1473,7 @@ function route(){
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   // pages that do not need al-Jami al-Kamil's data open at once; the book list comes when the data is in
   const h=location.hash;
-  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
+  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/verify|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').then(reg=>{const upd=()=>{if(document.getElementById('updbar'))return;const M={ur:['اپڈیٹ آ گیا ہے: نئی کتب اور بہتریاں دیکھنے کے لیے تازہ کریں','تازہ کریں'],en:['An update is available: refresh to get the new books and improvements','Refresh'],ar:['يوجد تحديث جديد: حدّث الصفحة لترى الكتب والتحسينات','تحديث']}[ui]||['Update available','Refresh'];const b=document.createElement('div');b.id='updbar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:74px;z-index:9999;background:#0b5d4b;color:#fff;border-radius:12px;padding:.6rem .9rem;display:flex;gap:.7rem;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,.3);font:15px/1.6 system-ui';b.append(document.createTextNode(M[0]));const x=document.createElement('button');x.textContent=M[1];x.style.cssText='background:#fff;color:#0b5d4b;border:0;border-radius:8px;padding:.35rem .8rem;font:600 14px system-ui;cursor:pointer';x.onclick=()=>location.reload();b.append(x);document.body.append(b);};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)upd();});});try{reg.update();}catch(e){}}).catch(()=>{});
 </script>
@@ -2332,7 +2337,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('quiz', T('quizT'), '#/quiz'));
+      tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     tickerBar(v);
     v.append(el('div', {class: 'card pad0'}, g));
@@ -3266,6 +3271,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- routes: #/  #/q  #/q/para  #/q/ruku  #/q/s/2/255[/play]  #/q/j/30  #/q/r/5  #/q/audio  #/q/search  #/q/bm ---------- */
   window.QURAN = {
+    async verseTexts() { await need(['ar_uthmani']); return {t: Q.data.ar_uthmani, sa, surah: s => Q.meta.surahs[s - 1]}; },
     route(h) {
       stopAuto();
       trForLang();
@@ -3703,6 +3709,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     go.addEventListener('click', search);
     q.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
     try { if (localStorage.hsq) q.value = localStorage.hsq; } catch (e) {}
+    let au = ''; try { au = sessionStorage.hsauto || ''; sessionStorage.removeItem('hsauto'); } catch (e) {}
+    if (au) { q.value = au; search(); }
     q.focus();
   }
   async function showSection(b, no) {
@@ -5528,6 +5536,161 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     play(w, c, Math.max(1, +lv)).catch(fail);
   }
   window.QUIZ = {route, cert: makeCert};
+})();
+
+</script>
+<script>
+// تحقیق و تصدیق: paste (or share from WhatsApp/Facebook) a post -> Quran wording check + search in our hadith books.
+// It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
+(function () {
+  const S = {
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ',
+      intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
+      ph: 'یہاں متن ڈالیں…', go: 'تحقیق کریں', clear: 'صاف کریں', paste: 'کلپ بورڈ سے ڈالیں',
+      short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
+      qHead: 'قرآنی آیت', qFound: (r) => 'یہ قرآن کی عبارت لگتی ہے: ' + r, qOk: '✓ الفاظ قرآن کے مطابق درست ہیں۔',
+      qExtra: 'آپ کے متن کے یہ الفاظ قرآن میں اس جگہ نہیں ملے: ', qMiss: 'قرآن کے یہ الفاظ آپ کے متن میں نہیں ہیں: ', qOpen: 'آیت کھولیں',
+      qNone: 'قرآن میں یہ عبارت نہیں ملی۔',
+      hHead: 'حدیث', hFound: n => 'ہماری کتابوں میں ملتی جلتی احادیث: ' + n, hNone: 'ہمارے الجامع الکامل میں یہ متن نہیں ملا۔',
+      hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
+      hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
+      howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث',
+      intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
+      ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
+      short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
+      qHead: 'آية قرآنية', qFound: r => 'يبدو أنه من القرآن: ' + r, qOk: '✓ الألفاظ موافقة للمصحف.',
+      qExtra: 'ألفاظ في نصك لم نجدها في هذا الموضع من القرآن: ', qMiss: 'ألفاظ من الآية غير موجودة في نصك: ', qOpen: 'افتح الآية',
+      qNone: 'لم نجد هذا النص في القرآن.',
+      hHead: 'حديث', hFound: n => 'أحاديث مشابهة في كتبنا: ' + n, hNone: 'لم نجد هذا النص في الجامع الكامل.',
+      hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
+      hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
+      howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith',
+      intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
+      ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
+      short: 'The text is too short. Enter at least three Arabic words.',
+      qHead: 'Quran', qFound: r => 'This looks like a Quran text: ' + r, qOk: '✓ The wording matches the Quran.',
+      qExtra: 'Words in your text not found at this place in the Quran: ', qMiss: 'Words of the verse missing from your text: ', qOpen: 'Open the verse',
+      qNone: 'This text was not found in the Quran.',
+      hHead: 'Hadith', hFound: n => 'Similar hadith in our books: ' + n, hNone: 'This text was not found in al-Jami al-Kamil.',
+      hNote: 'Not finding it here does not mean it is fabricated; only that it is not in our books. Read the ruling the scholars give in the book.',
+      hMore: 'Search all books', how: 'How to send directly to the app',
+      howT: 'Open the message in WhatsApp or Facebook → tap “Share” → choose “Turath Khair Al-Quroon” in the list. (Works when the app is installed on the phone.)'}
+  };
+  for (const [l, t] of Object.entries({fr: 'Vérifier', bn: 'যাচাই', hi: 'जाँच', gu: 'ચકાસણી'})) S[l] = Object.assign({}, S.en, {title: t});
+  const L = () => S[ui] || S.en;
+  const RTL = () => ui === 'ur' || ui === 'ar';
+  const qv = () => $('#qv');
+  // share target: the page opens as /?text=…  ->  keep the text and show #/verify
+  try {
+    const u = new URLSearchParams(location.search), t = [u.get('title'), u.get('text'), u.get('url')].filter(Boolean).join('\n');
+    if (t) { sessionStorage.vtext = t; history.replaceState(null, '', location.pathname + '#/verify'); }
+  } catch (e) {}
+  const nrm = s => String(s || '').replace(/[ً-ٰٟۖ-ۭـ‌‍]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىیي]/g, 'ي').replace(/ة/g, 'ه').replace(/ک/g, 'ك');
+  const words = s => { const r = [], a = nrm(s).split(/[^ء-ي]+/).filter(Boolean); for (let i = 0; i < a.length; i++) { if (a[i] === 'يا' && i + 1 < a.length) r.push('يا' + a[++i]); else r.push(a[i]); } return r; };
+  const skel = w => w.replace(/[اويهءئؤ]/g, '') || w[0];
+  let QI = null;
+  async function qIndex() {
+    if (QI) return QI;
+    const {t, sa, surah} = await QURAN.verseTexts();
+    const W = t.map(x => words(x).map(skel)), R = t.map(x => words(x));
+    const idx = new Map();
+    W.forEach((ws, i) => { for (let k = 0; k + 2 < ws.length; k++) { const g = ws[k] + ' ' + ws[k + 1] + ' ' + ws[k + 2]; let a = idx.get(g); if (!a) idx.set(g, a = []); if (a[a.length - 1] !== i) a.push(i); } });
+    return QI = {t, sa, surah, W, R, idx};
+  }
+  function lcs(a, b) {   // a, b: arrays of words; returns [pairs of matched indexes]
+    const n = a.length, m = b.length, d = Array.from({length: n + 1}, () => new Uint16Array(m + 1));
+    for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--) d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+    const p = []; let i = 0, j = 0;
+    while (i < n && j < m) { if (a[i] === b[j]) { p.push([i, j]); i++; j++; } else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++; }
+    return p;
+  }
+  async function quranCheck(inW) {
+    const I = await qIndex(), votes = new Map(), sk = inW.map(skel);
+    for (let k = 0; k + 2 < sk.length; k++) for (const v of (I.idx.get(sk[k] + ' ' + sk[k + 1] + ' ' + sk[k + 2]) || [])) votes.set(v, (votes.get(v) || 0) + 1);
+    const top = [...votes].sort((a, b) => b[1] - a[1]).slice(0, 6).map(x => x[0]);
+    let best = null;
+    for (const v of top) {
+      const cand = [];
+      for (const f of [Math.max(0, v - 1), v]) for (let e = v; e <= Math.min(I.W.length - 1, v + 3); e++) {
+        const seq = [], own = []; for (let i = f; i <= e; i++) I.W[i].forEach(w => { seq.push(w); own.push(i); });
+        const pr = lcs(sk, seq); cand.push({sc: pr.length / sk.length, n: pr.length, pr, seq, own, from: f, to: e});
+      }
+      const M = Math.max(...cand.map(c => c.n)), ok = cand.filter(c => c.n >= M - 1).sort((x, y) => (x.to - x.from) - (y.to - y.from) || y.n - x.n)[0];
+      if (!best || ok.sc > best.sc) best = ok;
+    }
+    if (!best || best.sc < .6) return null;
+    const vs = best.pr.map(([, j]) => best.own[j]), a = Math.min(...vs), b = Math.max(...vs);
+    // words of the verses a..b that are missing from the input, and input words that did not match
+    const matchedIn = new Set(best.pr.map(p => p[0])), matchedQ = new Set(best.pr.map(p => p[1]));
+    const extra = inW.filter((w, i) => !matchedIn.has(i));
+    const firstJ = Math.min(...best.pr.map(p => p[1])), lastJ = Math.max(...best.pr.map(p => p[1]));
+    const orig = []; { let j = 0; for (let i = best.from; i <= best.to; i++) I.R[i].forEach(w => { orig.push(w); j++; }); }
+    const miss = orig.filter((w, j) => j >= firstJ && j <= lastJ && !matchedQ.has(j));
+    return {a, b, extra, miss, sc: best.sc, I};
+  }
+  async function hadithCheck(inW, rawWords) {
+    const base = inW.length >= 3 ? inW : rawWords, tries = [];
+    for (const n of [10, 6, 4]) { if (base.length >= n) tries.push(base.slice(0, n)); }
+    if (base.length > 8) tries.push(base.slice(Math.floor(base.length / 2) - 3, Math.floor(base.length / 2) + 3));
+    if (!tries.length) tries.push(base);
+    for (const t of tries) {
+      try { const d = await api('search?q=' + encodeURIComponent(t.join(' ')) + '&book=jami&mode=all'); const n = d.total || (d.results || []).length; if (n) return {d, n, q: t.join(' ')}; } catch (e) {}
+    }
+    return null;
+  }
+  function show() {
+    const T = L();
+    bar(T.title, T.sub, true);
+    const v = qv(); v.replaceChildren();
+    const ta = el('textarea', {class: 'filter vfta', rows: '6', placeholder: T.ph, 'aria-label': T.ph, dir: 'auto'});
+    const out = el('div');
+    const go = el('button', {type: 'button', class: 'btn', on: {click: () => run()}}, icon('verify'), ' ', T.go);
+    const clr = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { ta.value = ''; out.replaceChildren(); ta.focus(); }}}, T.clear);
+    const pst = navigator.clipboard && navigator.clipboard.readText ? el('button', {type: 'button', class: 'btn lbtn', on: {click: async () => { try { ta.value = await navigator.clipboard.readText(); run(); } catch (e) {} }}}, T.paste) : null;
+    v.append(el('div', {class: 'quiz', lang: ui, dir: RTL() ? 'rtl' : 'ltr'},
+      el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('verify')), el('h2', {}, T.title), el('p', {class: 'cs'}, T.intro)),
+      ta, el('div', {class: 'gsbar'}, go, pst, clr), out,
+      el('details', {class: 'card gsres'}, el('summary', {}, T.how), el('p', {class: 'note'}, T.howT))));
+    let tk = 0;
+    async function run() {
+      const raw = ta.value.trim(); if (!raw) return;
+      const my = ++tk; out.replaceChildren(el('p', {class: 'cs'}, '…'));
+      const inW = words(raw), rawW = raw.split(/[\s،,.؟!؛:\-«»"'()[\]﴿﴾]+/).filter(x => x.length > 1);
+      if (inW.length < 3 && rawW.length < 3) { out.replaceChildren(el('p', {class: 'note'}, T.short)); return; }
+      const box = [];
+      if (inW.length >= 3) {
+        const q = await quranCheck(inW).catch(() => null);
+        if (my !== tk) return;
+        if (q) {
+          const [s1, a1] = q.I.sa(q.a), [s2, a2] = q.I.sa(q.b), sm = q.I.surah(s1);
+          const name = (ui === 'ur' || ui === 'ar' ? sm[1] : sm[0]) + ' ' + s1 + ':' + a1 + (q.a !== q.b ? '–' + (s1 === s2 ? '' : s2 + ':') + a2 : '');
+          const ok = !q.extra.length && !q.miss.length;
+          const parts = [el('h3', {class: 'grp'}, T.qHead), el('p', {class: 'ct'}, T.qFound(name))];
+          const txt = []; for (let i = q.a; i <= q.b; i++) txt.push(q.I.t[i]);
+          parts.push(el('p', {class: 'qar sm', lang: 'ar', dir: 'rtl'}, txt.join(' ')));
+          parts.push(ok ? el('p', {class: 'vok'}, T.qOk) : el('div', {}, q.extra.length ? el('p', {class: 'vbad'}, T.qExtra, el('b', {lang: 'ar'}, q.extra.join(' '))) : '', q.miss.length ? el('p', {class: 'vbad'}, T.qMiss, el('b', {lang: 'ar'}, q.miss.join(' '))) : ''));
+          parts.push(el('a', {class: 'btn lbtn', href: '#/q/s/' + s1 + '/' + a1}, T.qOpen));
+          box.push(el('div', {class: 'card pad'}, ...parts));
+        }
+      }
+      const h = await hadithCheck(inW, rawW);
+      if (my !== tk) return;
+      const parts = [el('h3', {class: 'grp'}, T.hHead)];
+      if (h) {
+        parts.push(el('p', {class: 'ct'}, T.hFound(h.n)));
+        const list = el('div'); (h.d.results || []).slice(0, 5).forEach(r => { try { list.append(row(r)); } catch (e) {} }); parts.push(list);
+      } else parts.push(el('p', {class: 'note'}, T.hNone));
+      parts.push(el('p', {class: 'cs'}, T.hNote));
+      parts.push(el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { try { sessionStorage.hsauto = (h ? h.q : ta.value.trim().slice(0, 80)); } catch (e) {} location.hash = '#/hs'; }}}, icon('search'), ' ', T.hMore));
+      box.push(el('div', {class: 'card pad'}, ...parts));
+      out.replaceChildren(...box);
+    }
+    let pre = ''; try { pre = sessionStorage.vtext || ''; sessionStorage.removeItem('vtext'); } catch (e) {}
+    if (pre) { ta.value = pre; run(); }
+  }
+  window.VERIFY = {route: show, title: () => (S[ui] || S.en).title};
 })();
 
 </script>
