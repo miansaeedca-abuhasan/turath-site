@@ -65,9 +65,14 @@ fun TimesScreen(s: AppState) {
             }
             // Friday: the adhan of Jumu'ah (Dhuhr on Fridays)
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(Tr["JUMUAH"], Modifier.weight(1f).padding(start = 112.dp), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
-                IconButton(onClick = { pickJum = true }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = MaterialTheme.colorScheme.primary) }
-                Spacer(Modifier.width(76.dp))
+                Text(s.fmt(t[P.DHUHR]), fontSize = 16.sp, modifier = Modifier.width(112.dp))
+                Text(Tr["JUMUAH"], Modifier.weight(1f), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                val jsnd = s.prefs.jumuahSound
+                val jmode = when (jsnd) { Snd.SILENT -> 2; Snd.NOTIFY -> 1; else -> 0 }
+                val jon = MaterialTheme.colorScheme.primary; val joff = MaterialTheme.colorScheme.onSurface.copy(alpha = .35f)
+                IconButton(onClick = { if (jmode == 0) pickJum = true else { s.prefs.jumuahSound = s.prefs.lastJumuah; s.changed() } }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = if (jmode == 0) jon else joff) }
+                IconButton(onClick = { s.prefs.jumuahSound = Snd.NOTIFY; s.changed() }, Modifier.size(38.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (jmode == 1) jon else joff) }
+                IconButton(onClick = { s.prefs.jumuahSound = Snd.SILENT; s.changed() }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (jmode == 2) jon else joff) }
             }
             // the middle of the night (from Maghrib to the next Fajr)
             val nf = Schedule.day(s.prefs, place, date.plusDays(1))[P.FAJR]

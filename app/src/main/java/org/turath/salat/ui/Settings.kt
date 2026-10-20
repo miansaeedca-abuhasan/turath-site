@@ -218,7 +218,7 @@ fun CityPicker(s: AppState, world: Boolean, done: () -> Unit) {
     Column(Modifier.fillMaxSize()) {
         TopBar(if (cc == null) Tr["country"] else Cities.countryName(cc!!, Tr.lang)) { if (cc != null) { cc = null; q = "" } else done() }
         OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth().padding(horizontal = 12.dp), singleLine = true,
-            leadingIcon = { Icon(Icons.Outlined.Search, null) }, placeholder = { Text(Tr["search"]) })
+            leadingIcon = { Icon(Icons.Outlined.Search, null) }, placeholder = { Text(Tr["cityHint"]) })
         if (!world && cc == null) TextButton(onClick = { gps(s) }, Modifier.padding(horizontal = 8.dp)) { Icon(Icons.Outlined.MyLocation, null); Text(" " + Tr["useGps"]) }
         var found by remember { mutableStateOf<List<Found>>(emptyList()) }
         LaunchedEffect(q, cc) {

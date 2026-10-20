@@ -1,5 +1,7 @@
 package org.turath.salat
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import android.app.*
 import android.content.*
 import android.content.pm.ServiceInfo
@@ -232,7 +234,7 @@ object Preview {
             MediaPlayer().apply {
                 setAudioAttributes(Audio.attrs(ctx)); setDataSource(ctx, u)
                 setOnCompletionListener { stop(); done() }
-                prepare(); start()
+                prepare(); start(); playing = true
             }
         }.getOrNull()
     }
@@ -293,6 +295,9 @@ class SoundService : Service() {
     private var until = 0L
 
     companion object {
+        /** true while an adhan / alarm sound is playing (the app then shows a stop button) */
+        var playing by androidx.compose.runtime.mutableStateOf(false)
+        fun stop(ctx: Context) { ctx.stopService(Intent(ctx, SoundService::class.java)) }
         fun start(ctx: Context, s: Snd, title: String, body: String, alarm: Boolean, fajr: Boolean = false) {
             val i = Intent(ctx, SoundService::class.java).putExtra("snd", s.name).putExtra("title", title).putExtra("body", body).putExtra("alarm", alarm).putExtra("fajr", fajr)
             ctx.startForegroundService(i)
@@ -340,7 +345,8 @@ class SoundService : Service() {
         val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this))
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
-            .setContentIntent(if (alarm) open else stop).setAutoCancel(true).setDeleteIntent(stop)
+            .setContentIntent(if (alarm) open else stop).setOngoing(true).setDeleteIntent(stop)
+            .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
             .addAction(Notification.Action.Builder(null, Tr["stop"], stop).build())
             .apply { if (alarm) setFullScreenIntent(open, true).setCategory(Notification.CATEGORY_ALARM) }
             .build()
@@ -369,5 +375,5 @@ class SoundService : Service() {
         } catch (e: Exception) { stopSelf() }
     }
 
-    override fun onDestroy() { mp?.release(); mp = null; super.onDestroy() }
+    override fun onDestroy() { mp?.release(); mp = null; playing = false; super.onDestroy() }
 }

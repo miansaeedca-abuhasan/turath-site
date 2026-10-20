@@ -156,6 +156,7 @@ fun QiblaScreen(s: AppState) {
             Text(Tr["tQibla"], fontSize = 26.sp, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
             TextButton(onClick = { calib = true }) { Text(Tr["calibrate"]) }
         }
+        s.prefs.place?.let { Text(it.name, Modifier.padding(horizontal = 12.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.primary) }
         SingleChoiceSegmentedButtonRow(Modifier.fillMaxWidth().padding(horizontal = 12.dp)) {
             SegmentedButton(mode == 0, { mode = 0 }, SegmentedButtonDefaults.itemShape(0, 2), icon = { Icon(Icons.Outlined.Explore, null) }) { Text(Tr["compass"]) }
             SegmentedButton(mode == 1, { mode = 1 }, SegmentedButtonDefaults.itemShape(1, 2), icon = { Icon(Icons.Outlined.PhotoCamera, null) }) { Text(Tr["camera"]) }

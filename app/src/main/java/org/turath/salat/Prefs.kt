@@ -151,7 +151,8 @@ class Prefs(ctx: Context) {
     fun lastSound(p: P): Snd = runCatching { Snd.valueOf(sp.getString("lastsnd_" + p.name, null) ?: "") }.getOrElse { if (p in FIVE) defaultSound(p) else Snd.NIGHTINGALE }
     /** the adhan of Friday's Dhuhr (Jumu'ah): Shaikh Hamad al-Daghriri unless the user chose another */
     var jumuahSound: Snd get() = runCatching { Snd.valueOf(sp.getString("snd_JUMUAH", null) ?: "") }.getOrElse { Snd.ADHAN_DAGHRIRI }
-        set(v) = sp.edit().putString("snd_JUMUAH", v.name).apply()
+        set(v) = sp.edit().putString("snd_JUMUAH", v.name).apply().also { if (v.raw != null) sp.edit().putString("lastsnd_JUMUAH", v.name).apply() }
+    val lastJumuah: Snd get() = runCatching { Snd.valueOf(sp.getString("lastsnd_JUMUAH", null) ?: "") }.getOrElse { Snd.ADHAN_DAGHRIRI }
     private fun defaultSound(p: P) = when (p) {
         // Fajr: Shaikh Ali Ahmad Mulla; Dhuhr: Abdul Basit; Asr: Nur ad-Din al-Maghribi; Maghrib: Hamad al-Daghriri; Isha: Saleh al-Nabet
         P.FAJR -> Snd.ADHAN_MAKKAH

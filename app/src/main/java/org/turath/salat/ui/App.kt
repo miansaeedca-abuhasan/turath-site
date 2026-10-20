@@ -176,6 +176,10 @@ fun Main(s: AppState) {
                     4 -> QiblaScreen(s)
                     else -> MosquesPage(s) { s.tab = 0 }
                 }
+                // an adhan is playing: a stop button on every screen
+                if (SoundService.playing) Button(onClick = { SoundService.stop(s.act) }, Modifier.align(Alignment.BottomCenter).padding(bottom = 12.dp)) {
+                    Icon(Icons.Outlined.Close, null); Text("  " + Tr["stop"], fontSize = 16.sp)
+                }
                 // the menu button (top corner, as in the other screens)
                 // the prayer times of other cities (Makkah, Madinah, al-Quds …) from the Today screen
                 if (s.tab == 0) IconButton(onClick = { s.page = "world"; s.sub = "" }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopEnd)) {
