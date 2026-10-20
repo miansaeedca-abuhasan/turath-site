@@ -1878,14 +1878,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     noVoice: l => ({ar: 'عربی', ur: 'اردو', en: 'انگریزی'})[l] + ' کی کوئی آواز اس فون/براؤزر میں نہیں ملی۔',
     voiceHelp: 'زیادہ قدرتی آواز کے لیے اینڈرائیڈ میں: Settings ← Text-to-speech ← Speech Services by Google ← Install voice data، پھر اردو اور عربی کی آوازیں ڈاؤن لوڈ کریں۔ کروم میں Google کی آوازیں سب سے بہتر رہتی ہیں۔',
     noTts: 'یہ براؤزر بولنے کی سہولت نہیں رکھتا۔ کروم میں کھولیں۔', test: 'آزمائیں', close: 'بند کریں', done: 'ٹھیک ہے',
-    nowHadith: n => 'حدیث ' + n, playing: 'چل رہا ہے'});
+    nowHadith: n => 'حدیث ' + n, playing: 'چل رہا ہے', uplift: 'اردو کے لیے خصوصی آواز (انٹرنیٹ سے)', upFail: 'خصوصی آواز نہیں ملی؛ فون کی آواز استعمال ہو رہی ہے۔'});
   Object.assign(I.en, {listen: 'Listen', listenAll: 'Listen to whole chapter', listenPart: 'Listen to this section', ttsSet: 'Listening settings',
     voice: l => ({ar: 'Arabic voice', ur: 'Urdu voice', en: 'English voice'})[l], rate: 'Speed', auto: 'Automatic (most natural)',
     natural: 'natural', withSanad: 'Also read the isnad', withArabic: 'Also read the Arabic text', withTr: 'Also read the translation',
     noVoice: l => 'No ' + ({ar: 'Arabic', ur: 'Urdu', en: 'English'})[l] + ' voice found on this phone/browser.',
     voiceHelp: 'For more natural voices on Android: Settings → Text-to-speech → Speech Services by Google → Install voice data, then download the Urdu and Arabic voices. Google voices in Chrome sound best.',
     noTts: 'This browser cannot speak. Open the app in Chrome.', test: 'Test', close: 'Close', done: 'Done',
-    nowHadith: n => 'Hadith ' + n, playing: 'Playing'});
+    nowHadith: n => 'Hadith ' + n, playing: 'Playing', uplift: 'Special Urdu voice (online)', upFail: 'The special voice is not available; using the phone voice.'});
   Object.assign(ICON, {
     listen: 'M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z',
     play: 'M8 5v14l11-7z', pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z', stop: 'M6 6h12v12H6z',
@@ -1945,7 +1945,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- voices ---------- */
   const SS = window.speechSynthesis;
-  const S = {rate: 1, voice: {}, sanad: false, arabic: true, tr: true};
+  const S = {rate: 1, voice: {}, sanad: false, arabic: true, tr: true, uplift: true};
   try { Object.assign(S, JSON.parse(localStorage.tts || '{}')); } catch (e) {}
   const save = () => { try { localStorage.tts = JSON.stringify(S); } catch (e) {} };
   let VOICES = [];
@@ -1971,7 +1971,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return out.flatMap(x => x.length <= 260 ? [x] : x.match(/.{1,240}(\s|$)/g));
   }
   let RUN = 0, KEEP = null;
+  /* Urdu: the Uplift AI voice through /api/tts (the key stays on the server); the phone voice is the fallback */
+  const UP = {cache: new Map(), audio: null, dead: 0};
+  const upGet = text => {
+    if (UP.cache.has(text)) return UP.cache.get(text);
+    const pr = fetch('api/tts', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({text})})
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.blob(); }).then(b => URL.createObjectURL(b));
+    pr.catch(() => UP.cache.delete(text)); UP.cache.set(text, pr); return pr;
+  };
+  const upOn = lang => lang === 'ur' && S.uplift && !UP.dead && navigator.onLine !== false;
+  const upPlay = async text => {
+    const url = await upGet(text), a = new Audio(url); UP.audio = a; a.playbackRate = Math.min(2, Math.max(.5, S.rate));
+    return new Promise((res, rej) => { a.onended = () => res(true); a.onerror = () => rej(new Error('audio')); a.play().catch(rej); });
+  };
   function say(text, lang) {
+    if (upOn(lang)) return upPlay(text).catch(() => { if (++UP.dead === 1) { try { toast(T('upFail')); } catch (e) {} } return say(text, lang); });
     return new Promise(res => {
       if (!SS || !text) return res(true);
       const u = new SpeechSynthesisUtterance(text), v = voiceFor(lang);
@@ -1989,12 +2003,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         while (LISTEN.paused && token === RUN) await new Promise(r => setTimeout(r, 200));
         if (token !== RUN) return false;
         if (!voicesFor(it.lang).length && !LISTEN.warned[it.lang]) { LISTEN.warned[it.lang] = 1; toast(T('noVoice')(it.lang)); }
+        if (upOn(it.lang)) { const ps = pieces(it.text), k = ps.indexOf(p); if (ps[k + 1]) upGet(ps[k + 1]).catch(() => {}); }
         await say(p, it.lang);
       }
     }
     return token === RUN;
   }
-  function stopTts() { RUN++; LISTEN.paused = false; if (SS) SS.cancel(); clearInterval(KEEP); document.querySelectorAll('.reading').forEach(x => x.classList.remove('reading')); }
+  function stopTts() { RUN++; LISTEN.paused = false; if (UP.audio) { try { UP.audio.pause(); } catch (e) {} UP.audio = null; } if (SS) SS.cancel(); clearInterval(KEEP); document.querySelectorAll('.reading').forEach(x => x.classList.remove('reading')); }
 
   /* ---------- what to read for one hadith ---------- */
   function hadithItems(d, node) {
@@ -2012,8 +2027,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     KEEP = setInterval(() => { if (SS.speaking && !SS.paused && !LISTEN.paused) { SS.pause(); SS.resume(); } }, 10000); // Chrome desktop 15s bug
     const ctl = {
       stop() { stopTts(); PLAYER.hide(); },
-      pause() { LISTEN.paused = true; SS.pause(); PLAYER.paused(true); },
-      resume() { LISTEN.paused = false; SS.resume(); PLAYER.paused(false); },
+      pause() { LISTEN.paused = true; if (UP.audio) UP.audio.pause(); SS.pause(); PLAYER.paused(true); },
+      resume() { LISTEN.paused = false; if (UP.audio) UP.audio.play().catch(() => {}); SS.resume(); PLAYER.paused(false); },
       next() { jump(i + 1); }, prev() { jump(Math.max(0, i - 1)); }};
     const jump = j => { if (j >= list.length) return; stopTts(); PLAYER.paused(false); run(j, RUN); };
     PLAYER.show(T('nowHadith')(list[i].d.num), ctl);
@@ -2030,7 +2045,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function playTexts(title, paras, lang, node) {
     if (!SS) { toast(T('noTts')); return; }
     stopTts(); const token = RUN;
-    PLAYER.show(title, {stop() { stopTts(); PLAYER.hide(); }, pause() { LISTEN.paused = true; SS.pause(); PLAYER.paused(true); }, resume() { LISTEN.paused = false; SS.resume(); PLAYER.paused(false); }});
+    PLAYER.show(title, {stop() { stopTts(); PLAYER.hide(); }, pause() { LISTEN.paused = true; if (UP.audio) UP.audio.pause(); SS.pause(); PLAYER.paused(true); }, resume() { LISTEN.paused = false; if (UP.audio) UP.audio.play().catch(() => {}); SS.resume(); PLAYER.paused(false); }});
     if (node) node.classList.add('reading');
     const ok = await speakAll(paras.map(t => ({text: t.replace(/[«»﴿﴾"“”]/g, ''), lang: lang === 'ur' || lang === 'ar' ? langOf(t) === 'en' ? lang : langOf(t) : lang})), token);
     if (ok) { stopTts(); PLAYER.hide(); }
@@ -2053,7 +2068,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     rate.addEventListener('input', () => { S.rate = +rate.value; rv.textContent = S.rate.toFixed(2) + '×'; save(); });
     rows.push(el('label', {class: 'srow'}, el('span', {}, T('rate')), rate, rv));
     const chk = (k, lbl) => { const c = el('input', {type: 'checkbox'}); c.checked = !!S[k]; c.addEventListener('change', () => { S[k] = c.checked; save(); }); return el('label', {class: 'srow chk'}, c, el('span', {}, lbl)); };
-    rows.push(chk('arabic', T('withArabic')), chk('sanad', T('withSanad')), chk('tr', T('withTr')));
+    rows.push(chk('arabic', T('withArabic')), chk('sanad', T('withSanad')), chk('tr', T('withTr')), chk('uplift', T('uplift')));
     rows.push(el('p', {class: 'note'}, SS ? T('voiceHelp') : T('noTts')));
     sheet(T('ttsSet'), rows, [[T('done'), null]]);
   }
