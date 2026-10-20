@@ -5550,7 +5550,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 // It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
 (function () {
   const S = {
-    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]],
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے…', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'آج کی حد پوری ہو گئی یا سروس مصروف ہے۔ متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔', ocrNote: 'تصویر پڑھنے کے لیے گوگل Gemini استعمال ہوتا ہے؛ پڑھا ہوا متن نیچے درست کر کے تحقیق کریں۔',
       intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
       ph: 'یہاں متن ڈالیں…', go: 'تحقیق کریں', clear: 'صاف کریں', paste: 'کلپ بورڈ سے ڈالیں',
       short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
@@ -5561,7 +5561,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
       hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
       howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
-    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]],
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.',
       intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
       ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
       short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
@@ -5572,7 +5572,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
       hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
       howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
-    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]],
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.',
       intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
       ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
       short: 'The text is too short. Enter at least three Arabic words.',
@@ -5654,13 +5654,30 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const out = el('div');
     const go = el('button', {type: 'button', class: 'btn', on: {click: () => run()}}, icon('verify'), ' ', T.go);
     const clr = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { ta.value = ''; out.replaceChildren(); ta.focus(); }}}, T.clear);
+    const fileIn = (cap) => { const i = el('input', {type: 'file', accept: 'image/*', hidden: 'hidden'}); if (cap) i.setAttribute('capture', 'environment'); i.addEventListener('change', () => { if (i.files[0]) readImage(i.files[0]); i.value = ''; }); return i; };
+    const fi = fileIn(false), fc = fileIn(true);
+    const imb = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => fi.click()}}, icon('poster'), ' ', T.img), cmb = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => fc.click()}}, icon('share'), ' ', T.cam);
+    async function readImage(f) {
+      out.replaceChildren(el('p', {class: 'cs'}, T.reading));
+      try {
+        const bm = await createImageBitmap(f), k = Math.min(1, 1800 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
+        c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
+        const data = c.toDataURL('image/jpeg', .85).split(',')[1];
+        const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: data, mime: 'image/jpeg'})});
+        if (r.status === 429 || r.status === 503) { out.replaceChildren(el('p', {class: 'note'}, T.ocrBusy)); return; }
+        if (!r.ok) throw 0;
+        const t = ((await r.json()).text || '').trim();
+        if (!t) { out.replaceChildren(el('p', {class: 'note'}, T.ocrNo)); return; }
+        ta.value = t.slice(0, 5000); cnt.textContent = ta.value.length + ' / 5000'; out.replaceChildren(el('p', {class: 'cs'}, T.ocrNote)); ta.focus();
+      } catch (e) { out.replaceChildren(el('p', {class: 'note'}, T.ocrFail)); }
+    }
     const pst = navigator.clipboard && navigator.clipboard.readText ? el('button', {type: 'button', class: 'btn lbtn', on: {click: async () => { try { ta.value = await navigator.clipboard.readText(); run(); } catch (e) {} }}}, T.paste) : null;
     ta.maxLength = 5000;
     const cnt = el('span', {class: 'cs vcnt'}, '0 / 5000'); ta.addEventListener('input', () => { cnt.textContent = ta.value.length + ' / 5000'; });
     const chips = el('div', {class: 'chips vch'}, ...T.ex.map(([l, t]) => el('button', {type: 'button', class: 'chip on', on: {click: () => { ta.value = t; cnt.textContent = t.length + ' / 5000'; run(); }}}, l)));
     v.append(el('div', {class: 'quiz', lang: ui, dir: RTL() ? 'rtl' : 'ltr'},
       el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('verify')), el('h2', {}, T.title), el('p', {class: 'cs'}, T.intro)),
-      ta, cnt, el('div', {class: 'gsbar'}, go, pst, clr), el('p', {class: 'cs'}, T.try), chips, out,
+      ta, cnt, el('div', {class: 'gsbar'}, imb, cmb, fi, fc, pst, go, clr), el('p', {class: 'cs'}, T.try), chips, out,
       el('details', {class: 'card gsres'}, el('summary', {}, T.how), el('p', {class: 'note'}, T.howT))));
     let tk = 0;
     async function run() {
