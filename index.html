@@ -495,6 +495,17 @@ details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .vfta{width:100%;min-height:8rem;resize:vertical;font-size:1.05rem;line-height:1.7;padding:.7rem;border-radius:12px;box-sizing:border-box}
 .vch{margin:.4rem 0 .8rem}.vcnt{display:block;text-align:end;margin:.2rem .3rem}
 .vok{color:#0a7a3d;font-weight:700;margin:.4rem 0}.vbad{color:#b3261e;margin:.4rem 0}.vbad b{background:rgba(179,38,30,.1);padding:0 .25rem;border-radius:4px}
+
+.vhead{display:flex;gap:.6rem;align-items:center;margin:.2rem 0 .7rem}.vhead svg{flex:none;width:34px;height:34px;fill:var(--accent)}.vhead p{margin:0;font-size:.85rem;line-height:1.6}
+.vbox{background:var(--card,#fff);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.vfta{display:block;width:100%;min-height:5.2rem;max-height:40vh;resize:vertical;border:0;outline:0;background:transparent;font:inherit;font-size:1rem;line-height:1.7;padding:.7rem .8rem;box-sizing:border-box;color:inherit}
+.vfta[data-ocr="1"]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.vbar{display:flex;align-items:center;gap:.35rem;padding:.35rem .5rem;border-top:1px solid var(--line)}
+.vsp{flex:1}.vcnt{font-size:.7rem;opacity:.6}
+.vib{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);background:transparent;display:inline-flex;align-items:center;justify-content:center;padding:0;cursor:pointer;color:inherit}.vib svg{width:18px;height:18px;fill:currentColor}
+.vgo{display:inline-flex;align-items:center;gap:.35rem;height:34px;padding:0 .9rem;border-radius:17px;border:0;background:var(--accent);color:#fff;font:inherit;font-size:.85rem;cursor:pointer}.vgo svg{width:16px;height:16px;fill:#fff}
+.vtry{margin:.6rem .2rem .2rem;font-size:.78rem}.vch{margin:.2rem 0 .8rem}.vch .chip{font-size:.78rem;padding:.25rem .6rem}
+.vout{margin-top:.6rem}
 </style>
 </head>
 <body>
@@ -740,6 +751,9 @@ const ICON={
  copy:'M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z',
  poster:'M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z',
  share:'M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z',
+ trash:'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z',
+ camera:'M12 15.2a3.2 3.2 0 1 0 0-6.4 3.2 3.2 0 0 0 0 6.4zM9 2L7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z',
+ paste:'M19 2h-4.18C14.4.84 13.3 0 12 0S9.6.84 9.18 2H5c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm7 18H5V4h2v3h10V4h2v16z',
  verify:'M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2 16l-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9l-8 8z',
  quiz:'M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-5.99 13c-.59 0-1.05-.47-1.05-1.05 0-.59.47-1.04 1.05-1.04.59 0 1.04.45 1.04 1.04-.01.58-.45 1.05-1.04 1.05zm2.5-6.17c-.63.93-1.23 1.21-1.56 1.81-.13.24-.18.4-.18 1.18h-1.52c0-.41-.06-1.08.26-1.65.41-.73 1.18-1.16 1.63-1.8.48-.68.21-1.94-1.14-1.94-.88 0-1.32.67-1.5 1.23l-1.37-.57C11.51 5.96 12.52 5 13.99 5c1.23 0 2.08.56 2.51 1.26.37.61.58 1.73.01 2.57z',
  dua:'M18.4 18.4L5.6 18.4L5.6 5.6L18.4 5.6zM12.0 21.0L3.0 12.0L12.0 3.0L21.0 12.0zM12 9a3 3 0 1 0 0 6a3 3 0 1 0 0-6z',seerah:'M12 2c-1.7 0-3 1.4-3 3.2V7H8v2H5v2h14V9h-3V7h-1V5.2C15 3.4 13.7 2 12 2zM3 12v10h7v-4.5c0-1.1.9-2 2-2s2 .9 2 2V22h7V12H3z',
@@ -5550,9 +5564,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 // It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
 (function () {
   const S = {
-    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے…', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'آج کی حد پوری ہو گئی یا سروس مصروف ہے۔ متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔', ocrNote: 'تصویر پڑھنے کے لیے گوگل Gemini استعمال ہوتا ہے؛ پڑھا ہوا متن نیچے درست کر کے تحقیق کریں۔',
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے…', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'آج کی حد پوری ہو گئی یا سروس مصروف ہے۔ متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔',  ocrUser: 'آج کے لیے تصاویر کی حد (5) پوری ہو گئی۔ کل دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrLeft: n => 'آج کی باقی تصاویر: ' + n,
       intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
-      ph: 'یہاں متن ڈالیں…', go: 'تحقیق کریں', clear: 'صاف کریں', paste: 'کلپ بورڈ سے ڈالیں',
+      ph: 'یہاں متن ڈالیں…', go: 'تحقیق', clear: 'حذف', paste: 'پیسٹ',
       short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
       qHead: 'قرآنی آیت', qFound: (r) => 'یہ قرآن کی عبارت لگتی ہے: ' + r, qOk: '✓ الفاظ قرآن کے مطابق درست ہیں۔',
       qExtra: 'آپ کے متن کے یہ الفاظ قرآن میں اس جگہ نہیں ملے: ', qMiss: 'قرآن کے یہ الفاظ آپ کے متن میں نہیں ہیں: ', qOpen: 'آیت کھولیں',
@@ -5561,7 +5575,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
       hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
       howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
-    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.',
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.', ocrUser: 'انتهى الحد اليومي للصور (5). حاول غدًا أو أدخل النص يدويًا.', ocrLeft: n => 'الصور المتبقية اليوم: ' + n,
       intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
       ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
       short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
@@ -5572,7 +5586,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
       hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
       howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
-    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.',
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.', ocrUser: 'You have used today’s limit of 5 pictures. Try tomorrow or paste the text.', ocrLeft: n => 'Pictures left today: ' + n,
       intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
       ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
       short: 'The text is too short. Enter at least three Arabic words.',
@@ -5650,39 +5664,51 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const T = L();
     bar(T.title, T.sub, true);
     const v = qv(); v.replaceChildren();
-    const ta = el('textarea', {class: 'filter vfta', rows: '6', placeholder: T.ph, 'aria-label': T.ph, dir: 'auto'});
-    const out = el('div');
-    const go = el('button', {type: 'button', class: 'btn', on: {click: () => run()}}, icon('verify'), ' ', T.go);
-    const clr = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { ta.value = ''; out.replaceChildren(); ta.focus(); }}}, T.clear);
-    const fileIn = (cap) => { const i = el('input', {type: 'file', accept: 'image/*', hidden: 'hidden'}); if (cap) i.setAttribute('capture', 'environment'); i.addEventListener('change', () => { if (i.files[0]) readImage(i.files[0]); i.value = ''; }); return i; };
+    const ta = el('textarea', {class: 'vfta', rows: '3', maxlength: '5000', placeholder: T.ph, 'aria-label': T.ph, dir: 'auto', enterkeyhint: 'search'});
+    const out = el('div', {class: 'vout'});
+    const cnt = el('span', {class: 'vcnt', dir: 'ltr'}, '0 / 5000');
+    const upd = () => { cnt.textContent = ta.value.length + ' / 5000'; };
+    const ib = (ic, title, fn, cls) => el('button', {type: 'button', class: 'vib' + (cls ? ' ' + cls : ''), title, 'aria-label': title, on: {click: fn}}, icon(ic));
+    const fileIn = cap => { const i = el('input', {type: 'file', accept: 'image/*', hidden: 'hidden'}); if (cap) i.setAttribute('capture', 'environment'); i.addEventListener('change', () => { if (i.files[0]) readImage(i.files[0]); i.value = ''; }); return i; };
     const fi = fileIn(false), fc = fileIn(true);
-    const imb = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => fi.click()}}, icon('poster'), ' ', T.img), cmb = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => fc.click()}}, icon('share'), ' ', T.cam);
+    const go = el('button', {type: 'button', class: 'vgo', on: {click: () => run()}}, icon('verify'), T.go);
+    const clr = ib('trash', T.clear, () => { ta.value = ''; ta.dataset.ocr = ''; upd(); out.replaceChildren(); ta.focus(); });
+    const tools = [ib('poster', T.img, () => fi.click()), ib('camera', T.cam, () => fc.click())];
+    if (navigator.clipboard && navigator.clipboard.readText) tools.push(ib('paste', T.paste, async () => { try { ta.value = await navigator.clipboard.readText(); ta.dataset.ocr = ''; upd(); run(); } catch (e) {} }));
+    ta.addEventListener('input', () => { ta.dataset.ocr = ta.dataset.ocr && ta.value ? ta.dataset.ocr : ''; upd(); });
+    ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(); } });
+    for (const ev of ['copy', 'cut', 'contextmenu', 'dragstart']) ta.addEventListener(ev, e => { if (ta.dataset.ocr) e.preventDefault(); });   // text read from a picture cannot be copied out
+    const note = (m, cls) => { out.replaceChildren(el('p', {class: cls || 'note'}, m)); out.scrollIntoView({block: 'nearest', behavior: 'smooth'}); };
     async function readImage(f) {
-      out.replaceChildren(el('p', {class: 'cs'}, T.reading));
+      note(T.reading, 'cs');
       try {
         const bm = await createImageBitmap(f), k = Math.min(1, 1800 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
         c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
         const data = c.toDataURL('image/jpeg', .85).split(',')[1];
         const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: data, mime: 'image/jpeg'})});
-        if (r.status === 429 || r.status === 503) { out.replaceChildren(el('p', {class: 'note'}, T.ocrBusy)); return; }
-        if (!r.ok) throw 0;
-        const t = ((await r.json()).text || '').trim();
-        if (!t) { out.replaceChildren(el('p', {class: 'note'}, T.ocrNo)); return; }
-        ta.value = t.slice(0, 5000); cnt.textContent = ta.value.length + ' / 5000'; out.replaceChildren(el('p', {class: 'cs'}, T.ocrNote)); ta.focus();
-      } catch (e) { out.replaceChildren(el('p', {class: 'note'}, T.ocrFail)); }
+        let j = {}; try { j = await r.json(); } catch (e) {}
+        if (r.status === 429 && j.error === 'user limit') { note(T.ocrUser); return; }
+        if (r.status === 429 || r.status === 503) { note(T.ocrBusy); return; }
+        if (!r.ok) { note(T.ocrFail + ' (' + r.status + (j.error ? ' ' + j.error : '') + (j.detail ? ': ' + j.detail : '') + ')'); return; }
+        const t = (j.text || '').trim();
+        if (!t) { note(T.ocrNo); return; }
+        ta.value = t.slice(0, 5000); ta.dataset.ocr = '1'; upd();
+        run(typeof j.left === 'number' ? T.ocrLeft(j.left) : '');
+      } catch (e) { note(T.ocrFail + ' (' + (e && e.message || e) + ')'); }
     }
-    const pst = navigator.clipboard && navigator.clipboard.readText ? el('button', {type: 'button', class: 'btn lbtn', on: {click: async () => { try { ta.value = await navigator.clipboard.readText(); run(); } catch (e) {} }}}, T.paste) : null;
-    ta.maxLength = 5000;
-    const cnt = el('span', {class: 'cs vcnt'}, '0 / 5000'); ta.addEventListener('input', () => { cnt.textContent = ta.value.length + ' / 5000'; });
-    const chips = el('div', {class: 'chips vch'}, ...T.ex.map(([l, t]) => el('button', {type: 'button', class: 'chip on', on: {click: () => { ta.value = t; cnt.textContent = t.length + ' / 5000'; run(); }}}, l)));
+    const chips = el('div', {class: 'chips vch'}, ...T.ex.map(([l, t]) => el('button', {type: 'button', class: 'chip on', on: {click: () => { ta.value = t; ta.dataset.ocr = ''; upd(); run(); }}}, l)));
     v.append(el('div', {class: 'quiz', lang: ui, dir: RTL() ? 'rtl' : 'ltr'},
-      el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('verify')), el('h2', {}, T.title), el('p', {class: 'cs'}, T.intro)),
-      ta, cnt, el('div', {class: 'gsbar'}, imb, cmb, fi, fc, pst, go, clr), el('p', {class: 'cs'}, T.try), chips, out,
+      el('div', {class: 'vhead'}, icon('verify'), el('p', {class: 'cs'}, T.intro)),
+      el('div', {class: 'vbox'}, ta, el('div', {class: 'vbar'}, go, clr, el('span', {class: 'vsp'}), ...tools, cnt, fi, fc)),
+      el('p', {class: 'cs vtry'}, T.try), chips, out,
       el('details', {class: 'card gsres'}, el('summary', {}, T.how), el('p', {class: 'note'}, T.howT))));
     let tk = 0;
-    async function run() {
+    async function run(extra) {
+      try { await run0(extra); } catch (e) { note(T.ocrFail + ' (' + (e && e.message || e) + ')'); }
+    }
+    async function run0(extra) {
       const raw = ta.value.trim(); if (!raw) return;
-      const my = ++tk; out.replaceChildren(el('p', {class: 'cs'}, '…'));
+      const my = ++tk; out.replaceChildren(el('p', {class: 'cs'}, '…')); out.scrollIntoView({block: 'nearest', behavior: 'smooth'});
       const inW = words(raw), rawW = raw.split(/[\s،,.؟!؛:\-«»"'()[\]﴿﴾]+/).filter(x => x.length > 1);
       if (inW.length < 3 && rawW.length < 3) { out.replaceChildren(el('p', {class: 'note'}, T.short)); return; }
       const box = [];
@@ -5707,6 +5733,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const hd = el('details', {class: 'card gsres'}, el('summary', {}, T.hHead), hout, el('p', {class: 'cs'}, T.hNote));
       hd.open = !strong;
       box.push(hd);
+      if (extra) box.unshift(el('p', {class: 'cs'}, extra));
       out.replaceChildren(...box);
       try { await COLL.hsEmbed(hq, hout); } catch (e) { hout.append(el('p', {class: 'note'}, T.hNone)); }
       return;
