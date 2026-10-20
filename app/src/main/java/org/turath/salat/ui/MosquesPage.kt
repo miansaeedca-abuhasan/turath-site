@@ -50,7 +50,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                 Spacer(Modifier.height(8.dp))
                 // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    for ((q, k) in listOf("masjid" to "gmapsNearby", "Muslim prayer room" to "gmapsPrayer")) OutlinedButton(onClick = {
+                    for ((q, k) in listOf("masjid" to "gmapsNearby", "Muslim prayer rooms and musallas" to "gmapsPrayer")) OutlinedButton(onClick = {
                         val la = place?.lat ?: 0.0; val ln = place?.lng ?: 0.0
                         val u = Uri.parse("geo:$la,$ln?q=" + Uri.encode(q))
                         runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, u)) }.onFailure {
