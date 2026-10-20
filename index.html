@@ -5686,10 +5686,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
         const data = c.toDataURL('image/jpeg', .85).split(',')[1];
         const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: data, mime: 'image/jpeg'})});
-        let j = {}; try { j = await r.json(); } catch (e) {}
+        let j = {}, raw = ''; try { raw = await r.text(); j = JSON.parse(raw); } catch (e) {}
         if (r.status === 429 && j.error === 'user limit') { note(T.ocrUser); return; }
         if (r.status === 429 || r.status === 503) { note(T.ocrBusy); return; }
-        if (!r.ok) { note(T.ocrFail + ' (' + r.status + (j.error ? ' ' + j.error : '') + (j.detail ? ': ' + j.detail : '') + ')'); return; }
+        if (!r.ok) { note(T.ocrFail + ' (' + r.status + (j.error ? ' ' + j.error : '') + (j.detail ? ': ' + j.detail : '') + (!j.error && raw ? ' ' + raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').slice(0, 100) : '') + ')'); return; }
         const t = (j.text || '').trim();
         if (!t) { note(T.ocrNo); return; }
         ta.value = t.slice(0, 5000); ta.dataset.ocr = '1'; upd();

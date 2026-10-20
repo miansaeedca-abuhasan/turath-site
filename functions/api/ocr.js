@@ -6,7 +6,10 @@ const PER_USER = 5;                                  // pictures per person (per
 const PROMPT = 'Extract ALL the text visible in this image exactly as written, in its original language (Arabic, Urdu, English …). Keep Arabic diacritics (tashkeel) and the line breaks. Do not translate, explain, correct or add anything. If there is no readable text, answer with an empty string.';
 const err = (s, m) => new Response(JSON.stringify({error: m}), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 
-export async function onRequest({request, env}) {
+export async function onRequest(ctx) {
+  try { return await handle(ctx); } catch (e) { return new Response(JSON.stringify({error: 'exception', detail: String(e && e.message || e).slice(0, 160)}), {status: 500, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
+}
+async function handle({request, env}) {
   if (request.method !== 'POST') return err(405, 'method');
   if (!env.GEMINI_API_KEY) return err(503, 'not set up');
   const u = new URL(request.url), origin = request.headers.get('Origin');
@@ -18,6 +21,7 @@ export async function onRequest({request, env}) {
   const day0 = new Date().toISOString().slice(0, 10), ipRaw = request.headers.get('CF-Connecting-IP') || 'x', lim = +env.OCR_USER || PER_USER;
   const ip = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(day0 + '|' + ipRaw)))].slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
   let used = 0;
+  const refund = async () => { try { if (env.DB) await env.DB.prepare('UPDATE ocr_ip SET n = MAX(0, n - 1) WHERE k = ?').bind(ip).run(); else await caches.default.put(new Request('https://ocr.cache.local/' + ip), new Response(String(Math.max(0, used - 1)), {headers: {'Cache-Control': 'max-age=86400'}})); } catch (e) {} };
   if (env.DB) {
     try {
       await env.DB.prepare('CREATE TABLE IF NOT EXISTS ocr_ip (k TEXT PRIMARY KEY, day TEXT NOT NULL, n INTEGER NOT NULL)').run();
@@ -50,9 +54,9 @@ export async function onRequest({request, env}) {
       method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY},
       body: JSON.stringify({contents: [{parts: [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}]}], generationConfig: {temperature: 0}})
     });
-  } catch (e) { return err(502, 'upstream'); }
-  if (r.status === 429) return err(429, 'busy');
-  if (!r.ok) { let d = ''; try { d = ((await r.json()).error || {}).message || ''; } catch (e) {} return new Response(JSON.stringify({error: 'upstream ' + r.status, detail: d.slice(0, 160)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
+  } catch (e) { await refund(); return new Response(JSON.stringify({error: 'upstream fetch', detail: String(e && e.message || e).slice(0, 120)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
+  if (r.status === 429) { await refund(); return err(429, 'busy'); }
+  if (!r.ok) { await refund(); let d = ''; try { d = ((await r.json()).error || {}).message || ''; } catch (e) {} return new Response(JSON.stringify({error: 'upstream ' + r.status, detail: d.slice(0, 160)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
   const j = await r.json(), t = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
   return new Response(JSON.stringify({text: t, left: Math.max(0, lim - used)}), {headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 }
