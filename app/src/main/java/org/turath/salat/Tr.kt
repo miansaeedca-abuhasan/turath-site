@@ -175,6 +175,8 @@ object Tr {
         "distance" to arrayOf("مکہ سے فاصلہ", "المسافة إلى مكة", "Distance to Makkah"),
         "km" to arrayOf("کلومیٹر", "كم", "km"),
         "noCompass" to arrayOf("اس فون میں قطب نما (سینسر) نہیں ہے", "لا توجد بوصلة في هذا الهاتف", "This phone has no compass sensor"),
+        "magClash" to arrayOf("قطب نما میں مقناطیسی خلل ہے (سینسر آپس میں مختلف سمت دے رہے ہیں) — کھلی جگہ پر جا کر فون 8 کی شکل میں گھمائیں", "هناك تشويش مغناطيسي — اذهب إلى مكان مفتوح وحرّك الهاتف على شكل 8", "Magnetic disturbance: the sensors disagree — move to an open place and wave the phone in a figure 8"),
+        "resetFix" to arrayOf("تصحیح صفر کریں", "تصفير التصحيح", "Reset correction to 0"),
         "accLow" to arrayOf("قطب نما کمزور ہے — فون کو 8 کی شکل میں گھمائیں", "دقة البوصلة ضعيفة — حرّك الهاتف على شكل 8", "Compass accuracy is low — move the phone in a figure 8"),
         "today" to arrayOf("آج", "اليوم", "Today"),
         "ramadan" to arrayOf("رمضان", "رمضان", "Ramadan"), "eid" to arrayOf("عید", "عيد", "Eid"),

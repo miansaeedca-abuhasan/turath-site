@@ -52,7 +52,7 @@ fun qiblaBearing(lat: Double, lng: Double): Double {
     return (Math.toDegrees(b) + 360) % 360
 }
 
-class Heading { var raw by mutableStateOf(""); var deg by mutableFloatStateOf(Float.NaN); var elev by mutableFloatStateOf(0f); var acc by mutableIntStateOf(3); var has by mutableStateOf(true) }
+class Heading { var raw by mutableStateOf(""); var deg by mutableFloatStateOf(Float.NaN); var elev by mutableFloatStateOf(0f); var acc by mutableIntStateOf(3); var clash by mutableStateOf(false); var has by mutableStateOf(true) }
 
 /** the direction the phone points to (true north): lying flat — its top; held upright — its camera */
 @Composable
@@ -88,6 +88,7 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
             h.elev = Math.toDegrees(Math.asin((-use[8]).toDouble().coerceIn(-1.0, 1.0))).toFloat()
             smooth = if (smooth.isNaN()) az else { var d = az - smooth; if (d > 180) d -= 360; if (d < -180) d += 360; (smooth + d * .12f + 360) % 360 }
             h.deg = smooth
+            if (n % 12 == 5 && hasR && hasAm) { var d = abs(azOf(mR) - azOf(mA)); if (d > 180) d = 360 - d; h.clash = d > 15f }
             if (++n % 12 == 0) {
                 fun f(ok: Boolean, mx: FloatArray) = if (ok) "%.0f°".format(azOf(mx)) else "—"
                 h.raw = "RV " + f(hasR, mR) + "  ·  GRV " + f(hasGv, mG) + "  ·  A+M " + f(hasAm, mA) + "  ·  " + "%.0f°".format(decl)
@@ -234,12 +235,19 @@ fun QiblaCompass(s: AppState) {
         Text(Tr["qiblaDeg"] + ": " + Tr.num("%.0f°".format(q)) + " " + Tr["fromNorth"] + "  ·  " + Tr.num("%,d".format(Cities.dist(place.lat, place.lng, 21.422487, 39.826206).roundToInt())) + " " + Tr["km"],
             fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
         if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) Text(Tr["accLow"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
+        if (h.clash) Text(Tr["magClash"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
+        // a correction saved in another place does not hold here (magnetic disturbance differs from place to place)
+        LaunchedEffect(Unit) {
+            val sl = s.prefs.sp.getFloat("qOffLat", 999f); val sn = s.prefs.sp.getFloat("qOffLng", 999f)
+            if (s.prefs.qiblaOffset != 0 && (sl > 900f || Cities.dist(place.lat, place.lng, sl.toDouble(), sn.toDouble()) > 30.0)) s.prefs.qiblaOffset = 0
+        }
         var off by remember { mutableIntStateOf(s.prefs.qiblaOffset) }
         Stepper(Tr["compassFix"], off, -180, 180, 1) { off = it; s.prefs.qiblaOffset = it }
         // standing exactly towards the qibla (a mosque's wall, a known direction): one tap sets the correction
         OutlinedButton(onClick = {
-            if (!h.deg.isNaN()) { var n = (q - (head - s.prefs.qiblaOffset)).roundToInt(); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n }
+            if (!h.deg.isNaN()) { var n = (q - (head - s.prefs.qiblaOffset)).roundToInt(); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n; s.prefs.sp.edit().putFloat("qOffLat", place.lat.toFloat()).putFloat("qOffLng", place.lng.toFloat()).apply() }
         }) { Text(Tr["setQibla"]) }
+        OutlinedButton(onClick = { s.prefs.qiblaOffset = 0; off = 0 }) { Text(Tr["resetFix"]) }
         var src by remember { mutableIntStateOf(s.prefs.compassSrc) }
         Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(Tr["compassSrc"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))

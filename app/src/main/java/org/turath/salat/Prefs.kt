@@ -256,7 +256,7 @@ class Prefs(ctx: Context) {
     var clockStyle: Int get() = sp.getInt("clk", 0); set(v) = sp.edit().putInt("clk", v).apply()
     var bgStyle: Int get() = sp.getInt("bgs", 0); set(v) = sp.edit().putInt("bgs", v).apply()
     /** the compass reading: 0 the phone's fused sensor, 1 the magnetic one, 2 raw magnetometer + accelerometer */
-    var declMode: Int get() = sp.getInt("dmode", 1); set(v) = sp.edit().putInt("dmode", v).apply()
+    var declMode: Int get() = sp.getInt("dmode", 0); set(v) = sp.edit().putInt("dmode", v).apply()
     var mosqRadius: Int get() = sp.getInt("mrad", 5); set(v) = sp.edit().putInt("mrad", v).apply()
     var mosqStrict: Boolean get() = sp.getBoolean("mstrict", false); set(v) = sp.edit().putBoolean("mstrict", v).apply()
     var hiddenMosques: Set<String> get() = sp.getStringSet("mhide", emptySet())?.toSet() ?: emptySet(); set(v) = sp.edit().putStringSet("mhide", v.toSet()).apply()
