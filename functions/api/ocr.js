@@ -10,6 +10,17 @@ export async function onRequest(ctx) {
   try { return await handle(ctx); } catch (e) { return new Response(JSON.stringify({error: 'exception', detail: String(e && e.message || e).slice(0, 160)}), {status: 500, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
 }
 async function handle({request, env}) {
+  const q = new URL(request.url).searchParams;
+  if (request.method === 'GET' && q.has('ping')) {      // diagnosis: open /api/ocr?ping=1 (function alive?) and /api/ocr?ping=2 (does the Gemini key and model answer?)
+    const o = {ok: true, key: !!env.GEMINI_API_KEY, db: !!env.DB, model: env.GEMINI_MODEL || MODEL};
+    if (q.get('ping') === '2' && env.GEMINI_API_KEY) {
+      try {
+        const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + o.model + ':generateContent', {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY}, body: JSON.stringify({contents: [{parts: [{text: 'Say OK'}]}]})});
+        o.gemini = r.status; if (!r.ok) o.detail = (await r.text()).slice(0, 300);
+      } catch (e) { o.gemini = 'fetch failed: ' + String(e && e.message || e).slice(0, 120); }
+    }
+    return new Response(JSON.stringify(o), {headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
+  }
   if (request.method !== 'POST') return err(405, 'method');
   if (!env.GEMINI_API_KEY) return err(503, 'not set up');
   const u = new URL(request.url), origin = request.headers.get('Origin');

@@ -5682,9 +5682,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     async function readImage(f) {
       note(T.reading, 'cs');
       try {
-        const bm = await createImageBitmap(f), k = Math.min(1, 1800 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
+        const bm = await createImageBitmap(f), k = Math.min(1, 1400 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
         c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
-        const data = c.toDataURL('image/jpeg', .85).split(',')[1];
+        const data = c.toDataURL('image/jpeg', .72).split(',')[1];
         const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: data, mime: 'image/jpeg'})});
         let j = {}, raw = ''; try { raw = await r.text(); j = JSON.parse(raw); } catch (e) {}
         if (r.status === 429 && j.error === 'user limit') { note(T.ocrUser); return; }
