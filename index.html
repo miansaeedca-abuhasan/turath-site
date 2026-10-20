@@ -1945,8 +1945,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- voices ---------- */
   const SS = window.speechSynthesis;
-  const S = {rate: 1, voice: {}, sanad: false, arabic: true, tr: true, uplift: true};
+  const S = {rate: 1, voice: {}, sanad: false, arabic: false, tr: true, uplift: true};
   try { Object.assign(S, JSON.parse(localStorage.tts || '{}')); } catch (e) {}
+  if (!S.v2) { S.v2 = 1; S.arabic = false; S.sanad = false; S.uplift = true; }   // Arabic reading by the phone voice is not accurate: off by default
   const save = () => { try { localStorage.tts = JSON.stringify(S); } catch (e) {} };
   let VOICES = [];
   const loadVoices = () => { VOICES = SS ? SS.getVoices() : []; };
@@ -2162,18 +2163,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     LG.forEach(([l, u, e]) => { const ts = list.filter(t => t.lang === l); if (!ts.length) return;
       const g = el('optgroup', {label: u}); ts.forEach(t => g.append(el('option', {value: t.key}, LTR() ? t.en : t.ur))); chips.append(g); });
     chips.addEventListener('change', () => { key = chips.value; QS.tafsir = key; qsave(); draw(); });
+    let tparas = [], tlang = 'ur';
     const draw = async () => {
-      chips.value = key;
+      chips.value = key; tparas = [];
       body.replaceChildren(el('p', {class: 'note'}, T('loading')));
       try { await needTafsir(key, s); } catch (e) { body.replaceChildren(el('p', {class: 'note'}, T('noTafsir'))); return; }
       const t = list.find(x => x.key === key), groups = (Q.taf[key] || {})[s] || [];
       const g = groups.find(x => x[0] <= a && a <= x[1]);
       const rng = g ? (g[0] === g[1] ? (NUM(g[0])) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]))) : '';
+      tlang = t.lang; tparas = g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => x.replace(/[\ue000\ue001]|\ue010[^\ue011]*\ue011/g, '')) : [];
       body.replaceChildren(el('p', {class: 'cs'}, sName(s) + ' · ' + T('tafsirOf')(rng || (NUM(a)))),
         ...(g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))) : [el('p', {class: 'note'}, T('noTafsir'))]));
     };
     sheet(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)),
-      [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...arParts(s, a)), chips, body,
+      [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...arParts(s, a)), chips,
+       el('button', {class: 'btn lbtn', type: 'button', style: 'margin:.4rem 0', on: {click: () => { if (tparas.length) LISTEN.playTexts(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)), tparas, tlang, body); }}}, icon('listen'), T('listenPart')), body,
        el('p', {class: 'note'}, T('tafsirMissing') + ' ' + Q.tafsirs.missing.join('، '))]);
     draw();
   }

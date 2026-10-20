@@ -1,5 +1,5 @@
 // Urdu voice (Uplift AI) for the «سنیں» player. The API key stays here as a secret (UPLIFT_API_KEY); the browser only calls /api/tts.
-// The same text is paid for once (Cloudflare cache); a daily limit of characters protects the credits (D1 table, optional).
+// The same text is paid for once (saved in the R2 bucket bound as AUDIO when there is one, otherwise in the Cloudflare cache); a daily limit of characters protects the credits (D1 table, optional).
 const VOICE = 'seerah-educator';       // override with the UPLIFT_VOICE variable
 const FORMAT = 'MP3_22050_64';
 const DAILY = 120000;                  // characters per day (override with TTS_DAILY_CHARS)
@@ -16,6 +16,8 @@ export async function onRequest({request, env, waitUntil}) {
   if (text.length < 2 || text.length > 700) return err(400, 'length');
   const voice = env.UPLIFT_VOICE || VOICE;
   const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(voice + '|' + FORMAT + '|' + text)))].map(b => b.toString(16).padStart(2, '0')).join('');
+  const R2 = env.AUDIO, rk = 'tts/' + hash.slice(0, 2) + '/' + hash + '.mp3';
+  if (R2) { try { const o = await R2.get(rk); if (o) return new Response(o.body, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=31536000'}}); } catch (e) {} }
   const cache = caches.default, key = new Request('https://tts.cache.local/' + hash);
   const hit = await cache.match(key);
   if (hit) return hit;
@@ -36,5 +38,6 @@ export async function onRequest({request, env, waitUntil}) {
   const buf = await r.arrayBuffer();
   const out = new Response(buf, {headers: {'Content-Type': 'audio/mpeg', 'Cache-Control': 'public, max-age=31536000'}});
   waitUntil && waitUntil(cache.put(key, out.clone()));
+  if (R2) { try { await R2.put(rk, buf, {httpMetadata: {contentType: 'audio/mpeg'}, customMetadata: {chars: String(text.length)}}); } catch (e) {} }
   return out;
 }
