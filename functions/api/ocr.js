@@ -12,7 +12,7 @@ async function gem(env, model, parts, ms) {
   }
 }
 const DAILY = 300;                                   // pictures per day for the whole site (override with OCR_DAILY)
-const PER_USER = 5;                                  // pictures per person (per network address) per day (override with OCR_USER)
+const PER_USER = 1000;                               // per person per day - set to 5 later (testing now); override with OCR_USER
 const PROMPT = 'Extract ALL the text visible in this image exactly as written, in its original language (Arabic, Urdu, English …). Keep Arabic diacritics (tashkeel) and the line breaks. Do not translate, explain, correct or add anything. If there is no readable text, answer with an empty string.';
 const err = (s, m) => new Response(JSON.stringify({error: m}), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 
