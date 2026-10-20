@@ -2,7 +2,7 @@
 // The key stays here as a secret (GEMINI_API_KEY); the browser only calls POST /api/ocr {image: base64, mime}. Optional variables: GEMINI_MODEL, OCR_DAILY.
 const MODEL = 'gemini-flash-lite-latest';             // fast model; falls back to MODELS[1] if it fails
 const MODELS = ['gemini-flash-lite-latest', 'gemini-flash-latest'];
-const TIMEOUT = 40000;
+const TIMEOUT = 55000;
 async function gem(env, model, parts, ms) {
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
   for (const think of [true, false]) {
@@ -72,13 +72,15 @@ async function handle({request, env}) {
     } catch (e) {}
   }
   let r, lastErr = '';
+  const t0 = Date.now();
   for (const m of [env.GEMINI_MODEL || MODELS[0], MODELS[1]]) {
+    const left = 88000 - (Date.now() - t0); if (left < 8000) break;
     try {
-      r = await gem(env, m, [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}]);
+      r = await gem(env, m, [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}], Math.min(TIMEOUT, left));
       if (r.ok || r.status === 429) break;
     } catch (e) { lastErr = String(e && e.message || e).slice(0, 120); r = null; }
   }
-  if (!r) { await refund(); return new Response(JSON.stringify({error: 'upstream fetch', detail: lastErr}), {status: 504, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
+  if (!r) { await refund(); lastErr = lastErr || 'timeout'; return new Response(JSON.stringify({error: 'upstream fetch', detail: lastErr}), {status: 504, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
   if (r.status === 429) { await refund(); return err(429, 'busy'); }
   if (!r.ok) { await refund(); let d = ''; try { d = ((await r.json()).error || {}).message || ''; } catch (e) {} return new Response(JSON.stringify({error: 'upstream ' + r.status, detail: d.slice(0, 160)}), {status: 502, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}}); }
   const j = await r.json(), t = ((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join('').trim();
