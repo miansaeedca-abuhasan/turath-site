@@ -194,13 +194,14 @@ class Prefs(ctx: Context) {
     var jumuahMinutes: Int get() = sp.getInt("jummin", 60); set(v) = sp.edit().putInt("jummin", v.coerceIn(15, 150)).apply()
     // the phone on vibrate for each prayer on its own (key = FAJR, DHUHR, ASR, MAGHRIB, ISHA or JUMUAH, which is used instead of DHUHR on Fridays):
     // on / off, starting before or after the adhan, how many minutes from the adhan (0–120), and how many minutes it lasts (0–120); then the phone rings again
-    fun vibOn(k: String) = sp.getBoolean("vibE_$k", k == "JUMUAH" && jumuahVib)
+    fun defVibLen(k: String) = when (k) { "FAJR", "ASR" -> 25; "DHUHR", "MAGHRIB" -> 30; else -> 45 }
+    fun vibOn(k: String) = sp.getBoolean("vibE_$k", true)
     fun setVibOn(k: String, v: Boolean) = sp.edit().putBoolean("vibE_$k", v).apply()
     fun vibAfter(k: String) = sp.getBoolean("vibA_$k", true)
     fun setVibAfter(k: String, v: Boolean) = sp.edit().putBoolean("vibA_$k", v).apply()
     fun vibFrom(k: String) = sp.getInt("vibF_$k", 0).coerceIn(0, 120)
     fun setVibFrom(k: String, v: Int) = sp.edit().putInt("vibF_$k", v.coerceIn(0, 120)).apply()
-    fun vibLen(k: String) = sp.getInt("vibL_$k", if (k == "JUMUAH") jumuahMinutes.coerceIn(0, 120) else 20).coerceIn(0, 120)
+    fun vibLen(k: String) = sp.getInt("vibL_$k", defVibLen(k)).coerceIn(0, 120)
     fun setVibLen(k: String, v: Int) = sp.edit().putInt("vibL_$k", v.coerceIn(0, 120)).apply()
 
     /** a fasting day: Ramadan, Monday / Thursday, or an accepted white day (by the hijri date of its daytime) */

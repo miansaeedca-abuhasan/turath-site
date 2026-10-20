@@ -79,6 +79,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
         Card0 {
             Choice(Tr["shafii"], pr.school == "shafii") { pr.school = "shafii"; s.changed() }
             Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
+            if (pr.school == "hanafi") Text(Tr["hanafiVibNote"], Modifier.padding(horizontal = 4.dp, vertical = 6.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
         }
         SectionTitle(Tr["method"])
         Card0 {
