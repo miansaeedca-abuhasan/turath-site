@@ -1250,8 +1250,14 @@ function langMenu(){
 $('#uilang').addEventListener('click',langMenu);
 /* ---------- back: every screen except Home has it; it returns to where you came from, or one level up ---------- */
 const isHome=()=>{const h=location.hash;return h===''||h==='#/'||h==='#/home';};
-const NAV=[];let goingBack=false;
-addEventListener('hashchange',e=>{if(goingBack){goingBack=false;return;}const old=(e.oldURL||'').split('#')[1];if(old!=null&&('#'+old)!==location.hash)NAV.push('#'+old);if(NAV.length>60)NAV.shift();});
+/* history with scroll memory: back returns to the exact entry you came from, at the same scroll position (works on every screen) */
+let SCR={};try{SCR=JSON.parse(sessionStorage.scr||'{}')}catch(e){}
+let HDEPTH=0;try{HDEPTH=+sessionStorage.hdepth||0}catch(e){}
+try{history.scrollRestoration='manual'}catch(e){}
+let isRestore=false;
+addEventListener('hashchange',e=>{const old=(e.oldURL||'').split('#')[1];if(old!=null){SCR['#'+old]=Math.round(scrollY);const ks=Object.keys(SCR);if(ks.length>80)delete SCR[ks[0]];try{sessionStorage.scr=JSON.stringify(SCR)}catch(x){}}});
+function histMark(){const st=history.state;if(st&&st.i!=null){isRestore=true;HDEPTH=Math.max(HDEPTH,st.i);}else{isRestore=false;HDEPTH++;try{history.replaceState(Object.assign({},st||{},{i:HDEPTH}),'',location.href)}catch(e){}}try{sessionStorage.hdepth=HDEPTH}catch(e){}}
+function restoreScroll(y){let n=0;const go=()=>{scrollTo(0,y);n++;if(n<40&&(n<4||Math.abs(scrollY-y)>3))setTimeout(go,60);};go();}
 function parentOf(h){
   let m;
   if(h.startsWith('#/t/'))return '#/';
@@ -1268,8 +1274,9 @@ function parentOf(h){
 function goBack(){
   const sh=document.querySelector('.sheetbg');if(sh){sh.remove();return;}
   if(location.hash==='#/b'&&$('#q').value.trim()){$('#q').value='';showHome();return;}
-  const to=NAV.pop()||parentOf(location.hash);
-  if(to!==location.hash){goingBack=true;location.hash=to;}
+  const st=history.state;if(st&&st.i>1&&history.length>1){history.back();return;}
+  const to=parentOf(location.hash);
+  if(to!==location.hash)location.hash=to;
 }
 $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
@@ -1432,8 +1439,9 @@ async function showExt(key,num){
   if(d.cited_by.length){v.append(el('p',{class:'note'},T('cited')));
     const c=el('div',{class:'chips'});d.cited_by.forEach(n=>c.append(el('a',{class:'chip on',href:'#/h/'+n},String(n))));v.append(c);}
 }
+let lastRouted=null;
 function route(){
-  const h=location.hash,sec=navBar();
+  const h=location.hash,sec=navBar();if(lastRouted!==h){lastRouted=h;histMark();}else isRestore=false;
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
@@ -1455,7 +1463,7 @@ function route(){
   else if(c)showChapter(c[1],+c[2]);
   else if(h==='#/bm')showBookmarks();
   else showHome();
-  if(!/^#\/q\/[sjr]\/\d+\/\d+/.test(h))scrollTo(0,0);
+  if(!/^#\/q\/[sjr]\/\d+\/\d+/.test(h)){if(isRestore&&SCR[h]>0)restoreScroll(SCR[h]);else scrollTo(0,0);}
 }
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   // pages that do not need al-Jami al-Kamil's data open at once; the book list comes when the data is in
