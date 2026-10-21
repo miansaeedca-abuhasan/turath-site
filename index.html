@@ -543,6 +543,10 @@ body.vfpage .appbar{position:static}
 
 .nbook{display:flex;justify-content:space-between;align-items:center;gap:.6rem;width:100%;text-align:start;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin:.35rem 0}
 .nhad{display:flex;flex-direction:column;gap:.2rem}.nsnip{font-size:.95rem;line-height:1.9}
+
+.nbar{display:block;width:100%;text-align:start;font:inherit;font-weight:600;color:#fff;background:var(--accent);border:0;border-radius:10px;padding:.8rem 1rem;margin:.55rem 0 0;cursor:pointer}
+.nbar.on{filter:brightness(.88)}.npanel{margin:.2rem 0 .4rem;border-top-left-radius:0;border-top-right-radius:0}
+.nrowbtns{margin-top:.9rem;justify-content:center}.nhbox{margin-top:.5rem}.nhbox .nsec{margin-top:.3rem}
 </style>
 </head>
 <body>
@@ -3932,6 +3936,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(rt('title'), '', true); box.replaceChildren();
     const card = el('article', {class: 'card rjmaster'});
     card.append(el('div', {class: 'rjfrom'}, rt('fromTK')));
+    if (window.NAR && NAR.idForTK) {      // the same narrator in the narrators encyclopedia (islam-db)
+      const pn = tk.an && tk.an[n], nm = x ? String(x.name || '') : (r0[1] || '').slice(0, 80);
+      if (pn) NAR.idForTK(parseInt(pn, 10), nm).then(id => { if (id) card.querySelector('.rjfrom').after(el('a', {class: 'btn lbtn nlink', href: '#/n/' + id}, {ur: 'موسوعۃ الرواۃ میں کھولیں', ar: 'افتح في موسوعة الرواة', en: 'Open in the Narrators Encyclopedia'}[ui] || 'Open in the Narrators Encyclopedia')); }).catch(() => {});
+    }
     if (x) {
       card.append(el('div', {class: 'rjtitle', lang: 'ar'}, rt('about')));
       const facts = el('div', {class: 'rjtable', lang: 'ar', dir: 'rtl'});
@@ -4175,6 +4183,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     },
     // the text of one row (null when the book or language is not here)
     async text(key, lang, n) { await index(); const b = bookOf(key); if (!b || b.ext || !b.langs.includes(lang)) return null; await needRange(b, lang, n, n); const r = row(b, lang, n); return r ? r[1] : null; },
+    async toN(key, printed) { await index(); return ((C.rev || {})[key] || {})[printed] || 0; },
     async bookName(key) { await index(); const b = bookOf(key); return b ? bname(b) : key; },
     async count(key) { await index(); const b = bookOf(key); return b ? b.count : 0; },
     // an Urdu translation for a Jami hadith from the first of its takhrij books that has one in the app: {text, book, num} or null
@@ -6129,17 +6138,32 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const acts = el('div', {class: 'vact'},
       el('button', {type: 'button', class: 'vgo', on: {click: async () => { const m = txt(); if (navigator.share) { try { await navigator.share({text: m}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } try { await navigator.clipboard.writeText(m); toast(T.copied); } catch (e) {} }}}, icon('share'), T.share),
       el('button', {type: 'button', class: 'vgo vsec', on: {click: async () => { try { await navigator.clipboard.writeText(txt()); toast(T.copied); } catch (e) {} }}}, icon('copy'), T.copy));
-    v.replaceChildren(head, SEC(T.about, el('div', {class: 'nfacts'}, ...facts)),
-      SEC(T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), J),
-      await hadithSection(id, T),
-      SEC(T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)),
-      SEC(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)), acts);
+    const acc = [];
+    const bars = (title, body, open) => { const panel = el('div', {class: 'npanel card pad', hidden: !open}, body), btn = el('button', {type: 'button', class: 'nbar' + (open ? ' on' : ''), 'aria-expanded': String(!!open)}, title);
+      btn.onclick = () => { const was = !panel.hidden; acc.forEach(x => { x.panel.hidden = true; x.btn.classList.remove('on'); x.btn.setAttribute('aria-expanded', 'false'); }); if (!was) { panel.hidden = false; btn.classList.add('on'); btn.setAttribute('aria-expanded', 'true'); btn.scrollIntoView({block: 'start', behavior: 'smooth'}); } };
+      acc.push({btn, panel}); return [btn, panel]; };
+    const hbox = el('div', {class: 'nhbox', hidden: true});
+    const hbtn = el('button', {type: 'button', class: 'vgo nhbtn'}, T.hsec + (r[8] ? '' : ''));
+    let hloaded = false; hbtn.onclick = async () => { hbox.hidden = !hbox.hidden; if (!hbox.hidden && !hloaded) { hloaded = true; hbox.replaceChildren(await hadithSection(id, T)); } };
+    const tkn = r[7] && window.COLL && COLL.toN ? await COLL.toN('tahdhibkamal', r[7]) : 0;
+    v.replaceChildren(head,
+      ...bars(T.about, el('div', {class: 'nfacts'}, ...facts), true),
+      ...bars(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)),
+      ...bars(T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)),
+      ...bars(T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), J),
+      el('div', {class: 'vact nrowbtns'}, hbtn, tkn ? el('a', {class: 'vgo vsec', href: '#/s/rijal/' + tkn}, T.open) : ''), hbox, acts);
   }
   function route(h) {
     const m = h.match(/^#\/n\/(\d+)/);
     if (m) showNarrator(+m[1]); else showList();
   }
-  window.NAR = {route, title: () => L().title};
+  let TKM = null;
+  async function idForTK(printed, name) {
+    await idx(); if (!TKM) { TKM = new Map(); IDX.d.forEach(r => { if (r[7]) (TKM.get(r[7]) || TKM.set(r[7], []).get(r[7])).push(r); }); }
+    const c = TKM.get(+printed) || []; if (c.length < 2) return c[0] ? c[0][0] : 0;
+    const t = new Set(nrm(name).split(' ')); let best = 0, bs = -1; c.forEach(r => { const k = nrm(r[1] + ' ' + r[2]).split(' ').filter(w => t.has(w)).length; if (k > bs) { bs = k; best = r[0]; } }); return best;
+  }
+  window.NAR = {route, title: () => L().title, idForTK};
 })();
 
 </script>
