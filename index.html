@@ -540,6 +540,9 @@ body.vfpage .appbar{position:static}
 .nhead .nname{font-size:1.5rem;margin:.1rem 0 .2rem}.nsec{margin-top:.7rem}.nh{margin:0 0 .5rem;font-size:1.02rem;color:var(--accent)}
 .nfacts{display:grid;grid-template-columns:1fr;gap:.1rem}.nfact{display:flex;justify-content:space-between;gap:.8rem;padding:.35rem 0;border-bottom:1px solid var(--line)}.nfact b{text-align:end}
 .nj{padding:.5rem 0;border-bottom:1px solid var(--line)}.nj p{margin:.15rem 0 0}.nwho{color:var(--accent)}
+
+.nbook{display:flex;justify-content:space-between;align-items:center;gap:.6rem;width:100%;text-align:start;font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;margin:.35rem 0}
+.nhad{display:flex;flex-direction:column;gap:.2rem}.nsnip{font-size:.95rem;line-height:1.9}
 </style>
 </head>
 <body>
@@ -4172,6 +4175,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     },
     // the text of one row (null when the book or language is not here)
     async text(key, lang, n) { await index(); const b = bookOf(key); if (!b || b.ext || !b.langs.includes(lang)) return null; await needRange(b, lang, n, n); const r = row(b, lang, n); return r ? r[1] : null; },
+    async bookName(key) { await index(); const b = bookOf(key); return b ? bname(b) : key; },
     async count(key) { await index(); const b = bookOf(key); return b ? b.count : 0; },
     // an Urdu translation for a Jami hadith from the first of its takhrij books that has one in the app: {text, book, num} or null
     async urFor(refs) {
@@ -5979,13 +5983,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const LB = {
     ur: {title: 'موسوعۃ الرواۃ', sub: 'رواۃ حدیث — حالات، اساتذہ، شاگرد، جرح و تعدیل', ph: 'راوی کا نام، کنیت یا نسبت لکھیں…', total: n => n.toLocaleString('en') + ' راوی', loading: 'ڈیٹا لوڈ ہو رہا ہے…', none: 'کوئی راوی نہیں ملا۔', more: 'مزید دکھائیں', all: 'سب', tab: 'طبقہ', tabAll: 'سب طبقات', cat: {sah: 'صحابہ', thq: 'ثقہ', sad: 'صدوق', maq: 'مقبول', weak: 'ضعیف', bad: 'متروک / متہم', unk: 'مجہول', ibh: 'ابن حبان کی توثیق'}, tabn: n => 'طبقہ ' + n, died: n => 'وفات ' + n + 'ھ', hadith: n => n.toLocaleString('en') + ' احادیث',
       about: 'تعارف', name: 'نام', kunya: 'کنیت', shohra: 'شہرت', nasab: 'نسبت', laqab: 'لقب', job: 'پیشہ', madhab: 'مذہب', rank: 'درجہ', tabaqa: 'طبقہ', birth: 'ولادت', death: 'وفات', age: 'عمر', live: 'رہائش', diedAt: 'جائے وفات', rel: 'رشتہ دار', mawla: 'ولاء', tk: 'تہذیب الکمال', h: 'ھ',
-      teachers: 'اساتذہ', students: 'شاگرد', jarh: 'جرح و تعدیل', noJ: 'اس راوی کے بارے میں اقوال درج نہیں۔', none2: 'درج نہیں', filter: 'نام سے چھانٹیں…', share: 'شیئر', copy: 'کاپی', copied: 'کاپی ہو گیا', src: 'ماخذ: islam-db / فکرۃ الکمبیوٹر', quotes: n => n + ' اقوال', open: 'تہذیب الکمال میں کھولیں', back: 'رواۃ'},
+      teachers: 'اساتذہ', students: 'شاگرد', jarh: 'جرح و تعدیل', noJ: 'اس راوی کے بارے میں اقوال درج نہیں۔', hsec: 'احادیث الراوی', hnote: 'ہماری کتب میں اس راوی کی سند سے آنے والی احادیث', hnone: 'ہماری کتب میں اس راوی کی کوئی حدیث نہیں ملی۔', hcount: n => n.toLocaleString('en') + ' احادیث', none2: 'درج نہیں', filter: 'نام سے چھانٹیں…', share: 'شیئر', copy: 'کاپی', copied: 'کاپی ہو گیا', src: 'ماخذ: islam-db / فکرۃ الکمبیوٹر', quotes: n => n + ' اقوال', open: 'تہذیب الکمال میں کھولیں', back: 'رواۃ'},
     ar: {title: 'موسوعة الرواة', sub: 'رواة الحديث — الترجمة والشيوخ والتلاميذ والجرح والتعديل', ph: 'اكتب اسم الراوي أو كنيته أو نسبته…', total: n => n.toLocaleString('en') + ' راويًا', loading: 'جارٍ التحميل…', none: 'لا يوجد راوٍ بهذا الاسم.', more: 'عرض المزيد', all: 'الكل', tab: 'الطبقة', tabAll: 'كل الطبقات', cat: {sah: 'الصحابة', thq: 'ثقة', sad: 'صدوق', maq: 'مقبول', weak: 'ضعيف', bad: 'متروك / متهم', unk: 'مجهول', ibh: 'وثّقه ابن حبان'}, tabn: n => 'الطبقة ' + n, died: n => 'ت ' + n + 'هـ', hadith: n => n.toLocaleString('en') + ' حديثًا',
       about: 'عن حياة الراوي', name: 'الاسم', kunya: 'الكنية', shohra: 'الشهرة', nasab: 'النسب', laqab: 'اللقب', job: 'الوظيفة', madhab: 'المذهب', rank: 'الرتبة', tabaqa: 'الطبقة', birth: 'الولادة', death: 'الوفاة', age: 'العمر', live: 'سكن في', diedAt: 'مات في', rel: 'القرابات', mawla: 'الولاء', tk: 'تهذيب الكمال', h: 'هـ',
-      teachers: 'شيوخ الراوي', students: 'تلاميذ الراوي', jarh: 'الجرح والتعديل', noJ: 'لا توجد أقوال مسجّلة في هذا الراوي.', none2: 'لا يوجد', filter: 'تصفية بالاسم…', share: 'مشاركة', copy: 'نسخ', copied: 'تم النسخ', src: 'المصدر: islam-db / فكرة كمبيوتر', quotes: n => n + ' أقوال', open: 'افتح في تهذيب الكمال', back: 'الرواة'},
+      teachers: 'شيوخ الراوي', students: 'تلاميذ الراوي', jarh: 'الجرح والتعديل', noJ: 'لا توجد أقوال مسجّلة في هذا الراوي.', hsec: 'أحاديث الراوي', hnote: 'الأحاديث التي في كتبنا وهو في إسنادها', hnone: 'لم نجد له أحاديث في كتبنا.', hcount: n => n.toLocaleString('en') + ' حديثًا', none2: 'لا يوجد', filter: 'تصفية بالاسم…', share: 'مشاركة', copy: 'نسخ', copied: 'تم النسخ', src: 'المصدر: islam-db / فكرة كمبيوتر', quotes: n => n + ' أقوال', open: 'افتح في تهذيب الكمال', back: 'الرواة'},
     en: {title: 'Narrators Encyclopedia', sub: 'Hadith narrators — biography, teachers, students, criticism', ph: 'Type a narrator’s name, kunya or nisba…', total: n => n.toLocaleString('en') + ' narrators', loading: 'Loading data…', none: 'No narrator found.', more: 'Show more', all: 'All', tab: 'Generation', tabAll: 'All generations', cat: {sah: 'Companions', thq: 'Trustworthy', sad: 'Truthful', maq: 'Acceptable', weak: 'Weak', bad: 'Abandoned / accused', unk: 'Unknown', ibh: 'Trusted only by Ibn Hibban'}, tabn: n => 'Generation ' + n, died: n => 'd. ' + n + ' AH', hadith: n => n.toLocaleString('en') + ' hadith',
       about: 'About', name: 'Name', kunya: 'Kunya', shohra: 'Known as', nasab: 'Nisba', laqab: 'Laqab', job: 'Occupation', madhab: 'School', rank: 'Grade', tabaqa: 'Generation', birth: 'Born', death: 'Died', age: 'Age', live: 'Lived in', diedAt: 'Died at', rel: 'Relatives', mawla: 'Mawla of', tk: 'Tahdhib al-Kamal', h: 'AH',
-      teachers: 'Teachers', students: 'Students', jarh: 'Criticism and praise', noJ: 'No sayings recorded for this narrator.', none2: 'None', filter: 'Filter by name…', share: 'Share', copy: 'Copy', copied: 'Copied', src: 'Source: islam-db / Fekra Computers', quotes: n => n + ' sayings', open: 'Open in Tahdhib al-Kamal', back: 'Narrators'}
+      teachers: 'Teachers', students: 'Students', jarh: 'Criticism and praise', noJ: 'No sayings recorded for this narrator.', hsec: 'Hadith of the narrator', hnote: 'Hadith in our books that have him in the chain', hnone: 'No hadith of his found in our books.', hcount: n => n.toLocaleString('en') + ' hadith', none2: 'None', filter: 'Filter by name…', share: 'Share', copy: 'Copy', copied: 'Copied', src: 'Source: islam-db / Fekra Computers', quotes: n => n + ' sayings', open: 'Open in Tahdhib al-Kamal', back: 'Narrators'}
   };
   const qv = () => $('#qv'), L = () => LB[ui] || LB.en;
   const PILL = {sah: 'ok', thq: 'ok', sad: 'ok', maq: 'mix', weak: 'weak', bad: 'bad', unk: 'unk', ibh: 'unk', '': 'unk'};
@@ -6014,6 +6018,41 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const s = document.createElement('script'); s.src = url; window.NCHUNK = d => ok(d); s.onload = () => s.remove();
       s.onerror = () => { delete loaded[url]; no(new Error(url)); }; document.head.append(s);
     })).catch(e => { delete loaded[url]; throw e; }));
+  }
+  let HBK = null, hchain = Promise.resolve();
+  async function hbooks() { if (HBK) return HBK; return HBK = await load('idb/hbk.js', 'HBK'); }
+  function hchunk(id) {
+    const url = 'idb/h_' + Math.floor((id - 1) / 250) + '.js'; if (loaded[url]) return loaded[url];
+    return loaded[url] = (hchain = hchain.then(() => new Promise((ok, no) => { const s = document.createElement('script'); s.src = url; window.HCHUNK = d => ok(d); s.onload = () => s.remove(); s.onerror = () => ok({}); document.head.append(s); })));
+  }
+  const plain = t => (t || '').replace(/<[^>]+>/g, ' ').replace(/[\u064b-\u0652\u0670\u0640]/g, '').replace(/\s+/g, ' ').trim();
+  async function hadithSection(id, T) {
+    const box = SEC(T.hsec, el('p', {class: 'cs'}, T.loading)); box.hidden = false;
+    (async () => {
+      try {
+        const keys = await hbooks(), mine = (await hchunk(id))[id] || [];
+        if (!mine.length) { box.replaceChildren(el('h3', {class: 'nh'}, T.hsec), el('p', {class: 'cs'}, T.hnone)); return; }
+        const books = mine.map(([ki, d]) => { let a = 0; return {key: keys[ki], ns: d.map(x => a += x)}; }).sort((a, b) => b.ns.length - a.ns.length);
+        const tot = books.reduce((a, b) => a + b.ns.length, 0);
+        box.replaceChildren(el('h3', {class: 'nh'}, T.hsec + ' (' + tot.toLocaleString('en') + ')'), el('p', {class: 'cs'}, T.hnote));
+        for (const b of books) {
+          const name = window.COLL ? await COLL.bookName(b.key) : b.key, list = el('div', {class: 'nlist', hidden: true}), more = el('button', {type: 'button', class: 'vgo vsec', hidden: true}, T.more);
+          let shown = 0, opened = false;
+          const next = async () => {
+            const part = b.ns.slice(shown, shown + 15); shown += part.length;
+            for (const n of part) {
+              const a = el('a', {class: 'nrow nhad', href: '#/s/' + b.key + '/n/' + n}, el('span', {class: 'cs'}, '#' + (window.COLL ? COLL.printed(b.key, n) : n)), el('span', {class: 'ar nsnip', lang: 'ar', dir: 'rtl'}, '…'));
+              list.append(a);
+              COLL.text(b.key, 'ar', n).then(t => { const x = plain(t); const k = x.search(/(قال|يقول|سمعت|ان)? ?رسول الله/); const y = k > 40 ? '… ' + x.slice(k) : x; a.lastChild.textContent = y.length > 170 ? y.slice(0, 170) + ' …' : y; });
+            }
+            more.hidden = shown >= b.ns.length;
+          };
+          const head = el('button', {type: 'button', class: 'nbook', on: {click: () => { list.hidden = !list.hidden; if (!opened) { opened = true; next(); } }}}, el('b', {}, name), el('span', {class: 'cs'}, T.hcount(b.ns.length)));
+          more.onclick = next; box.append(head, list, more);
+        }
+      } catch (e) { box.replaceChildren(el('h3', {class: 'nh'}, T.hsec), el('p', {class: 'vbad'}, '✗ ' + e.message)); }
+    })();
+    return box;
   }
   const cat = r => IDX.rc[r[4]] || '';
   const rank = r => IDX.rk[r[4]] || '';
@@ -6092,6 +6131,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('button', {type: 'button', class: 'vgo vsec', on: {click: async () => { try { await navigator.clipboard.writeText(txt()); toast(T.copied); } catch (e) {} }}}, icon('copy'), T.copy));
     v.replaceChildren(head, SEC(T.about, el('div', {class: 'nfacts'}, ...facts)),
       SEC(T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), J),
+      await hadithSection(id, T),
       SEC(T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)),
       SEC(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)), acts);
   }
