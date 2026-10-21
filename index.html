@@ -154,13 +154,10 @@ body.withplayer{padding-bottom:calc(8rem + env(safe-area-inset-bottom,0px))}
 .bnav a.navhome .nico{background:var(--accent);color:#fff;border-radius:50%;width:2.6rem;height:2.6rem;align-items:center;justify-content:center;margin-top:-1.1rem;box-shadow:0 2px 8px rgba(12,92,110,.35);border:3px solid var(--card)}
 .bnav a.navhome .nico svg{width:1.4rem;height:1.4rem}
 #player{position:fixed;left:0;right:0;bottom:calc(3.6rem + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;gap:.1rem;background:var(--bar);color:#fff;padding:.25rem .5rem;box-shadow:0 -2px 10px rgba(0,0,0,.18)}
-#player{flex-wrap:wrap}
-#player .pseek{flex:0 0 100%;display:flex;align-items:center;gap:.5rem;direction:ltr;font-size:.8rem;padding:.2rem .3rem 0}
+#player .pseek{flex:1;min-width:0;max-width:30rem;margin:0 auto;display:flex;align-items:center;gap:.4rem;direction:ltr;font-size:.78rem}
 #player .pseek[hidden]{display:none}
 #player .pseek input{flex:1;min-width:0;height:1.4rem;accent-color:#e8b04a}
-body.withseek.withplayer{padding-bottom:calc(10.2rem + env(safe-area-inset-bottom,0px))}
-body.withseek.withplayer .qnav{bottom:calc(10rem + env(safe-area-inset-bottom,0px))}
-body.withseek.withplayer .speedbox{bottom:calc(13.9rem + env(safe-area-inset-bottom,0px))}
+body.withseek #player .ptitle{display:none}
 #player .ptitle{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem;padding:0 .4rem}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.2rem;padding:.6rem .3rem}
 .tile{display:flex;flex-direction:column;align-items:center;gap:.2rem;background:none;border:0;border-radius:12px;padding:.5rem .2rem;color:var(--ink);text-decoration:none;cursor:pointer;font-size:.9rem;line-height:1.5;text-align:center}
@@ -2075,12 +2072,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     rg.addEventListener('input', () => { P.drag = true; $('#pcur').textContent = (x => Math.floor(x / 60) + ':' + String(Math.floor(x % 60)).padStart(2, '0'))(+rg.value); });
     rg.addEventListener('change', () => { P.drag = false; if (P.A) { try { P.A.currentTime = +rg.value; } catch (e) {} } if (P.upd) P.upd(); });
     $('#player').replaceChildren(
-      el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
       b('pstop', 'stop', () => P.cb && P.cb.stop(), 'Stop'),
       b('pprev', 'prev', () => P.cb && P.cb.prev && P.cb.prev(), 'Previous'),
       b('pplay', 'pause', () => { if (!P.cb) return; P.paused ? P.cb.resume() : P.cb.pause(); }, 'Play/Pause'),
       b('pnext', 'next', () => P.cb && P.cb.next && P.cb.next(), 'Next'),
       el('span', {id: 'ptitle', class: 'ptitle'}, title),
+      el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
       b('pset', 'tune', () => P.cb && P.cb.settings ? P.cb.settings() : ttsSettings(), 'Settings'));
   }
 
