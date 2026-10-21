@@ -530,6 +530,16 @@ body.vfpage .appbar{position:static}
 .vprev{white-space:pre-wrap;word-break:break-word;font:inherit;font-size:.82rem;line-height:1.7;background:var(--wash);border-radius:10px;padding:.6rem .7rem;margin:.3rem 0;max-height:12rem;overflow:auto}
 .vsharebar{display:flex;flex-wrap:wrap;gap:.4rem;padding:.6rem .8rem;align-items:center}.vsharebar .tbtn{margin-inline-start:auto}
 .vcard{max-width:100%;border-radius:10px;border:1px solid var(--line);margin:.4rem 0}
+
+.nbox{display:flex;gap:.5rem;align-items:center}.nsearch{flex:1;min-width:0;width:100%;border:1px solid var(--line);border-radius:12px;padding:.6rem .8rem;font:inherit;background:var(--card);color:var(--ink)}
+.ntab{border:1px solid var(--line);border-radius:12px;padding:.55rem .4rem;background:var(--card);color:var(--ink);font:inherit;max-width:7.5rem}
+.nchips{margin:.6rem 0 .2rem}.ncnt{margin:.2rem 0 0}.nlist{display:flex;flex-direction:column;gap:.45rem;margin:.5rem 0}
+.nrow{display:block;text-decoration:none;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.55rem .75rem}.nrow:active{background:var(--wash)}
+.nmain{display:flex;flex-direction:column;gap:.1rem}.nmain b{font-size:1.02rem}.nmeta{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center;margin-top:.35rem}
+.npill{font-size:.72rem;padding:.1rem .5rem;margin:0}.nmeta .vpill{margin:0;font-size:.74rem;padding:.12rem .55rem}
+.nhead .nname{font-size:1.5rem;margin:.1rem 0 .2rem}.nsec{margin-top:.7rem}.nh{margin:0 0 .5rem;font-size:1.02rem;color:var(--accent)}
+.nfacts{display:grid;grid-template-columns:1fr;gap:.1rem}.nfact{display:flex;justify-content:space-between;gap:.8rem;padding:.35rem 0;border-bottom:1px solid var(--line)}.nfact b{text-align:end}
+.nj{padding:.5rem 0;border-bottom:1px solid var(--line)}.nj p{margin:.15rem 0 0}.nwho{color:var(--accent)}
 </style>
 </head>
 <body>
@@ -1306,6 +1316,7 @@ function parentOf(h){
   if(h.startsWith('#/t/'))return '#/';
   if((m=h.match(/^(#\/quiz(?:\/[ak](?:\/[a-z]+)?)?)\/[^/]+$/)))return m[1];
   if(h==='#/quiz')return '#/';
+  if(/^#\/n\/\d+/.test(h))return '#/nar';
   if((m=h.match(/^#\/c\/(\d+)\/\d+/)))return '#/k/'+m[1];
   if((m=h.match(/^#\/s\/([a-z0-9]+)\/./)))return '#/s/'+m[1];
   if((m=h.match(/^#\/cmp\/j\/(\d+)/)))return '#/h/'+m[1];
@@ -1325,7 +1336,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify')?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/nar'||h.startsWith('#/n/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -1489,11 +1500,12 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',quran=sec==='q'||sec==='home'||td||qz||vf;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb',home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(vf)VERIFY.route();
+  else if(nr)NAR.route(h);
   else if(qz)QUIZ.route(h);
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
@@ -2377,7 +2389,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
+      tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     tickerBar(v);
     v.append(el('div', {class: 'card pad0'}, g));
@@ -4936,7 +4948,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function apply() { if (off) strip(document.body); }
   function sched() { if (pend || !off) return; pend = true; requestAnimationFrame(() => { pend = false; orig.forEach((v, n) => { if (!n.isConnected) orig.delete(n); }); strip(document.body); }); }
   function show() {
-    const h = location.hash, hide = /^#\/(q|quiz)(\/|$)/.test(h) || h === '#/q';
+    const h = location.hash, hide = /^#\/(q|quiz|nar|n)(\/|$)/.test(h) || h === '#/q';
     if (btn) btn.style.display = hide ? 'none' : '';
   }
   function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
@@ -5956,6 +5968,138 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (pre) { ta.value = pre; run(); }
   }
   window.VERIFY = {route: show, title: () => (S[ui] || S.en).title};
+})();
+
+</script>
+<script>
+/* موسوعة الرواة — 42,517 narrators (data: islam-db / Fekra Computers): search, filters, a page per narrator with life facts,
+   teachers, students and the sayings of the critics. Routes: #/nar (list) and #/n/<id> (narrator). */
+(function () {
+  'use strict';
+  const LB = {
+    ur: {title: 'موسوعۃ الرواۃ', sub: 'رواۃ حدیث — حالات، اساتذہ، شاگرد، جرح و تعدیل', ph: 'راوی کا نام، کنیت یا نسبت لکھیں…', total: n => n.toLocaleString('en') + ' راوی', loading: 'ڈیٹا لوڈ ہو رہا ہے…', none: 'کوئی راوی نہیں ملا۔', more: 'مزید دکھائیں', all: 'سب', tab: 'طبقہ', tabAll: 'سب طبقات', cat: {sah: 'صحابہ', thq: 'ثقہ', sad: 'صدوق', maq: 'مقبول', weak: 'ضعیف', bad: 'متروک / متہم', unk: 'مجہول', ibh: 'ابن حبان کی توثیق'}, tabn: n => 'طبقہ ' + n, died: n => 'وفات ' + n + 'ھ', hadith: n => n.toLocaleString('en') + ' احادیث',
+      about: 'تعارف', name: 'نام', kunya: 'کنیت', shohra: 'شہرت', nasab: 'نسبت', laqab: 'لقب', job: 'پیشہ', madhab: 'مذہب', rank: 'درجہ', tabaqa: 'طبقہ', birth: 'ولادت', death: 'وفات', age: 'عمر', live: 'رہائش', diedAt: 'جائے وفات', rel: 'رشتہ دار', mawla: 'ولاء', tk: 'تہذیب الکمال', h: 'ھ',
+      teachers: 'اساتذہ', students: 'شاگرد', jarh: 'جرح و تعدیل', noJ: 'اس راوی کے بارے میں اقوال درج نہیں۔', none2: 'درج نہیں', filter: 'نام سے چھانٹیں…', share: 'شیئر', copy: 'کاپی', copied: 'کاپی ہو گیا', src: 'ماخذ: islam-db / فکرۃ الکمبیوٹر', quotes: n => n + ' اقوال', open: 'تہذیب الکمال میں کھولیں', back: 'رواۃ'},
+    ar: {title: 'موسوعة الرواة', sub: 'رواة الحديث — الترجمة والشيوخ والتلاميذ والجرح والتعديل', ph: 'اكتب اسم الراوي أو كنيته أو نسبته…', total: n => n.toLocaleString('en') + ' راويًا', loading: 'جارٍ التحميل…', none: 'لا يوجد راوٍ بهذا الاسم.', more: 'عرض المزيد', all: 'الكل', tab: 'الطبقة', tabAll: 'كل الطبقات', cat: {sah: 'الصحابة', thq: 'ثقة', sad: 'صدوق', maq: 'مقبول', weak: 'ضعيف', bad: 'متروك / متهم', unk: 'مجهول', ibh: 'وثّقه ابن حبان'}, tabn: n => 'الطبقة ' + n, died: n => 'ت ' + n + 'هـ', hadith: n => n.toLocaleString('en') + ' حديثًا',
+      about: 'عن حياة الراوي', name: 'الاسم', kunya: 'الكنية', shohra: 'الشهرة', nasab: 'النسب', laqab: 'اللقب', job: 'الوظيفة', madhab: 'المذهب', rank: 'الرتبة', tabaqa: 'الطبقة', birth: 'الولادة', death: 'الوفاة', age: 'العمر', live: 'سكن في', diedAt: 'مات في', rel: 'القرابات', mawla: 'الولاء', tk: 'تهذيب الكمال', h: 'هـ',
+      teachers: 'شيوخ الراوي', students: 'تلاميذ الراوي', jarh: 'الجرح والتعديل', noJ: 'لا توجد أقوال مسجّلة في هذا الراوي.', none2: 'لا يوجد', filter: 'تصفية بالاسم…', share: 'مشاركة', copy: 'نسخ', copied: 'تم النسخ', src: 'المصدر: islam-db / فكرة كمبيوتر', quotes: n => n + ' أقوال', open: 'افتح في تهذيب الكمال', back: 'الرواة'},
+    en: {title: 'Narrators Encyclopedia', sub: 'Hadith narrators — biography, teachers, students, criticism', ph: 'Type a narrator’s name, kunya or nisba…', total: n => n.toLocaleString('en') + ' narrators', loading: 'Loading data…', none: 'No narrator found.', more: 'Show more', all: 'All', tab: 'Generation', tabAll: 'All generations', cat: {sah: 'Companions', thq: 'Trustworthy', sad: 'Truthful', maq: 'Acceptable', weak: 'Weak', bad: 'Abandoned / accused', unk: 'Unknown', ibh: 'Trusted only by Ibn Hibban'}, tabn: n => 'Generation ' + n, died: n => 'd. ' + n + ' AH', hadith: n => n.toLocaleString('en') + ' hadith',
+      about: 'About', name: 'Name', kunya: 'Kunya', shohra: 'Known as', nasab: 'Nisba', laqab: 'Laqab', job: 'Occupation', madhab: 'School', rank: 'Grade', tabaqa: 'Generation', birth: 'Born', death: 'Died', age: 'Age', live: 'Lived in', diedAt: 'Died at', rel: 'Relatives', mawla: 'Mawla of', tk: 'Tahdhib al-Kamal', h: 'AH',
+      teachers: 'Teachers', students: 'Students', jarh: 'Criticism and praise', noJ: 'No sayings recorded for this narrator.', none2: 'None', filter: 'Filter by name…', share: 'Share', copy: 'Copy', copied: 'Copied', src: 'Source: islam-db / Fekra Computers', quotes: n => n + ' sayings', open: 'Open in Tahdhib al-Kamal', back: 'Narrators'}
+  };
+  const qv = () => $('#qv'), L = () => LB[ui] || LB.en;
+  const PILL = {sah: 'ok', thq: 'ok', sad: 'ok', maq: 'mix', weak: 'weak', bad: 'bad', unk: 'unk', ibh: 'unk', '': 'unk'};
+  const loaded = {}; let IDX = null, MAP = null, NORM = null;
+  const nrm = s => (s || '').replace(/[ً-ْٰـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[ک]/g, 'ك').replace(/[ی]/g, 'ي').replace(/ۃ/g, 'ه').replace(/ہ|ھ/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/\s+/g, ' ').trim();
+  function load(url, cbName) {
+    if (loaded[url]) return loaded[url];
+    return loaded[url] = new Promise((ok, no) => {
+      const s = document.createElement('script'); s.src = url;
+      window[cbName] = d => { ok(d); };
+      s.onload = () => s.remove(); s.onerror = () => { delete loaded[url]; no(new Error(url)); };
+      document.head.append(s);
+    });
+  }
+  async function idx() {
+    if (IDX) return IDX;
+    // chunks load in sequence because each script answers through the same global callback
+    IDX = await load('idb/idx.js', 'NIDX'); MAP = new Map(IDX.d.map(r => [r[0], r]));
+    NORM = IDX.d.map(r => nrm(r[1] + ' ' + r[2] + ' ' + r[3])); return IDX;
+  }
+  let chain = Promise.resolve();
+  function chunk(id) {
+    const k = Math.floor((id - 1) / 250), url = 'idb/n_' + k + '.js';
+    if (loaded[url]) return loaded[url];
+    return loaded[url] = (chain = chain.then(() => new Promise((ok, no) => {
+      const s = document.createElement('script'); s.src = url; window.NCHUNK = d => ok(d); s.onload = () => s.remove();
+      s.onerror = () => { delete loaded[url]; no(new Error(url)); }; document.head.append(s);
+    })).catch(e => { delete loaded[url]; throw e; }));
+  }
+  const cat = r => IDX.rc[r[4]] || '';
+  const rank = r => IDX.rk[r[4]] || '';
+  const pill = r => el('span', {class: 'vpill vp-' + PILL[cat(r)] + ' npill', lang: 'ar', dir: 'rtl'}, rank(r) || '—');
+  const nrow = (r, extra) => el('a', {class: 'nrow', href: '#/n/' + r[0]},
+    el('div', {class: 'nmain'}, el('b', {lang: 'ar', dir: 'rtl'}, r[1]), (r[2] || r[3]) ? el('span', {class: 'cs', lang: 'ar', dir: 'rtl'}, [r[2], r[3]].filter(Boolean).join(' — ')) : ''),
+    el('div', {class: 'nmeta'}, pill(r), r[5] ? el('span', {class: 'cs'}, L().tabn(r[5])) : '', r[6] ? el('span', {class: 'cs'}, L().died(r[6])) : '', extra || ''));
+
+  /* ---------------- list ---------------- */
+  async function showList() {
+    const T = L(); bar(T.title, T.sub, true);
+    const v = qv(); v.replaceChildren();
+    const inp = el('input', {type: 'search', class: 'vfta nsearch', placeholder: T.ph, dir: 'auto', enterkeyhint: 'search', autocomplete: 'off'});
+    const chips = el('div', {class: 'chips nchips'}), out = el('div', {class: 'nlist'}), cnt = el('p', {class: 'cs ncnt'}), moreB = el('button', {type: 'button', class: 'vgo vsec', hidden: true}, T.more);
+    const tabSel = el('select', {class: 'ntab', 'aria-label': T.tab}, el('option', {value: ''}, T.tabAll));
+    for (let i = 1; i <= 37; i++) tabSel.append(el('option', {value: i}, T.tabn(i)));
+    v.append(el('div', {class: 'card pad'}, el('div', {class: 'nbox'}, inp, tabSel), chips, cnt), out, moreB, el('p', {class: 'note'}, T.src));
+    out.append(el('p', {class: 'cs'}, T.loading));
+    try { await idx(); } catch (e) { out.replaceChildren(el('p', {class: 'vbad'}, '✗ ' + e.message)); return; }
+    const st = (() => { try { return JSON.parse(sessionStorage.nstate || '{}'); } catch (e) { return {}; } })();
+    let fcat = st.c || '', shown = 0, res = [], q = st.q || ''; inp.value = q; tabSel.value = st.t || '';
+    const cats = ['', 'sah', 'thq', 'sad', 'maq', 'weak', 'bad', 'unk'];
+    const paintChips = () => { chips.replaceChildren(...cats.map(c => el('button', {type: 'button', class: 'chip' + (fcat === c ? ' on' : ''), on: {click: () => { fcat = c; paintChips(); run(); }}}, c ? T.cat[c] : T.all))); };
+    function run() {
+      try { sessionStorage.nstate = JSON.stringify({q: inp.value, c: fcat, t: tabSel.value}); } catch (e) {}
+      const n = nrm(inp.value), toks = n ? n.split(' ') : [], tb = +tabSel.value || 0; res = [];
+      IDX.d.forEach((r, i) => {
+        if (fcat && cat(r) !== fcat) return;
+        if (tb && r[5] !== tb) return;
+        if (toks.length) { const s = NORM[i]; for (const t of toks) if (!s.includes(t)) return; }
+        res.push(i);
+      });
+      if (!toks.length) res.sort((a, b) => IDX.d[b][8] - IDX.d[a][8]);                    // no query: the narrators with the most hadith first
+      else res.sort((a, b) => (nrm(IDX.d[a][1]).startsWith(n) ? 0 : 1) - (nrm(IDX.d[b][1]).startsWith(n) ? 0 : 1) || IDX.d[b][8] - IDX.d[a][8]);
+      shown = 0; out.replaceChildren(); cnt.textContent = T.total(res.length); next();
+    }
+    function next() {
+      const part = res.slice(shown, shown + 40); shown += part.length;
+      part.forEach(i => { const r = IDX.d[i]; out.append(nrow(r, r[8] ? el('span', {class: 'cs'}, T.hadith(r[8])) : '')); });
+      if (!res.length) out.append(el('p', {class: 'vbad'}, T.none));
+      moreB.hidden = shown >= res.length;
+    }
+    moreB.onclick = next; let tm; inp.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 180); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); clearTimeout(tm); run(); inp.blur(); } });
+    tabSel.addEventListener('change', run); paintChips(); run();
+  }
+
+  /* ---------------- narrator ---------------- */
+  const SEC = (title, ...kids) => el('section', {class: 'card pad nsec'}, el('h3', {class: 'nh'}, title), ...kids);
+  function relList(ids, T) {
+    const rows = ids.map(i => MAP.get(i)).filter(Boolean).sort((a, b) => (a[5] || 99) - (b[5] || 99) || (b[8] - a[8]));
+    const box = el('div'), list = el('div', {class: 'nlist'}), f = el('input', {type: 'search', class: 'vfta nsearch', placeholder: T.filter, dir: 'auto'}), more = el('button', {type: 'button', class: 'vgo vsec', hidden: true}, T.more);
+    let cur = rows, shown = 0;
+    const next = () => { cur.slice(shown, shown + 30).forEach(r => list.append(nrow(r))); shown = Math.min(cur.length, shown + 30); more.hidden = shown >= cur.length; };
+    const go = () => { const t = nrm(f.value).split(' ').filter(Boolean); cur = t.length ? rows.filter(r => { const s = nrm(r[1] + ' ' + r[2] + ' ' + r[3]); return t.every(x => s.includes(x)); }) : rows; shown = 0; list.replaceChildren(); next(); if (!cur.length) list.append(el('p', {class: 'cs'}, T.none)); };
+    more.onclick = next; f.addEventListener('input', go);
+    if (rows.length > 12) box.append(f); box.append(list, more); go(); return box;
+  }
+  async function showNarrator(id) {
+    const T = L(); bar(T.title, '', true);
+    const v = qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    let r, d;
+    try { await idx(); r = MAP.get(id); if (!r) { v.replaceChildren(el('p', {class: 'vbad'}, T.none)); return; } d = (await chunk(id))[id]; } catch (e) { v.replaceChildren(el('p', {class: 'vbad'}, '✗ ' + e.message)); return; }
+    const [nasab, laqab, job, madhab, birth, age, live, diedAt, rel, mawla, tch, std, jarh] = d;
+    bar(r[1], r[2] || '', true);
+    const fact = (k, val) => val ? el('div', {class: 'nfact'}, el('span', {class: 'cs'}, k), el('b', {lang: 'ar', dir: 'rtl'}, String(val))) : '';
+    const head = el('div', {class: 'card pad nhead'}, el('h2', {class: 'ar nname', lang: 'ar', dir: 'rtl'}, r[1]), r[2] ? el('p', {class: 'cs', lang: 'ar', dir: 'rtl'}, r[2]) : '',
+      el('div', {class: 'nmeta'}, pill(r), r[5] ? el('span', {class: 'vpill vp-unk'}, T.tabn(r[5])) : '', r[6] ? el('span', {class: 'vpill vp-unk'}, T.died(r[6])) : '', r[8] ? el('span', {class: 'vpill vp-unk'}, T.hadith(r[8])) : ''));
+    const facts = [fact(T.kunya, r[3]), fact(T.shohra, r[2]), fact(T.nasab, nasab), fact(T.laqab, laqab), fact(T.job, job), fact(T.madhab, madhab), fact(T.rank, rank(r)), fact(T.tabaqa, r[5] ? T.tabn(r[5]) : ''),
+      fact(T.birth, birth ? birth + ' ' + T.h : ''), fact(T.death, r[6] ? r[6] + ' ' + T.h : ''), fact(T.age, age), fact(T.live, live), fact(T.diedAt, diedAt), fact(T.rel, rel), fact(T.mawla, mawla), fact(T.tk, r[7] ? '[' + r[7] + ']' : '')].filter(Boolean);
+    const J = jarh.length ? el('div', {class: 'njarh'}, ...jarh.map(([who, op]) => el('div', {class: 'nj'}, who ? el('b', {class: 'nwho', lang: 'ar', dir: 'rtl'}, who) : '', el('p', {class: 'ar', lang: 'ar', dir: 'rtl'}, op)))) : el('p', {class: 'cs'}, T.noJ);
+    const txt = () => [r[1] + (r[2] ? ' (' + r[2] + ')' : ''), rank(r) + (r[5] ? ' — ' + T.tabn(r[5]) : '') + (r[6] ? ' — ' + T.died(r[6]) : ''), ...jarh.slice(0, 5).map(([w, o]) => '• ' + (w ? w + ': ' : '') + o), '', 'https://turathkhairalquroon.com/#/n/' + id].join('\n');
+    const toast = m => { const t = el('div', {class: 'vtoast'}, m); document.body.append(t); setTimeout(() => t.remove(), 1800); };
+    const acts = el('div', {class: 'vact'},
+      el('button', {type: 'button', class: 'vgo', on: {click: async () => { const m = txt(); if (navigator.share) { try { await navigator.share({text: m}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } try { await navigator.clipboard.writeText(m); toast(T.copied); } catch (e) {} }}}, icon('share'), T.share),
+      el('button', {type: 'button', class: 'vgo vsec', on: {click: async () => { try { await navigator.clipboard.writeText(txt()); toast(T.copied); } catch (e) {} }}}, icon('copy'), T.copy));
+    v.replaceChildren(head, SEC(T.about, el('div', {class: 'nfacts'}, ...facts)),
+      SEC(T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), J),
+      SEC(T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)),
+      SEC(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)), acts, el('p', {class: 'note'}, T.src));
+  }
+  function route(h) {
+    const m = h.match(/^#\/n\/(\d+)/);
+    if (m) showNarrator(+m[1]); else showList();
+  }
+  window.NAR = {route, title: () => L().title};
 })();
 
 </script>
