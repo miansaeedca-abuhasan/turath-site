@@ -2192,7 +2192,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     });
   }
   // items: [{text, lang, onstart}]; returns false if stopped
+  // Urdu reading by the phone voice is switched off (its pronunciation was not correct): Urdu parts are skipped
+  const NO_UR = true;
   async function speakAll(items, token) {
+    if (NO_UR) { const n0 = items.length; items = items.filter(it => (it.lang === 'ur' || it.lang === 'ar') ? langOf(it.text) !== 'ur' : true);
+      if (n0 && !items.length && !LISTEN.warned.nour) { LISTEN.warned.nour = 1; try { toast(ui === 'ur' ? 'اردو آواز بند ہے۔ عربی یا انگریزی متن سننے کے لیے سننے کی ترتیبات میں «عربی متن بھی سنائیں» چنیں۔' : ui === 'ar' ? 'القراءة بالأردية متوقفة. فعّل «اقرأ النص العربي» من إعدادات الاستماع.' : 'Urdu reading is switched off. Turn on “Also read the Arabic text” in the listening settings.'); } catch (e) {} } }
     for (const it of items) {
       if (token !== RUN) return false;
       it.onstart && it.onstart();
@@ -2252,7 +2256,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function ttsSettings() {
     loadVoices();
     const rows = [];
-    ['ar', 'ur', 'en'].forEach(l => {
+    ['ar', 'en'].forEach(l => {
       const vs = voicesFor(l), sel = el('select', {'aria-label': T('voice')(l)});
       sel.append(el('option', {value: ''}, T('auto') + (voiceFor(l) && !S.voice[l] ? ' — ' + voiceFor(l).name : '')));
       vs.slice().sort((a, b) => score(b, l) - score(a, l)).forEach(v => sel.append(el('option', {value: v.name}, v.name + (NATURAL.test(v.name) || /google/i.test(v.name) ? ' ★' : ''))));
@@ -2265,7 +2269,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     rate.addEventListener('input', () => { S.rate = +rate.value; rv.textContent = S.rate.toFixed(2) + '×'; save(); });
     rows.push(el('label', {class: 'srow'}, el('span', {}, T('rate')), rate, rv));
     const chk = (k, lbl) => { const c = el('input', {type: 'checkbox'}); c.checked = !!S[k]; c.addEventListener('change', () => { S[k] = c.checked; save(); }); return el('label', {class: 'srow chk'}, c, el('span', {}, lbl)); };
-    rows.push(chk('arabic', T('withArabic')), chk('sanad', T('withSanad')), chk('tr', T('withTr')), chk('uplift', T('uplift')));
+    rows.push(chk('arabic', T('withArabic')), chk('sanad', T('withSanad')), chk('tr', T('withTr')));
     rows.push(el('p', {class: 'note'}, SS ? T('voiceHelp') : T('noTts')));
     sheet(T('ttsSet'), rows, [[T('done'), null]]);
   }
