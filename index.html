@@ -310,8 +310,9 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .srow.chk small{display:block}
 .srow.dim{opacity:.55}
 .hbfull{display:block;font-size:.72rem;line-height:1.5;opacity:.75;margin-top:.15rem}
-.dimw{opacity:.55;font-size:.92em}
-.fullh .jw{font-weight:700;background:var(--mark);border-radius:4px;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.dimw{opacity:.45}
+.fullh a.snlink .dimw{opacity:1}
+.fullh a.snlink{color:#1a73c9;font-weight:600;border-bottom:1px dotted currentColor}
 .jwnote{margin:.2rem 0 .5rem;font-size:.85rem;color:var(--muted)}
 .reclist .grp{margin:.8rem 0 .1rem}
 .srow2>.ab,.moment .ab{background:none;border:0;color:var(--accent);border-radius:50%;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
@@ -1001,12 +1002,12 @@ async function fullHadith(d,box){
   let inBr=false;   // the editor's own words (in square brackets) are not part of the hadith
   best.raw.forEach((w,i)=>{const st=best.it.text.indexOf(w,pos);pos=st<0?pos:st+w.length;
     if(w.includes('['))inBr=true;const skip=inBr;if(w.includes(']'))inBr=false;if(skip){cur=null;return;}
-    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'jw':'dimw'},w);
+    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
     if(x){if(!cur||cur.x!==x){const a=el('a',{class:'snlink',href:x.href});
         a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
         cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}cur.a.append(sp,' ');}
     else{cur=null;p.append(sp,' ');}});
-  box.append(el('p',{class:'jwnote ar',lang:'ar',dir:'rtl'},'الجزء المظلَّل هو نصّ الجامع الكامل، وبقيّة الكلام تمامُ الحديث بسنده من الكتاب الأصلي'),p,el('a',{href:best.it.href||'#'},T('open')));
+  box.append(el('p',{class:'jwnote ar',lang:'ar',dir:'rtl'},'نصّ الجامع الكامل بالخطّ العادي، وبقيّة الحديث وسنده بخطٍّ خافت'),p,el('a',{href:best.it.href||'#'},T('open')));
   try{if(window.NAR&&NAR.linkChips&&snEls.length){const nn=best.r.n||await COLL.toN(best.r.key,best.r.number)||+best.r.number;if(nn)NAR.linkChips(best.r.key,nn,snNames,snEls);}}catch(e){}
 }
 
