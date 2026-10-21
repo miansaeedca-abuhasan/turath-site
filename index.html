@@ -154,13 +154,20 @@ body.withplayer{padding-bottom:calc(8rem + env(safe-area-inset-bottom,0px))}
 .bnav a.navhome .nico{background:var(--accent);color:#fff;border-radius:50%;width:2.6rem;height:2.6rem;align-items:center;justify-content:center;margin-top:-1.1rem;box-shadow:0 2px 8px rgba(12,92,110,.35);border:3px solid var(--card)}
 .bnav a.navhome .nico svg{width:1.4rem;height:1.4rem}
 #player{position:fixed;left:0;right:0;bottom:calc(3.6rem + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;gap:.1rem;background:var(--bar);color:#fff;padding:.25rem .5rem;box-shadow:0 -2px 10px rgba(0,0,0,.18)}
-#pseekw{position:fixed;left:0;bottom:calc(6.8rem + env(safe-area-inset-bottom,0px));width:min(100%,30rem);z-index:6;display:flex;align-items:center;gap:.4rem;direction:ltr;background:#1f6f9a;color:#fff;font-size:.78rem;padding:.1rem .2rem .1rem .8rem;border-radius:0 1.4rem 1.4rem 0;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:transform .35s ease}
-#pseekw[hidden]{display:none}
-#pseekw.shut{transform:translateX(calc(-100% + 2.6rem))}
-#pseekw input{flex:1;min-width:0;height:1.4rem;accent-color:#7fd0ff}
-#pseekw .ib{flex:0 0 auto;color:#fff}
-body.withseek.withplayer .qnav{bottom:calc(10.2rem + env(safe-area-inset-bottom,0px))}
-body.withseek.withplayer .speedbox{bottom:calc(14rem + env(safe-area-inset-bottom,0px))}
+#player{transition:transform .35s ease}
+#player.shut{transform:translateX(-105%)}
+body.rtl #player.shut,html[dir=rtl] #player.shut{transform:translateX(105%)}
+#player .pseek{flex:1;min-width:0;display:flex;align-items:center;gap:.4rem;direction:ltr;font-size:.78rem;padding:0 .4rem}
+#player .pseek[hidden]{display:none}
+#player .pseek input{flex:1;min-width:0;height:1.4rem;accent-color:#00e5ff}
+body.withseek #player .ptitle{display:none}
+.ptab{position:fixed;left:0;bottom:calc(3.9rem + env(safe-area-inset-bottom,0px));z-index:6;width:2.6rem;height:2.6rem;border:0;border-radius:0 1.3rem 1.3rem 0;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.ptab[hidden]{display:none}
+.ptab svg{width:1.4rem;height:1.4rem;fill:currentColor}
+body.withplayer.pshut{padding-bottom:calc(5rem + env(safe-area-inset-bottom,0px))}
+body.withplayer.pshut .qnav{bottom:calc(4.4rem + env(safe-area-inset-bottom,0px))}
+body.withplayer.pshut #sbar{bottom:calc(3.7rem + env(safe-area-inset-bottom,0px))}
+body.withplayer.pshut .speedbox{bottom:calc(8.3rem + env(safe-area-inset-bottom,0px))}
 #player .ptitle{display:none}
 #player .ptitle{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem;padding:0 .4rem}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.2rem;padding:.6rem .3rem}
@@ -2058,40 +2065,41 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- shared bottom player bar ---------- */
   const P = {cb: null};
   window.PLAYER = {
-    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); { const sw = $('#pseekw'); if (sw) sw.hidden = true; } paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); },
+    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); P.open(true); },
     title(t) { $('#ptitle').textContent = t; },
     paused(p) { P.paused = p; $('#pplay').replaceChildren(icon(p ? 'play' : 'pause')); },
     seek(A) {
-      let w = $('#pseekw');
-      if (!w) {
-        const rg = el('input', {type: 'range', id: 'prange', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Seek'});
-        const fm = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
-        P.fm = fm;
-        rg.addEventListener('input', () => { P.drag = true; $('#pcur').textContent = fm(+rg.value); P.rearm(); });
-        rg.addEventListener('change', () => { P.drag = false; if (P.A) { try { P.A.currentTime = +rg.value; } catch (e) {} } if (P.upd) P.upd(); P.rearm(); });
-        const tg = el('button', {class: 'ib', id: 'ptoggle', type: 'button', 'aria-label': 'Timeline', title: 'Timeline', on: {click: () => P.open(w.classList.contains('shut'))}}, icon('clock'));
-        w = el('div', {id: 'pseekw', class: 'pseekw', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00'), tg);
-        document.body.append(w);
-        P.rearm = () => { clearTimeout(P.t); if (!w.classList.contains('shut')) P.t = setTimeout(() => P.open(false), 10000); };
-        P.open = on => { w.classList.toggle('shut', !on); document.body.classList.toggle('withseek', on); P.rearm(); };
-      }
-      w.hidden = false; P.open(true);
+      const bar = $('#pseek'); if (!bar) return; bar.hidden = false; document.body.classList.add('withseek'); P.open(true);
       const rg = $('#prange');
       const upd = () => { if (P.drag) return; const d = isFinite(A.duration) ? A.duration : 0; rg.max = d || 0; rg.value = A.currentTime || 0; $('#pcur').textContent = P.fm(A.currentTime); $('#pdur').textContent = P.fm(d); };
       P.A = A; P.upd = upd;
       if (!A._seekOn) { A._seekOn = 1; ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach(e => A.addEventListener(e, () => P.upd && P.upd())); }
       upd();
     },
-    hide() { const sb = $('#pseekw'); if (sb) sb.hidden = true; clearTimeout(P.t); document.body.classList.remove('withseek'); $('#player').hidden = true; document.body.classList.remove('withplayer'); P.cb = null; }};
+    hide() { clearTimeout(P.t); const sb = $('#pseek'); if (sb) sb.hidden = true; const tb = $('#ptab'); if (tb) tb.hidden = true; const pl = $('#player'); pl.classList.remove('shut'); pl.hidden = true; document.body.classList.remove('withseek', 'withplayer', 'pshut'); P.cb = null; }};
+  // the whole bar slides to the side after 10 seconds and leaves a small tab; the tab (or a touch of the bar) brings it back
+  P.fm = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+  P.rearm = () => { clearTimeout(P.t); if (!$('#player').classList.contains('shut')) P.t = setTimeout(() => P.open(false), 10000); };
+  P.open = on => {
+    const pl = $('#player'); pl.classList.toggle('shut', !on); document.body.classList.toggle('pshut', !on);
+    let tb = $('#ptab');
+    if (!tb) { tb = el('button', {id: 'ptab', class: 'ptab', type: 'button', 'aria-label': 'Player', title: 'Player', on: {click: () => P.open(true)}}, icon('listen')); document.body.append(tb); }
+    tb.hidden = on; P.rearm();
+  };
   function paint(title) {
     const b = (id, ic, fn, lbl) => el('button', {class: 'ib', id, type: 'button', 'aria-label': lbl, title: lbl, on: {click: fn}}, icon(ic));
+    const rg = el('input', {type: 'range', id: 'prange', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Seek'});
+    rg.addEventListener('input', () => { P.drag = true; $('#pcur').textContent = P.fm(+rg.value); });
+    rg.addEventListener('change', () => { P.drag = false; if (P.A) { try { P.A.currentTime = +rg.value; } catch (e) {} } if (P.upd) P.upd(); });
     $('#player').replaceChildren(
       b('pstop', 'stop', () => P.cb && P.cb.stop(), 'Stop'),
       b('pprev', 'prev', () => P.cb && P.cb.prev && P.cb.prev(), 'Previous'),
       b('pplay', 'pause', () => { if (!P.cb) return; P.paused ? P.cb.resume() : P.cb.pause(); }, 'Play/Pause'),
       b('pnext', 'next', () => P.cb && P.cb.next && P.cb.next(), 'Next'),
       el('span', {id: 'ptitle', class: 'ptitle'}, title),
+      el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
       b('pset', 'tune', () => P.cb && P.cb.settings ? P.cb.settings() : ttsSettings(), 'Settings'));
+    if (!P.touch) { P.touch = 1; $('#player').addEventListener('pointerdown', () => P.rearm()); }
   }
 
   /* ---------- voices ---------- */
