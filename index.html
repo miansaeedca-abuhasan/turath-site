@@ -224,6 +224,7 @@ body.withplayer .resume.float{display:none}
 .hbseg{display:flex;gap:.4rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.8rem 0 0}.hbseg a{flex:1;text-align:center;padding:.5rem;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:600}.hbseg a.on{background:var(--accent);color:#fff}
 .sau{display:block;font-size:.85rem;color:var(--accent);margin-top:.1rem}.hbrow{border-inline-start:4px solid var(--accent)}
 .aucard{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.85rem 1.1rem;margin-top:.55rem;text-decoration:none;color:var(--ink);border-inline-start:4px solid var(--accent)}.aucard:hover{background:var(--wash)}.aunm{font:700 1.15rem/1.4 var(--urduhead)}.aunm.ar{font-family:var(--arabic)}.aumeta{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;flex:none}.aupill{background:var(--wash);color:var(--accent);border-radius:999px;padding:.05rem .6rem;font-size:.8rem}
+.rbh{margin-top:.7rem}.rbhd{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.4rem}.rbno{font-weight:700;color:var(--accent)}.rbtxt{font-size:var(--har,24px);line-height:2.1;margin:0}.rbtxt a.rw{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}.rbtxt a.rw:hover{color:var(--accent)}.rbtxt .mt{background:var(--wash);border-radius:6px;padding:0 .2rem}.rbnav{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}.rbgo{width:8rem!important}.rbcp{font-size:.8rem;padding:.2rem .7rem}
 .catgrid{display:grid;gap:.7rem;margin-top:.7rem}.catcard{display:flex;align-items:center;gap:1rem;padding:.9rem 1.1rem;text-decoration:none;color:var(--ink);flex-direction:row-reverse;min-height:4.4rem}.catcard:hover{background:var(--wash)}.catico{flex:none;width:3.1rem;height:3.1rem;border-radius:50%;background:var(--wash);color:var(--accent);display:flex;align-items:center;justify-content:center}.catico svg{width:1.6rem;height:1.6rem;fill:currentColor}.catinfo{flex:1;display:flex;flex-direction:column;align-items:flex-end;text-align:end;gap:.15rem}.cattl{font:700 1.3rem/1.4 var(--urduhead)}.cattl.ar{font-family:var(--arabic)}.catn{font-size:.85rem;color:var(--muted)}
 .srow2{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem}
 .snum{font:700 1.4rem/1 var(--sans);color:var(--accent);min-width:2.2rem;text-align:center}
@@ -1079,8 +1080,8 @@ async function showKitabs(){
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
-Object.assign(I.ur,{hbNBooks:n=>n+' کتب',hbCats:'زمرے',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
-Object.assign(I.en,{hbNBooks:n=>n+' books',hbCats:'Categories',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
+Object.assign(I.ur,{hbNBooks:n=>n+' کتب',hbCats:'زمرے',hbRbMore:'مزید 1٬328 کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
+Object.assign(I.en,{hbNBooks:n=>n+' books',hbCats:'Categories',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
 const HB_AR={jami:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbF=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/[()\s]/g,'');const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
 async function hbCounts(){if(HBC)return HBC;HBC={};
@@ -1123,7 +1124,8 @@ async function showBookList(cat,aut,authors){
         const a=el('a',{class:'card catcard',href:'#/hb/c/'+id},el('span',{class:'catico'},icon('read')),
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
-      list.replaceChildren(...rows.slice(0,nJ).map(rowEl),g);return;}
+      const rbc=window.RB&&RB.on?el('a',{class:'card catcard rbcard',href:'#/rb'},el('span',{class:'catico'},icon('read')),el('span',{class:'catinfo'},el('span',{class:'cattl'+(ui==='ar'||EN()?' ar':''),dir:'auto'},RB.title()),el('span',{class:'catn'},T('hbRbMore')))):null;
+      list.replaceChildren(...rows.slice(0,nJ).map(rowEl),...(rbc?[rbc]:[]),g);return;}
     list.replaceChildren(...rows.filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(r.au&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)))).flatMap(r=>{return [rowEl(r)];}));};
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
@@ -1344,6 +1346,7 @@ function parentOf(h){
   if(h.startsWith('#/t/'))return '#/';
   if((m=h.match(/^(#\/quiz(?:\/[ak](?:\/[a-z]+)?)?)\/[^/]+$/)))return m[1];
   if(h==='#/quiz')return '#/';
+  if(/^#\/rb(\/|$)/.test(h))return RB.parent(h);
   if(/^#\/n\/\d+/.test(h))return '#/nar';
   if(/^#\/hb\/a\/[a-z0-9]+$/.test(h))return '#/hb/a';
   if(/^#\/hb\/(c\/\d+|a)$/.test(h))return '#/hb';
@@ -1530,12 +1533,13 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr||rb;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(vf)VERIFY.route();
   else if(nr)NAR.route(h);
+  else if(rb)RB.route(h);
   else if(qz)QUIZ.route(h);
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
@@ -6209,6 +6213,95 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const t = new Set(nrm(name).split(' ')); let best = 0, bs = -1; c.forEach(r => { const k = nrm(r[1] + ' ' + r[2]).split(' ').filter(w => t.has(w)).length; if (k > bs) { bs = k; best = r[0]; } }); return best;
   }
   window.NAR = {route, title: () => L().title, idForTK, linkChips};
+})();
+
+</script>
+<script>
+/* موسوعة الحديث — 1,328 more hadith books (text: islam-db / Fekra Computers), kept on Cloudflare R2 and read page by page.
+   Routes: #/rb (categories) · #/rb/c/<cat> (books) · #/rb/b/<bid>[/<page>] (reader). */
+(function () {
+  'use strict';
+  const ON = false;
+  const BASE = () => window.R2BASE || 'https://books.turathkhairalquroon.com/b/';
+  const LB = {
+    ur: {title: 'موسوعۃ الحدیث', sub: 'مزید کتبِ حدیث', books: n => n + ' کتب', ph: 'کتاب یا مؤلف کا نام لکھیں…', hn: n => 'حدیث ' + n, prev: 'پچھلی', next: 'اگلی', go: 'نمبر پر جائیں', of: (a, b) => a + ' / ' + b, loading: 'کھل رہا ہے…', err: 'یہ حصہ ابھی نہیں کھل سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', none: 'کوئی کتاب نہیں ملی', ah: n => 'احادیث: ' + n, copy: 'نقل', copied: 'نقل ہو گیا', note: 'متن: islam-db — راوی کے نام پر کلک کرنے سے اس کے حالات کھلتے ہیں۔', total: n => n + ' کتابیں'},
+    ar: {title: 'موسوعة الحديث', sub: 'المزيد من كتب الحديث', books: n => n + ' كتاب', ph: 'اكتب اسم الكتاب أو المؤلف…', hn: n => 'حديث ' + n, prev: 'السابقة', next: 'التالية', go: 'اذهب للرقم', of: (a, b) => a + ' / ' + b, loading: 'جارٍ التحميل…', err: 'تعذّر فتح هذا الجزء الآن. تحقّق من الاتصال وأعد المحاولة.', none: 'لا توجد كتب', ah: n => 'الأحاديث: ' + n, copy: 'نسخ', copied: 'تم النسخ', note: 'النص: islam-db — اضغط على اسم الراوي لعرض ترجمته.', total: n => n + ' كتاب'},
+    en: {title: 'Hadith Library', sub: 'More hadith books', books: n => n + ' books', ph: 'Type a book or author name…', hn: n => 'Hadith ' + n, prev: 'Previous', next: 'Next', go: 'Go to number', of: (a, b) => a + ' / ' + b, loading: 'Loading…', err: 'Could not open this part. Check your connection and try again.', none: 'No books found', ah: n => 'Ahadith: ' + n, copy: 'Copy', copied: 'Copied', note: 'Text: islam-db — tap a narrator’s name to see his biography.', total: n => n + ' books'}
+  };
+  const L = () => LB[ui] || LB.en, qv = () => $('#qv');
+  const CATN = id => (typeof HB_CATS !== 'undefined' && HB_CATS[id]) ? (ui === 'ar' ? HB_CATS[id][1] : ui === 'ur' ? HB_CATS[id][0] : HB_CATS[id][2]) : '';
+  let CAT = null;
+  function cat() {
+    if (CAT) return CAT;
+    return CAT = new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'idb/rcat.js'; window.RCAT = d => { d.m = new Map(d.b.map(r => [r[0], r])); ok(d); }; s.onload = () => s.remove(); s.onerror = () => { CAT = null; no(); }; document.head.append(s); });
+  }
+  const nrm = s => (s || '').replace(/[ً-ْٰـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLowerCase();
+  const N = n => ui === 'en' ? Number(n).toLocaleString('en-US') : ad(n);
+  const auLine = (C, a) => { const x = C.a[a]; return x ? x[0] + (x[1] > 0 ? (ui === 'en' ? ' (d. ' + x[1] + ' AH)' : ' (ت ' + N(x[1]) + 'ھ)') : '') : ''; };
+  async function showCats() {
+    const C = await cat(), T = L(), v = qv(); bar(T.title, '', false);
+    const cnt = {}; C.b.forEach(r => cnt[r[2]] = (cnt[r[2]] || 0) + 1);
+    const g = el('div', {class: 'catgrid'});
+    Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a]).forEach(id => g.append(el('a', {class: 'card catcard', href: '#/rb/c/' + id}, el('span', {class: 'catico'}, icon('read')), el('span', {class: 'catinfo'}, el('span', {class: 'cattl', dir: 'auto'}, CATN(id)), el('span', {class: 'catn'}, T.books(N(cnt[id])))))));
+    const f = el('input', {type: 'search', class: 'nsearch', placeholder: T.ph}), res = el('div');
+    f.oninput = () => { const q = nrm(f.value.trim()); if (!q) { res.replaceChildren(); g.hidden = false; return; } g.hidden = true; res.replaceChildren(...bookRows(C, C.b.filter(r => nrm(r[1] + ' ' + auLine(C, r[3])).includes(q)).slice(0, 80), T)); };
+    v.replaceChildren(el('p', {class: 'cs'}, T.sub + ' — ' + T.total(N(C.b.length))), f, g, res);
+  }
+  function bookRows(C, rows, T) {
+    if (!rows.length) return [el('p', {class: 'cs'}, T.none)];
+    return rows.map(r => el('a', {class: 'card srow2 hbrow', href: '#/rb/b/' + r[0]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, r[1]), r[3] && C.a[r[3]] ? el('span', {class: 'sau'}, auLine(C, r[3])) : '', el('span', {class: 'cs'}, T.ah(N(r[4]))))));
+  }
+  async function showCat(id) {
+    const C = await cat(), T = L(), v = qv(); bar(CATN(id), '', true);
+    const rows = C.b.filter(r => String(r[2]) === String(id)).sort((a, b) => (C.a[a[3]] ? C.a[a[3]][1] || 9999 : 9999) - (C.a[b[3]] ? C.a[b[3]][1] || 9999 : 9999) || a[1].localeCompare(b[1], 'ar'));
+    const f = el('input', {type: 'search', class: 'nsearch', placeholder: T.ph}), res = el('div');
+    const draw = () => { const q = nrm(f.value.trim()); res.replaceChildren(...bookRows(C, rows.filter(r => !q || nrm(r[1] + ' ' + auLine(C, r[3])).includes(q)).slice(0, 150), T)); };
+    f.oninput = draw; draw(); v.replaceChildren(f, res);
+  }
+  const chunkCache = new Map();
+  async function chunk(bid, k) {
+    const key = bid + '/' + k; if (chunkCache.has(key)) return chunkCache.get(key);
+    const r = await fetch(BASE() + key + '.json'); if (!r.ok) throw new Error(r.status);
+    const d = await r.json(); chunkCache.set(key, d); if (chunkCache.size > 12) chunkCache.delete(chunkCache.keys().next().value); return d;
+  }
+  /* turns the stored markup into safe nodes: narrators become links to their page, the matn gets a light background */
+  function render(html) {
+    const doc = new DOMParser().parseFromString('<body>' + html + '</body>', 'text/html'), out = document.createDocumentFragment();
+    doc.body.childNodes.forEach(n => {
+      if (n.nodeType === 3) out.append(n.textContent);
+      else if (n.nodeName === 'A' && n.className === 'rawy') out.append(el('a', {class: 'rw', href: '#/n/' + (n.id || '').replace(/\D/g, '')}, n.textContent));
+      else if (n.nodeName === 'A' && n.className === 'matn') out.append(el('span', {class: 'mt'}, n.textContent));
+      else out.append(n.textContent);
+    });
+    return out;
+  }
+  async function showBook(bid, page) {
+    const C = await cat(), T = L(), v = qv(), r = C.m.get(bid); if (!r) { v.replaceChildren(el('p', {class: 'note'}, T.none)); return; }
+    const pages = Math.ceil(r[4] / C.ch), k = Math.min(Math.max(page, 0), pages - 1);
+    bar(r[1], r[3] && C.a[r[3]] ? auLine(C, r[3]) : '', true);
+    v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    let rows; try { rows = await chunk(bid, k); } catch (e) { v.replaceChildren(el('p', {class: 'note'}, T.err)); return; }
+    const nav = () => {
+      const go = el('input', {type: 'number', class: 'nsearch rbgo', min: 1, max: r[4], placeholder: T.go});
+      go.onkeydown = e => { if (e.key === 'Enter' && go.value) location.hash = '#/rb/b/' + bid + '/' + Math.floor((Math.min(+go.value, r[4]) - 1) / C.ch); };
+      return el('div', {class: 'rbnav'}, k > 0 ? el('a', {class: 'btn', href: '#/rb/b/' + bid + '/' + (k - 1)}, T.prev) : el('span'), el('span', {class: 'cs'}, T.of(N(k + 1), N(pages))), k < pages - 1 ? el('a', {class: 'btn', href: '#/rb/b/' + bid + '/' + (k + 1)}, T.next) : el('span'), go);
+    };
+    const cards = rows.map((h, i) => {
+      const body = el('p', {class: 'rbtxt ar', lang: 'ar', dir: 'rtl'}, render(h[1]));
+      const cp = el('button', {class: 'btn rbcp', type: 'button', on: {click: async () => { try { await navigator.clipboard.writeText(body.textContent + '\n\n— ' + r[1] + ' (' + (k * C.ch + i + 1) + ')'); cp.textContent = T.copied; setTimeout(() => cp.textContent = T.copy, 1500); } catch (e) {} }}}, T.copy);
+      return el('article', {class: 'card rbh', id: 'rbh' + (k * C.ch + i + 1)}, el('div', {class: 'rbhd'}, el('span', {class: 'rbno'}, T.hn(N(k * C.ch + i + 1))), cp), body);
+    });
+    v.replaceChildren(nav(), ...cards, nav(), el('p', {class: 'cs'}, T.note)); window.scrollTo(0, 0);
+  }
+  function route(h) {
+    let m;
+    if ((m = h.match(/^#\/rb\/b\/(\d+)(?:\/(\d+))?/))) showBook(+m[1], +(m[2] || 0)).catch(() => {});
+    else if ((m = h.match(/^#\/rb\/c\/(\d+)/))) showCat(m[1]).catch(() => {});
+    else showCats().catch(() => {});
+  }
+  window.RB = {route, on: ON, title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
+    parent: h => { let m; if ((m = h.match(/^#\/rb\/b\/(\d+)\/\d+$/))) return '#/rb/b/' + m[1]; if ((m = h.match(/^#\/rb\/b\/(\d+)$/))) return '#/rb/c/' + (window.__rbcat && window.__rbcat[m[1]] || ''); if (/^#\/rb\/c\//.test(h)) return '#/rb'; return '#/hb'; }};
+  cat().then(C => { window.__rbcat = {}; C.b.forEach(r => window.__rbcat[r[0]] = r[2]); }).catch(() => {});
 })();
 
 </script>
