@@ -6221,7 +6221,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
    Routes: #/rb (categories) · #/rb/c/<cat> (books) · #/rb/b/<bid>[/<page>] (reader). */
 (function () {
   'use strict';
-  const ON = false;
+  const ON = true;
   const BASE = () => window.R2BASE || 'https://books.turathkhairalquroon.com/b/';
   const LB = {
     ur: {title: 'موسوعۃ الحدیث', sub: 'مزید کتبِ حدیث', books: n => n + ' کتب', ph: 'کتاب یا مؤلف کا نام لکھیں…', hn: n => 'حدیث ' + n, prev: 'پچھلی', next: 'اگلی', go: 'نمبر پر جائیں', of: (a, b) => a + ' / ' + b, loading: 'کھل رہا ہے…', err: 'یہ حصہ ابھی نہیں کھل سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', none: 'کوئی کتاب نہیں ملی', ah: n => 'احادیث: ' + n, copy: 'نقل', copied: 'نقل ہو گیا', note: 'متن: islam-db — راوی کے نام پر کلک کرنے سے اس کے حالات کھلتے ہیں۔', total: n => n + ' کتابیں'},
