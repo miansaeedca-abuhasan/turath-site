@@ -154,10 +154,14 @@ body.withplayer{padding-bottom:calc(8rem + env(safe-area-inset-bottom,0px))}
 .bnav a.navhome .nico{background:var(--accent);color:#fff;border-radius:50%;width:2.6rem;height:2.6rem;align-items:center;justify-content:center;margin-top:-1.1rem;box-shadow:0 2px 8px rgba(12,92,110,.35);border:3px solid var(--card)}
 .bnav a.navhome .nico svg{width:1.4rem;height:1.4rem}
 #player{position:fixed;left:0;right:0;bottom:calc(3.6rem + env(safe-area-inset-bottom,0px));z-index:6;display:flex;align-items:center;gap:.1rem;background:var(--bar);color:#fff;padding:.25rem .5rem;box-shadow:0 -2px 10px rgba(0,0,0,.18)}
-#player .pseek{flex:1;min-width:0;max-width:30rem;margin:0 auto;display:flex;align-items:center;gap:.4rem;direction:ltr;font-size:.78rem}
-#player .pseek[hidden]{display:none}
-#player .pseek input{flex:1;min-width:0;height:1.4rem;accent-color:#e8b04a}
-body.withseek #player .ptitle{display:none}
+#pseekw{position:fixed;left:0;bottom:calc(6.8rem + env(safe-area-inset-bottom,0px));width:min(100%,30rem);z-index:6;display:flex;align-items:center;gap:.4rem;direction:ltr;background:#1f6f9a;color:#fff;font-size:.78rem;padding:.1rem .2rem .1rem .8rem;border-radius:0 1.4rem 1.4rem 0;box-shadow:0 2px 10px rgba(0,0,0,.25);transition:transform .35s ease}
+#pseekw[hidden]{display:none}
+#pseekw.shut{transform:translateX(calc(-100% + 2.6rem))}
+#pseekw input{flex:1;min-width:0;height:1.4rem;accent-color:#7fd0ff}
+#pseekw .ib{flex:0 0 auto;color:#fff}
+body.withseek.withplayer .qnav{bottom:calc(10.2rem + env(safe-area-inset-bottom,0px))}
+body.withseek.withplayer .speedbox{bottom:calc(14rem + env(safe-area-inset-bottom,0px))}
+#player .ptitle{display:none}
 #player .ptitle{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem;padding:0 .4rem}
 .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:.2rem;padding:.6rem .3rem}
 .tile{display:flex;flex-direction:column;align-items:center;gap:.2rem;background:none;border:0;border-radius:12px;padding:.5rem .2rem;color:var(--ink);text-decoration:none;cursor:pointer;font-size:.9rem;line-height:1.5;text-align:center}
@@ -2014,7 +2018,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     nowHadith: n => 'Hadith ' + n, playing: 'Playing', uplift: 'Special Urdu voice (online)', upFail: 'The special voice is not available; using the phone voice.'});
   Object.assign(ICON, {
     listen: 'M12 1c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-4v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z',
-    play: 'M8 5v14l11-7z', pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z', stop: 'M6 6h12v12H6z',
+    clock: 'M12 2a10 10 0 100 20 10 10 0 000-20zm.5 5H11v6l5.2 3.1.8-1.2-4.5-2.7V7z', play: 'M8 5v14l11-7z', pause: 'M6 19h4V5H6v14zm8-14v14h4V5h-4z', stop: 'M6 6h12v12H6z',
     next: 'M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z', prev: 'M6 6h2v12H6zm3.5 6l8.5 6V6z',
     tune: 'M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z',
     close: 'M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'});
@@ -2054,30 +2058,39 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- shared bottom player bar ---------- */
   const P = {cb: null};
   window.PLAYER = {
-    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); },
+    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); { const sw = $('#pseekw'); if (sw) sw.hidden = true; } paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); },
     title(t) { $('#ptitle').textContent = t; },
     paused(p) { P.paused = p; $('#pplay').replaceChildren(icon(p ? 'play' : 'pause')); },
     seek(A) {
-      const bar = $('#pseek'); if (!bar) return; bar.hidden = false; document.body.classList.add('withseek');
-      const rg = $('#prange'), fmt = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), s = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(s).padStart(2, '0'); };
-      const upd = () => { if (P.drag) return; const d = isFinite(A.duration) ? A.duration : 0; rg.max = d || 0; rg.value = A.currentTime || 0; $('#pcur').textContent = fmt(A.currentTime); $('#pdur').textContent = fmt(d); };
+      let w = $('#pseekw');
+      if (!w) {
+        const rg = el('input', {type: 'range', id: 'prange', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Seek'});
+        const fm = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+        P.fm = fm;
+        rg.addEventListener('input', () => { P.drag = true; $('#pcur').textContent = fm(+rg.value); P.rearm(); });
+        rg.addEventListener('change', () => { P.drag = false; if (P.A) { try { P.A.currentTime = +rg.value; } catch (e) {} } if (P.upd) P.upd(); P.rearm(); });
+        const tg = el('button', {class: 'ib', id: 'ptoggle', type: 'button', 'aria-label': 'Timeline', title: 'Timeline', on: {click: () => P.open(w.classList.contains('shut'))}}, icon('clock'));
+        w = el('div', {id: 'pseekw', class: 'pseekw', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00'), tg);
+        document.body.append(w);
+        P.rearm = () => { clearTimeout(P.t); if (!w.classList.contains('shut')) P.t = setTimeout(() => P.open(false), 10000); };
+        P.open = on => { w.classList.toggle('shut', !on); document.body.classList.toggle('withseek', on); P.rearm(); };
+      }
+      w.hidden = false; P.open(true);
+      const rg = $('#prange');
+      const upd = () => { if (P.drag) return; const d = isFinite(A.duration) ? A.duration : 0; rg.max = d || 0; rg.value = A.currentTime || 0; $('#pcur').textContent = P.fm(A.currentTime); $('#pdur').textContent = P.fm(d); };
       P.A = A; P.upd = upd;
       if (!A._seekOn) { A._seekOn = 1; ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach(e => A.addEventListener(e, () => P.upd && P.upd())); }
       upd();
     },
-    hide() { const sb = $('#pseek'); if (sb) sb.hidden = true; document.body.classList.remove('withseek'); $('#player').hidden = true; document.body.classList.remove('withplayer'); P.cb = null; }};
+    hide() { const sb = $('#pseekw'); if (sb) sb.hidden = true; clearTimeout(P.t); document.body.classList.remove('withseek'); $('#player').hidden = true; document.body.classList.remove('withplayer'); P.cb = null; }};
   function paint(title) {
     const b = (id, ic, fn, lbl) => el('button', {class: 'ib', id, type: 'button', 'aria-label': lbl, title: lbl, on: {click: fn}}, icon(ic));
-    const rg = el('input', {type: 'range', id: 'prange', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Seek'});
-    rg.addEventListener('input', () => { P.drag = true; $('#pcur').textContent = (x => Math.floor(x / 60) + ':' + String(Math.floor(x % 60)).padStart(2, '0'))(+rg.value); });
-    rg.addEventListener('change', () => { P.drag = false; if (P.A) { try { P.A.currentTime = +rg.value; } catch (e) {} } if (P.upd) P.upd(); });
     $('#player').replaceChildren(
       b('pstop', 'stop', () => P.cb && P.cb.stop(), 'Stop'),
       b('pprev', 'prev', () => P.cb && P.cb.prev && P.cb.prev(), 'Previous'),
       b('pplay', 'pause', () => { if (!P.cb) return; P.paused ? P.cb.resume() : P.cb.pause(); }, 'Play/Pause'),
       b('pnext', 'next', () => P.cb && P.cb.next && P.cb.next(), 'Next'),
       el('span', {id: 'ptitle', class: 'ptitle'}, title),
-      el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
       b('pset', 'tune', () => P.cb && P.cb.settings ? P.cb.settings() : ttsSettings(), 'Settings'));
   }
 
