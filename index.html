@@ -2398,7 +2398,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(el('div', {id: 'today'}));
     const vis = el('span', {class: 'visits'});
     if (window.OFFLINE) v.append(el('button', {type: 'button', class: 'resume', on: {click: () => OFFLINE.open()}}, OFFLINE.label()));
-    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', T('free'), vis));
+    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits'}[ui] || 'Credits'), ' · ', T('free'), vis));
     visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
   }
@@ -6030,7 +6030,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const chips = el('div', {class: 'chips nchips'}), out = el('div', {class: 'nlist'}), cnt = el('p', {class: 'cs ncnt'}), moreB = el('button', {type: 'button', class: 'vgo vsec', hidden: true}, T.more);
     const tabSel = el('select', {class: 'ntab', 'aria-label': T.tab}, el('option', {value: ''}, T.tabAll));
     for (let i = 1; i <= 37; i++) tabSel.append(el('option', {value: i}, T.tabn(i)));
-    v.append(el('div', {class: 'card pad'}, el('div', {class: 'nbox'}, inp, tabSel), chips, cnt), out, moreB, el('p', {class: 'note'}, T.src));
+    v.append(el('div', {class: 'card pad'}, el('div', {class: 'nbox'}, inp, tabSel), chips, cnt), out, moreB);
     out.append(el('p', {class: 'cs'}, T.loading));
     try { await idx(); } catch (e) { out.replaceChildren(el('p', {class: 'vbad'}, '✗ ' + e.message)); return; }
     const st = (() => { try { return JSON.parse(sessionStorage.nstate || '{}'); } catch (e) { return {}; } })();
@@ -6093,7 +6093,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.replaceChildren(head, SEC(T.about, el('div', {class: 'nfacts'}, ...facts)),
       SEC(T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), J),
       SEC(T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)),
-      SEC(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)), acts, el('p', {class: 'note'}, T.src));
+      SEC(T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)), acts);
   }
   function route(h) {
     const m = h.match(/^#\/n\/(\d+)/);
