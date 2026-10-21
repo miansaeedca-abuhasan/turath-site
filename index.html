@@ -3450,7 +3450,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (rjx) c.append(rjBlock(rjx));
     else if (arParas.length) c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar'))));
     if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail') { const sn = sanadNames(arParas.join(' '));
-      if (sn.length > 1) c.append(el('details', {class: 'rjsanad'}, el('summary', {}, rt('sanad') + ' (' + fmtN(sn.length) + ')'), el('p', {class: 'cs'}, rt('sanadHint')), el('div', {class: 'chips'}, ...sn.map((x, i) => el('a', {class: 'btn', lang: 'ar', dir: 'rtl', href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))}, x.d))))); }
+      if (sn.length > 1) { const chipEls = sn.map((x, i) => el('a', {class: 'btn', lang: 'ar', dir: 'rtl', href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))}, x.d));
+        c.append(el('details', {class: 'rjsanad'}, el('summary', {}, rt('sanad') + ' (' + fmtN(sn.length) + ')'), el('p', {class: 'cs'}, rt('sanadHint')), el('div', {class: 'chips'}, ...chipEls)));
+        if (window.NAR && NAR.linkChips) NAR.linkChips(b.key, n, sn.map(x => x.q), chipEls); } }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null;
@@ -6157,13 +6159,33 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const m = h.match(/^#\/n\/(\d+)/);
     if (m) showNarrator(+m[1]); else showList();
   }
+  /* the isnad of a hadith: the chips of the narrators open the narrator's page when we know the chain (text-matched hadith) */
+  const tk2 = s => nrm(s).split(' ').filter(Boolean).map(w => w === 'ابي' || w === 'ابا' ? 'ابو' : w === 'ابن' ? 'بن' : w);
+  const cchLoaded = {}; let cchain = Promise.resolve();
+  async function chainIds(key, n) {
+    const keys = await hbooks(), ki = keys.indexOf(key); if (ki < 0) return null;
+    const url = 'idb/c_' + ki + '_' + Math.floor((n - 1) / 500) + '.js';
+    if (!cchLoaded[url]) cchLoaded[url] = (cchain = cchain.then(() => new Promise(ok => { const sc = document.createElement('script'); sc.src = url; window.CCH = d => ok(d); sc.onload = () => sc.remove(); sc.onerror = () => ok({}); document.head.append(sc); })));
+    return ((await cchLoaded[url])[n]) || null;
+  }
+  async function linkChips(key, n, names, els) {
+    try {
+      const ids = await chainIds(key, n); if (!ids || !ids.length) return; await idx();
+      const cand = ids.map(i => MAP.get(i)).filter(Boolean).map(r => ({r, v: [tk2(r[1]), tk2(r[2]), tk2(r[3])].filter(x => x.length)})), used = new Set();
+      names.forEach((q, i) => {
+        const Q = tk2(q); if (!Q.length) return; let best = null, bs = 0;
+        cand.forEach(c => { if (used.has(c.r[0])) return; c.v.forEach(V => { const com = Q.filter(w => V.includes(w)).length; if (!com) return; const sc = com / Q.length + .3 * com / V.length; if (com / Q.length >= .6 && sc > bs) { bs = sc; best = c.r[0]; } }); });
+        if (best) { used.add(best); els[i].href = '#/n/' + best; els[i].classList.add('nmatch'); }
+      });
+    } catch (e) {}
+  }
   let TKM = null;
   async function idForTK(printed, name) {
     await idx(); if (!TKM) { TKM = new Map(); IDX.d.forEach(r => { if (r[7]) (TKM.get(r[7]) || TKM.set(r[7], []).get(r[7])).push(r); }); }
     const c = TKM.get(+printed) || []; if (c.length < 2) return c[0] ? c[0][0] : 0;
     const t = new Set(nrm(name).split(' ')); let best = 0, bs = -1; c.forEach(r => { const k = nrm(r[1] + ' ' + r[2]).split(' ').filter(w => t.has(w)).length; if (k > bs) { bs = k; best = r[0]; } }); return best;
   }
-  window.NAR = {route, title: () => L().title, idForTK};
+  window.NAR = {route, title: () => L().title, idForTK, linkChips};
 })();
 
 </script>
