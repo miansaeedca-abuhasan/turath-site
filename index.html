@@ -3524,6 +3524,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   async function needAll(b, lang) { await Promise.allSettled((b.files[lang] || []).map(f => once(f[2], 'coll/' + f[2]))); }
   const row = (b, lang, n) => (C.data[b.key + '|' + lang] || new Map()).get(n);
+  // the Arabic kitab / bab of each hadith of the old collections (islam-db), loaded per book: idb/ch_<key>.js
+  const CHK = new Set(["abdrazzaq", "abudawud", "adab", "ahmad", "bukhari", "dalail", "darimi", "hakim", "humaydi", "ibnhibban", "ibnjad", "ibnkhuzaymah", "ibnmajah", "kubrabayhaqi", "kubranasai", "malik", "mujamkabir", "muslim", "muslimab", "muslimtr", "nasai", "sarraj", "sh10480", "sh10490", "sh11333", "sh12520", "sh12579", "sh12862", "sh13011", "sh13016", "sh13034", "sh13035", "sh13041", "sh13053", "sh13061", "sh13068", "sh13122", "sh13132", "sh13159", "sh13160", "sh13162", "sh13170", "sh146", "sh1719", "sh21570", "sh22367", "sh22547", "sh22804", "sh236", "sh23764", "sh28107", "sh28171", "sh3525", "sh5930", "sh71", "sh7351", "sh8238", "sh8970", "sh9196", "sh9270", "sh9697", "sh9771", "shamail", "sharhsunna", "shuabiman", "sunnaabdullah", "tawhid", "tayalisi", "tirmidhi", "zuhdmubarak"]);
+  C.ch = {}; window.CH = (k, d) => { C.ch[k] = d; };
+  const needChap = b => !CHK.has(b.key) || b.key in C.ch ? Promise.resolve() : new Promise(ok => { C.ch[b.key] = null;
+    const sc = document.createElement('script'); sc.src = 'idb/ch_' + b.key + '.js'; sc.onload = () => { sc.remove(); ok(); }; sc.onerror = () => { sc.remove(); ok(); }; document.head.append(sc); });
+  const chapStr = (b, n) => { const d = C.ch[b.key]; if (!d || !d.r) return ''; const r = d.r; let lo = 0, hi = r.length / 2 - 1, at = -1;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (r[2 * m] <= n) { at = m; lo = m + 1; } else hi = m - 1; }
+    if (at < 0 || r[2 * at + 1] < 0) return ''; return d.c[r[2 * at + 1]].map(i => d.t[i]).join(' - '); };
   const bname = b => ui === 'ar' ? (b.ar || b.ur) : LTR() ? b.en : b.ur;
   const fmtN = n => ui === 'en' ? Number(n).toLocaleString('en-US') : NUM(n);
   // chosen translation language for these books
@@ -3557,7 +3565,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the compiler's footer; an Arabic line (with harakat) in the Arabic font
   window.footEl = foot => el('div', {class: 'shfoot', lang: 'ur', dir: 'rtl'}, ...foot.split('\n').map(x => /[\u064b-\u0652]/.test(x) ? el('p', {class: 'far', lang: 'ar'}, x) : el('p', {}, x)));
   const footOf = (b, n) => { const k = b.foot ? (b.kind ? b.kind[n - 1] : b.footAll) : null; return (k && b.foot[k]) || ''; };
-  const secT = (b, s) => (b.secL && b.secL[ui] && b.secL[ui][s[0] - 1]) || s[1];
+  const secT = (b, s) => { const x = (b.secL && b.secL[ui] && b.secL[ui][s[0] - 1]) || s[1];
+    if (ui === 'ar' && /[A-Za-z]/.test(x)) { const d = C.ch[b.key]; if (d && d.s && d.s[s[0]] != null) return d.t[d.s[s[0]]]; }   // no English in the Arabic interface: the book's own Arabic kitab name
+    return x; };
   const RNG = b => b.key === 'shadharat' || b.key === 'siyar' ? (x, y) => T(b.key === 'siyar' ? 'cParaNo' : 'cNasNo')(x === y ? fmtN(x) : fmtN(x) + '–' + fmtN(y))
     // books from al-Jami al-Kamil: the book's own printed numbers (the notes between them have none)
     : b.jami ? (x, y) => { const p = []; for (let k = x; k <= y; k++) if (!(b.nn && b.nn[k])) p.push(+(b.an[k] || k)); return p.length ? T('range')(Math.min(...p), Math.max(...p)) : ''; }
@@ -3581,6 +3591,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a note of the book (text between the hadith, e.g. in the Seerah) has no number: a small star instead
     const note = b.nn && b.nn[n];
     if (b.bab && b.bab[n]) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, b.bab[n]));
+    else { const cs = chapStr(b, n); if (cs) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, cs)); }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
@@ -3649,7 +3660,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const norm = s => (s || '').normalize('NFKD').replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىی]/g, 'ي').replace(/[ةۃ]/g, 'ه').replace(/ک/g, 'ك')
     .replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ').toLowerCase().replace(/\s+/g, ' ').trim();
   async function showBook(b) {
-    const box = $('#list'); box.replaceChildren();
+    const box = $('#list'); box.replaceChildren(); await needChap(b);
     bar(bname(b), (subOf(b) ? subOf(b) + ' — ' : '') + CNT(b)(fmtN(b.count)), true);
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch'), 'aria-label': T('cSecSearch'), id: 'csearch'});
     const out = el('div');
@@ -3925,7 +3936,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     q.focus();
   }
   async function showSection(b, no) {
-    const s = b.sections.find(x => String(x[0]) === String(no)), box = $('#list'); box.replaceChildren();
+    const s = b.sections.find(x => String(x[0]) === String(no)), box = $('#list'); box.replaceChildren(); await needChap(b);
     if (!s) { box.append(el('p', {class: 'note'}, T('nf'))); return; }
     bar(fmtN(s[0]) + '. ' + secT(b, s), bname(b), true);
     if (s[4]) box.append(el('p', {class: 'ca', lang: 'ar', style: 'margin:.2rem 0'}, s[4]));
@@ -3955,7 +3966,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   async function showOne(b, n) {
     const box = $('#list'); box.replaceChildren();
-    const lang = getLang(b); await needRange(b, 'ar', n, n); if (lang) await needRange(b, lang, n, n);
+    const lang = getLang(b); await needRange(b, 'ar', n, n); if (lang) await needRange(b, lang, n, n); await needChap(b);
     const s = b.sections.find(x => !(x[5] && x[5].src) && x[2] <= n && n <= x[3]);
     bar(bname(b), T(b.key === 'shadharat' ? 'cNasNo' : b.key === 'siyar' ? 'cParaNo' : 'hadith')(fmtN(n)), true);
     box.append(langChips(b, () => showOne(b, n)));
