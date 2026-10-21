@@ -225,7 +225,7 @@ body.withplayer .resume.float{display:none}
 .sau{display:block;font-size:.85rem;color:var(--accent);margin-top:.1rem}.hbrow{border-inline-start:4px solid var(--accent)}
 .aucard{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.85rem 1.1rem;margin-top:.55rem;text-decoration:none;color:var(--ink);border-inline-start:4px solid var(--accent)}.aucard:hover{background:var(--wash)}.aunm{font:700 1.15rem/1.4 var(--urduhead)}.aunm.ar{font-family:var(--arabic)}.aumeta{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;flex:none}.aupill{background:var(--wash);color:var(--accent);border-radius:999px;padding:.05rem .6rem;font-size:.8rem}
 .rbh{margin-top:.7rem}.rbhd{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.4rem}.rbno{font-weight:700;color:var(--accent)}.rbtxt{font-size:var(--har,24px);line-height:2.1;margin:0}.rbtxt a.rw{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}.rbtxt a.rw:hover{color:var(--accent)}.rbtxt .mt{background:var(--wash);border-radius:6px;padding:0 .2rem}.rbnav{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}.rbgo{width:8rem!important}.rbcp{font-size:.8rem;padding:.2rem .7rem}
-.catgrid{display:grid;gap:.7rem;margin-top:.7rem}.catcard{display:flex;align-items:center;gap:1rem;padding:.9rem 1.1rem;text-decoration:none;color:var(--ink);flex-direction:row-reverse;min-height:4.4rem}.catcard:hover{background:var(--wash)}.catico{flex:none;width:3.1rem;height:3.1rem;border-radius:50%;background:var(--wash);color:var(--accent);display:flex;align-items:center;justify-content:center}.catico svg{width:1.6rem;height:1.6rem;fill:currentColor}.catinfo{flex:1;display:flex;flex-direction:column;align-items:flex-end;text-align:end;gap:.15rem}.cattl{font:700 1.3rem/1.4 var(--urduhead)}.cattl.ar{font-family:var(--arabic)}.catn{font-size:.85rem;color:var(--muted)}
+.catgrid{display:grid;gap:.7rem;margin-top:.7rem}.catcard{display:flex;align-items:center;gap:1rem;padding:.9rem 1.1rem;text-decoration:none;color:var(--ink);min-height:4.4rem}.catcard:hover{background:var(--wash)}.catico{flex:none;width:3.1rem;height:3.1rem;border-radius:50%;background:var(--wash);color:var(--accent);display:flex;align-items:center;justify-content:center}.catico svg{width:1.6rem;height:1.6rem;fill:currentColor}.catinfo{flex:1;display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:.15rem}.cattl{font:700 1.3rem/1.4 var(--urduhead)}.cattl.ar{font-family:var(--arabic)}.catn{font-size:.85rem;color:var(--muted)}
 .srow2{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem}
 .snum{font:700 1.4rem/1 var(--sans);color:var(--accent);min-width:2.2rem;text-align:center}
 .sinfo{flex:1;min-width:0}
@@ -1080,7 +1080,7 @@ async function showKitabs(){
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
-Object.assign(I.ur,{hbNBooks:n=>n+' کتب',hbCats:'زمرے',hbRbMore:'مزید 1٬328 کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
+Object.assign(I.ur,{hbNBooks:n=>n+' کتب',hbCats:'زمرے',hbRbMore:'مزید ١٣٢٨ کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
 Object.assign(I.en,{hbNBooks:n=>n+' books',hbCats:'Categories',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
 const HB_AR={jami:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbF=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/[()\s]/g,'');const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
@@ -4399,6 +4399,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 (function () {
   const bd = n => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
   I.ar = {
+    hbNBooks: n => n + ' كتاب', hbCats: 'الموضوعات', hbAuthors: 'المؤلفون', hbRbMore: 'المزيد: ١٣٢٨ كتابًا',
     kSearch: 'في هذا الكتاب: رقم الحديث أو اسم الباب', notInKitab: 'هذا الحديث في كتاب آخر — اضغط لفتحه', mAll: 'جميع الكلمات', mExact: 'العبارة كاملة', mSimilar: 'مشابه',
     results: 'عدد النتائج', shownFirst: n => '(عُرض أول ' + n + ' — زد الكلمات لتضييق البحث)', readMode: 'وضع القراءة (كالمصحف)', cardMode: 'وضع البطاقات',
     showSanad: 'إظهار الإسناد', showTr: 'إظهار الترجمة', brand: 'تراث خير القرون', navFazail: 'فضائل الصحابة', death: y => '(ت ' + y + 'هـ)', arOnly: 'عربي فقط',
