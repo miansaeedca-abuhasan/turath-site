@@ -2274,6 +2274,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     sheet(T('ttsSet'), rows, [[T('done'), null]]);
   }
 
+  // the Urdu interface has no «سنیں» (listen) buttons while the Urdu reading is off: every button carrying the listen icon is hidden
+  (() => {
+    let busy = false;
+    const sweep = () => { if (busy || typeof ui === 'undefined' || ui !== 'ur') return; busy = true;
+      document.querySelectorAll('button:not([data-nl]) path[d="' + ICON.listen + '"]').forEach(pa => { const b = pa.closest('button'); if (b && b.id !== 'ptab') { b.dataset.nl = '1'; b.style.display = 'none'; } });
+      busy = false; };
+    new MutationObserver(sweep).observe(document.body, {childList: true, subtree: true}); sweep();
+  })();
+
   window.LISTEN = {paused: false, warned: {}, playHadiths, playTexts, stop: stopTts, settings: ttsSettings, say, speakAll, voiceFor, langOf,
     get running() { return RUN; }, newRun() { stopTts(); return RUN; }, S};
 })();
