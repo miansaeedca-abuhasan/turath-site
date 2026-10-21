@@ -583,6 +583,7 @@ body.vfpage .appbar{position:static}
 <div id="xtools" class="xt"></div>
 <button id="hsbtn" class="ib" type="button" aria-label="Hadith search"></button>
 <button id="bmbtn" class="ib" type="button" aria-label="Bookmarks"></button>
+<button id="addhome" class="ib" type="button" hidden></button>
 <button id="uilang" class="ib" type="button"></button>
 <button id="lang" class="ib" type="button"></button></header>
 <main><div id="searchrow"><select id="book" aria-label="Book"></select><input id="q" type="search" aria-label="Search" autocomplete="off"><div id="hmode" class="seg" role="group"></div></div>
@@ -1609,6 +1610,21 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   const h=location.hash;
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/verify|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
+/* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
+(function(){
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+  const b=document.getElementById('addhome');if(!b||!ios||navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches))return;
+  ICON.addhome='M17 1H7a2 2 0 00-2 2v18a2 2 0 002 2h10a2 2 0 002-2V3a2 2 0 00-2-2zm0 18H7V5h10v14zm-4-9h-2v2H9v2h2v2h2v-2h2v-2h-2v-2z';
+  ICON.iosshare='M12 2l4 4-1.4 1.4L13 5.8V15h-2V5.8L9.4 7.4 8 6l4-4zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1z';
+  const TX={ur:{t:'ہوم اسکرین میں محفوظ کریں',s:['سفاری (Safari) میں یہ صفحہ کھولیں۔','نیچے شیئر کا نشان دبائیں۔','فہرست میں سے «Add to Home Screen» منتخب کریں۔','اوپر «Add» دبائیں۔ اب آئیکون ہوم اسکرین پر آ جائے گا اور ایپ کی طرح کھلے گا۔']},
+    ar:{t:'احفظ في الشاشة الرئيسية',s:['افتح هذه الصفحة في متصفح سفاري (Safari).','اضغط على زر المشاركة في الأسفل.','اختر «Add to Home Screen» من القائمة.','اضغط «Add» في الأعلى، فتظهر الأيقونة في الشاشة الرئيسية ويُفتح الموقع كتطبيق.']},
+    en:{t:'Save to Home Screen',s:['Open this page in Safari.','Tap the Share button at the bottom.','Choose “Add to Home Screen” from the list.','Tap “Add” at the top. The icon appears on your Home Screen and opens like an app.']}};
+  const tx=()=>TX[ui]||TX.en;
+  b.hidden=false;b.replaceChildren(icon('addhome'));
+  const upd=()=>{const t=tx().t;b.title=t;b.setAttribute('aria-label',t);};upd();
+  b.addEventListener('click',()=>{upd();const x=tx(),rtl=ui==='ur'||ui==='ar';
+    window.sheet(x.t,[el('ol',{dir:rtl?'rtl':'ltr',lang:ui,style:'line-height:2;padding-inline-start:1.4rem;margin:.2rem 0'},...x.s.map((t,i)=>el('li',{},t,i===1?el('span',{style:'display:inline-block;vertical-align:middle;margin:0 .4rem'},icon('iosshare')):null)))]);});
+})();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').then(reg=>{const upd=()=>{if(document.getElementById('updbar'))return;const M={ur:['اپڈیٹ آگئی ہے: نئی کتب اور بہتریاں دیکھنے کے لیے ریفریش کریں','ریفریش کریں'],en:['An update is available: refresh to get the new books and improvements','Refresh'],ar:['يوجد تحديث جديد: حدّث الصفحة لترى الكتب والتحسينات','تحديث']}[ui]||['Update available','Refresh'];const b=document.createElement('div');b.id='updbar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:74px;z-index:9999;background:#0b5d4b;color:#fff;border-radius:12px;padding:.6rem .9rem;display:flex;gap:.7rem;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,.3);font:15px/1.6 system-ui';b.append(document.createTextNode(M[0]));const x=document.createElement('button');x.textContent=M[1];x.style.cssText='background:#fff;color:#0b5d4b;border:0;border-radius:8px;padding:.35rem .8rem;font:600 14px system-ui;cursor:pointer';x.onclick=()=>location.reload();b.append(x);document.body.append(b);};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)upd();});});try{reg.update();}catch(e){}}).catch(()=>{});
 </script>
 <script>
