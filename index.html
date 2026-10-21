@@ -2687,10 +2687,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }]]);
   }
   // copy / share a range of ayahs of one surah (e.g. al-Baqarah 25 to 35), the Arabic only or with the chosen translations
-  async function copySheet() {
+  async function copySheet(pre) {
     await need([]);
     const C = Object.assign({s: 1, from: 1, to: 7, mode: 'aya'}, QS.copyR);
-    if (R && R.kind === 's' && C.s !== R.n) { C.s = R.n; C.from = 1; C.to = Math.min(10, Q.meta.surahs[R.n - 1][4]); }
+    if (pre) { C.s = pre.s; C.from = pre.from; C.to = pre.to; }
+    else if (R && R.kind === 's' && C.s !== R.n) { C.s = R.n; C.from = 1; C.to = Math.min(10, Q.meta.surahs[R.n - 1][4]); }
     const sel = el('select', {'aria-label': T('surahs')});
     Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
     sel.value = C.s;
@@ -2746,7 +2747,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const x = $('#xtools'); x.replaceChildren();
     const b = (ic, lbl, fn) => el('button', {class: 'ib', type: 'button', title: lbl, 'aria-label': lbl, on: {click: fn}}, icon(ic));
     x.append(b(QS.mode === 'tr' ? 'read' : 'list', T('viewMode'), viewSheet),
-      b('translate', T('selectTr'), () => pickTr(true)), b('replay', T('hifz'), hifzSheet), b('copy', T('copyRange'), copySheet), b('play', T('recite'), () => playFrom(firstVisible())), b('tune', T('settings'), qSettings));
+      b('translate', T('selectTr'), () => pickTr(true)), b('replay', T('hifz'), hifzSheet), b('play', T('recite'), () => playFrom(firstVisible())), b('tune', T('settings'), qSettings));
   }
   function header(s) {
     const m = Q.meta.surahs[s - 1], h = el('div', {class: 'shead'});
@@ -2802,7 +2803,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return el('div', {class: 'acts'},
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: () => playFrom(i)}}, icon('play')), bm,
       el('button', {class: 'ab tafb', type: 'button', title: T('tafsir'), 'aria-label': T('tafsir'), on: {click: () => showTafsir(s, a)}}, icon('tafsir'), el('span', {}, T('tafsir'))),
-      el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(ayahText(s, a), '#/q/s/' + s + '/' + a)) ? 'copied' : 'copyfail'))}}, icon('copy')),
+      el('button', {class: 'ab', type: 'button', title: T('copyRange'), 'aria-label': T('copyRange'), on: {click: () => copySheet({s, from: a, to: a})}}, icon('copy')),
       el('button', {class: 'ab', type: 'button', title: T('poster'), 'aria-label': T('poster'), on: {click: () => ayahPoster(s, a)}}, icon('poster')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: () => shareAyah(s, a)}}, icon('share')), el('span', {class: 'sp'}));
   }
@@ -3341,7 +3342,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           el('span', {class: 'qrno'}, (NUM(n + 1)) + '.'),
           el('p', {class: 'qar qra', lang: 'ar'}, ...(ks.has(AK()) ? marked(verse(AK(), s, a), qw) : [verse(AK(), s, a)])),
           el('div', {class: 'qrside'}, el('a', {class: 'qref', href: '#/q/s/' + s + '/' + a, lang: 'ar'}, refOf(s, a)),
-            el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(textOf(s, a), '#/q/s/' + s + '/' + a)) ? 'copied' : 'copyfail'))}}, icon('copy'))));
+            el('button', {class: 'ab', type: 'button', title: T('copyRange'), 'aria-label': T('copyRange'), on: {click: () => copySheet({s, from: a, to: a})}}, icon('copy'))));
         li.append(top);
         const shown = [...new Set(showKeys.concat([...ks].filter(k => k !== AK())))];
         const eds = shown.map(k => Q.meta.editions.find(e => e.key === k)).filter(Boolean);
