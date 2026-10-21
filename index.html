@@ -2509,6 +2509,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(el('div', {id: 'today'}));
     const vis = el('span', {class: 'visits'});
     if (window.OFFLINE) v.append(el('button', {type: 'button', class: 'resume', on: {click: () => OFFLINE.open()}}, OFFLINE.label()));
+    v.append(el('p', {class: 'note foot'}, {ur: 'آفیشل ایپ ان شاء اللہ پلے سٹور پر دستیاب ہوگی۔ دوسری جگہوں سے آنے والی APK فائلوں سے ایپ انسٹال نہ کریں، تاکہ آپ اصل ڈیٹا اور تازہ اپڈیٹس سے پورا فائدہ اٹھا سکیں۔',
+      ar: 'سيتوفّر التطبيق الرسمي — إن شاء الله — على متجر Google Play. لا تثبّتوا التطبيق من ملفات APK الواردة من مصادر أخرى، لتستفيدوا من البيانات الأصلية والتحديثات الحديثة.',
+      en: 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits'}[ui] || 'Credits'), ' · ', T('free'), vis));
     visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
