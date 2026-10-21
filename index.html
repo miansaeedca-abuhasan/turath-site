@@ -3655,7 +3655,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
     const intro = () => (b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => paraEl(p, 'ur'))));
-    const cover = () => b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : [];
+    // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
+    const BA = {bukhari: ['https://islamwww.com/wp-content/uploads/2018/12/Sahih_Al-Bukhari_01.mp3']};
+    const bookAudio = () => { const fl = BA[b.key]; if (!fl) return [];
+      const ti = {ur: 'آڈیو', ar: 'الصوتيات', en: 'Audio'}[ui] || 'Audio', pt = n => ({ur: 'حصہ ', ar: 'الجزء ', en: 'Part '}[ui] || 'Part ') + fmtN(n);
+      return [el('details', {class: 'card intro', open: true}, el('summary', {}, ti + ' — ' + bname(b)),
+        ...fl.map((u, i) => el('div', {style: 'margin:.5rem 0'}, el('div', {class: 'cs'}, pt(i + 1)), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%', dir: 'ltr'}))),
+        el('p', {class: 'cs'}, {ur: 'ماخذ: islamwww.com — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', ar: 'المصدر: islamwww.com — تُشغَّل المادة من رابط الموقع نفسه.', en: 'Source: islamwww.com — played from the publisher’s own link.'}[ui] || 'Source: islamwww.com'))]; };
+    const cover = () => bookAudio().concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
     const row = s => el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
       el('span', {class: 'snum'}, fmtN(s[0])), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, secT(b, s)), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, [RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
     // books with group headings (فضائل صحابہ): each heading opens only its own babs
