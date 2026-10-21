@@ -1119,8 +1119,8 @@ async function showKitabs(){
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
-Object.assign(I.ur,{hbNBooks:n=>n+' کتب',hbCats:'موضوعات',hbRbMore:'مزید ١٣٢٨ کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
-Object.assign(I.en,{hbNBooks:n=>n+' books',hbCats:'Topics',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
+Object.assign(I.ur,{hbTabBooks:'کتب',hbNBooks:n=>n+' کتب',hbCats:'موضوعات',hbRbMore:'مزید ١٣٢٨ کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
+Object.assign(I.en,{hbTabBooks:'Books',hbNBooks:n=>n+' books',hbCats:'Topics',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
 const HB_AR={jami:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbF=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/[()\s]/g,'');const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
 async function hbCounts(){if(HBC)return HBC;HBC={};
@@ -1135,7 +1135,7 @@ const HB_CAT={"fazail":17,"seerah":8,"shadharat":4,"mutafarriq":15,"siyar":4,"bu
 const hbCatName=id=>{const c=HB_CATS[id];return c?(EN()?c[2]:ui==='ar'?c[1]:c[0]):''};
 const AZ={ur:'دکتور محمد عبداللہ اعظمی (المعروف بالضیاء)',ar:'الدكتور محمد عبد الله الأعظمي (المعروف بالضياء)',en:'Dr. Muhammad Abdullah al-A‘zami (known as al-Diya’)'};
 const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):(EN()?a[3]:ui==='ar'?a[1]:a[2])+(a[4]?(EN()?' (d. '+a[4]+' AH)':' (ت '+ad(a[4])+'ھ)'):'');
-async function showBookList(cat,aut,authors){
+async function showBookList(cat,aut,authors,topics){
   const box=$('#list');box.replaceChildren();bar(cat?hbCatName(cat):'',  '',false);
   const cnt=await hbCounts(),colls=await COLL.list().catch(()=>[]);
   const rows=[];
@@ -1146,7 +1146,7 @@ async function showBookList(cat,aut,authors){
     open:()=>hbOpen(b.key),resume:()=>hbOpen(b.key,hbLast(b.key)||(b.key==='tuhfa'?'#/b':'#/c/1/0'))});});
   const subjRows=[];const takeSubj=()=>{for(let i=rows.length-1;i>=0;i--)if(SUBJ.has(rows[i].key)){subjRows.unshift(rows[i]);rows.splice(i,1);}};takeSubj();
   const nJ=rows.length;
-  colls.forEach(c=>rows.push({key:c.key,sub:c.sub?(c.sub[ui]||c.sub.ur):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
+  colls.forEach(c=>rows.push({key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||c.sub.ur)))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
   takeSubj();
   {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Al-Jami al-Kamil kitab list
   {const OR=["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
@@ -1159,22 +1159,24 @@ async function showBookList(cat,aut,authors){
     Object.keys(RC.a).forEach(id=>{if(!cR[id])return;const nm=RC.a[id][0],dt=RC.a[id][1]>0?RC.a[id][1]:0,k=dt&&byD.get(dt);
       if(k){AUS.get(k).n+=cR[id];(RAU.get(k)||RAU.set(k,[]).get(k)).push(id);}else{AUS.set('r'+id,{a:['r'+id,nm,nm,nm,dt],n:cR[id]});RAU.set('r'+id,[id]);}});}
   bar(cat?hbCatName(cat):aut&&AUS.get(aut)?auName(AUS.get(aut).a):authors?T('hbAuthors'):T('hbBooks'),'',false);
-  const seg=el('div',{class:'hbseg'},el('a',{href:'#/hb',class:!authors?'on':''},T('hbCats')),el('a',{href:'#/hb/a',class:authors?'on':''},T('hbAuthors')));
+  const seg=el('div',{class:'hbseg'},el('a',{href:'#/hb',class:!authors&&!topics?'on':''},T('hbTabBooks')),el('a',{href:'#/hb/t',class:topics?'on':''},T('hbCats')),el('a',{href:'#/hb/a',class:authors?'on':''},T('hbAuthors')));
   const f=el('input',{type:'search',class:'filter',placeholder:T('hbFilter'),'aria-label':T('hbFilter'),id:'hbfilter'}),list=el('div');
   const N=n=>n==null?'':EN()?Number(n).toLocaleString('en-US'):ad(n);
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[ً-ْ]/g,''),n=toNum(f.value);
     let lastG;
     if(authors&&!aut){const arr=[...AUS.values()].filter(o=>!q||(o.a[1]+' '+o.a[2]+' '+o.a[3]).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)).sort((x,y)=>(x.a[0]==='jami'?-1:x.a[4]||9999)-(y.a[0]==='jami'?-1:y.a[4]||9999));
       list.replaceChildren(...arr.map(o=>el('a',{class:'card aucard',href:'#/hb/a/'+o.a[0]},el('span',{class:'aunm'+(ui==='ar'?' ar':''),dir:'auto'},o.a[0]==='jami'?(AZ[ui]||AZ.en):EN()?o.a[3]:ui==='ar'?o.a[1]:o.a[2]),el('span',{class:'aumeta'},(o.a[4]?el('span',{class:'aupill'},EN()?'d. '+o.a[4]+' AH':'ت '+ad(o.a[4])+'ھ'):''),el('span',{class:'catn'},T('hbNBooks')(N(o.n)))))));return;}
-    if(!q&&!cat&&!aut){const cnt={};rows.forEach(r=>cnt[r.cat]=(cnt[r.cat]||0)+1);if(RC)RC.b.forEach(r=>cnt[r[2]]=(cnt[r[2]]||0)+1);
+    if(!q&&!cat&&!aut&&topics){const cnt={};rows.forEach(r=>cnt[r.cat]=(cnt[r.cat]||0)+1);if(RC)RC.b.forEach(r=>cnt[r[2]]=(cnt[r[2]]||0)+1);
       const g=el('div',{class:'catgrid'});Object.keys(HB_CATS).filter(id=>cnt[id]).forEach(id=>{
         const a=el('a',{class:'card catcard',href:'#/hb/c/'+id},el('span',{class:'catico'},icon('read')),
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
       list.replaceChildren(...rows.slice(0,nJ).map(rowEl),g);return;}
     const mine=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)))).flatMap(r=>{return [rowEl(r)];});
-    const extra=RC&&n==null?RB.rows(RC,RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):String(r[2])===String(cat)).slice(0,q?60:9999)):[];
-    list.replaceChildren(...mine,...extra);};
+    const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
+    const extra=RB&&RC&&n==null?RB.rows(RC,allB?rbAll.slice(0,150):rbAll):[];
+    list.replaceChildren(...mine,...extra);
+    if(allB&&rbAll.length>150){let sh=150;const mb=el('button',{class:'btn more',type:'button'},T('more'));mb.onclick=()=>{const part=rbAll.slice(sh,sh+200);sh+=200;list.insertBefore(el('div',{},...RB.rows(RC,part)),mb);if(sh>=rbAll.length)mb.remove();};list.append(mb);}};
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
@@ -1399,7 +1401,8 @@ function parentOf(h){
   if(/^#\/rb(\/|$)/.test(h))return RB.parent(h);
   if(/^#\/n\/\d+/.test(h))return '#/nar';
   if(/^#\/hb\/a\/[a-z0-9]+$/.test(h))return '#/hb/a';
-  if(/^#\/hb\/(c\/\d+|a)$/.test(h))return '#/hb';
+  if(/^#\/hb\/c\/\d+$/.test(h))return '#/hb/t';
+  if(h==='#/hb/a'||h==='#/hb/t')return '#/hb';
   if((m=h.match(/^#\/c\/(\d+)\/\d+/)))return '#/k/'+m[1];
   if((m=h.match(/^#\/s\/([a-z0-9]+)\/./)))return '#/s/'+m[1];
   if((m=h.match(/^#\/cmp\/j\/(\d+)/)))return '#/h/'+m[1];
@@ -1583,7 +1586,7 @@ function route(){
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr||rb;
-  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
+  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(vf)VERIFY.route();
@@ -1593,7 +1596,7 @@ function route(){
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
   else if(sc)COLL.route(h);
-  else if(hb)showBookList((h.match(/^#\/hb\/c\/(\d+)/)||[])[1],(h.match(/^#\/hb\/a\/([a-z0-9]+)/)||[])[1],h==='#/hb/a');
+  else if(hb)showBookList((h.match(/^#\/hb\/c\/(\d+)/)||[])[1],(h.match(/^#\/hb\/a\/([a-z0-9]+)/)||[])[1],h==='#/hb/a',h==='#/hb/t');
   else if(gs)COLL.showSearch();
   else if(hs)COLL.showHadithSearch();
   else if(cm)CMP.route(h);
@@ -4527,7 +4530,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 (function () {
   const bd = n => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
   I.ar = {
-    hbNBooks: n => n + ' كتاب', hbCats: 'الموضوعات', hbAuthors: 'المؤلفون', hbRbMore: 'المزيد: ١٣٢٨ كتابًا',
+    hbNBooks: n => n + ' كتاب', hbTabBooks: 'الكتب', hbCats: 'الموضوعات', hbAuthors: 'المؤلفون', hbRbMore: 'المزيد: ١٣٢٨ كتابًا',
     kSearch: 'في هذا الكتاب: رقم الحديث أو اسم الباب', notInKitab: 'هذا الحديث في كتاب آخر — اضغط لفتحه', mAll: 'جميع الكلمات', mExact: 'العبارة كاملة', mSimilar: 'مشابه',
     results: 'عدد النتائج', shownFirst: n => '(عُرض أول ' + n + ' — زد الكلمات لتضييق البحث)', readMode: 'وضع القراءة (كالمصحف)', cardMode: 'وضع البطاقات',
     showSanad: 'إظهار الإسناد', showTr: 'إظهار الترجمة', brand: 'تراث خير القرون', navFazail: 'فضائل الصحابة', death: y => '(ت ' + y + 'هـ)', arOnly: 'عربي فقط',
