@@ -310,7 +310,9 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .srow.chk small{display:block}
 .srow.dim{opacity:.55}
 .hbfull{display:block;font-size:.72rem;line-height:1.5;opacity:.75;margin-top:.15rem}
-.dimw{opacity:.4}
+.dimw{opacity:.55;font-size:.92em}
+.fullh .jw{font-weight:700;background:var(--mark);border-radius:4px;padding:0 .12em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.jwnote{margin:.2rem 0 .5rem;font-size:.85rem;color:var(--muted)}
 .reclist .grp{margin:.8rem 0 .1rem}
 .srow2>.ab,.moment .ab{background:none;border:0;color:var(--accent);border-radius:50%;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .srow2>.ab:hover{background:var(--wash)}
@@ -501,6 +503,10 @@ details.dirasa>summary{cursor:pointer;padding:.6rem .8rem;font:700 1.15rem/1.8 v
 details.dirasa>summary::before{content:'▸ ';}details.dirasa[open]>summary::before{content:'▾ ';}
 details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
 .drbody{padding:.2rem .9rem .6rem;font:1.08rem/2 var(--arabic);text-align:justify}.drbody p{margin:.45rem 0}.drbody p.q{color:var(--muted)}
+.mtabs{display:flex;gap:1.2rem;border-bottom:1px solid var(--line);margin:.2rem 0 .6rem}
+.mtabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:.45rem .1rem;font:inherit;font-size:1rem;color:var(--muted);cursor:pointer}
+.mtabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.nsheet{min-height:8rem}
 .snlink{color:var(--link,#1a5fb4);border-bottom:1px dotted currentColor;text-decoration:none;border-radius:3px}.snlink:hover{background:rgba(26,95,180,.1)}
 .rjtbl{border:1px solid var(--line,#d9d2c3);border-radius:10px;margin:.5rem .6rem .7rem;overflow:hidden}.rjth,.rjtr{display:flex;align-items:center;justify-content:space-between;gap:.6rem;padding:.4rem .8rem}.rjth{background:var(--wash,rgba(11,93,75,.1));font:700 1rem var(--arabic);color:var(--accent,#0b5d4b)}.rjtr{border-top:1px solid var(--line,#e6e0d2);text-decoration:none;color:inherit;font:1.05rem/1.8 var(--arabic)}.rjtr:nth-child(even){background:rgba(127,127,127,.05)}.rjtr:active{background:var(--wash)}.rjtn{flex:1}.rjtk{flex:0 0 auto}.rjnone{color:var(--muted,#999)}.rjtbl .btn{margin:.5rem}
 .rjcd{display:flex;gap:.7rem;align-items:flex-start;text-decoration:none;color:inherit;padding:.7rem .9rem;margin:.45rem 0}.rjcd .sinfo{flex:1;display:flex;flex-direction:column;gap:.15rem}.rjcn{font:700 1.2rem/1.9 var(--arabic);color:var(--accent,#0b5d4b)}.rjck{font:.95rem/1.8 var(--arabic);color:var(--muted,#7a7468)}.rjcd .rjline{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.2rem}.rjchip{font:.9rem/1.7 var(--arabic);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .6rem;color:var(--muted,#6b665a)}
@@ -991,13 +997,27 @@ async function fullHadith(d,box){
   box.append(el('b',{},(COLL.name(best.r.key)||best.r.label)+' ('+best.r.number+')'));
   const p=el('p',{class:'ar fullh',lang:'ar'});
   let sn=[];try{sn=(COLL.sanad&&COLL.sanad(best.it.text))||[]}catch(e){}
-  let pos=0,cur=null;
+  let pos=0,cur=null;const snNames=[],snEls=[];
+  let inBr=false;   // the editor's own words (in square brackets) are not part of the hadith
   best.raw.forEach((w,i)=>{const st=best.it.text.indexOf(w,pos);pos=st<0?pos:st+w.length;
-    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
-    if(x){if(!cur||cur.x!==x){cur={x,a:el('a',{class:'snlink',href:x.href})};p.append(cur.a);}cur.a.append(sp,' ');}
+    if(w.includes('['))inBr=true;const skip=inBr;if(w.includes(']'))inBr=false;if(skip){cur=null;return;}
+    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'jw':'dimw'},w);
+    if(x){if(!cur||cur.x!==x){const a=el('a',{class:'snlink',href:x.href});
+        a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
+        cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}cur.a.append(sp,' ');}
     else{cur=null;p.append(sp,' ');}});
-  box.append(p,el('a',{href:best.it.href||'#'},T('open')));
+  box.append(el('p',{class:'jwnote ar',lang:'ar',dir:'rtl'},'الجزء المظلَّل هو نصّ الجامع الكامل، وبقيّة الكلام تمامُ الحديث بسنده من الكتاب الأصلي'),p,el('a',{href:best.it.href||'#'},T('open')));
+  try{if(window.NAR&&NAR.linkChips&&snEls.length){const nn=best.r.n||await COLL.toN(best.r.key,best.r.number)||+best.r.number;if(nn)NAR.linkChips(best.r.key,nn,snNames,snEls);}}catch(e){}
 }
+
+/* ---------- tabs «متن الحديث» | «الحديث بكامل السند»: the Jami's text, or the source book's whole hadith with its isnad (narrators open in a window) ---------- */
+function fullTabs(d,mt,fb){
+  if(!(d.refs&&d.refs.some(r=>COLL.has(r.key))))return null;
+  const t1=el('button',{type:'button',class:'on'},'متن الحديث'),t2=el('button',{type:'button'},'الحديث بكامل السند');let done=false;
+  const set=full=>{t1.classList.toggle('on',!full);t2.classList.toggle('on',full);mt.hidden=full;fb.hidden=!full;
+    if(full&&!done){done=true;fb.replaceChildren(el('p',{class:'note'},'…'));fullHadith(d,fb).catch(()=>{done=false;});}};
+  t1.addEventListener('click',()=>set(false));t2.addEventListener('click',()=>set(true));
+  return el('div',{class:'mtabs ar',lang:'ar',dir:'rtl',role:'tablist'},t1,t2);}
 window.fullHadith=fullHadith;
 /* ---------- a hadith card (chapter view, bookmarks) ---------- */
 function hadithCard(d,scope){
@@ -1006,6 +1026,7 @@ function hadithCard(d,scope){
   c.append(el('div',{class:'top'},el('span',{class:'big',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:'مکمل حدیث',on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},fmt(d.num)),gradeNode(d.grade)));
   const mt=el('div',{class:'mt ar',lang:'ar'});
   d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(el('span',{class:'sanad'},d.sanad+' '));pe.append(...rich(p,'ar'));mt.append(pe);});
+  {const tb=fullTabs(d,mt,fb);if(tb)c.append(tb);}
   c.append(mt,fb);
   const tr=trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
@@ -1407,7 +1428,6 @@ $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
 // the takhrij of a hadith of al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
 function refBlock(d){const out=[];d.refs=d.refs||[];
-if(d.refs.some(r=>COLL.has(r.key))){const fb=el('div',{class:'refbox fullbox',hidden:true});out.push(el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;fb.replaceChildren(el('p',{class:'note'},'…'));await fullHadith(d,fb);}}},'مکمل حدیث (سند سمیت)'),fb);}
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
     d.refs.forEach(r=>{const nm=ui==='en'&&EN_BOOK[r.key]?EN_BOOK[r.key]:(r.n&&COLL.name(r.key))||r.label;
@@ -1515,7 +1535,7 @@ async function showHadith(num){
   const g=gradeNode(d.grade);if(g)v.append(el('div',{style:'margin:.4rem 0'},g));
   const box=el('div',{class:'card'}),mt=el('div',{class:'mt ar',lang:'ar'}),hasSanad=!!d.sanad;
   d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&hasSanad)pe.append(el('span',{class:'sanad'},d.sanad+' '));pe.append(...rich(p,'ar'));mt.append(pe);});
-  box.append(mt);
+  {const fb2=el('div',{class:'refbox fullbox',hidden:true}),tb=fullTabs(d,mt,fb2);if(tb)box.append(tb);box.append(mt,fb2);}
   if(hasSanad){let hidden=false;try{hidden=localStorage.hideSanad==='1'}catch(e){}
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
@@ -6208,13 +6228,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     more.onclick = next; f.addEventListener('input', go);
     if (rows.length > 12) box.append(f); box.append(list, more); go(); return box;
   }
-  async function showNarrator(id) {
-    const T = L(); bar(T.title, '', true);
-    const v = qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+  async function showNarrator(id, into) {
+    const T = L(); if (!into) bar(T.title, '', true);
+    const v = into || qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
     let r, d;
     try { await idx(); r = MAP.get(id); if (!r) { v.replaceChildren(el('p', {class: 'vbad'}, T.none)); return; } d = (await chunk(id))[id]; } catch (e) { v.replaceChildren(el('p', {class: 'vbad'}, '✗ ' + e.message)); return; }
     const [nasab, laqab, job, madhab, birth, age, live, diedAt, rel, mawla, tch, std, jarh] = d;
-    bar(r[1], r[2] || '', true);
+    if (!into) bar(r[1], r[2] || '', true);
     const fact = (k, val) => val ? el('div', {class: 'nfact'}, el('span', {class: 'cs'}, k), el('b', {lang: 'ar', dir: 'rtl'}, String(val))) : '';
     const head = el('div', {class: 'card pad nhead'}, el('h2', {class: 'ar nname', lang: 'ar', dir: 'rtl'}, r[1]), r[2] ? el('p', {class: 'cs', lang: 'ar', dir: 'rtl'}, r[2]) : '',
       el('div', {class: 'nmeta'}, pill(r), r[5] ? el('span', {class: 'vpill vp-unk'}, T.tabn(r[5])) : '', r[6] ? el('span', {class: 'vpill vp-unk'}, T.died(r[6])) : '', r[8] ? el('span', {class: 'vpill vp-unk'}, T.hadith(r[8])) : ''));
@@ -6271,7 +6291,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const c = TKM.get(+printed) || []; if (c.length < 2) return c[0] ? c[0][0] : 0;
     const t = new Set(nrm(name).split(' ')); let best = 0, bs = -1; c.forEach(r => { const k = nrm(r[1] + ' ' + r[2]).split(' ').filter(w => t.has(w)).length; if (k > bs) { bs = k; best = r[0]; } }); return best;
   }
-  window.NAR = {route, title: () => L().title, idForTK, linkChips};
+  /* the narrator in a window over the page: closing it leaves the reader on the same hadith */
+  function openSheet(id) {
+    const host = el('div', {class: 'nsheet'}); let close = null;
+    host.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href^="#/"]'); if (!a) return; const m = a.getAttribute('href').match(/^#\/n\/(\d+)/);
+      if (m) { e.preventDefault(); showNarrator(+m[1], host); const sb = host.closest('.sbody'); if (sb) sb.scrollTop = 0; } else if (close) close(); });
+    close = window.sheet(L().title, [host]);
+    showNarrator(id, host);
+  }
+  window.NAR = {openSheet, route, title: () => L().title, idForTK, linkChips};
 })();
 
 </script>
