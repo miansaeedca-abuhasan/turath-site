@@ -161,6 +161,34 @@ body.rtl #player.shut,html[dir=rtl] #player.shut{transform:translateX(105%)}
 #player .pseek[hidden]{display:none}
 #player .pseek input{flex:1;min-width:0;height:1.4rem;accent-color:#00e5ff}
 body.withseek #player .ptitle{display:none}
+
+.abcard{padding:1rem;text-align:center;margin:.5rem 0;background:linear-gradient(160deg,#0c5c6e,#12394a);color:#fff;border:0}
+.abnow{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75}
+.abname{font-size:1.15rem;font-weight:700;margin:.35rem 0 .7rem;min-height:1.6rem}
+.abseek{display:flex;align-items:center;gap:.5rem;font-size:.8rem;direction:ltr}
+.abseek input{flex:1;min-width:0;accent-color:#f5c542;height:1.4rem}
+.abctl{display:flex;align-items:center;justify-content:center;gap:.35rem;margin:.7rem 0 .4rem;direction:ltr}
+.abb{background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:50%;width:2.5rem;height:2.5rem;font-size:1.05rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.abb.sk{font-size:.74rem;font-weight:700;width:2.7rem}
+.abb.big{width:3.6rem;height:3.6rem;background:#f5c542;color:#12394a}
+.abb.big svg{width:1.7rem;height:1.7rem;fill:currentColor}
+.abb.on{background:#f5c542;color:#12394a}
+.abb.wide{width:auto;border-radius:1rem;padding:0 .8rem;font-size:.8rem;height:2.2rem}
+.abopts{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;align-items:center;margin-top:.5rem;font-size:.8rem}
+.abspd{background:rgba(255,255,255,.14);color:#fff;border:0;border-radius:.8rem;padding:.35rem .5rem;font-size:.85rem}
+.abspd option{color:#000}
+.abrow{display:flex;align-items:center;width:100%;text-align:start;cursor:pointer;font:inherit;color:inherit}
+.abrow.abon{border-color:#f5c542;background:rgba(245,197,66,.13)}
+.abresume{display:flex;align-items:center;gap:.8rem;width:100%;text-align:start;cursor:pointer;font:inherit;color:inherit;border:1px solid #f5c542;background:rgba(245,197,66,.12);margin:.5rem 0}
+.abri{width:2.4rem;height:2.4rem;border-radius:50%;background:#f5c542;color:#12394a;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.abeq{margin-inline-start:auto;color:#c98f00;font-size:.8rem}
+#player .sk{font-size:.74rem;font-weight:700;width:2.3rem;color:#fff;border:1px solid rgba(255,255,255,.35);height:1.9rem;border-radius:1rem;direction:ltr}
+#player .sk[hidden],#player .pspd[hidden]{display:none}
+#player .pspd{display:inline-flex;align-items:center;direction:ltr;flex:none;font-size:.78rem}
+#player .pspd b{min-width:2.9rem;text-align:center;font-weight:700}
+#player .pspd .sp{width:1.8rem;height:1.8rem;font-size:1.1rem;border:1px solid rgba(255,255,255,.35)}
+@media (max-width:700px){body.withseek.withplayer:not(.pshut){padding-bottom:calc(11.6rem + env(safe-area-inset-bottom,0px))}body.withseek.withplayer:not(.pshut) .qnav{bottom:calc(11.3rem + env(safe-area-inset-bottom,0px))}body.withseek.withplayer:not(.pshut) .speedbox{bottom:calc(15.2rem + env(safe-area-inset-bottom,0px))}body.withseek.withplayer:not(.pshut) #sbar{bottom:calc(10.4rem + env(safe-area-inset-bottom,0px))}}
+@media (max-width:700px){body.withseek #player{flex-wrap:wrap;row-gap:.1rem}body.withseek #player .pseek{order:-1;flex:1 1 100%}body.withseek #player #pset{margin-inline-start:auto}body.withseek #player .ptitle{display:block;order:-2;flex:1 1 100%;font-size:.8rem;opacity:.95;padding:0 .4rem;color:#fff;margin:0}}
 .ptab{position:fixed;left:0;bottom:calc(3.9rem + env(safe-area-inset-bottom,0px));z-index:6;width:2.6rem;height:2.6rem;border:0;border-radius:0 1.3rem 1.3rem 0;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}
 .ptab[hidden]{display:none}
 .ptab svg{width:1.4rem;height:1.4rem;fill:currentColor}
@@ -1418,6 +1446,7 @@ function parentOf(h){
   if((m=h.match(/^(#\/quiz(?:\/[ak](?:\/[a-z]+)?)?)\/[^/]+$/)))return m[1];
   if(h==='#/quiz')return '#/';
   if(/^#\/rb(\/|$)/.test(h))return RB.parent(h);
+  if(/^#\/ab(\/|$)/.test(h))return ABK.parent(h);
   if(/^#\/n\/\d+/.test(h))return '#/nar';
   if(/^#\/hb\/a\/[a-z0-9]+$/.test(h))return '#/hb/a';
   if(/^#\/hb\/c\/\d+$/.test(h))return '#/hb/t';
@@ -1441,7 +1470,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/nar'||h.startsWith('#/n/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -1604,13 +1633,14 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr||rb;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr||rb||ab;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(vf)VERIFY.route();
   else if(nr)NAR.route(h);
   else if(rb)RB.route(h);
+  else if(ab)ABK.route(h);
   else if(qz)QUIZ.route(h);
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
@@ -2220,19 +2250,41 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- shared bottom player bar ---------- */
   const P = {cb: null};
   window.PLAYER = {
-    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); P.open(true); },
-    title(t) { $('#ptitle').textContent = t; },
-    paused(p) { P.paused = p; $('#pplay').replaceChildren(icon(p ? 'play' : 'pause')); },
+    show(title, cb) { P.cb = cb; P.paused = false; document.body.classList.remove('withseek'); paint(title); $('#player').hidden = false; document.body.classList.add('withplayer'); P.open(true); P.ms(title); },
+    title(t) { $('#ptitle').textContent = t; P.ms(t); },
+    get rate() { return P.rate; }, set rate(v) { P.rate = v; }, skip(d) { P.skip(d); }, applyRate() { P.applyRate(); },
+    paused(p) { P.paused = p; $('#pplay').replaceChildren(icon(p ? 'play' : 'pause')); try { if ('mediaSession' in navigator && P.cb) navigator.mediaSession.playbackState = p ? 'paused' : 'playing'; } catch (e) {} },
     seek(A) {
       const bar = $('#pseek'); if (!bar) return; bar.hidden = false; document.body.classList.add('withseek'); P.open(true);
       const rg = $('#prange');
       const upd = () => { if (P.drag) return; const d = isFinite(A.duration) ? A.duration : 0; rg.max = d || 0; rg.value = A.currentTime || 0; $('#pcur').textContent = P.fm(A.currentTime); $('#pdur').textContent = P.fm(d); };
       P.A = A; P.upd = upd;
-      if (!A._seekOn) { A._seekOn = 1; ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach(e => A.addEventListener(e, () => P.upd && P.upd())); }
-      upd();
+      ['pback', 'pfwd', 'pspd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = false; });
+      if (!A._seekOn) { A._seekOn = 1; ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach(e => A.addEventListener(e, () => P.upd && P.upd())); ['loadstart', 'loadedmetadata', 'play'].forEach(e => A.addEventListener(e, () => { if (P.A === A) P.applyRate(); })); ['loadedmetadata', 'durationchange', 'ratechange', 'seeked'].forEach(e => A.addEventListener(e, () => { try { if (P.A === A && 'mediaSession' in navigator && isFinite(A.duration) && A.duration > 0) navigator.mediaSession.setPositionState({duration: A.duration, playbackRate: A.playbackRate || 1, position: Math.min(A.currentTime || 0, A.duration)}); } catch (x) {} })); }
+      P.applyRate(); upd();
     },
-    hide() { clearTimeout(P.t); const sb = $('#pseek'); if (sb) sb.hidden = true; const tb = $('#ptab'); if (tb) tb.hidden = true; const pl = $('#player'); pl.classList.remove('shut'); pl.hidden = true; document.body.classList.remove('withseek', 'withplayer', 'pshut'); P.cb = null; }};
+    hide() { clearTimeout(P.t); ['pback', 'pfwd', 'pspd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = true; }); const sb = $('#pseek'); if (sb) sb.hidden = true; const tb = $('#ptab'); if (tb) tb.hidden = true; const pl = $('#player'); pl.classList.remove('shut'); pl.hidden = true; document.body.classList.remove('withseek', 'withplayer', 'pshut'); P.cb = null; }};
   // the whole bar slides to the side after 10 seconds and leaves a small tab; the tab (or a touch of the bar) brings it back
+  // playback speed (only these steps) and +/-10 seconds, for every recording that has a seek bar
+  P.RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+  P.rate = (() => { try { const r = +localStorage.prate; return P.RATES.includes(r) ? r : 1; } catch (e) { return 1; } })();
+  P.fr = r => r + '\u00D7';
+  P.applyRate = () => { const A = P.A; if (!A) return; try { A.defaultPlaybackRate = P.rate; A.playbackRate = P.rate; } catch (e) {} const l = $('#prate'); if (l) l.textContent = P.fr(P.rate); };
+  P.speed = d => { const i = Math.max(0, Math.min(P.RATES.length - 1, P.RATES.indexOf(P.rate) + d)); P.rate = P.RATES[i]; try { localStorage.prate = P.rate; } catch (e) {} P.applyRate(); P.rearm(); };
+  P.skip = d => { const A = P.A; if (!A) return; try { const t = (A.currentTime || 0) + d, m = isFinite(A.duration) ? A.duration : Infinity; A.currentTime = Math.max(0, Math.min(t, m - 0.05 > 0 ? m - 0.05 : t)); } catch (e) {} if (P.upd) P.upd(); P.rearm(); };
+  // notification bar / lock screen (Media Session): what is playing, the app icon, play/pause, previous/next, +-10 s, seek bar
+  P.ms = title => {
+    if (!('mediaSession' in navigator) || typeof MediaMetadata === 'undefined') return; const ms = navigator.mediaSession;
+    try {
+      ms.metadata = new MediaMetadata({title: title || '', artist: '\u062A\u0631\u0627\u062B \u062E\u064A\u0631\u0627\u0644\u0642\u0631\u0648\u0646', album: 'Turath Khair Al-Quroon', artwork: [{src: 'icon-192.png', sizes: '192x192', type: 'image/png'}, {src: 'icon-512.png', sizes: '512x512', type: 'image/png'}]});
+      if (P.msOn) return; P.msOn = true;
+      const h = (k, f) => { try { ms.setActionHandler(k, f); } catch (e) {} };
+      h('play', () => P.cb && P.cb.resume && P.cb.resume()); h('pause', () => P.cb && P.cb.pause && P.cb.pause()); h('stop', () => P.cb && P.cb.stop && P.cb.stop());
+      h('previoustrack', () => P.cb && P.cb.prev && P.cb.prev()); h('nexttrack', () => P.cb && P.cb.next && P.cb.next());
+      h('seekbackward', d => P.skip(-((d && d.seekOffset) || 10))); h('seekforward', d => P.skip((d && d.seekOffset) || 10));
+      h('seekto', d => { if (P.A && d && d.seekTime != null) { try { P.A.currentTime = d.seekTime; } catch (e) {} } });
+    } catch (e) {}
+  };
   P.fm = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
   P.rearm = () => { clearTimeout(P.t); if (!$('#player').classList.contains('shut')) P.t = setTimeout(() => P.open(false), 10000); };
   P.open = on => {
@@ -2249,10 +2301,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     $('#player').replaceChildren(
       b('pstop', 'stop', () => P.cb && P.cb.stop(), 'Stop'),
       b('pprev', 'prev', () => P.cb && P.cb.prev && P.cb.prev(), 'Previous'),
+      el('button', {class: 'ib sk', id: 'pback', type: 'button', hidden: true, 'aria-label': '-10', title: '-10', on: {click: () => P.skip(-10)}}, '\u21BA10'),
       b('pplay', 'pause', () => { if (!P.cb) return; P.paused ? P.cb.resume() : P.cb.pause(); }, 'Play/Pause'),
+      el('button', {class: 'ib sk', id: 'pfwd', type: 'button', hidden: true, 'aria-label': '+10', title: '+10', on: {click: () => P.skip(10)}}, '10\u21BB'),
       b('pnext', 'next', () => P.cb && P.cb.next && P.cb.next(), 'Next'),
       el('span', {id: 'ptitle', class: 'ptitle'}, title),
       el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
+      el('div', {id: 'pspd', class: 'pspd', hidden: true, dir: 'ltr'}, el('button', {class: 'ib sp', type: 'button', 'aria-label': 'Slower', on: {click: () => P.speed(-1)}}, '\u2212'), el('b', {id: 'prate'}, P.fr(P.rate)), el('button', {class: 'ib sp', type: 'button', 'aria-label': 'Faster', on: {click: () => P.speed(1)}}, '+')),
       b('pset', 'tune', () => P.cb && P.cb.settings ? P.cb.settings() : ttsSettings(), 'Settings'));
     if (!P.touch) { P.touch = 1; $('#player').addEventListener('pointerdown', () => P.rearm()); }
   }
@@ -2406,7 +2461,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     new MutationObserver(sweep).observe(document.body, {childList: true, subtree: true}); sweep();
   })();
 
-  window.LISTEN = {paused: false, warned: {}, playHadiths, playTexts, stop: stopTts, settings: ttsSettings, say, speakAll, voiceFor, langOf,
+  window.LISTEN = {paused: false, warned: {}, playHadiths, playTexts, stop: () => { stopTts(); document.dispatchEvent(new Event('mediastop')); }, settings: ttsSettings, say, speakAll, voiceFor, langOf,
     get running() { return RUN; }, newRun() { stopTts(); return RUN; }, S};
 })();
 
@@ -2706,6 +2761,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
       tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
+    if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('listen', ABK.title(), '#/ab')); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     tickerBar(v);
     v.append(el('div', {class: 'card pad0'}, g));
@@ -7382,6 +7438,195 @@ Object.assign(I.fr, {
   window.RB = {route, on: ON, isNew, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => nrm(r[1]).includes(q), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
     parent: h => { let m; if ((m = h.match(/^#\/rb\/b\/(\d+)\/\d+$/))) return '#/rb/b/' + m[1]; if ((m = h.match(/^#\/rb\/b\/(\d+)$/))) return '#/hb/c/' + (window.__rbcat && window.__rbcat[m[1]] || ''); return '#/hb'; }};
   cat().then(C => { window.__rbcat = {}; C.b.forEach(r => window.__rbcat[r[0]] = r[2]); }).catch(() => {});
+})();
+
+</script>
+<script>
+/* الكتب الصوتية / آڈیو کتب — audio books played from the publishers' own links (nothing is copied here).
+   Routes: #/ab (list of audio books) · #/ab/<book> (its chapters: tk = Tafsir Ibn Kathir, sh = Shamail, mk = Mishkat) · #/ab/<book>/<n> (the recordings of one chapter, one player). */
+(function () {
+  'use strict';
+  const LB = {
+    ur: {title: 'آڈیو کتب', sub: 'کتابیں سنیں — آڈیو اردو میں ہے، ماخذ کی اپنی سائٹ کے لنک سے', tk: 'تفسیر ابن کثیر', tkd: 'اردو آڈیو — مقدمہ اور تمام ۱۱۴ سورتیں', intro: 'مقدمہ', part: n => 'حصہ ' + n, parts: n => n + ' حصے', src: 'ماخذ: islamicaudiobooks.info — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', orig: 'اصل صفحہ کھولیں', nowp: 'اب چل رہا ہے', loading: 'لوڈ ہو رہا ہے…', lang: 'اردو', surahs: 'سورتیں', none: 'کوئی فائل نہیں ملی', shuf: 'بے ترتیب', rep: 'دہرائیں', rep0: 'دہرانا بند', rep1: 'ایک حصہ دہرائیں', repa: 'سب دہرائیں', auto: 'خود اگلا', slp: 'نیند ٹائمر', off: 'بند', min: n => n + ' منٹ', endp: 'اس حصے کے بعد', spd: 'رفتار', now: 'اب چل رہا ہے', nextS: 'اگلی سورت پر جائیں', resume: 'پچھلی جگہ سے', ayat: 'آیات', hd: 'حدیث', cont: 'وہیں سے سنیں جہاں سے چھوڑا تھا'},
+    ar: {title: 'الكتب الصوتية', sub: 'استمع إلى الكتب — من رابط الموقع الناشر نفسه', tk: 'تفسير ابن كثير', tkd: 'صوتيات بالأردية — المقدمة والسور الـ١١٤', intro: 'المقدمة', part: n => 'الجزء ' + n, parts: n => n + ' أجزاء', src: 'المصدر: islamicaudiobooks.info — تُشغَّل المادة من رابط الموقع نفسه.', orig: 'فتح الصفحة الأصلية', nowp: 'يعمل الآن', loading: 'جارٍ التحميل…', lang: 'بالأردية', surahs: 'السور', none: 'لا توجد ملفات', shuf: 'عشوائي', rep: 'تكرار', rep0: 'بدون تكرار', rep1: 'تكرار الجزء', repa: 'تكرار الكل', auto: 'التالي تلقائيًا', slp: 'مؤقّت النوم', off: 'إيقاف', min: n => n + ' دقيقة', endp: 'بعد هذا الجزء', spd: 'السرعة', now: 'يعمل الآن', nextS: 'الانتقال إلى السورة التالية', resume: 'من آخر موضع', ayat: 'الآيات', hd: 'حديث', cont: 'تابع الاستماع من حيث توقفت'},
+    en: {title: 'Audio Books', sub: 'Listen to books — the recordings are in Urdu, played from the publisher’s own link', tk: 'Tafsir Ibn Kathir', tkd: 'Urdu audio — introduction and all 114 surahs', intro: 'Introduction', part: n => 'Part ' + n, parts: n => n + ' parts', src: 'Source: islamicaudiobooks.info — played from the publisher’s own link.', orig: 'Open the original page', nowp: 'Now playing', loading: 'Loading…', lang: 'Urdu', surahs: 'Surahs', none: 'No files found', shuf: 'Shuffle', rep: 'Repeat', rep0: 'Repeat off', rep1: 'Repeat one', repa: 'Repeat all', auto: 'Auto-next', slp: 'Sleep timer', off: 'Off', min: n => n + ' min', endp: 'After this part', spd: 'Speed', now: 'Now playing', nextS: 'Continue to the next surah', resume: 'Resume', ayat: 'Ayat', hd: 'Hadith', cont: 'Continue where you left off'},
+    bn: {title: 'অডিও বই', sub: 'বই শুনুন — প্রকাশকের নিজস্ব লিংক থেকে', tk: 'তাফসীর ইবনে কাসীর', tkd: 'উর্দু অডিও — ভূমিকা ও সব ১১৪টি সূরা', intro: 'ভূমিকা', part: n => 'অংশ ' + n, parts: n => n + 'টি অংশ', src: 'সূত্র: islamicaudiobooks.info — প্রকাশকের নিজস্ব লিংক থেকে চলে।', orig: 'মূল পাতা খুলুন', nowp: 'এখন চলছে', loading: 'লোড হচ্ছে…', lang: 'উর্দু', surahs: 'সূরা', none: 'কোনো ফাইল পাওয়া যায়নি', shuf: 'এলোমেলো', rep: 'পুনরাবৃত্তি', rep0: 'পুনরাবৃত্তি বন্ধ', rep1: 'একটি অংশ পুনরাবৃত্তি', repa: 'সব পুনরাবৃত্তি', auto: 'স্বয়ংক্রিয় পরবর্তী', slp: 'স্লিপ টাইমার', off: 'বন্ধ', min: n => n + ' মিনিট', endp: 'এই অংশের পর', spd: 'গতি', now: 'এখন চলছে', nextS: 'পরের সূরায় যান', resume: 'আগের জায়গা থেকে', ayat: 'আয়াত', hd: 'হাদীস', cont: 'যেখানে থেমেছিলেন সেখান থেকে শুনুন'},
+    hi: {title: 'ऑडियो किताबें', sub: 'किताबें सुनें — रिकॉर्डिंग उर्दू में हैं, प्रकाशक के अपने लिंक से', tk: 'तफ़सीर इब्ने कसीर', tkd: 'उर्दू ऑडियो — भूमिका और सभी 114 सूरतें', intro: 'भूमिका', part: n => 'भाग ' + n, parts: n => n + ' भाग', src: 'स्रोत: islamicaudiobooks.info — प्रकाशक के अपने लिंक से चलती है।', orig: 'मूल पन्ना खोलें', nowp: 'अभी चल रहा है', loading: 'लोड हो रहा है…', lang: 'उर्दू', surahs: 'सूरतें', none: 'कोई फ़ाइल नहीं मिली', shuf: 'शफ़ल', rep: 'दोहराएँ', rep0: 'दोहराना बंद', rep1: 'एक भाग दोहराएँ', repa: 'सब दोहराएँ', auto: 'अपने-आप अगला', slp: 'स्लीप टाइमर', off: 'बंद', min: n => n + ' मिनट', endp: 'इस भाग के बाद', spd: 'गति', now: 'अभी चल रहा है', nextS: 'अगली सूरत पर जाएँ', resume: 'पिछली जगह से', ayat: 'आयतें', hd: 'हदीस', cont: 'वहीं से सुनें जहाँ छोड़ा था'},
+    gu: {title: 'ઑડિયો પુસ્તકો', sub: 'પુસ્તકો સાંભળો — રેકોર્ડિંગ ઉર્દૂમાં છે, પ્રકાશકની પોતાની લિંકથી', tk: 'તફસીર ઇબ્ને કસીર', tkd: 'ઉર્દૂ ઑડિયો — પ્રસ્તાવના અને બધી ૧૧૪ સૂરતો', intro: 'પ્રસ્તાવના', part: n => 'ભાગ ' + n, parts: n => n + ' ભાગ', src: 'સ્ત્રોત: islamicaudiobooks.info — પ્રકાશકની પોતાની લિંકથી ચાલે છે.', orig: 'મૂળ પાનું ખોલો', nowp: 'હમણાં ચાલે છે', loading: 'લોડ થાય છે…', lang: 'ઉર્દૂ', surahs: 'સૂરતો', none: 'કોઈ ફાઇલ મળી નથી', shuf: 'શફલ', rep: 'પુનરાવર્તન', rep0: 'પુનરાવર્તન બંધ', rep1: 'એક ભાગ ફરી', repa: 'બધું ફરી', auto: 'આપમેળે આગળ', slp: 'સ્લીપ ટાઇમર', off: 'બંધ', min: n => n + ' મિનિટ', endp: 'આ ભાગ પછી', spd: 'ઝડપ', now: 'હમણાં ચાલે છે', nextS: 'આગલી સૂરત પર જાઓ', resume: 'છેલ્લી જગ્યાએથી', ayat: 'આયતો', hd: 'હદીસ', cont: 'જ્યાંથી છોડ્યું હતું ત્યાંથી સાંભળો'},
+    fr: {title: 'Livres audio', sub: 'Écoutez des livres — lus depuis le lien de l’éditeur', tk: 'Tafsir Ibn Kathir', tkd: 'Audio en ourdou — introduction et les 114 sourates', intro: 'Introduction', part: n => 'Partie ' + n, parts: n => n + ' parties', src: 'Source : islamicaudiobooks.info — lue depuis le lien de l’éditeur.', orig: 'Ouvrir la page d’origine', nowp: 'En cours de lecture', loading: 'Chargement…', lang: 'Ourdou', surahs: 'Sourates', none: 'Aucun fichier', shuf: 'Aléatoire', rep: 'Répéter', rep0: 'Sans répétition', rep1: 'Répéter une partie', repa: 'Tout répéter', auto: 'Suivant auto', slp: 'Minuterie', off: 'Arrêt', min: n => n + ' min', endp: 'Après cette partie', spd: 'Vitesse', now: 'En cours', nextS: 'Passer à la sourate suivante', resume: 'Reprendre', ayat: 'Versets', hd: 'Hadith', cont: 'Reprendre là où vous vous étiez arrêté'}
+  };
+  const L = () => LB[ui] || LB.en, qv = () => $('#qv');
+  const N = n => (ui === 'ur' || ui === 'ar') ? ad(n) : NUM(Number(n).toLocaleString('en-US'));
+  const AVAIL = ['tk', 'sh'];            // books whose idb/ab_<id>.js exists
+  const DS = {}; let META = null;
+  const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
+  async function data(id) {
+    if (DS[id]) return DS[id];
+    window.ABD = d => { DS[id] = d; };
+    await loadJs('idb/ab_' + id + '.js'); return DS[id];
+  }
+  async function meta() {
+    if (META) return META;
+    const prev = window.QMETA; window.QMETA = m => { if (prev) prev(m); META = m; };
+    try { await loadJs('quran/meta.js'); } catch (e) {} finally { window.QMETA = prev; }
+    return META;
+  }
+  const sname = (m, n) => { const s = m && m.surahs[n - 1]; return s ? ((ui === 'ar' || ui === 'ur') ? s[1] : s[0]) : ''; };
+  // book names, one line per language: [title, description, language of the recording]
+  const BN = {
+    tk: {ur: ['تفسیر ابن کثیر', 'اردو آڈیو — مقدمہ اور تمام ۱۱۴ سورتیں', 'اردو'], ar: ['تفسير ابن كثير', 'صوتيات بالأردية — المقدمة والسور الـ١١٤', 'بالأردية'], en: ['Tafsir Ibn Kathir', 'Urdu audio — introduction and all 114 surahs', 'Urdu'], bn: ['তাফসীর ইবনে কাসীর', 'উর্দু অডিও — ভূমিকা ও সব ১১৪টি সূরা', 'উর্দু'], hi: ['तफ़सीर इब्ने कसीर', 'उर्दू ऑडियो — भूमिका और सभी 114 सूरतें', 'उर्दू'], gu: ['તફસીર ઇબ્ને કસીર', 'ઉર્દૂ ઑડિયો — પ્રસ્તાવના અને બધી ૧૧૪ સૂરતો', 'ઉર્દૂ'], fr: ['Tafsir Ibn Kathir', 'Audio en ourdou — introduction et les 114 sourates', 'Ourdou']},
+    sh: {ur: ['شمائل محمدیہ', 'امام ترمذی — مقدمہ اور تمام ابواب', 'اردو'], ar: ['الشمائل المحمدية', 'للإمام الترمذي — المقدمة وجميع الأبواب'], en: ['Shamail Muhammadiyyah', 'Imam al-Tirmidhi — introduction and all chapters', 'Urdu'], bn: ['শামায়েলে মুহাম্মাদিয়া', 'ইমাম তিরমিযী — ভূমিকা ও সব অধ্যায়'], hi: ['शमाइल-ए-मुहम्मदिया', 'इमाम तिर्मिज़ी — भूमिका और सभी अध्याय', 'उर्दू'], gu: ['શમાઇલે મુહમ્મદિયા', 'ઇમામ તિર્મિઝી — પ્રસ્તાવના અને બધા પ્રકરણો', 'ઉર્દૂ'], fr: ['Shamâ’il Muhammadiyya', 'Imam at-Tirmidhi — introduction et tous les chapitres']},
+    mk: {ur: ['احادیث مشکوۃ المصابیح', 'منتخب ابواب کی آڈیو', 'اردو'], ar: ['أحاديث مشكاة المصابيح', 'تسجيلات صوتية'], en: ['Hadiths of Mishkat al-Masabih', 'Audio recordings', 'Urdu'], bn: ['মিশকাতুল মাসাবীহের হাদীস', 'অডিও রেকর্ডিং'], hi: ['मिश्कात-उल-मसाबीह की हदीसें', 'ऑडियो रिकॉर्डिंग', 'उर्दू'], gu: ['મિશ્કાતુલ મસાબીહની હદીસો', 'ઑડિયો રેકોર્ડિંગ', 'ઉર્દૂ'], fr: ['Hadiths de Mishkat al-Masabih', 'Enregistrements audio']}
+  };
+  const bnm = id => (BN[id][ui] || BN[id].en);
+  const tkName = (id) => { const b = bnm(id || ST.bk || 'tk'); return b[0] + (b[2] ? ' (' + b[2] + ')' : ''); };
+  const itemName = (id, p) => id === 'tk' ? (p[0] ? sname(META, p[0]) : L().intro) : (p[3] ? (p[3][ui] || p[3].en || p[1]) : (p[0] ? String(p[0]) : L().intro));
+  // "continue where you left off": shown on the audio books pages of the book that was being listened to; a tap resumes at the saved second
+  async function resumeCard(only) {
+    const l = LAST.v; if (!l || (only && only.bk && only.bk !== l.bk) || !AVAIL.includes(l.bk)) return null;
+    if (ST.i >= 0 && ST.bk === l.bk && ST.no === l.no && !A.paused) return null;
+    let d, name = '';
+    try { [d] = await Promise.all([data(l.bk), l.bk === 'tk' ? meta() : null]); } catch (e) { return null; }
+    const p = d.p.find(x => x[0] === l.no); if (!p || !p[2][l.i]) return null;
+    const T = L(); name = itemName(l.bk, p) + ' \u2014 ' + T.part(N(l.i + 1)) + (l.t > 5 ? ' \u00B7 ' + fmt(l.t) : '');
+    return el('button', {class: 'card abresume', type: 'button', on: {click: () => { load(l.bk, l.no, l.i); location.hash = '#/ab/' + l.bk + '/' + l.no; }}},
+      el('span', {class: 'abri'}, '\u25B6'), el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, T.cont), el('span', {class: 'cs', dir: 'auto'}, tkName(l.bk) + ' \u2014 ' + name)));
+  }
+  function showList() {
+    const T = L(), v = qv(); bar(T.title, '', false);
+    resumeCard().then(c => { if (c && location.hash === '#/ab') v.prepend(c); });
+    v.replaceChildren(el('p', {class: 'cs'}, T.sub), ...AVAIL.map(id => el('a', {class: 'card srow2 hbrow', href: '#/ab/' + id}, el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, tkName(id)), el('span', {class: 'cs'}, bnm(id)[1])))));
+  }
+  async function showBook(id) {
+    const T = L(), v = qv(); bar(tkName(id), T.title, true);
+    v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    const [d] = await Promise.all([data(id), id === 'tk' ? meta() : null]);
+    const rows = d.p.map(p => el('a', {class: 'card srow2', href: '#/ab/' + id + '/' + p[0]},
+      el('span', {class: 'snum'}, p[0] ? N(p[0]) : '٭'),
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto', lang: id === 'tk' && (ui === 'ar' || ui === 'ur') && p[0] ? 'ar' : null}, itemName(id, p)), el('span', {class: 'cs'}, T.parts(N(p[2].length))))));
+    const rc = await resumeCard({bk: id});
+    v.replaceChildren(...(rc ? [rc] : []), el('p', {class: 'cs'}, bnm(id)[1]), ...rows, el('p', {class: 'cs'}, T.src));
+  }
+  /* ---------- the player: one audio element that keeps playing while the person browses; shown in the shared bottom bar and in a card on the surah page ---------- */
+  const A = new Audio(); A.preload = 'none';
+  const ST = {bk: '', no: -1, q: [], i: -1, hist: [], played: new Set(), sleepAt: 0, sleepEnd: false, sleepMode: 0};
+  const OPT = (() => { try { return Object.assign({rep: 0, shuf: false, auto: true}, JSON.parse(localStorage.abopt || '{}')); } catch (e) { return {rep: 0, shuf: false, auto: true}; } })();
+  const saveOpt = () => { try { localStorage.abopt = JSON.stringify(OPT); } catch (e) {} };
+  const POS = (() => { try { return JSON.parse(localStorage.abpos || '{}'); } catch (e) { return {}; } })();
+  let lastSave = 0; const savePos = (force) => { const u = A.src; if (!u || !isFinite(A.duration)) return; const n = Date.now(); if (!force && n - lastSave < 4000) return; lastSave = n; saveLast(); const k = u.slice(-60); if (A.currentTime > 5 && A.currentTime < A.duration - 15) POS[k] = Math.floor(A.currentTime); else delete POS[k]; try { const ks = Object.keys(POS); if (ks.length > 60) delete POS[ks[0]]; localStorage.abpos = JSON.stringify(POS); } catch (e) {} };
+  const LAST = {v: (() => { try { return JSON.parse(localStorage.ablast || 'null'); } catch (e) { return null; } })()};
+  const saveLast = () => { if (ST.i < 0 || !ST.bk) return; LAST.v = {bk: ST.bk, no: ST.no, i: ST.i, t: Math.floor(A.currentTime || 0)}; try { localStorage.ablast = JSON.stringify(LAST.v); } catch (e) {} };
+  const clearLast = () => { LAST.v = null; try { localStorage.removeItem('ablast'); } catch (e) {} };
+  let UI = null; // the card currently on screen
+  const fmt = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+  const RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
+  const curTitle = () => { const q = ST.q[ST.i]; if (!q) return ''; const p = DS[ST.bk] && DS[ST.bk].p.find(x => x[0] === ST.no); return (p ? itemName(ST.bk, p) : '') + ' — ' + L().part(N(ST.i + 1)); };
+  const stopAll = () => { try { A.pause(); } catch (e) {} savePos(true); ST.i = -1; A.removeAttribute('src'); try { A.load(); } catch (e) {} if (window.PLAYER) PLAYER.hide(); paintUI(); };
+  const ctl = {stop: stopAll, pause: () => { A.pause(); }, resume: () => { A.play().catch(() => {}); }, next: () => step(1), prev: () => step(-1), settings: () => { if (ST.no >= 0) location.hash = '#/ab/' + ST.bk + '/' + ST.no; }};
+  const pick = () => { // index of the next part
+    const n = ST.q.length; if (OPT.rep === 1) return ST.i;
+    if (OPT.shuf) { const left = ST.q.map((_, k) => k).filter(k => !ST.played.has(k) && k !== ST.i); if (left.length) return left[Math.floor(Math.random() * left.length)]; if (OPT.rep === 2) { ST.played.clear(); const o = ST.q.map((_, k) => k).filter(k => k !== ST.i); return o.length ? o[Math.floor(Math.random() * o.length)] : ST.i; } return -1; }
+    if (ST.i + 1 < n) return ST.i + 1; return OPT.rep === 2 ? 0 : -1;
+  };
+  async function nextSurah() { // after the last part: go on to the next surah (if auto-next is on)
+    const d = DS[ST.bk]; if (!d) return false; const k = d.p.findIndex(x => x[0] === ST.no); if (k < 0 || k + 1 >= d.p.length) return false;
+    load(ST.bk, d.p[k + 1][0], 0); return true;
+  }
+  async function step(dir, auto) {
+    if (ST.i < 0) return;
+    if (dir < 0) { if (A.currentTime > 3) { A.currentTime = 0; return; } const h = ST.hist.pop(); if (OPT.shuf && h != null) return playIdx(h, true); if (ST.i > 0) return playIdx(ST.i - 1, true); return; }
+    if (auto && ST.sleepEnd) { ST.sleepEnd = false; ST.sleepMode = 0; paintUI(); return; }
+    const k = pick(); if (k >= 0) return playIdx(k); if (OPT.auto && OPT.rep !== 2 && await nextSurah()) return; stopAll(); if (auto) clearLast();
+  }
+  function load(bk, no, i) {
+    const D = DS[bk], p = D.p.find(x => x[0] === no); if (!p) return; if (ST.no !== no || ST.bk !== bk) { ST.bk = bk; ST.no = no; ST.q = p[2].map(f => ({t: f[0], u: /^https?:/.test(f[1]) ? f[1] : D.b + f[1]})); ST.hist = []; ST.played.clear(); }
+    playIdx(i);
+  }
+  function playIdx(i, back) {
+    const q = ST.q[i]; if (!q) return; if (window.LISTEN) { busy = true; LISTEN.stop(); busy = false; } savePos(true);
+    if (!back && ST.i >= 0 && ST.i !== i) ST.hist.push(ST.i); ST.i = i; ST.played.add(i);
+    A.src = q.u; const k = q.u.slice(-60), t = POS[k]; A.defaultPlaybackRate = A.playbackRate = (window.PLAYER && PLAYER.rate) || 1;
+    if (t) A.addEventListener('loadedmetadata', function f() { A.removeEventListener('loadedmetadata', f); try { A.currentTime = t; } catch (e) {} });
+    PLAYER.show(curTitle(), ctl); PLAYER.seek(A); PLAYER.paused(false); A.play().catch(() => {}); paintUI(); media();
+  }
+  /* lock-screen / notification controls and background playing (Media Session): title, book, artwork, play/pause, previous/next, +-10 s, seek */
+  function media() {
+    if (!('mediaSession' in navigator)) return; const ms = navigator.mediaSession;
+    try {
+      ms.metadata = new MediaMetadata({title: curTitle(), artist: tkName(), album: L().title + ' — تراث خيرالقرون', artwork: [{src: 'icon-192.png', sizes: '192x192', type: 'image/png'}, {src: 'icon-512.png', sizes: '512x512', type: 'image/png'}]});
+      const h = (k, f) => { try { ms.setActionHandler(k, f); } catch (e) {} };
+      h('play', () => A.play().catch(() => {})); h('pause', () => A.pause()); h('stop', stopAll);
+      h('previoustrack', () => step(-1)); h('nexttrack', () => step(1));
+      h('seekbackward', d => { A.currentTime = Math.max(0, A.currentTime - ((d && d.seekOffset) || 10)); }); h('seekforward', d => { A.currentTime = Math.min(A.duration || 1e9, A.currentTime + ((d && d.seekOffset) || 10)); });
+      h('seekto', d => { if (d && d.seekTime != null) A.currentTime = d.seekTime; });
+    } catch (e) {}
+  }
+  const mediaPos = () => { try { if ('mediaSession' in navigator && ST.i >= 0 && isFinite(A.duration)) navigator.mediaSession.setPositionState({duration: A.duration, playbackRate: A.playbackRate || 1, position: Math.min(A.currentTime, A.duration)}); } catch (e) {} };
+  ['loadedmetadata', 'ratechange', 'seeked'].forEach(e => A.addEventListener(e, mediaPos));
+  const mstate = () => { try { if ('mediaSession' in navigator) navigator.mediaSession.playbackState = ST.i < 0 ? 'none' : A.paused ? 'paused' : 'playing'; } catch (e) {} };
+  ['play', 'pause', 'ended'].forEach(e => A.addEventListener(e, mstate));
+  let busy = false;
+  document.addEventListener('mediastop', () => { if (!busy && ST.i >= 0) { A.pause(); PLAYER.hide(); ST.i = -1; paintUI(); } });
+  A.addEventListener('ended', () => { savePos(true); step(1, true); });
+  A.addEventListener('pause', () => { if (ST.i >= 0 && !A.ended) { PLAYER.paused(true); savePos(true); } paintUI(); });
+  A.addEventListener('play', () => { if (ST.i >= 0) PLAYER.paused(false); paintUI(); });
+  A.addEventListener('timeupdate', () => { savePos(); if (ST.sleepAt && Date.now() >= ST.sleepAt) { ST.sleepAt = 0; ST.sleepMode = 0; A.pause(); } if (UI) { const r = UI.rg; if (r && !UI.drag) { r.max = isFinite(A.duration) ? A.duration : 0; r.value = A.currentTime || 0; } UI.cur.textContent = fmt(A.currentTime); UI.dur.textContent = fmt(isFinite(A.duration) ? A.duration : 0); } });
+  A.addEventListener('error', () => { if (ST.i >= 0 && UI) UI.name.textContent = L().none; });
+  function paintUI() {
+    const u = UI; if (!u || !u.root.isConnected) { UI = null; return; }
+    const T = L(), here = ST.bk === u.bk && ST.no === u.no && ST.i >= 0, playing = here && !A.paused;
+    u.name.textContent = here ? curTitle() : u.title;
+    u.play.replaceChildren(icon(playing ? 'pause' : 'play'));
+    u.shuf.classList.toggle('on', OPT.shuf); u.rep.classList.toggle('on', OPT.rep > 0); u.rep.textContent = OPT.rep === 1 ? '⟲ 1' : '⟲'; u.rep.title = [T.rep0, T.rep1, T.repa][OPT.rep];
+    u.auto.classList.toggle('on', OPT.auto); u.slp.classList.toggle('on', !!(ST.sleepAt || ST.sleepEnd));
+    u.slp.textContent = '☾ ' + (ST.sleepEnd ? T.endp : ST.sleepAt ? T.min(N(Math.max(1, Math.round((ST.sleepAt - Date.now()) / 60000)))) : T.off);
+    u.rows.forEach((r, j) => { const on = here && ST.i === j; r.classList.toggle('abon', on); r.querySelector('.abeq').textContent = on ? (playing ? '▶' : '❚❚') : ''; });
+    u.spd.value = String((window.PLAYER && PLAYER.rate) || 1);
+  }
+  async function showSurah(bk, no) {
+    const T = L(), v = qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    const [d] = await Promise.all([data(bk), bk === 'tk' ? meta() : null]);
+    const p = d.p.find(x => x[0] === no);
+    const title = p ? itemName(bk, p) : '';
+    bar(title, tkName(bk), true);
+    if (!p) { v.replaceChildren(el('p', {class: 'note'}, T.none)); return; }
+    const b = (cls, txt, fn, tt) => el('button', {class: 'abb ' + cls, type: 'button', title: tt || null, 'aria-label': tt || txt, on: {click: fn}}, txt);
+    const here = () => ST.bk === bk && ST.no === no && ST.i >= 0;
+    const name = el('div', {class: 'abname', dir: 'auto'}, title), cur = el('span', {}, '0:00'), dur = el('span', {}, '0:00');
+    const rg = el('input', {type: 'range', min: '0', max: '0', step: '1', value: '0', 'aria-label': 'Seek', dir: 'ltr'});
+    const sw = el('div', {class: 'abseek', dir: 'ltr'}, cur, rg, dur);
+    const play = el('button', {class: 'abb big', type: 'button', 'aria-label': 'Play', on: {click: () => { if (here()) { A.paused ? A.play().catch(() => {}) : A.pause(); } else load(bk, no, 0); }}}, icon('play'));
+    const shuf = b('', '⇄', () => { OPT.shuf = !OPT.shuf; ST.played.clear(); saveOpt(); paintUI(); }, T.shuf);
+    const rep = b('', '⟲', () => { OPT.rep = (OPT.rep + 1) % 3; saveOpt(); paintUI(); }, T.rep);
+    const auto = b('wide', '', () => { OPT.auto = !OPT.auto; saveOpt(); paintUI(); }); auto.textContent = '⇥ ' + T.auto;
+    const slp = b('wide', '', () => { const modes = [0, 15, 30, 45, 60, -1]; ST.sleepMode = (ST.sleepMode + 1) % modes.length; const x = modes[ST.sleepMode]; ST.sleepEnd = x === -1; ST.sleepAt = x > 0 ? Date.now() + x * 60000 : 0; paintUI(); }, T.slp);
+    const spd = el('select', {class: 'abspd', 'aria-label': T.spd, dir: 'ltr', on: {change: e => { if (window.PLAYER) { PLAYER.rate = +e.target.value; try { localStorage.prate = PLAYER.rate; } catch (x) {} PLAYER.applyRate && PLAYER.applyRate(); } }}}, ...RATES.map(r => el('option', {value: String(r)}, r + '×')));
+    const rows = p[2].map((f, i) => {
+      const lb = f[0] || '', num = n => String(n).replace(/\d+/g, x => N(x)).replace(/-/g, '\u2013');
+      const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : '';
+      return el('button', {class: 'card srow2 abrow', type: 'button', on: {click: () => load(bk, no, i)}},
+        el('span', {class: 'snum'}, N(i + 1)), el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, main), sub ? el('span', {class: 'cs'}, sub) : ''), el('span', {class: 'abeq'}, ''));
+    });
+    const card = el('div', {class: 'card abcard'}, el('div', {class: 'abnow'}, T.now), name, sw,
+      el('div', {class: 'abctl', dir: 'ltr'}, shuf, b('', '⏮', () => { if (here()) step(-1); else load(bk, no, 0); }, 'Previous'), b('sk', '↺10', () => PLAYER.skip && here() && PLAYER.skip(-10), '-10'), play, b('sk', '10↻', () => PLAYER.skip && here() && PLAYER.skip(10), '+10'), b('', '⏭', () => { if (here()) step(1); else load(bk, no, 0); }, 'Next'), rep),
+      el('div', {class: 'abopts'}, el('label', {class: 'abspdl'}, T.spd + ' ', spd), auto, slp));
+    rg.addEventListener('input', () => { UI.drag = true; cur.textContent = fmt(+rg.value); });
+    rg.addEventListener('change', () => { UI.drag = false; if (here()) { try { A.currentTime = +rg.value; } catch (e) {} } });
+    const rc2 = (LAST.v && LAST.v.bk === bk && LAST.v.no === no && !here()) ? await resumeCard({bk}) : null;
+    v.replaceChildren(...(rc2 ? [rc2] : []), card, ...rows, el('p', {class: 'cs'}, T.src), el('a', {class: 'btn', href: d.o + p[1] + '/', target: '_blank', rel: 'noopener'}, T.orig));
+    UI = {root: card, bk, title, no, name, cur, dur, rg, play, shuf, rep, auto, slp, spd, rows, drag: false}; paintUI();
+    if (here()) { rg.max = isFinite(A.duration) ? A.duration : 0; rg.value = A.currentTime || 0; }
+  }
+  // the recordings are in Urdu: the section is offered in the Urdu, Hindi, Gujarati and English interfaces (each recording is marked as Urdu)
+  const on = () => ui === 'ur' || ui === 'hi' || ui === 'gu' || ui === 'en';
+  function route(h) {
+    let m;
+    if (!on()) { location.replace('#/'); return; }
+    if ((m = h.match(/^#\/ab\/([a-z]+)\/(\d+)$/)) && AVAIL.includes(m[1])) showSurah(m[1], +m[2]).catch(() => {});
+    else if ((m = h.match(/^#\/ab\/([a-z]+)$/)) && AVAIL.includes(m[1])) showBook(m[1]).catch(() => {});
+    else showList();
+  }
+  window.ABK = {route, on, title: () => L().title, parent: h => { let m; if ((m = h.match(/^#\/ab\/([a-z]+)\/\d+$/))) return '#/ab/' + m[1]; return /^#\/ab\/[a-z]+$/.test(h) ? '#/ab' : '#/'; }};
 })();
 
 </script>
