@@ -7457,7 +7457,7 @@ Object.assign(I.fr, {
   };
   const L = () => LB[ui] || LB.en, qv = () => $('#qv');
   const N = n => (ui === 'ur' || ui === 'ar') ? ad(n) : NUM(Number(n).toLocaleString('en-US'));
-  const AVAIL = ['tk', 'sh'];            // books whose idb/ab_<id>.js exists
+  const AVAIL = ['tk', 'sh', 'mk'];            // books whose idb/ab_<id>.js exists
   const DS = {}; let META = null;
   const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
   async function data(id) {
@@ -7501,9 +7501,15 @@ Object.assign(I.fr, {
     const T = L(), v = qv(); bar(tkName(id), T.title, true);
     v.replaceChildren(el('p', {class: 'cs'}, T.loading));
     const [d] = await Promise.all([data(id), id === 'tk' ? meta() : null]);
-    const rows = d.p.map(p => el('a', {class: 'card srow2', href: '#/ab/' + id + '/' + p[0]},
+    const mk = p => el('a', {class: 'card srow2', href: '#/ab/' + id + '/' + p[0]},
       el('span', {class: 'snum'}, p[0] ? N(p[0]) : '٭'),
-      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto', lang: id === 'tk' && (ui === 'ar' || ui === 'ur') && p[0] ? 'ar' : null}, itemName(id, p)), el('span', {class: 'cs'}, T.parts(N(p[2].length))))));
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto', lang: id === 'tk' && (ui === 'ar' || ui === 'ur') && p[0] ? 'ar' : null}, itemName(id, p)), el('span', {class: 'cs'}, T.parts(N(p[2].length)))));
+    let rows;
+    if (d.g) { // a book with chapters (Mishkat): one collapsible card per kitab
+      const gn = n => { const g = d.g[n] || {}; return g[ui] || g.en || ''; }, by = {};
+      d.p.forEach(p => { (by[p[4] || 0] = by[p[4] || 0] || []).push(p); });
+      rows = Object.keys(by).map(Number).sort((x, y) => x - y).map(n => n === 0 ? el('div', {}, ...by[n].map(mk)) : el('details', {class: 'card grpbox'}, el('summary', {}, el('span', {class: 'gt'}, N(n) + '. ' + gn(n)), el('span', {class: 'cs'}, T.parts(N(by[n].length)))), ...by[n].map(mk)));
+    } else rows = d.p.map(mk);
     const rc = await resumeCard({bk: id});
     v.replaceChildren(...(rc ? [rc] : []), el('p', {class: 'cs'}, bnm(id)[1]), ...rows, el('p', {class: 'cs'}, T.src));
   }
@@ -7603,9 +7609,9 @@ Object.assign(I.fr, {
     const spd = el('select', {class: 'abspd', 'aria-label': T.spd, dir: 'ltr', on: {change: e => { if (window.PLAYER) { PLAYER.rate = +e.target.value; try { localStorage.prate = PLAYER.rate; } catch (x) {} PLAYER.applyRate && PLAYER.applyRate(); } }}}, ...RATES.map(r => el('option', {value: String(r)}, r + '×')));
     const rows = p[2].map((f, i) => {
       const lb = f[0] || '', num = n => String(n).replace(/\d+/g, x => N(x)).replace(/-/g, '\u2013');
-      const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : '';
+      const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : (bk === 'mk' ? lb : '');
       return el('button', {class: 'card srow2 abrow', type: 'button', on: {click: () => load(bk, no, i)}},
-        el('span', {class: 'snum'}, N(i + 1)), el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, main), sub ? el('span', {class: 'cs'}, sub) : ''), el('span', {class: 'abeq'}, ''));
+        el('span', {class: 'snum'}, N(i + 1)), el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, main), sub ? el('span', {class: 'cs', dir: bk === 'mk' ? 'ltr' : null, style: bk === 'mk' ? 'text-align:start' : null}, sub) : ''), el('span', {class: 'abeq'}, ''));
     });
     const card = el('div', {class: 'card abcard'}, el('div', {class: 'abnow'}, T.now), name, sw,
       el('div', {class: 'abctl', dir: 'ltr'}, shuf, b('', '⏮', () => { if (here()) step(-1); else load(bk, no, 0); }, 'Previous'), b('sk', '↺10', () => PLAYER.skip && here() && PLAYER.skip(-10), '-10'), play, b('sk', '10↻', () => PLAYER.skip && here() && PLAYER.skip(10), '+10'), b('', '⏭', () => { if (here()) step(1); else load(bk, no, 0); }, 'Next'), rep),
