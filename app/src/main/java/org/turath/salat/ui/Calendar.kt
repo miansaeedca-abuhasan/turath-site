@@ -134,7 +134,8 @@ fun CalendarScreen(s: AppState) {
         val myItems = (1..len).flatMap { d -> eventsOn(d).map { d to it } }
         if (dayItems.isNotEmpty() || monthItems.isNotEmpty() || myItems.isNotEmpty()) Card0 {
             for ((d, n) in dayItems) Row(Modifier.fillMaxWidth().clickable { dayOpen = d }.padding(vertical = 4.dp)) {
-                Text(Tr.num(d) + " " + Tr.hijriMonth(m), Modifier.width(120.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)); Text(n, color = MaterialTheme.colorScheme.primary)
+                val white = n == Tr["whiteDays"]
+                Text(if (white) Tr.num("13-14-15") else Tr.num(d) + " " + Tr.hijriMonth(m), Modifier.width(120.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f)); Text(n, color = MaterialTheme.colorScheme.primary)
             }
             if (monthItems.isNotEmpty()) {
                 Text(Tr["inThisMonth"], Modifier.padding(top = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))

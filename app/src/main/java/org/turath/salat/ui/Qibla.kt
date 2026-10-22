@@ -82,9 +82,9 @@ fun rememberHeading(ctx: Context, lat: Double, lng: Double, upright: Boolean): H
             return ((Math.toDegrees(o[0].toDouble()) + 720) % 360).toFloat()
         }
         fun push() {
-            val want = corr.compassSrc
+            val want = 0
             val use = when { want == 1 && hasGv -> mG; want == 2 && hasAm -> mA; hasR -> mR; hasGv -> mG; else -> mA }
-            val dd = when (corr.declMode) { 0 -> decl; 1 -> -decl; else -> 0f }
+            val dd = decl
             val az = ((azOf(use) + dd + corr.qiblaOffset + 720) % 360).toFloat()
             h.elev = Math.toDegrees(Math.asin((-use[8]).toDouble().coerceIn(-1.0, 1.0))).toFloat()
             smooth = if (smooth.isNaN()) az else { var d = az - smooth; if (d > 180) d -= 360; if (d < -180) d += 360; (smooth + d * .12f + 360) % 360 }
@@ -237,8 +237,7 @@ fun QiblaCompass(s: AppState) {
             fontSize = 24.sp, fontWeight = FontWeight.Bold, color = if (on) green else MaterialTheme.colorScheme.onBackground)
         Text(Tr["qiblaDeg"] + ": " + Tr.num("%.0f°".format(q)) + " " + Tr["fromNorth"] + "  ·  " + Tr.num("%,d".format(Cities.dist(place.lat, place.lng, 21.422487, 39.826206).roundToInt())) + " " + Tr["km"],
             fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
-        if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM) Text(Tr["accLow"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
-        if (h.clash) Text(Tr["magClash"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 14.sp)
+        if (h.acc < SensorManager.SENSOR_STATUS_ACCURACY_MEDIUM || h.clash) Text(Tr["accLow"], color = Color(0xFFB3261E), textAlign = TextAlign.Center, fontSize = 13.sp)
         // a correction saved in another place does not hold here (magnetic disturbance differs from place to place)
         LaunchedEffect(Unit) {
             val sl = s.prefs.sp.getFloat("qOffLat", 999f); val sn = s.prefs.sp.getFloat("qOffLng", 999f)
@@ -250,18 +249,6 @@ fun QiblaCompass(s: AppState) {
         OutlinedButton(onClick = {
             if (!h.deg.isNaN()) { var n = (q - (head - s.prefs.qiblaOffset)).roundToInt(); while (n > 180) n -= 360; while (n < -180) n += 360; s.prefs.qiblaOffset = n; off = n; s.prefs.sp.edit().putFloat("qOffLat", place.lat.toFloat()).putFloat("qOffLng", place.lng.toFloat()).apply() }
         }) { Text(Tr["setQibla"]) }
-        OutlinedButton(onClick = { s.prefs.qiblaOffset = 0; off = 0 }) { Text(Tr["resetFix"]) }
-        var src by remember { mutableIntStateOf(s.prefs.compassSrc) }
-        Row(Modifier.fillMaxWidth().padding(top = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(Tr["compassSrc"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
-            for ((i, n) in listOf("RV", "GRV", "A+M").withIndex()) ChoiceChip(src == i, { src = i; s.prefs.compassSrc = i }, { Text(n, fontSize = 12.sp) })
-        }
-        var dm by remember { mutableIntStateOf(s.prefs.declMode) }
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-            Text(Tr["declMode"], Modifier.weight(1f), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
-            for ((i, k) in listOf("dmNormal", "dmRev", "dmOff").withIndex()) ChoiceChip(dm == i, { dm = i; s.prefs.declMode = i }, { Text(Tr[k], fontSize = 12.sp) })
-        }
-        if (h.raw.isNotEmpty()) Text(h.raw, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .5f))
         Text(Tr["qiblaHint"], fontSize = 13.sp, textAlign = TextAlign.Center, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(top = 6.dp))
     }
 }

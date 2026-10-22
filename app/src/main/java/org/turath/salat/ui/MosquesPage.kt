@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,11 +28,13 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
     var radius by remember { mutableIntStateOf(s.prefs.mosqRadius) }
     val place = s.prefs.place
     var hidden by remember { mutableStateOf(s.prefs.hiddenMosques) }
-    var state by remember { mutableIntStateOf(0) }          // 0 loading, 1 list, 2 error
+    var state by remember { mutableIntStateOf(3) }          // 0 loading, 1 list, 2 error, 3 not started (the search button)
+    var go by remember { mutableIntStateOf(0) }
     var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
     var reload by remember { mutableIntStateOf(0) }
     LaunchedEffect(Unit) { if (!act.hasLocation()) { act.onPermResult = { reload++ }; act.askLocation() } }
-    LaunchedEffect(reload, radius > 50) {
+    LaunchedEffect(go, reload, radius > 50) {
+        if (go == 0) return@LaunchedEffect
         state = 0
         val here = Mosques.here(act, s.prefs.place)
         if (here == null) { state = 2; return@LaunchedEffect }
@@ -47,6 +50,8 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.padding(top = 6.dp)) {
                     for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
+                Spacer(Modifier.height(10.dp))
+                Button(onClick = { go++ }, Modifier.fillMaxWidth()) { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Text("  " + Tr["mosqSearch"], fontSize = 16.sp) }
                 Spacer(Modifier.height(8.dp))
                 // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -61,6 +66,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
             }
             if (state == 1) item { Text(Tr["mosqCount"] + ": " + Tr.num(shown.size) + "  (" + Tr.num(all.size) + ")", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
             when {
+                state == 3 -> item { Text(Tr["mosqIdle"], Modifier.padding(vertical = 8.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)) }
                 state == 0 -> item { Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
                 state == 2 -> item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().padding(24.dp)) {

@@ -99,11 +99,12 @@ object Events {
 }
 
 object Alarms {
-    const val CH_ADHAN = "adhan"; const val CH_REM = "reminders_quiet"; const val CH_NEXT = "next_prayer"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
+    const val CH_ADHAN = "adhan_v2"; const val CH_REM = "reminders_quiet"; const val CH_NEXT = "next_prayer"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
 
     fun channels(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         Tr.lang = Prefs(ctx).lang.ifEmpty { "en" }
+        runCatching { nm.deleteNotificationChannel("adhan") }
         nm.createNotificationChannel(NotificationChannel(CH_ADHAN, Tr["prayerTime"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
         // reminders without a sound of their own: a notification with vibration only (no bell)
         nm.createNotificationChannel(NotificationChannel(CH_REM, Tr["remTitle"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null); enableVibration(true) })
