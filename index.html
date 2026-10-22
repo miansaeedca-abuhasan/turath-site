@@ -343,6 +343,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .fullh a.snlink{color:#1a73c9;font-weight:600;border-bottom:1px dotted currentColor}
 .jwnote{margin:.2rem 0 .5rem;font-size:.85rem;color:var(--muted)}
 .reclist .grp{margin:.8rem 0 .1rem}
+.hrec{margin:.6rem 0;border:1px solid var(--line,#ddd);border-radius:8px;padding:.3rem .6rem}.hrec>summary{cursor:pointer;font-weight:600;padding:.3rem 0}
 .srow2>.ab,.moment .ab{background:none;border:0;color:var(--accent);border-radius:50%;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .srow2>.ab:hover{background:var(--wash)}
 .bism{text-align:center!important}
@@ -3015,12 +3016,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const sync = () => { const n = Q.meta.surahs[sel.value - 1][4]; from.max = to.max = n; if (+from.value > n) from.value = 1; if (+to.value > n || +to.value < 1) to.value = n; };
     sel.addEventListener('change', () => { from.value = 1; to.value = Q.meta.surahs[sel.value - 1][4]; sync(); }); sync();
     const row = (l, x, hint) => el('label', {class: 'srow'}, el('span', {}, l, hint ? el('small', {class: 'cs', style: 'display:block'}, hint) : null), x);
+    // reciters with ayah-by-ayah audio, shown only inside this repeat dialog
+    const ayahOnly = r => !r.surah;
+    const cur = () => { const r = recOf(); return ayahOnly(r) ? r : RECITERS.find(ayahOnly); };
+    const hsum = el('summary', {}, T('reciter') + ': ' + recLabel(cur()));
+    const hrec = el('details', {class: 'hrec'}, hsum, reciterList(r => { hsum.textContent = T('reciter') + ': ' + recLabel(r); }, ayahOnly));
     sheet(T('hifz'), [el('p', {class: 'note'}, T('hifzNote')), row(T('surahShort'), sel), row(T('hFrom'), from), row(T('hTo'), to),
-      row(T('hAyahRep'), ar, T('hAyahRepHint')), row(T('hRangeRep'), rr, T('hRangeRepHint')), row(T('hGap'), gap)],
+      row(T('hAyahRep'), ar, T('hAyahRepHint')), row(T('hRangeRep'), rr, T('hRangeRepHint')), row(T('hGap'), gap), hrec],
       [[T('close'), null], [T('start'), () => {
         const n = Q.meta.surahs[sel.value - 1][4], cl = (x, a, b) => Math.max(a, Math.min(b, Math.round(+x || a)));
         const f = cl(from.value, 1, n), t = cl(to.value, f, n);
         QS.hifz = {s: +sel.value, from: f, to: t, ayahRep: cl(ar.value, 1, 100), rangeRep: cl(rr.value, 1, 100), gap: cl(gap.value, 0, 30)}; qsave();
+        if (recOf().surah) { QS.reciter = cur().k; qsave(); }
         HZ.pending = Object.assign({}, QS.hifz);
         location.hash = '#/q/s/' + QS.hifz.s + '/' + f + '/hifz';
       }]]);
@@ -3545,11 +3552,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function stopAudio() { AU.token++; AU.on = false; try { AU.a.pause(); } catch (e) {} AU.a.removeAttribute('src'); document.querySelectorAll('.playing').forEach(x => x.classList.remove('playing')); if (!AS.on) wake(false); }
 
   /* ---------- reciter list ---------- */
-  function reciterList(onPick) {
+  function reciterList(onPick, only) {
     const box = el('div', {class: 'reclist'});
     ['makkah', 'madinah', 'others'].forEach(g => {
+      const L = RECITERS.filter(r => r.g === g && (!only || only(r))); if (!L.length) return;
       box.append(el('p', {class: 'grp'}, T(g)));
-      RECITERS.filter(r => r.g === g).forEach(r => {
+      L.forEach(r => {
         const inp = el('input', {type: 'radio', name: 'rec', value: r.k}); inp.checked = r.k === QS.reciter;
         inp.addEventListener('change', () => { QS.reciter = r.k; let ch = false; if (r.tl && QS.tr[0] !== r.tl) { QS.tr = [r.tl].concat(QS.tr.filter(k => k !== r.tl)); QS.trBy[ui] = QS.tr.slice(); ch = true; } qsave(); if (ch && R && typeof redraw === 'function') redraw(); onPick && onPick(r); });
         box.append(el('label', {class: 'srow chk'}, inp, el('span', {}, recLabel(r), r.surah ? el('small', {class: 'cs'}, T('surahOnly')) : null)));
@@ -7449,7 +7457,7 @@ Object.assign(I.fr, {
   const LB = {
     ur: {title: 'آڈیو کتب', sub: 'کتابیں سنیں — آڈیو اردو میں ہے، ماخذ کی اپنی سائٹ کے لنک سے', tk: 'تفسیر ابن کثیر', tkd: 'اردو آڈیو — مقدمہ اور تمام ۱۱۴ سورتیں', intro: 'مقدمہ', part: n => 'حصہ ' + n, parts: n => n + ' حصے', src: 'ماخذ: islamicaudiobooks.info — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', orig: 'اصل صفحہ کھولیں', nowp: 'اب چل رہا ہے', loading: 'لوڈ ہو رہا ہے…', lang: 'اردو', surahs: 'سورتیں', none: 'کوئی فائل نہیں ملی', shuf: 'بے ترتیب', rep: 'دہرائیں', rep0: 'دہرانا بند', rep1: 'ایک حصہ دہرائیں', repa: 'سب دہرائیں', auto: 'خود اگلا', slp: 'نیند ٹائمر', off: 'بند', min: n => n + ' منٹ', endp: 'اس حصے کے بعد', spd: 'رفتار', now: 'اب چل رہا ہے', nextS: 'اگلی سورت پر جائیں', resume: 'پچھلی جگہ سے', ayat: 'آیات', hd: 'حدیث', cont: 'وہیں سے سنیں جہاں سے چھوڑا تھا'},
     ar: {title: 'الكتب الصوتية', sub: 'استمع إلى الكتب — من رابط الموقع الناشر نفسه', tk: 'تفسير ابن كثير', tkd: 'صوتيات بالأردية — المقدمة والسور الـ١١٤', intro: 'المقدمة', part: n => 'الجزء ' + n, parts: n => n + ' أجزاء', src: 'المصدر: islamicaudiobooks.info — تُشغَّل المادة من رابط الموقع نفسه.', orig: 'فتح الصفحة الأصلية', nowp: 'يعمل الآن', loading: 'جارٍ التحميل…', lang: 'بالأردية', surahs: 'السور', none: 'لا توجد ملفات', shuf: 'عشوائي', rep: 'تكرار', rep0: 'بدون تكرار', rep1: 'تكرار الجزء', repa: 'تكرار الكل', auto: 'التالي تلقائيًا', slp: 'مؤقّت النوم', off: 'إيقاف', min: n => n + ' دقيقة', endp: 'بعد هذا الجزء', spd: 'السرعة', now: 'يعمل الآن', nextS: 'الانتقال إلى السورة التالية', resume: 'من آخر موضع', ayat: 'الآيات', hd: 'حديث', cont: 'تابع الاستماع من حيث توقفت'},
-    en: {title: 'Audio Books', sub: 'Listen to books — the recordings are in Urdu, played from the publisher’s own link', tk: 'Tafsir Ibn Kathir', tkd: 'Urdu audio — introduction and all 114 surahs', intro: 'Introduction', part: n => 'Part ' + n, parts: n => n + ' parts', src: 'Source: islamicaudiobooks.info — played from the publisher’s own link.', orig: 'Open the original page', nowp: 'Now playing', loading: 'Loading…', lang: 'Urdu', surahs: 'Surahs', none: 'No files found', shuf: 'Shuffle', rep: 'Repeat', rep0: 'Repeat off', rep1: 'Repeat one', repa: 'Repeat all', auto: 'Auto-next', slp: 'Sleep timer', off: 'Off', min: n => n + ' min', endp: 'After this part', spd: 'Speed', now: 'Now playing', nextS: 'Continue to the next surah', resume: 'Resume', ayat: 'Ayat', hd: 'Hadith', cont: 'Continue where you left off'},
+    en: {title: 'Audio Books', sub: 'Listen to books — the recordings are in Urdu, played from the publisher’s own link', tk: 'Tafsir Ibn Kathir', tkd: 'Urdu audio — introduction and all 114 surahs', intro: 'Introduction', part: n => 'Part ' + n, parts: n => n + (String(n) === '1' ? ' part' : ' parts'), src: 'Source: islamicaudiobooks.info — played from the publisher’s own link.', orig: 'Open the original page', nowp: 'Now playing', loading: 'Loading…', lang: 'Urdu', surahs: 'Surahs', none: 'No files found', shuf: 'Shuffle', rep: 'Repeat', rep0: 'Repeat off', rep1: 'Repeat one', repa: 'Repeat all', auto: 'Auto-next', slp: 'Sleep timer', off: 'Off', min: n => n + ' min', endp: 'After this part', spd: 'Speed', now: 'Now playing', nextS: 'Continue to the next surah', resume: 'Resume', ayat: 'Ayat', hd: 'Hadith', cont: 'Continue where you left off'},
     bn: {title: 'অডিও বই', sub: 'বই শুনুন — প্রকাশকের নিজস্ব লিংক থেকে', tk: 'তাফসীর ইবনে কাসীর', tkd: 'উর্দু অডিও — ভূমিকা ও সব ১১৪টি সূরা', intro: 'ভূমিকা', part: n => 'অংশ ' + n, parts: n => n + 'টি অংশ', src: 'সূত্র: islamicaudiobooks.info — প্রকাশকের নিজস্ব লিংক থেকে চলে।', orig: 'মূল পাতা খুলুন', nowp: 'এখন চলছে', loading: 'লোড হচ্ছে…', lang: 'উর্দু', surahs: 'সূরা', none: 'কোনো ফাইল পাওয়া যায়নি', shuf: 'এলোমেলো', rep: 'পুনরাবৃত্তি', rep0: 'পুনরাবৃত্তি বন্ধ', rep1: 'একটি অংশ পুনরাবৃত্তি', repa: 'সব পুনরাবৃত্তি', auto: 'স্বয়ংক্রিয় পরবর্তী', slp: 'স্লিপ টাইমার', off: 'বন্ধ', min: n => n + ' মিনিট', endp: 'এই অংশের পর', spd: 'গতি', now: 'এখন চলছে', nextS: 'পরের সূরায় যান', resume: 'আগের জায়গা থেকে', ayat: 'আয়াত', hd: 'হাদীস', cont: 'যেখানে থেমেছিলেন সেখান থেকে শুনুন'},
     hi: {title: 'ऑडियो किताबें', sub: 'किताबें सुनें — रिकॉर्डिंग उर्दू में हैं, प्रकाशक के अपने लिंक से', tk: 'तफ़सीर इब्ने कसीर', tkd: 'उर्दू ऑडियो — भूमिका और सभी 114 सूरतें', intro: 'भूमिका', part: n => 'भाग ' + n, parts: n => n + ' भाग', src: 'स्रोत: islamicaudiobooks.info — प्रकाशक के अपने लिंक से चलती है।', orig: 'मूल पन्ना खोलें', nowp: 'अभी चल रहा है', loading: 'लोड हो रहा है…', lang: 'उर्दू', surahs: 'सूरतें', none: 'कोई फ़ाइल नहीं मिली', shuf: 'शफ़ल', rep: 'दोहराएँ', rep0: 'दोहराना बंद', rep1: 'एक भाग दोहराएँ', repa: 'सब दोहराएँ', auto: 'अपने-आप अगला', slp: 'स्लीप टाइमर', off: 'बंद', min: n => n + ' मिनट', endp: 'इस भाग के बाद', spd: 'गति', now: 'अभी चल रहा है', nextS: 'अगली सूरत पर जाएँ', resume: 'पिछली जगह से', ayat: 'आयतें', hd: 'हदीस', cont: 'वहीं से सुनें जहाँ छोड़ा था'},
     gu: {title: 'ઑડિયો પુસ્તકો', sub: 'પુસ્તકો સાંભળો — રેકોર્ડિંગ ઉર્દૂમાં છે, પ્રકાશકની પોતાની લિંકથી', tk: 'તફસીર ઇબ્ને કસીર', tkd: 'ઉર્દૂ ઑડિયો — પ્રસ્તાવના અને બધી ૧૧૪ સૂરતો', intro: 'પ્રસ્તાવના', part: n => 'ભાગ ' + n, parts: n => n + ' ભાગ', src: 'સ્ત્રોત: islamicaudiobooks.info — પ્રકાશકની પોતાની લિંકથી ચાલે છે.', orig: 'મૂળ પાનું ખોલો', nowp: 'હમણાં ચાલે છે', loading: 'લોડ થાય છે…', lang: 'ઉર્દૂ', surahs: 'સૂરતો', none: 'કોઈ ફાઇલ મળી નથી', shuf: 'શફલ', rep: 'પુનરાવર્તન', rep0: 'પુનરાવર્તન બંધ', rep1: 'એક ભાગ ફરી', repa: 'બધું ફરી', auto: 'આપમેળે આગળ', slp: 'સ્લીપ ટાઇમર', off: 'બંધ', min: n => n + ' મિનિટ', endp: 'આ ભાગ પછી', spd: 'ઝડપ', now: 'હમણાં ચાલે છે', nextS: 'આગલી સૂરત પર જાઓ', resume: 'છેલ્લી જગ્યાએથી', ayat: 'આયતો', hd: 'હદીસ', cont: 'જ્યાંથી છોડ્યું હતું ત્યાંથી સાંભળો'},
