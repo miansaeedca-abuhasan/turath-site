@@ -7465,7 +7465,8 @@ Object.assign(I.fr, {
   };
   const L = () => LB[ui] || LB.en, qv = () => $('#qv');
   const N = n => (ui === 'ur' || ui === 'ar') ? ad(n) : NUM(Number(n).toLocaleString('en-US'));
-  const AVAIL = ['tk', 'sh', 'mk'];            // books whose idb/ab_<id>.js exists
+  const isT = id => id === 'tk' || id === 'te';   // surah-indexed tafsir recordings (Urdu / English)
+  const AVAIL = ['tk', 'te', 'sh', 'mk'];            // books whose idb/ab_<id>.js exists
   const DS = {}; let META = null;
   const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
   async function data(id) {
@@ -7483,18 +7484,19 @@ Object.assign(I.fr, {
   // book names, one line per language: [title, description, language of the recording]
   const BN = {
     tk: {ur: ['تفسیر ابن کثیر', 'اردو آڈیو — مقدمہ اور تمام ۱۱۴ سورتیں', 'اردو'], ar: ['تفسير ابن كثير', 'صوتيات بالأردية — المقدمة والسور الـ١١٤', 'بالأردية'], en: ['Tafsir Ibn Kathir', 'Urdu audio — introduction and all 114 surahs', 'Urdu'], bn: ['তাফসীর ইবনে কাসীর', 'উর্দু অডিও — ভূমিকা ও সব ১১৪টি সূরা', 'উর্দু'], hi: ['तफ़सीर इब्ने कसीर', 'उर्दू ऑडियो — भूमिका और सभी 114 सूरतें', 'उर्दू'], gu: ['તફસીર ઇબ્ને કસીર', 'ઉર્દૂ ઑડિયો — પ્રસ્તાવના અને બધી ૧૧૪ સૂરતો', 'ઉર્દૂ'], fr: ['Tafsir Ibn Kathir', 'Audio en ourdou — introduction et les 114 sourates', 'Ourdou']},
+    te: {ur: ['تفسیر ابن کثیر', 'انگریزی آڈیو — مقدمہ، الفاتحہ، البقرہ کا حصہ اور سورۃ الضحیٰ تا الناس', 'انگریزی'], ar: ['تفسير ابن كثير', 'صوتيات بالإنجليزية — المقدمة والفاتحة وجزء من البقرة والضحى إلى الناس', 'بالإنجليزية'], en: ['Tafsir Ibn Kathir', 'English audio — introduction, Al-Fatiha, part of Al-Baqarah and Ad-Duha to An-Nas', 'English'], bn: ['তাফসীর ইবনে কাসীর', 'ইংরেজি অডিও — ভূমিকা, আল-ফাতিহা, আল-বাকারার অংশ এবং আদ-দুহা থেকে আন-নাস', 'ইংরেজি'], hi: ['तफ़सीर इब्ने कसीर', 'अंग्रेज़ी ऑडियो — भूमिका, अल-फ़ातिहा, अल-बक़रा का भाग और अज़-ज़ुहा से अन-नास', 'अंग्रेज़ी'], gu: ['તફસીર ઇબ્ને કસીર', 'અંગ્રેજી ઑડિયો — પ્રસ્તાવના, અલ-ફાતિહા, અલ-બકરાનો ભાગ અને અઝ-ઝુહા થી અન-નાસ', 'અંગ્રેજી'], fr: ['Tafsir Ibn Kathir', 'Audio en anglais — introduction, Al-Fatiha, une partie d’Al-Baqara et de Ad-Duha à An-Nas', 'anglais']},
     sh: {ur: ['شمائل محمدیہ', 'امام ترمذی — مقدمہ اور تمام ابواب', 'اردو'], ar: ['الشمائل المحمدية', 'للإمام الترمذي — المقدمة وجميع الأبواب'], en: ['Shamail Muhammadiyyah', 'Imam al-Tirmidhi — introduction and all chapters', 'Urdu'], bn: ['শামায়েলে মুহাম্মাদিয়া', 'ইমাম তিরমিযী — ভূমিকা ও সব অধ্যায়'], hi: ['शमाइल-ए-मुहम्मदिया', 'इमाम तिर्मिज़ी — भूमिका और सभी अध्याय', 'उर्दू'], gu: ['શમાઇલે મુહમ્મદિયા', 'ઇમામ તિર્મિઝી — પ્રસ્તાવના અને બધા પ્રકરણો', 'ઉર્દૂ'], fr: ['Shamâ’il Muhammadiyya', 'Imam at-Tirmidhi — introduction et tous les chapitres']},
     mk: {ur: ['احادیث مشکوۃ المصابیح', 'منتخب ابواب کی آڈیو', 'اردو'], ar: ['أحاديث مشكاة المصابيح', 'تسجيلات صوتية'], en: ['Hadiths of Mishkat al-Masabih', 'Audio recordings', 'Urdu'], bn: ['মিশকাতুল মাসাবীহের হাদীস', 'অডিও রেকর্ডিং'], hi: ['मिश्कात-उल-मसाबीह की हदीसें', 'ऑडियो रिकॉर्डिंग', 'उर्दू'], gu: ['મિશ્કાતુલ મસાબીહની હદીસો', 'ઑડિયો રેકોર્ડિંગ', 'ઉર્દૂ'], fr: ['Hadiths de Mishkat al-Masabih', 'Enregistrements audio']}
   };
   const bnm = id => (BN[id][ui] || BN[id].en);
   const tkName = (id) => { const b = bnm(id || ST.bk || 'tk'); return b[0] + (b[2] ? ' (' + b[2] + ')' : ''); };
-  const itemName = (id, p) => id === 'tk' ? (p[0] ? sname(META, p[0]) : L().intro) : (p[3] ? (p[3][ui] || p[3].en || p[1]) : (p[0] ? String(p[0]) : L().intro));
+  const itemName = (id, p) => isT(id) ? (p[0] ? sname(META, p[0]) : L().intro) : (p[3] ? (p[3][ui] || p[3].en || p[1]) : (p[0] ? String(p[0]) : L().intro));
   // "continue where you left off": shown on the audio books pages of the book that was being listened to; a tap resumes at the saved second
   async function resumeCard(only) {
     const l = LAST.v; if (!l || (only && only.bk && only.bk !== l.bk) || !AVAIL.includes(l.bk)) return null;
     if (ST.i >= 0 && ST.bk === l.bk && ST.no === l.no && !A.paused) return null;
     let d, name = '';
-    try { [d] = await Promise.all([data(l.bk), l.bk === 'tk' ? meta() : null]); } catch (e) { return null; }
+    try { [d] = await Promise.all([data(l.bk), isT(l.bk) ? meta() : null]); } catch (e) { return null; }
     const p = d.p.find(x => x[0] === l.no); if (!p || !p[2][l.i]) return null;
     const T = L(); name = itemName(l.bk, p) + ' \u2014 ' + T.part(N(l.i + 1)) + (l.t > 5 ? ' \u00B7 ' + fmt(l.t) : '');
     return el('button', {class: 'card abresume', type: 'button', on: {click: () => { load(l.bk, l.no, l.i); location.hash = '#/ab/' + l.bk + '/' + l.no; }}},
@@ -7508,10 +7510,10 @@ Object.assign(I.fr, {
   async function showBook(id) {
     const T = L(), v = qv(); bar(tkName(id), T.title, true);
     v.replaceChildren(el('p', {class: 'cs'}, T.loading));
-    const [d] = await Promise.all([data(id), id === 'tk' ? meta() : null]);
+    const [d] = await Promise.all([data(id), isT(id) ? meta() : null]);
     const mk = p => el('a', {class: 'card srow2', href: '#/ab/' + id + '/' + p[0]},
       el('span', {class: 'snum'}, p[0] ? N(p[0]) : '٭'),
-      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto', lang: id === 'tk' && (ui === 'ar' || ui === 'ur') && p[0] ? 'ar' : null}, itemName(id, p)), el('span', {class: 'cs'}, T.parts(N(p[2].length)))));
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto', lang: isT(id) && (ui === 'ar' || ui === 'ur') && p[0] ? 'ar' : null}, itemName(id, p)), el('span', {class: 'cs'}, T.parts(N(p[2].length)))));
     let rows;
     if (d.g) { // a book with chapters (Mishkat): one collapsible card per kitab
       const gn = n => { const g = d.g[n] || {}; return g[ui] || g.en || ''; }, by = {};
@@ -7599,7 +7601,7 @@ Object.assign(I.fr, {
   }
   async function showSurah(bk, no) {
     const T = L(), v = qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
-    const [d] = await Promise.all([data(bk), bk === 'tk' ? meta() : null]);
+    const [d] = await Promise.all([data(bk), isT(bk) ? meta() : null]);
     const p = d.p.find(x => x[0] === no);
     const title = p ? itemName(bk, p) : '';
     bar(title, tkName(bk), true);
@@ -7617,7 +7619,7 @@ Object.assign(I.fr, {
     const spd = el('select', {class: 'abspd', 'aria-label': T.spd, dir: 'ltr', on: {change: e => { if (window.PLAYER) { PLAYER.rate = +e.target.value; try { localStorage.prate = PLAYER.rate; } catch (x) {} PLAYER.applyRate && PLAYER.applyRate(); } }}}, ...RATES.map(r => el('option', {value: String(r)}, r + '×')));
     const rows = p[2].map((f, i) => {
       const lb = f[0] || '', num = n => String(n).replace(/\d+/g, x => N(x)).replace(/-/g, '\u2013');
-      const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : (bk === 'mk' ? lb : '');
+      const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : (bk === 'mk' || bk === 'te' ? lb : '');
       return el('button', {class: 'card srow2 abrow', type: 'button', on: {click: () => load(bk, no, i)}},
         el('span', {class: 'snum'}, N(i + 1)), el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, main), sub ? el('span', {class: 'cs', dir: bk === 'mk' ? 'ltr' : null, style: bk === 'mk' ? 'text-align:start' : null}, sub) : ''), el('span', {class: 'abeq'}, ''));
     });
