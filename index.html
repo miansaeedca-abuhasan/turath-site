@@ -1134,7 +1134,7 @@ const HB_CATS={1:['اجزاء و فوائد','أجزاء وفوائد','Juz’ a
 const HB_CAT={"fazail":17,"seerah":8,"shadharat":4,"mutafarriq":15,"siyar":4,"bukhari":9,"adab":6,"tarikhbukhari":4,"sh9697":10,"muslim":9,"abudawud":7,"tirmidhi":7,"shamail":8,"nasai":7,"kubranasai":7,"amalyawm":6,"ibnmajah":7,"malik":7,"sh28107":7,"ahmad":14,"zuhd":6,"zuhdmubarak":6,"qadar":10,"tayalisi":14,"abdrazzaq":15,"humaydi":14,"sh13122":7,"ibnjad":14,"sh9944":15,"sh13159":14,"darimi":7,"khaythama":4,"sh13023":10,"sh9196":4,"sunnaabdullah":10,"sh11333":10,"sh12520":14,"sh13011":10,"ibnkhuzaymah":9,"sarraj":14,"ibnhibban":9,"thiqat":4,"sh13035":10,"sh13045":6,"sh13016":6,"sh13068":16,"sh13162":14,"sh28171":16,"sh13132":6,"sh9771":7,"tawhid":10,"hakim":9,"sh9200":10,"sh10490":4,"sh13034":10,"kubrabayhaqi":7,"dalail":8,"sh8970":6,"sh9270":10,"sh13053":10,"sh13061":7,"sh131336":13,"sh23764":4,"sharhsunna":13,"sh10480":9,"riyad":2,"mishkat":15,"sh10906":4,"sh11428":11,"majma":15,"sh12862":14,"sh13160":14,"sh21570":14,"bulugh":13,"sh22804":14,"hisn":6,"sh13170":14,"bazzar":14,"lulu":9,"shuabiman":10,"jamjawami":15,"ibnrajab50":2,"atraf":11,"mujamkabir":16,"sh2170":4,"sh5635":7,"sh5930":10,"sh7351":18,"sh9082":11,"sh12579":4,"sh13041":4,"sh13043":10,"sh13071":9,"sh146":4,"sh1581":11,"sh1692":4,"sh6847":6,"sh9767":4,"sh22367":6,"sh22547":13,"sh236":13,"sh1655":13,"sh1719":13,"sh2186":13,"sh4445":4,"sh7289":10,"sh10495":4,"sh30108":11,"sh11385":11,"sh26324":11,"sh1673":13,"muslimab":9,"muslimtr":9,"sh9863":4,"sh26112":4,"sh132965":4,"sh149213":4,"tahdhibkamal":4,"sh1290":4,"sh5782":4,"sh8609":4,"sh8632":4,"sh36357":4,"sh71":4,"sh3508":4,"sh12698":4,"sh8238":17,"sh3525":6,"sh816":4,"sh10802":4};
 const hbCatName=id=>{const c=HB_CATS[id];return c?(EN()?c[2]:ui==='ar'?c[1]:c[0]):''};
 const AZ={ur:'دکتور محمد عبداللہ اعظمی (المعروف بالضیاء)',ar:'الدكتور محمد عبد الله الأعظمي (المعروف بالضياء)',en:'Dr. Muhammad Abdullah al-A‘zami (known as al-Diya’)'};
-const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):(EN()?a[3]:ui==='ar'?a[1]:a[2])+(a[4]?(EN()?' (d. '+a[4]+' AH)':' (ت '+ad(a[4])+'ھ)'):'');
+const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):(EN()?a[3]:ui==='ar'?a[1]:a[2])+(a[4]?(EN()?' (d. '+a[4]+' AH)':' (ت '+ad(a[4])+(ui==='ar'?'هـ':'ھ')+')'):'');
 async function showBookList(cat,aut,authors,topics){
   const box=$('#list');box.replaceChildren();bar(cat?hbCatName(cat):'',  '',false);
   const cnt=await hbCounts(),colls=await COLL.list().catch(()=>[]);
@@ -1151,7 +1151,10 @@ async function showBookList(cat,aut,authors,topics){
   {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Al-Jami al-Kamil kitab list
   {const OR=["bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
    const head=rows.slice(0,nJ),rest=rows.slice(nJ).map((r,i)=>[r,i]).sort((a,b)=>o(a[0].key)-o(b[0].key)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...head,...rest);}
-  rows.forEach((r,i)=>{r.no=i+1;r.cat=HB_CAT[r.key]||15;});
+  rows.forEach(r=>{r.cat=HB_CAT[r.key]||15;});
+  const TAILR={11:1,4:2,18:3,5:4,12:5},rk=c=>TAILR[c]||0;   // hadith books first; then hadith sciences, biographies, fabricated reports, tafsir, Quranic sciences
+  {const h=rows.slice(0,nJ),t=rows.slice(nJ).map((x,i)=>[x,i]).sort((a,b)=>rk(a[0].cat)-rk(b[0].cat)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...h,...t);}
+  rows.forEach((r,i)=>{r.no=i+1;});
   const RC=window.RB&&RB.on?await RB.catalog():null;
   const AUS=new Map();rows.concat(subjRows).forEach(r=>{if(Array.isArray(r.au)&&r.au[0]!=='aslaf'){const o=AUS.get(r.au[0])||{a:r.au,n:0};o.n++;AUS.set(r.au[0],o);}});
   const RAU=new Map();   // our author -> the same author's ids in the Hadith Library (matched by year of death); other authors are added
@@ -1165,18 +1168,18 @@ async function showBookList(cat,aut,authors,topics){
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[ً-ْ]/g,''),n=toNum(f.value);
     let lastG;
     if(authors&&!aut){const arr=[...AUS.values()].filter(o=>!q||(o.a[1]+' '+o.a[2]+' '+o.a[3]).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)).sort((x,y)=>(x.a[0]==='jami'?-1:x.a[4]||9999)-(y.a[0]==='jami'?-1:y.a[4]||9999));
-      list.replaceChildren(...arr.map(o=>el('a',{class:'card aucard',href:'#/hb/a/'+o.a[0]},el('span',{class:'aunm'+(ui==='ar'?' ar':''),dir:'auto'},o.a[0]==='jami'?(AZ[ui]||AZ.en):EN()?o.a[3]:ui==='ar'?o.a[1]:o.a[2]),el('span',{class:'aumeta'},(o.a[4]?el('span',{class:'aupill'},EN()?'d. '+o.a[4]+' AH':'ت '+ad(o.a[4])+'ھ'):''),el('span',{class:'catn'},T('hbNBooks')(N(o.n)))))));return;}
+      list.replaceChildren(...arr.map(o=>el('a',{class:'card aucard',href:'#/hb/a/'+o.a[0]},el('span',{class:'aunm'+(ui==='ar'?' ar':''),dir:'auto'},o.a[0]==='jami'?(AZ[ui]||AZ.en):EN()?o.a[3]:ui==='ar'?o.a[1]:o.a[2]),el('span',{class:'aumeta'},(o.a[4]?el('span',{class:'aupill'},EN()?'d. '+o.a[4]+' AH':'ت '+ad(o.a[4])+(ui==='ar'?'هـ':'ھ')):''),el('span',{class:'catn'},T('hbNBooks')(N(o.n)))))));return;}
     if(!q&&!cat&&!aut&&topics){const cnt={};rows.forEach(r=>cnt[r.cat]=(cnt[r.cat]||0)+1);if(RC)RC.b.forEach(r=>cnt[r[2]]=(cnt[r[2]]||0)+1);
       const g=el('div',{class:'catgrid'});Object.keys(HB_CATS).filter(id=>cnt[id]).forEach(id=>{
         const a=el('a',{class:'card catcard',href:'#/hb/c/'+id},el('span',{class:'catico'},icon('read')),
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
       list.replaceChildren(...rows.slice(0,nJ).map(rowEl),g);return;}
-    const mine=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)))).flatMap(r=>{return [rowEl(r)];});
+    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))));const mine=mineR.map(rowEl);
     const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
-    const extra=RB&&RC&&n==null?RB.rows(RC,allB?rbAll.slice(0,150):rbAll):[];
-    list.replaceChildren(...mine,...extra);
-    if(allB&&rbAll.length>150){let sh=150;const mb=el('button',{class:'btn more',type:'button'},T('more'));mb.onclick=()=>{const part=rbAll.slice(sh,sh+200);sh+=200;list.insertBefore(el('div',{},...RB.rows(RC,part)),mb);if(sh>=rbAll.length)mb.remove();};list.append(mb);}};
+    if(allB&&RC&&n==null){const out=[];for(let k=0;k<=5;k++){out.push(...mine.filter((_,i)=>rk(mineR[i].cat)===k));const g=rbAll.filter(x=>rk(+x[2])===k);if(g.length)out.push(...RB.rows(RC,g));}list.replaceChildren(...out);return;}
+    const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
+    list.replaceChildren(...mine,...extra);};
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
@@ -3577,7 +3580,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     : T('range');
   const CNT = b => T(b.key === 'shadharat' ? 'cNas' : b.key === 'siyar' ? 'cPara' : 'count');
   const HN = (b, x, y) => { let c = 0; for (let k = x; k <= y; k++) if (!(b.nn && b.nn[k])) c++; return c; };
-  const subOf = b => b.sub ? (b.sub[ui] || b.sub.ur) : '';
+  const subOf = b => b.sub ? (b.sub[ui] || (ui === 'ur' ? b.sub.ur : (b.sub.en || b.sub.ur))) : '';
   function card(b, n, lang, q) {
     if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of al-Jami al-Kamil
       const r = row(b, 'ar', n) || [], nums = String(r[2] || '').split(',').filter(Boolean), c = el('article', {class: 'card atraf'});
@@ -4264,7 +4267,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const bk = b => el('a', {class: 'card srow2', href: '#/s/' + b.key}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, el('span', {class: 'bkno'}, fmtN(++bkn)), b.ar, window.NEWS_NEW && window.NEWS_NEW.has(b.key) ? el('span', {class: 'newtag'}, rt('newtag')) : null), el('span', {class: 'cs'}, rt('count')(fmtN(b.count)))));
     const tkb = bookOf('tahdhibkamal'), folder = tkb ? [el('h3', {class: 'grp', lang: 'ar'}, rt('folder')), el('a', {class: 'card srow2 rjfolder', href: '#/s/rijal/all'}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, rt('folderCard')), el('span', {class: 'cs', lang: 'ar', dir: 'rtl'}, rt('foldercnt')(fmtN(tkb.count)))))] : [];
     const lib = AU.flatMap(([k, ks, nm]) => { const bs = ks.map(bookOf).filter(Boolean); return bs.length ? [el('h3', {class: 'grp', lang: 'ar'}, nm.ar, bs.length > 1 ? ' (' + fmtN(bs.length) + ')' : ''), ...bs.map(bk)] : []; });
-    const news = window.NEWS && window.NEWS.length ? el('details', {class: 'rjsec newsbox'}, el('summary', {}, el('span', {class: 'rjst'}, rt('newsAll'))), el('div', {class: 'newsbody'}, ...window.NEWS.map(nw => el('div', {class: 'newsitem'}, el('b', {}, (nw.t[ui] || nw.t.ur) + ' — ' + nw.d), el('ul', {}, ...(nw.i[ui] || nw.i.ur).map(t => el('li', {}, t))))))) : null;
+    const news = window.NEWS && window.NEWS.length ? el('details', {class: 'rjsec newsbox'}, el('summary', {}, el('span', {class: 'rjst'}, rt('newsAll'))), el('div', {class: 'newsbody'}, ...window.NEWS.map(nw => el('div', {class: 'newsitem'}, el('b', {}, (nw.t[ui] || nw.t.en || nw.t.ur) + ' — ' + nw.d), el('ul', {}, ...(nw.i[ui] || nw.i.en || nw.i.ur).map(t => el('li', {}, t))))))) : null;
     const more = el('details', {class: 'rjsec'}, el('summary', {}, el('span', {class: 'rjst'}, rt('bookwise'))), el('div', {class: 'rjinner'}, el('p', {class: 'cs'}, rt('src')), chips));
     box.append(el('div', {class: 'rjhero'}, el('h2', {}, rt('rj_hero'))), el('div', {class: 'card pad0 filterbox'}, icon('search'), inp), more, out, news, ...folder, ...lib);
     draw(); if (q) setTimeout(() => out.scrollIntoView && 0, 0);
@@ -4300,8 +4303,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const existing = localStorage.length > 0;
     localStorage.newsSeen = last.id;
     if (!existing || !window.sheet) return;               // a new installation does not need the message
-    const L = k => k[ui] || k.ur;
-    window.sheet(rt('news'), [el('p', {class: 'grp', dir: 'auto'}, L(last.t)), el('ul', {class: 'newsul', dir: ui === 'en' ? 'ltr' : 'rtl'}, ...L(last.i).map(t => el('li', {}, t)))],
+    const L = k => k[ui] || k.en || k.ur;
+    window.sheet(rt('news'), [el('p', {class: 'grp', dir: 'auto'}, L(last.t)), el('ul', {class: 'newsul', dir: ui === 'ur' || ui === 'ar' ? 'rtl' : 'ltr'}, ...L(last.i).map(t => el('li', {}, t)))],
       [[T('hClose') || 'OK', null], [rt('title'), () => { location.hash = '#/s/rijal'; }]]);
     if (window.Notification && Notification.permission === 'granted' && navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(L(last.t), {body: L(last.i)[0], icon: 'icon-192.png', tag: 'news-' + last.id, data: {url: '#/s/rijal'}})).catch(() => {});
   } catch (e) {} }, 3500);
@@ -6378,7 +6381,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   const nrm = s => (s || '').replace(/[ً-ْٰـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLowerCase();
   const N = n => ui === 'en' ? Number(n).toLocaleString('en-US') : ad(n);
-  const auLine = (C, a) => { const x = C.a[a]; return x ? x[0] + (x[1] > 0 ? (ui === 'en' ? ' (d. ' + x[1] + ' AH)' : ' (ت ' + N(x[1]) + 'ھ)') : '') : ''; };
+  const auLine = (C, a) => { const x = C.a[a]; return x ? x[0] + (x[1] > 0 ? (ui !== 'ur' && ui !== 'ar' ? ' (d. ' + N(x[1]) + ' AH)' : ui === 'ar' ? ' (ت ' + N(x[1]) + 'هـ)' : ' (ت ' + N(x[1]) + 'ھ)') : '') : ''; };
   async function showCats() {
     const C = await cat(), T = L(), v = qv(); bar(T.title, '', false);
     const cnt = {}; C.b.forEach(r => cnt[r[2]] = (cnt[r[2]] || 0) + 1);
