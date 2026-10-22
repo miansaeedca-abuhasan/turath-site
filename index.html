@@ -997,7 +997,7 @@ async function fullHadith(d,box){
       for(let i=0;i+2<nt.length;i++)if(grams.has(nt[i]+' '+nt[i+1]+' '+nt[i+2])){[i,i+1,i+2].forEach(k=>{if(!inn[k]){inn[k]=true;hit++;}});}
       if(!best||hit>best.hit||(hit===best.hit&&raw.length>best.raw.length))best={r,it,raw,inn,hit};
     }catch(e){}}
-  if(!best||best.hit<3||best.raw.length<jt.length*1.15){box.append(el('p',{class:'note'},'اس حدیث کا اس سے طویل مکمل متن ہماری کتب میں نہیں ملا۔'));return;}
+  if(!best||best.hit<3){box.append(el('p',{class:'note',lang:ui,dir:DIR(ui)},FTX(2)));return;}
   box.append(el('b',{},(COLL.name(best.r.key)||best.r.label)+' ('+best.r.number+')'));
   const p=el('p',{class:'ar fullh',lang:'ar'});
   let sn=[];try{sn=(COLL.sanad&&COLL.sanad(best.it.text))||[]}catch(e){}
@@ -1010,18 +1010,26 @@ async function fullHadith(d,box){
         a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
         cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}cur.a.append(sp,' ');}
     else{cur=null;p.append(sp,' ');}});
-  box.append(el('p',{class:'jwnote ar',lang:'ar',dir:'rtl'},'نصّ الجامع الكامل بالخطّ العادي، وبقيّة الحديث وسنده بخطٍّ خافت'),p,el('a',{href:best.it.href||'#'},T('open')));
+  box.append(el('p',{class:'jwnote',lang:ui,dir:DIR(ui)},FTX(3)),p,el('a',{href:best.it.href||'#'},T('open')));
   try{if(window.NAR&&NAR.linkChips&&snEls.length){const nn=best.r.n||await COLL.toN(best.r.key,best.r.number)||+best.r.number;if(nn)NAR.linkChips(best.r.key,nn,snNames,snEls);}}catch(e){}
 }
 
 /* ---------- tabs «متن الحديث» | «الحديث بكامل السند»: the Jami's text, or the source book's whole hadith with its isnad (narrators open in a window) ---------- */
+const FT={ur:['متنِ حدیث','حدیث مکمل سند کے ساتھ','اس حدیث کا مکمل سند والا متن ہماری کتب میں نہیں ملا۔','الجامع الکامل کا متن عام خط میں ہے، باقی حدیث اور سند ہلکے رنگ میں'],
+ ar:['متن الحديث','الحديث بكامل السند','لم نجد لهذا الحديث نصًّا كاملًا بسنده في كتبنا.','نصّ الجامع الكامل بالخطّ العادي، وبقيّة الحديث وسنده بخطٍّ خافت'],
+ en:['Hadith text','Hadith with full isnad','No full text with isnad of this hadith was found in our books.','The Jami’s wording is in normal text; the rest of the hadith and its isnad are lighter'],
+ bn:['হাদীসের মতন','পূর্ণ সনদসহ হাদীস','এই হাদীসের পূর্ণ সনদসহ পাঠ আমাদের গ্রন্থসমূহে পাওয়া যায়নি।','আল-জামিউল কামিলের পাঠ স্বাভাবিক অক্ষরে; হাদীসের বাকি অংশ ও সনদ হালকা রঙে'],
+ hi:['हदीस का मतन','पूरी सनद के साथ हदीस','इस हदीस का पूरी सनद वाला पाठ हमारी किताबों में नहीं मिला।','अल-जामिउल कामिल का पाठ सामान्य अक्षरों में है; हदीस का बाक़ी हिस्सा और सनद हल्के रंग में'],
+ gu:['હદીસનું મતન','પૂરી સનદ સાથે હદીસ','આ હદીસનું પૂરી સનદવાળું લખાણ અમારા પુસ્તકોમાં મળ્યું નથી.','અલ-જામિઉલ કામિલનું લખાણ સામાન્ય અક્ષરોમાં છે; હદીસનો બાકીનો ભાગ અને સનદ આછા રંગમાં'],
+ fr:['Texte du hadith','Hadith avec la chaîne complète','Le texte complet de ce hadith avec sa chaîne n’a pas été trouvé dans nos livres.','Le texte d’al-Jâmi‘ est en caractères normaux ; le reste du hadith et sa chaîne sont en gris clair']};
+const FTX=i=>(FT[ui]||FT.en)[i];
 function fullTabs(d,mt,fb){
   if(!(d.refs&&d.refs.some(r=>COLL.has(r.key))))return null;
-  const t1=el('button',{type:'button',class:'on'},'متن الحديث'),t2=el('button',{type:'button'},'الحديث بكامل السند');let done=false;
+  const t1=el('button',{type:'button',class:'on'},FTX(0)),t2=el('button',{type:'button'},FTX(1));let done=false;
   const set=full=>{t1.classList.toggle('on',!full);t2.classList.toggle('on',full);mt.hidden=full;fb.hidden=!full;
     if(full&&!done){done=true;fb.replaceChildren(el('p',{class:'note'},'…'));fullHadith(d,fb).catch(()=>{done=false;});}};
   t1.addEventListener('click',()=>set(false));t2.addEventListener('click',()=>set(true));
-  return el('div',{class:'mtabs ar',lang:'ar',dir:'rtl',role:'tablist'},t1,t2);}
+  return el('div',{class:'mtabs',lang:ui,dir:DIR(ui),role:'tablist'},t1,t2);}
 window.fullHadith=fullHadith;
 /* ---------- a hadith card (chapter view, bookmarks) ---------- */
 function hadithCard(d,scope){
@@ -2304,7 +2312,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // items: [{text, lang, onstart}]; returns false if stopped
   // Urdu reading by the phone voice is switched off (its pronunciation was not correct): Urdu parts are skipped
   const NO_UR = true;
+  // the phone's robotic voices are switched off everywhere (wrong pronunciation); only the real recordings play. Turn on when approved voices exist.
+  const NO_TTS = true;
   async function speakAll(items, token) {
+    if (NO_TTS) return true;
     if (NO_UR) { const n0 = items.length; items = items.filter(it => (it.lang === 'ur' || it.lang === 'ar') ? langOf(it.text) !== 'ur' : true);
       if (n0 && !items.length && !LISTEN.warned.nour) { LISTEN.warned.nour = 1; try { toast(NOUR() ? NOUR() : ui === 'ur' ? 'اردو آواز بند ہے۔ عربی یا انگریزی متن سننے کے لیے سننے کی ترتیبات میں «عربی متن بھی سنائیں» چنیں۔' : ui === 'ar' ? 'القراءة بالأردية متوقفة. فعّل «اقرأ النص العربي» من إعدادات الاستماع.' : 'Urdu reading is switched off. Turn on “Also read the Arabic text” in the listening settings.'); } catch (e) {} } }
     for (const it of items) {
@@ -2333,6 +2344,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   // one hadith, or a whole list (chapter): [{d, node}]
   async function playHadiths(list, startIdx) {
+    if (NO_TTS) return;
     if (!SS) { toast(T('noTts')); return; }
     stopTts(); const token = RUN; let i = startIdx || 0;
     KEEP = setInterval(() => { if (SS.speaking && !SS.paused && !LISTEN.paused) { SS.pause(); SS.resume(); } }, 10000); // Chrome desktop 15s bug
@@ -2354,6 +2366,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     run(i, token);
   }
   async function playTexts(title, paras, lang, node) {
+    if (NO_TTS) return;
     if (!SS) { toast(T('noTts')); return; }
     stopTts(); const token = RUN;
     PLAYER.show(title, {stop() { stopTts(); PLAYER.hide(); }, pause() { LISTEN.paused = true; if (UP.audio) UP.audio.pause(); SS.pause(); PLAYER.paused(true); }, resume() { LISTEN.paused = false; if (UP.audio) UP.audio.play().catch(() => {}); SS.resume(); PLAYER.paused(false); }});
@@ -2387,7 +2400,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the Urdu interface has no «سنیں» (listen) buttons while the Urdu reading is off: every button carrying the listen icon is hidden
   (() => {
     let busy = false;
-    const sweep = () => { if (busy || typeof ui === 'undefined' || ui !== 'ur') return; busy = true;
+    const sweep = () => { if (busy) return; busy = true;
       document.querySelectorAll('button:not([data-nl]) path[d="' + ICON.listen + '"]').forEach(pa => { const b = pa.closest('button'); if (b && b.id !== 'ptab') { b.dataset.nl = '1'; b.style.display = 'none'; } });
       busy = false; };
     new MutationObserver(sweep).observe(document.body, {childList: true, subtree: true}); sweep();
