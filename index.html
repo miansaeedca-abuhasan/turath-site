@@ -667,9 +667,24 @@ function ENGINE(){
     }
     return {idx, N: items.length};
   }
-  let jIdx = null, tIdx = null; const eIdx = {};
+  // the same index built in small steps, so a phone is not frozen while it is made (the first search, or the first search after a language is loaded)
+  async function buildIndexAsync(items) {
+    const idx = new Map(); let c = 0;
+    for (const [id, texts] of items) {
+      for (const [f, t] of texts) for (const k of toks(t)) {
+        let m = idx.get(k); if (!m) idx.set(k, m = new Map());
+        let o = m.get(id); if (!o) m.set(id, o = {});
+        o[f] = (o[f] || 0) + 1;
+      }
+      if (++c % 200 === 0) await new Promise(r => setTimeout(r, 0));
+    }
+    return {idx, N: items.length};
+  }
+  let jIdx = null, tIdx = null, jIdxP = null, tIdxP = null; const eIdx = {};
   const jamiIndex = () => jIdx || (jIdx = buildIndex(D.hadith.filter(hasJami).map(h => [h.num, textsOf(h, 'jami')])));
   const tuhfaIndex = () => tIdx || (tIdx = buildIndex(D.hadith.filter(hasLayer).map(h => [h.num, textsOf(h, 'tuhfa')])));
+  const jamiReady = () => jIdx ? Promise.resolve() : (jIdxP || (jIdxP = buildIndexAsync(D.hadith.filter(hasJami).map(h => [h.num, textsOf(h, 'jami')])).then(i => { jIdx = i; })));
+  const tuhfaReady = () => tIdx ? Promise.resolve() : (tIdxP || (tIdxP = buildIndexAsync(D.hadith.filter(hasLayer).map(h => [h.num, textsOf(h, 'tuhfa')])).then(i => { tIdx = i; })));
   const extIndex = b => eIdx[b] || (eIdx[b] = buildIndex(D.external.filter(e => e.book === b).map(e => [e.num, [['ext', e.matn]]])));
 
   function postings(I, t, exact) {
@@ -716,7 +731,7 @@ function ENGINE(){
     fields: [], snippet: []}, extra);
 
   // mode: 'all' = every word present, any order (default) · 'exact' = the words together as one phrase · 'similar' = ranked, partial words too
-  function search(q, book, mode) {
+  async function search(q, book, mode) {
     mode = mode || 'all'; EXACT = mode !== 'similar';
     const tk = toks(q.replace(/[&+،,]/g, ' ')); if (!tk.length) return [];
     const ext = book !== 'jami' && book !== 'tuhfa';
@@ -729,18 +744,24 @@ function ENGINE(){
     let ids = [...hits.keys()].sort((a, b) => hits.get(b).score - hits.get(a).score);
     if (mode === 'exact' && tk.length > 1) {            // keep only those where the words stand together, in this order
       const phrase = ' ' + tk.join(' ') + ' ';
-      ids = ids.filter(id => { const texts = ext ? [['ext', extBy.get(book + '|' + id).matn]] : textsOf(byNum.get(id), book);
-        return texts.some(([, t]) => (' ' + toks(t).join(' ') + ' ').includes(phrase)); });
+      const keep = [];
+      for (let i = 0; i < ids.length; i++) {
+        const id = ids[i], texts = ext ? [['ext', extBy.get(book + '|' + id).matn]] : textsOf(byNum.get(id), book);
+        if (texts.some(([, t]) => (' ' + toks(t).join(' ') + ' ').includes(phrase))) keep.push(id);
+        if (i % 120 === 119) await new Promise(r => setTimeout(r, 0));
+      }
+      ids = keep;
     }
     if (mode !== 'similar') ids.sort((a, b) => a - b);  // in book order
     if (book === 'tuhfa') ids = ids.filter(id => hasLayer(byNum.get(id)));
-    search.total = ids.length;
-    return ids.slice(0, 300).map(id => {
+    const total = ids.length;
+    const rows = ids.slice(0, 300).map(id => {
       const f = [...hits.get(id).fields].sort();
       if (ext) { const e = extBy.get(book + '|' + id); return {book, num: id, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: snippet(e.matn, tk)}; }
       const h = byNum.get(id), t = bestText(textsOf(h, book), tk);
       return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk) : []});
     });
+    rows.total = total; return rows;
   }
   function hadithObj(h, book) {
     const prev = real.filter(x => x.num < h.num).pop(), next = real.find(x => x.num > h.num);
@@ -785,7 +806,10 @@ function ENGINE(){
       const m = t.match(/^(.+?)\s+(\d+)$/);
       if (m) { const key = resolveBook(m[1]); if (key) D.hadith.forEach(h => { if (h.refs.some(r => r.key === key && r.number === +m[2])) res.push(rowOf(h, 'jami', {fields: ['ref']})); }); }
       let total = res.length;
-      if (!res.length) { res = search(t, book, q.mode); total = search.total || res.length; }
+      if (!res.length) {
+        if (book === 'jami') await jamiReady(); else if (book === 'tuhfa') await tuhfaReady();
+        res = await search(t, book, q.mode); total = res.total || res.length;
+      }
       return {results: res, total, semantic: false};
     }
     if (path === 'list') {
@@ -815,8 +839,9 @@ function ENGINE(){
   function needLang(l) {
     const files = (D.langfiles || {})[l]; if (!files || !files.length) return Promise.resolve();
     return LOADED[l] || (LOADED[l] = Promise.all(files.map(src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); })))
-      .then(() => { jIdx = null; }));
+      .then(() => { jIdx = null; jIdxP = null; }));
   }
+  setTimeout(() => { jamiReady().catch(() => {}); }, 1500);
   window.localApi = async function (u) {
     const m = u.match(/([?&]book=)jami_(\w+)/);
     if (!m) return realApi(u, null);
@@ -4024,72 +4049,160 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     for (const [n, r] of C.data[b.key + '|ar'] || []) { const tr = lang ? row(b, lang, n) : null; if (test(r[1]) || (tr && test(tr[1]))) hits.push(n); }
     return hits;
   }
+  /* ---------- the search of the two search pages (the books of this site): the word index narrows down the books, the text is read only
+     where needed, the first hits of each book appear at once and nothing blocks the page ---------- */
+  const SKIP = new Set(['seerah', 'fazail', 'shadharat', 'siyar', 'tuhfa']);   // not part of this search
+  const tick = () => new Promise(r => setTimeout(r, 0));
+  async function rbBook(key) {
+    const bid = +key.slice(2); let K = null; try { K = await window.RB.catalog(); } catch (e) {}
+    const r = K && K.m.get(bid); if (!r) return null; const a = r[3] && K.a[r[3]];
+    return {key, rb: true, bid, ar: r[1], ur: r[1], en: r[1], count: r[4], langs: ['ar'], au: a ? [a[0]] : null};
+  }
+  // the hits of one book, found as needed: pool.fill(n) checks the candidates until n hits are found (or none is left)
+  function makePool(b, ns, lang, words, md) {
+    const test = modeTest(md, words), multi = md === 'exact' && words.length > 1;
+    const p = {b, ok: [], pos: 0, more: true, total: null};
+    if (ns && !multi) { p.ok = ns.slice(); p.more = false; p.total = ns.length; return p; }
+    p.fill = async target => {
+      if (p.busy) return; p.busy = true;
+      try {
+        while (p.more && p.ok.length < target) {
+          if (!ns) {      // every row of the book: text and translation (an interface language other than Arabic)
+            if (!p.rows) { await needAll(b, 'ar'); if (lang) await needAll(b, lang); p.rows = [...(C.data[b.key + '|ar'] || new Map()).keys()]; }
+            const part = p.rows.slice(p.pos, p.pos + 1500); p.pos += part.length;
+            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if ((r && test(r[1])) || (tr && test(tr[1]))) p.ok.push(n); }
+            if (p.pos >= p.rows.length) p.more = false;
+          } else if (b.rb) {
+            const part = ns.slice(p.pos, p.pos + 24); p.pos += part.length;
+            const hs = await Promise.all(part.map(n => window.RB.hit(b.bid, n).catch(() => null)));
+            part.forEach((n, i) => { if (hs[i] && test(hs[i].text)) p.ok.push(n); });
+            if (p.pos >= ns.length) p.more = false;
+          } else {
+            const part = ns.slice(p.pos, p.pos + 40); p.pos += part.length;
+            await needRange(b, 'ar', part[0], part[part.length - 1]);
+            for (const n of part) { const r = row(b, 'ar', n); if (r && test(r[1])) p.ok.push(n); }
+            if (p.pos >= ns.length) p.more = false;
+          }
+          await tick();
+        }
+      } finally { p.busy = false; }
+    };
+    return p;
+  }
+  // one result box: the book's name, the number of hits, 20 hits at a time
+  function hitSection(name, p, b, lang, words, items) {
+    const cnt = el('span', {class: 'cs'}), sec = el('details', {class: 'card gsres'}, el('summary', {}, name, ' ', cnt));
+    const more = el('button', {class: 'btn more', type: 'button'}, T('more')); let shown = 0, busy = false;
+    const total = () => items ? items.length : p.total != null ? p.total : p.ok.length;
+    const label = () => { cnt.textContent = T('results') + ': ' + fmtN(total()) + (!items && p.more ? '+' : ''); };
+    const add = async () => {
+      if (busy) return; busy = true; more.disabled = true;
+      try {
+        if (!items && p.fill) await p.fill(shown + 20);
+        const n = items ? items.length : p.ok.length, end = Math.min(shown + 20, n);
+        let nodes = [];
+        if (items) nodes = items.slice(shown, end).map(f => f());
+        else if (b.rb) { const part = p.ok.slice(shown, end), hs = await Promise.all(part.map(x => window.RB.hit(b.bid, x).catch(() => null))); nodes = part.map((x, i) => hs[i] ? window.RB.hitCard(b.bid, x, hs[i]) : null); }
+        else { const part = p.ok.slice(shown, end); if (part.length) { await needRange(b, 'ar', part[0], part[part.length - 1]); if (lang) await needRange(b, lang, part[0], part[part.length - 1]); } nodes = part.map(x => card(b, x, lang, words)); }
+        nodes.forEach((c, i) => { if (c) { c.prepend(el('span', {class: 'rno'}, fmtN(shown + i + 1) + '.')); sec.insertBefore(c, more); } });
+        shown = end; label();
+        if (shown >= total() && (items || !p.more)) more.remove();
+      } finally { busy = false; more.disabled = false; }
+    };
+    sec.append(more); more.addEventListener('click', add);
+    sec.addEventListener('toggle', () => { if (sec.open && !shown) add(); });
+    label(); if (!items && !p.more && p.ok.length <= 20 && false) more.remove();
+    return sec;
+  }
+  // o: {words, md, sel (a Set of book keys, or null for all), cur (is this search still the current one), site (the box for the results), sum (the line of the total)}
+  async function siteSearch(o) {
+    const {words, md, sel, cur, site, sum} = o, jobs = [], pools = [], placed = [];
+    const upd = () => { const t = pools.reduce((a, x) => a + (x.total != null ? x.total : x.ok.length), 0), pl = pools.some(x => x.more);
+      sum.textContent = pools.length ? T('gsTotal')(fmtN(t) + (pl ? '+' : ''), fmtN(pools.length)) : T('loading'); };
+    const put = (idx, sec) => { const nx = placed.filter(x => x.idx > idx).sort((a, b) => a.idx - b.idx)[0]; site.insertBefore(sec, nx ? nx.sec : null); placed.push({idx, sec});
+      if (placed.length === 1) sec.open = true; else if (placed.length === 2) placed[0].sec.open = false; };
+    const arUI = ui === 'ar', v = words.join(' ');
+    // al-Jami al-Kamil first (its own search, in the interface language's translation too)
+    try {
+      const jb = ['ar', 'ur', 'en'].includes(ui) ? 'jami' : 'jami_' + ui;
+      let d; try { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=' + jb + '&mode=' + md); } catch (e) { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=jami&mode=' + md); }
+      if (!cur()) return;
+      const n = d.total || d.results.length;
+      if (n && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
+    } catch (e) {}
+    upd();
+    if (arUI) {
+      let hits = new Map(); try { hits = await siteHits(words); } catch (e) {}
+      if (!cur()) return;
+      const order = (IX.books || []);
+      [...hits.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach(k => {
+        if (SKIP.has(k)) return; const ns = hits.get(k); if (!ns || !ns.length) return;
+        if (isRbKey(k) ? (sel && !sel.has('rb*')) : (sel && !sel.has(k))) return;
+        jobs.push({key: k, ns});
+      });
+    } else {
+      (C.idx || []).forEach(b => { if (SKIP.has(b.key) || b.ext || !b.langs.includes(ui) || (sel && !sel.has(b.key))) return; jobs.push({key: b.key, ns: null, b}); });
+    }
+    let next = 0;
+    const worker = async () => {
+      while (next < jobs.length && cur()) {
+        const i = next++, j = jobs[i];
+        try {
+          const b = j.b || (isRbKey(j.key) ? await rbBook(j.key) : bookOf(j.key)); if (!b) continue;
+          const lang = arUI ? null : ui, pool = makePool(b, j.ns, lang, words, md);
+          if (pool.fill) await pool.fill(20);
+          if (!cur() || !pool.ok.length) continue;
+          pools.push(pool); put(i + 1, hitSection(bname(b) + (b.au && b.rb ? ' — ' + b.au[0] : ''), pool, b, lang, words, null)); upd();
+        } catch (e) {}
+      }
+    };
+    await Promise.all([worker(), worker(), worker()]);
+    if (!cur()) return;
+    if (pools.length) upd(); else sum.textContent = T('none');
+  }
+  const isRbKey = k => /^rb\d+$/.test(k);
   /* ---------- search in several books at once: choose the books from the list ---------- */
   const DEF_SEL = ['jami', 'bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik'];
   async function showSearch() {
     await index();
     bar(T('gsTitle'), '', true);
     const box = $('#list'); box.replaceChildren();
-    let sel; try { sel = JSON.parse(localStorage.gsel || 'null'); } catch (e) {} if (!Array.isArray(sel)) sel = DEF_SEL.slice();
-    const books = [{key: 'jami', name: T('jamiName'), count: 16552, local: true},
-      {key: 'tuhfa', name: T('tuhfaName'), count: 4, local: true}]
-      .concat(C.idx.map(b => ({key: b.key, name: bname(b), count: b.count, ext: b.ext, grp: b.grp, au: b.author, b})));
+    const RBL = {ur: 'موسوعۃ الحدیث (1,328 کتب)', ar: 'موسوعة الحديث (١٬٣٢٨ كتابًا)', en: 'Hadith Encyclopedia (1,328 books)', bn: 'হাদীস বিশ্বকোষ (১,৩২৮টি বই)', hi: 'हदीस विश्वकोश (1,328 किताबें)', gu: 'હદીસ વિશ્વકોશ (1,328 કિતાબો)', fr: 'Bibliothèque du hadith (1 328 livres)'};
+    const books = [{key: 'jami', name: T('jamiName'), count: 16552}]
+      .concat(C.idx.filter(b => !SKIP.has(b.key) && !b.ext && (ui === 'ar' || b.langs.includes(ui))).map(b => ({key: b.key, name: bname(b), count: b.count})));
+    if (ui === 'ar') books.push({key: 'rb*', name: RBL.ar, count: 0});
+    const allKeys = books.map(x => x.key);
+    let sel; try { sel = JSON.parse(localStorage.gsel2 || 'null'); } catch (e) {} sel = Array.isArray(sel) ? sel.filter(k => allKeys.includes(k)) : allKeys.slice();
     const q = el('input', {type: 'search', class: 'filter', placeholder: T('gsPlace'), 'aria-label': T('gsPlace'), id: 'gsq'});
     const go = el('button', {class: 'btn lbtn', type: 'button'}, icon('search'), T('gsGo'));
-    const save = () => { try { localStorage.gsel = JSON.stringify(sel); } catch (e) {} };
+    const save = () => { try { localStorage.gsel2 = JSON.stringify(sel.length === allKeys.length ? null : sel); } catch (e) {} };
     const list = el('div', {class: 'gslist'}), cnt = el('span', {class: 'cs'});
     const paint = () => {
       cnt.textContent = T('gsChosen')(fmtN(sel.length));
-      list.replaceChildren(...books.map((x, i) => {
-        const ak0 = x.au ? x.au[0] : '', pk0 = i && books[i - 1].au ? books[i - 1].au[0] : 'jami', h0 = null;
-        if (x.ext) return el('div', {}, h0 || '', el('label', {class: 'srow chk gsx'}, el('input', {type: 'checkbox', disabled: true}), el('span', {}, x.name, el('small', {class: 'cs'}, ' — ' + T('hbExt')))));
+      list.replaceChildren(...books.map(x => {
         const c = el('input', {type: 'checkbox'}); c.checked = sel.includes(x.key);
         c.addEventListener('change', () => { sel = c.checked ? sel.concat(x.key) : sel.filter(k => k !== x.key); save(); cnt.textContent = T('gsChosen')(fmtN(sel.length)); });
-        const ak = x.au ? x.au[0] : 'jami', pk = i && books[i - 1].au ? books[i - 1].au[0] : 'jami';
-        const head = null;
-        const lab = el('label', {class: 'srow chk'}, c, el('span', {}, x.name, el('small', {class: 'cs'}, '  ' + T('count')(fmtN(x.count)))));
-        return head ? el('div', {}, head, lab) : lab;
+        return el('label', {class: 'srow chk'}, c, el('span', {}, x.name, x.count ? el('small', {class: 'cs'}, '  ' + T('count')(fmtN(x.count))) : ''));
       }));
     };
-    const all = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = books.filter(x => !x.ext).map(x => x.key); save(); paint(); }}}, T('gsAll'));
+    const all = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = allKeys.slice(); save(); paint(); }}}, T('gsAll'));
     const none = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = []; save(); paint(); }}}, T('gsNone'));
-    const main = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = DEF_SEL.slice(); save(); paint(); }}}, T('gsMain'));
-    const pick = el('details', {class: 'card gspick'}, el('summary', {}, T('gsPick'), ' ', cnt), el('div', {class: 'chips'}, all, main, none), list);
-    const out = el('div');
-    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), modeBar(() => { if (q.value.trim()) run(); }), el('div', {class: 'gsbar'}, go), pick, el('p', {class: 'note'}, T('gsHint')), out);
+    const pick = el('details', {class: 'card gspick'}, el('summary', {}, T('gsPick'), ' ', cnt), el('div', {class: 'chips'}, all, none), list);
+    const out = el('div'); let run = 0;
+    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), modeBar(() => { if (q.value.trim()) go.click(); }), el('div', {class: 'gsbar'}, go), pick, el('p', {class: 'note'}, T('gsHint')), out);
     paint();
-    const run = async () => {
+    const doRun = async () => {
       const v = q.value.trim(); if (!v) return;
       const words = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!words.length) return;
-      const md = /[&+،,]/.test(v) ? 'all' : GSMODE();
+      const md = /[&+،,]/.test(v) ? 'all' : GSMODE(), tk = ++run;
       pick.open = false; out.replaceChildren();
-      const sum = el('div', {class: 'qsbar'}), totals = []; out.append(sum);
-      for (const x of books.filter(x => sel.includes(x.key) && !x.ext)) {
-        const sec = el('details', {class: 'card gsres'}, el('summary', {}, x.name, ' ', el('span', {class: 'cs'}, T('loading'))));
-        out.append(sec);
-        let n = 0, items = [];
-        if (x.local) {
-          const d = await api('search?q=' + encodeURIComponent(v) + '&book=' + x.key + '&mode=' + md);
-          n = d.total || d.results.length; items = d.results.map(r => () => window.row(r));
-        } else {
-          const lang = getLang(x.b), hits = await findIn(x.b, words, lang, md);
-          n = hits.length; items = hits.map(h => () => card(x.b, h, lang, words));
-        }
-        totals.push(n);
-        sec.querySelector('summary .cs').textContent = T('results') + ': ' + fmtN(n);
-        if (!n) { sec.remove(); continue; }     // only the books that have the words are listed
-        let shown = 0; const more = el('button', {class: 'btn more', type: 'button'}, T('more'));
-        const add = () => { items.slice(shown, shown + 20).forEach((f, i) => { const c = f(); c.prepend(el('span', {class: 'rno'}, fmtN(shown + i + 1) + '.')); sec.insertBefore(c, more); }); shown += 20; if (shown >= items.length) more.remove(); };
-        sec.append(more); more.addEventListener('click', add); add();
-        if (totals.filter(Boolean).length === 1) sec.open = true;
-        sum.replaceChildren(el('span', {class: 'cs'}, T('gsTotal')(fmtN(totals.reduce((a, b) => a + b, 0)), fmtN(totals.filter(Boolean).length))));
-      }
-      if (!totals.some(Boolean)) sum.replaceChildren(el('p', {class: 'note'}, T('none')));
+      const sum = el('div', {class: 'qsbar'}, T('loading')), site = el('div'); out.append(sum, site);
+      await siteSearch({v, words, md, sel: new Set(sel), cur: () => tk === run, site, sum});
     };
-    go.addEventListener('click', run);
-    q.addEventListener('keydown', e => { if (e.key === 'Enter') run(); });
+    go.addEventListener('click', doRun);
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') doRun(); });
     q.focus();
-    try { const pre = sessionStorage.gspre; if (pre) { sessionStorage.removeItem('gspre'); q.value = pre; run(); } } catch (e) {}
+    try { const pre = sessionStorage.gspre; if (pre) { sessionStorage.removeItem('gspre'); q.value = pre; doRun(); } } catch (e) {}
   }
   /* ---------- «حدیث تلاش»: first all the books of this site (a word index, coll/ix), then the Hadith Encyclopedia of
      Dorar (dorar.net) with each muhaddith's grade, through /api/dorar ---------- */
@@ -4170,41 +4283,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       out.append(h1, sum, site);
       const dsec = el('div');
       out.append(el('h3', {class: 'grp'}, T('hsDorar')), dsec);
-      const secs = []; let total = 0;
-      try {
-        const d = await api('search?q=' + encodeURIComponent(v) + '&book=jami&mode=' + md);
-        const n = d.total || d.results.length;
-        if (n) secs.push({name: T('jamiName'), n, items: d.results.map(r => () => window.row(r))});
-      } catch (e) {}
-      let hits = new Map();
-      try { hits = await siteHits(words); } catch (e) {}
-      if (tk !== run) return;
-      const vtest = modeTest(md, words);
-      for (const b of C.idx) { let ns = hits.get(b.key); if (ns && ns.length) { const lang = getLang(b);
-        if (md === 'exact' && words.length > 1) {      // the words are in these hadith; keep those where they stand together
-          sum.textContent = T('loading') + ' ' + bname(b);
-          await needRange(b, 'ar', ns[0], ns[ns.length - 1]); if (lang) await needRange(b, lang, ns[0], ns[ns.length - 1]);
-          if (tk !== run) return;
-          ns = ns.filter(n => { const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null; return (a && vtest(a[1])) || (t && vtest(t[1])); });
-        }
-        if (ns.length) secs.push({name: bname(b), n: ns.length, b, ns, lang}); } }
-      for (const x of secs) {
-        total += x.n;
-        const sec = el('details', {class: 'card gsres'}, el('summary', {}, x.name, ' ', el('span', {class: 'cs'}, T('results') + ': ' + fmtN(x.n))));
-        const more = el('button', {class: 'btn more', type: 'button'}, T('more')); let shown = 0, busy = false;
-        const add = async () => {
-          if (busy) return; busy = true;
-          const part = x.items ? x.items.slice(shown, shown + 20) : x.ns.slice(shown, shown + 20);
-          if (!x.items && part.length) { await needRange(x.b, 'ar', part[0], part[part.length - 1]); if (x.lang) await needRange(x.b, x.lang, part[0], part[part.length - 1]); }
-          part.forEach((p, i) => { const c = x.items ? p() : card(x.b, p, x.lang, words); c.prepend(el('span', {class: 'rno'}, fmtN(shown + i + 1) + '.')); sec.insertBefore(c, more); });
-          shown += part.length; if (shown >= x.n) more.remove(); busy = false;
-        };
-        sec.append(more); more.addEventListener('click', add);
-        sec.addEventListener('toggle', () => { if (sec.open && !shown) add(); });
-        site.append(sec);
-      }
-      if (secs.length === 1) site.firstChild.open = true;
-      sum.textContent = total ? T('gsTotal')(fmtN(total), fmtN(secs.length)) : T('none');
+      siteSearch({v, words, md, sel: null, cur: () => tk === run, site, sum}).catch(() => {});
       // 2. Dorar, with the grades
       dorarPage(v, 1, dsec, tk);
     };
@@ -7516,7 +7595,13 @@ Object.assign(I.fr, {
   }
   const isNew = () => Date.now() < new Date(2026, 10, 22).getTime();
   const sortAu = (C, rs) => rs.slice().sort((a, b) => (C.a[a[3]] ? C.a[a[3]][1] || 9999 : 9999) - (C.a[b[3]] ? C.a[b[3]][1] || 9999 : 9999) || a[1].localeCompare(b[1], 'ar'));
-  window.RB = {route, on: ON, isNew, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => nrm(r[1]).includes(q), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
+  // search pages: the text of hadith number n (1-based) of book bid, and its card
+  async function hit(bid, n) { const C = await cat(), k = Math.floor((n - 1) / C.ch), rows = await chunk(bid, k), h = rows[(n - 1) % C.ch]; return h ? {html: h[1], text: h[1].replace(/<[^>]+>/g, ' '), page: k} : null; }
+  function hitCard(bid, n, h) {
+    const T = L(), body = el('p', {class: 'rbtxt ar', lang: 'ar', dir: 'rtl'}, render(h.html));
+    return el('article', {class: 'card rbh'}, el('div', {class: 'rbhd'}, el('a', {class: 'rbno', href: '#/rb/b/' + bid + '/' + h.page + '#' + n}, T.hn(N(n)))), body);
+  }
+  window.RB = {route, on: ON, isNew, hit, hitCard, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => nrm(r[1]).includes(q), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
     parent: h => { let m; if ((m = h.match(/^#\/rb\/b\/(\d+)\/\d+$/))) return '#/rb/b/' + m[1]; if ((m = h.match(/^#\/rb\/b\/(\d+)$/))) return '#/hb/c/' + (window.__rbcat && window.__rbcat[m[1]] || ''); return '#/hb'; }};
   cat().then(C => { window.__rbcat = {}; C.b.forEach(r => window.__rbcat[r[0]] = r[2]); }).catch(() => {});
 })();
