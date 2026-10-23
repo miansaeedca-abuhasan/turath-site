@@ -91,9 +91,9 @@ object Events {
             for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1) for (b in r.bases)
                 out += Ev(t[b].plusMinutes(r.minutes.toLong()), "custom", b, r.sound, r.label.ifEmpty { Tr.num(kotlin.math.abs(r.minutes)) + " " + Tr["min"] + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + Tr.p(b) }, r.id)
             // a notification before sunrise, at sunrise (forbidden time begins) and at the zawal time (forbidden time begins)
-            out += Ev(t[P.SUNRISE].minusMinutes(15), "info", P.FAJR, text = "sunSoon")
-            out += Ev(t[P.SUNRISE], "info", P.SUNRISE, text = "sunNow")
-            t.forbidden.firstOrNull { it.first == t[P.ZAWAL] }?.let { out += Ev(it.first, "info", P.ZAWAL, text = "zawalNow") }
+            out += Ev(t[P.SUNRISE].minusMinutes(15), "info", P.FAJR, text = "sunSoon", extra = t[P.SUNRISE].toInstant().toEpochMilli())
+            out += (t.forbidden.firstOrNull { it.first == t[P.SUNRISE] }?.second ?: t[P.SUNRISE].plusMinutes(20)).let { Ev(t[P.SUNRISE], "info", P.SUNRISE, text = "sunNow", extra = it.toInstant().toEpochMilli()) }
+            t.forbidden.firstOrNull { it.first == t[P.ZAWAL] }?.let { out += Ev(it.first, "info", P.ZAWAL, text = "zawalNow", extra = it.second.toInstant().toEpochMilli()) }
             // the widget blinks in the forbidden times: refresh when they begin and end
             for (f in t.forbidden) { out += Ev(f.first, "widget"); out += Ev(f.second, "widget") }
             // the widget shows the next prayer: refresh at each prayer and at midnight
@@ -190,7 +190,7 @@ object Alarms {
             }
             "info" -> {
                 nm.notify(5000 + (e.p?.ordinal ?: 0) * 10 + e.text.length, Notification.Builder(ctx, CH_INFO).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
-                    .setContentTitle(Tr[e.text].format(place?.name ?: "")).setContentText(fmt(pr, e.at)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(30 * 60_000L).build())
+                    .setContentTitle(Tr[e.text].format(place?.name ?: "")).setContentText(fmt(pr, e.at)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(if (e.extra > 0) (e.extra - System.currentTimeMillis()).coerceIn(60_000L, 3600_000L) else 30 * 60_000L).build())
             }
             "iftar" -> {
                 // a countdown to maghrib with the du'a of iftar
