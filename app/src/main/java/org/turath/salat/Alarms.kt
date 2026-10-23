@@ -185,12 +185,12 @@ object Alarms {
                 else {
                     val ch = if (e.snd == Snd.NOTIFY) CH_REM else CH_ADHAN
                     nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
-                        .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build())
+                        .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(30 * 60_000L).build())
                 }
             }
             "info" -> {
                 nm.notify(5000 + (e.p?.ordinal ?: 0) * 10 + e.text.length, Notification.Builder(ctx, CH_INFO).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
-                    .setContentTitle(Tr[e.text].format(place?.name ?: "")).setContentText(fmt(pr, e.at)).setContentIntent(open).setAutoCancel(true).build())
+                    .setContentTitle(Tr[e.text].format(place?.name ?: "")).setContentText(fmt(pr, e.at)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(30 * 60_000L).build())
             }
             "iftar" -> {
                 // a countdown to maghrib with the du'a of iftar
@@ -208,7 +208,7 @@ object Alarms {
                 nm.notify(4002, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                     .setContentTitle(Tr["beedAsk"]).setContentText(Tr["beed"]).setContentIntent(open)
                     .addAction(Notification.Action.Builder(null, Tr["accept"], act(true)).build())
-                    .addAction(Notification.Action.Builder(null, Tr["decline"], act(false)).build()).setAutoCancel(true).build())
+                    .addAction(Notification.Action.Builder(null, Tr["decline"], act(false)).build()).setAutoCancel(true).setTimeoutAfter(6 * 3600_000L).build())
             }
             "vibon" -> Vibrate.on(ctx, pr)
             "viboff" -> Vibrate.off(ctx, pr)
