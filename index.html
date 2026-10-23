@@ -4077,7 +4077,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         }
         totals.push(n);
         sec.querySelector('summary .cs').textContent = T('results') + ': ' + fmtN(n);
-        if (!n) { sec.classList.add('empty'); continue; }
+        if (!n) { sec.remove(); continue; }     // only the books that have the words are listed
         let shown = 0; const more = el('button', {class: 'btn more', type: 'button'}, T('more'));
         const add = () => { items.slice(shown, shown + 20).forEach((f, i) => { const c = f(); c.prepend(el('span', {class: 'rno'}, fmtN(shown + i + 1) + '.')); sec.insertBefore(c, more); }); shown += 20; if (shown >= items.length) more.remove(); };
         sec.append(more); more.addEventListener('click', add); add();
