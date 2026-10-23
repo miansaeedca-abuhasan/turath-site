@@ -5106,25 +5106,25 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     'Pacific/Auckland':[-36.85,174.76]};
   const PT = {
     ur: {fajr: 'فجر', dhuhr: 'ظہر', asr: 'عصر', maghrib: 'مغرب', from: (n, t) => n + ' (' + t + ') سے', locBtn: 'اپنے مقام کے مطابق درست وقت', locOk: 'اذکار کے اوقات اب آپ کے مقام کے مطابق ہیں', locNo: 'مقام نہیں مل سکا — اوقات اندازے سے رہیں گے',
-      locTitle: 'صبح و شام کے اذکار کے اوقات', locGps: 'آپ کے مقام کے مطابق', locTz: z => 'اندازاً، فون کے وقت کے علاقے (' + z + ') کے مطابق', locClock: 'گھڑی کے حساب سے (صبح 3 سے دوپہر 2 بجے تک صبح کے اذکار)', locOff: 'مقام ہٹا دیں',
+      locTitle: 'صبح و شام کے اذکار کے اوقات', locGps: 'آپ کے مقام کے مطابق', locTz: z => 'اندازاً، فون کے وقت کے علاقے کے مطابق', locClock: 'گھڑی کے حساب سے (صبح 3 سے دوپہر 2 بجے تک صبح کے اذکار)', locOff: 'مقام ہٹا دیں',
       locNote: 'صبح کے اذکار فجر سے ظہر تک، اور شام کے اذکار عصر سے رات تک۔ آپ کا مقام صرف آپ کے فون میں رہتا ہے، کہیں بھیجا نہیں جاتا۔'},
     ar: {fajr: 'الفجر', dhuhr: 'الظهر', asr: 'العصر', maghrib: 'المغرب', from: (n, t) => 'من ' + n + ' (' + t + ')', locBtn: 'الوقت الدقيق حسب موقعي', locOk: 'أوقات الأذكار الآن حسب موقعك', locNo: 'تعذر تحديد الموقع — تبقى الأوقات تقريبية',
-      locTitle: 'أوقات أذكار الصباح والمساء', locGps: 'حسب موقعك', locTz: z => 'تقريبية، حسب منطقة توقيت الهاتف (' + z + ')', locClock: 'حسب الساعة (أذكار الصباح من 3 إلى 2 ظهرًا)', locOff: 'إزالة الموقع',
+      locTitle: 'أوقات أذكار الصباح والمساء', locGps: 'حسب موقعك', locTz: z => 'تقريبية، حسب منطقة توقيت الهاتف', locClock: 'حسب الساعة (أذكار الصباح من 3 إلى 2 ظهرًا)', locOff: 'إزالة الموقع',
       locNote: 'أذكار الصباح من الفجر إلى الظهر، وأذكار المساء من العصر إلى الليل. يبقى موقعك في هاتفك فقط ولا يُرسل إلى أي جهة.'},
     en: {fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', from: (n, t) => 'from ' + n + ' (' + t + ')', locBtn: 'Exact times for my location', locOk: 'Adhkar times now follow your location', locNo: 'Location not available — times stay approximate',
-      locTitle: 'Times of the morning and evening adhkar', locGps: 'By your location', locTz: z => 'Approximate, by the phone time zone (' + z + ')', locClock: 'By the clock (morning adhkar 3:00 to 14:00)', locOff: 'Remove location',
+      locTitle: 'Times of the morning and evening adhkar', locGps: 'By your location', locTz: z => 'Approximate, by the phone time zone', locClock: 'By the clock (morning adhkar 3:00 to 14:00)', locOff: 'Remove location',
       locNote: 'Morning adhkar from Fajr until Dhuhr; evening adhkar from Asr into the night. Your location stays only on your phone and is never sent anywhere.'},
     fr: {fajr: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', from: (n, t) => 'à partir de ' + n + ' (' + t + ')', locBtn: 'Heures exactes selon ma position', locOk: 'Les heures des invocations suivent maintenant votre position', locNo: 'Position indisponible — les heures restent approximatives',
-      locTitle: 'Heures des invocations du matin et du soir', locGps: 'Selon votre position', locTz: z => 'Approximatif, selon le fuseau horaire du téléphone (' + z + ')', locClock: "Selon l'horloge (matin de 3h à 14h)", locOff: 'Supprimer la position',
+      locTitle: 'Heures des invocations du matin et du soir', locGps: 'Selon votre position', locTz: z => 'Approximatif, selon le fuseau horaire du téléphone', locClock: "Selon l'horloge (matin de 3h à 14h)", locOff: 'Supprimer la position',
       locNote: "Invocations du matin de Fajr jusqu'à Dhuhr ; du soir de Asr jusqu'à la nuit. Votre position reste uniquement sur votre téléphone."},
     hi: {fajr: 'फ़ज्र', dhuhr: 'ज़ुहर', asr: 'अस्र', maghrib: 'मग़रिब', from: (n, t) => n + ' (' + t + ') से', locBtn: 'मेरे स्थान के अनुसार सही समय', locOk: 'अज़कार का समय अब आपके स्थान के अनुसार है', locNo: 'स्थान नहीं मिला — समय अनुमान से रहेगा',
-      locTitle: 'सुबह-शाम के अज़कार का समय', locGps: 'आपके स्थान के अनुसार', locTz: z => 'अनुमानित, फ़ोन के समय क्षेत्र (' + z + ') के अनुसार', locClock: 'घड़ी के अनुसार (सुबह 3 से दोपहर 2 बजे तक सुबह के अज़कार)', locOff: 'स्थान हटाएँ',
+      locTitle: 'सुबह-शाम के अज़कार का समय', locGps: 'आपके स्थान के अनुसार', locTz: z => 'अनुमानित, फ़ोन के समय क्षेत्र के अनुसार', locClock: 'घड़ी के अनुसार (सुबह 3 से दोपहर 2 बजे तक सुबह के अज़कार)', locOff: 'स्थान हटाएँ',
       locNote: 'सुबह के अज़कार फ़ज्र से ज़ुहर तक, शाम के अज़कार अस्र से रात तक। आपका स्थान केवल आपके फ़ोन में रहता है।'},
     bn: {fajr: 'ফজর', dhuhr: 'যোহর', asr: 'আসর', maghrib: 'মাগরিব', from: (n, t) => n + ' (' + t + ') থেকে', locBtn: 'আমার অবস্থান অনুযায়ী সঠিক সময়', locOk: 'যিকিরের সময় এখন আপনার অবস্থান অনুযায়ী', locNo: 'অবস্থান পাওয়া যায়নি — সময় আনুমানিক থাকবে',
-      locTitle: 'সকাল-সন্ধ্যার যিকিরের সময়', locGps: 'আপনার অবস্থান অনুযায়ী', locTz: z => 'আনুমানিক, ফোনের সময় অঞ্চল (' + z + ') অনুযায়ী', locClock: 'ঘড়ি অনুযায়ী (ভোর ৩টা থেকে দুপুর ২টা সকালের যিকির)', locOff: 'অবস্থান মুছুন',
+      locTitle: 'সকাল-সন্ধ্যার যিকিরের সময়', locGps: 'আপনার অবস্থান অনুযায়ী', locTz: z => 'আনুমানিক, ফোনের সময় অঞ্চল অনুযায়ী', locClock: 'ঘড়ি অনুযায়ী (ভোর ৩টা থেকে দুপুর ২টা সকালের যিকির)', locOff: 'অবস্থান মুছুন',
       locNote: 'সকালের যিকির ফজর থেকে যোহর পর্যন্ত, সন্ধ্যার যিকির আসর থেকে রাত পর্যন্ত। আপনার অবস্থান শুধু আপনার ফোনেই থাকে।'},
     gu: {fajr: 'ફજર', dhuhr: 'ઝુહર', asr: 'અસર', maghrib: 'મગરિબ', from: (n, t) => n + ' (' + t + ') થી', locBtn: 'મારા સ્થાન મુજબ સાચો સમય', locOk: 'અઝકારનો સમય હવે તમારા સ્થાન મુજબ છે', locNo: 'સ્થાન મળ્યું નહીં — સમય અંદાજે રહેશે',
-      locTitle: 'સવાર-સાંજના અઝકારનો સમય', locGps: 'તમારા સ્થાન મુજબ', locTz: z => 'અંદાજે, ફોનના સમય વિસ્તાર (' + z + ') મુજબ', locClock: 'ઘડિયાળ મુજબ (સવારે 3 થી બપોરે 2 સુધી સવારના અઝકાર)', locOff: 'સ્થાન દૂર કરો',
+      locTitle: 'સવાર-સાંજના અઝકારનો સમય', locGps: 'તમારા સ્થાન મુજબ', locTz: z => 'અંદાજે, ફોનના સમય વિસ્તાર મુજબ', locClock: 'ઘડિયાળ મુજબ (સવારે 3 થી બપોરે 2 સુધી સવારના અઝકાર)', locOff: 'સ્થાન દૂર કરો',
       locNote: 'સવારના અઝકાર ફજરથી ઝુહર સુધી, સાંજના અઝકાર અસરથી રાત સુધી. તમારું સ્થાન ફક્ત તમારા ફોનમાં જ રહે છે.'}};
   const P = k => (PT[ui] || PT.en)[k];
   const TZ = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } };
