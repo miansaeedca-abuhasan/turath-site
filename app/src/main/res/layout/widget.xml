@@ -19,10 +19,16 @@
                 <TextView android:id="@+id/n0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" android:maxLines="1"  android:text="—" />
                 <TextView android:id="@+id/w0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
             </LinearLayout>
-            <LinearLayout android:id="@+id/c1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:paddingTop="4dp" android:paddingBottom="4dp">
+            <FrameLayout android:id="@+id/c1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1">
+                <ViewFlipper android:id="@+id/blink1" android:layout_width="match_parent" android:layout_height="match_parent" android:autoStart="true" android:flipInterval="600" android:visibility="gone">
+                    <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wb_red" android:scaleType="fitXY" />
+                    <ImageView android:layout_width="match_parent" android:layout_height="match_parent" android:src="@drawable/wcal_none" android:scaleType="fitXY" />
+                </ViewFlipper>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center" android:paddingTop="4dp" android:paddingBottom="4dp">
                 <TextView android:id="@+id/n1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" android:maxLines="1"  android:text="—" />
                 <TextView android:id="@+id/w1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
             </LinearLayout>
+            </FrameLayout>
             <LinearLayout android:id="@+id/c2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:gravity="center" android:paddingTop="4dp" android:paddingBottom="4dp">
                 <TextView android:id="@+id/n2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#CCFFFFFF" android:textSize="12sp" android:maxLines="1"  android:text="—" />
                 <TextView android:id="@+id/w2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
@@ -40,12 +46,18 @@
                 <TextView android:id="@+id/w5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
             </LinearLayout>
         </LinearLayout>
-        <TextView android:id="@+id/ticker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp"
+        <FrameLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp">
+            <TextView android:id="@+id/ticker" android:layout_width="match_parent" android:layout_height="wrap_content" 
             android:singleLine="true" android:ellipsize="marquee" android:marqueeRepeatLimit="marquee_forever" android:scrollHorizontally="true"
             android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true"
             android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="">
             <requestFocus android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true" />
         </TextView>
+            <ViewFlipper android:id="@+id/tbl" android:layout_width="match_parent" android:layout_height="wrap_content" android:autoStart="true" android:flipInterval="600" android:visibility="gone">
+                <TextView android:id="@+id/tb0" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:singleLine="true" android:textColor="#FF3B30" android:textSize="13sp" android:textStyle="bold" android:text="" />
+                <TextView android:id="@+id/tb1" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:singleLine="true" android:textColor="#00FF3B30" android:textSize="13sp" android:textStyle="bold" android:text="" />
+            </ViewFlipper>
+        </FrameLayout>
         <TextView android:id="@+id/date2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#AAFFFFFF" android:textSize="11sp" android:maxLines="1" android:layout_gravity="center_horizontal" android:text="" />
     </LinearLayout>
 </FrameLayout>

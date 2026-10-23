@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
@@ -53,6 +54,13 @@ fun HomeScreen(s: AppState) {
         // a moving line between the menu and the globe: nafl times, adhkar, Friday, today's special day, the user's events
         val line = remember(now.toLocalDate(), now.hour < 12, s.version, forb?.first) { Widget.ticker(s.prefs, place, now, today) }
         Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
+            if (forb != null && (forb.first == today[P.SUNRISE] || forb.first == today[P.ZAWAL])) {
+                // forbidden time: the moving line stops, a red message blinks
+                val blink by androidx.compose.animation.core.rememberInfiniteTransition(label = "blink").animateFloat(1f, .15f,
+                    androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(600), androidx.compose.animation.core.RepeatMode.Reverse), label = "a")
+                Text("⛔ " + Tr["prohibited"], Modifier.fillMaxWidth().graphicsLayer { alpha = blink }, maxLines = 1, fontSize = 15.sp, fontWeight = FontWeight.Bold,
+                    color = Color(0xFFD32F2F), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+            } else
             Text(line, Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE, velocity = 40.dp), maxLines = 1,
                 fontSize = 13.sp, color = tickerInk(s.prefs))
         }

@@ -141,6 +141,15 @@ class Widget : AppWidgetProvider() {
             }
             v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 5, Intent(ctx, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
             if (full) {
+                // sunrise until Ishraq and the zawal time: the Sunrise cell and the message are red and blink, the moving line stops
+                val fbStart = t.forbiddenAt(now)?.first
+                val sunriseF = fbStart != null && fbStart == t[P.SUNRISE]
+                val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL])
+                v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
+                if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
+                v.setViewVisibility(R.id.ticker, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
+                v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
+                if (fb) { v.setTextViewText(R.id.tb0, "⛔ " + Tr["prohibited"]); v.setTextViewText(R.id.tb1, "⛔ " + Tr["prohibited"]) }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
                 v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)

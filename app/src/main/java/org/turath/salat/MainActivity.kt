@@ -53,10 +53,13 @@ class MainActivity : ComponentActivity() {
         if (stoppedAt != 0L && System.currentTimeMillis() - stoppedAt > 20_000 && tabRequest < 0) tabRequest = 0
     }
 
+    private var askedNotif = false
     override fun onResume() {
         super.onResume()
         Thread { runCatching { Alarms.schedule(this) } }.start()
         volumeControlStream = Audio.stream(Prefs(this))
+        // without the permission no adhan notification can be shown: ask when the app opens (the box appears only while it is still allowed to)
+        if (!askedNotif && needNotifications()) { askedNotif = true; askNotifications() }
         runCatching { Durood.start(this) }
     }
 

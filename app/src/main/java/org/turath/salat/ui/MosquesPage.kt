@@ -51,7 +51,11 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                     for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
                 Spacer(Modifier.height(10.dp))
-                Button(onClick = { go++ }, Modifier.fillMaxWidth()) { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Text("  " + Tr["mosqSearch"], fontSize = 16.sp) }
+                Button(onClick = { if (state != 0) go++ }, Modifier.fillMaxWidth().height(52.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(26.dp)) {
+                    if (state == 0) { CircularProgressIndicator(Modifier.size(22.dp), color = LocalContentColor.current, strokeWidth = 2.5.dp); Spacer(Modifier.width(10.dp)) }
+                    else { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Spacer(Modifier.width(8.dp)) }
+                    Text(Tr["mosqSearch"], fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                }
                 Spacer(Modifier.height(8.dp))
                 // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -67,7 +71,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
             if (state == 1) item { Text(Tr["mosqCount"] + ": " + Tr.num(shown.size) + "  (" + Tr.num(all.size) + ")", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
             when {
                 state == 3 -> item { Text(Tr["mosqIdle"], Modifier.padding(vertical = 8.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f)) }
-                state == 0 -> item { Box(Modifier.fillMaxWidth().padding(32.dp), contentAlignment = Alignment.Center) { CircularProgressIndicator() } }
+                state == 0 -> {}
                 state == 2 -> item {
                     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth().padding(24.dp)) {
                         Text(Tr["mosqErr"], fontSize = 15.sp)

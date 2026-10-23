@@ -90,6 +90,12 @@ object Events {
             // the user's own reminders
             for (r in pr.reminders) if (r.on && (r.days shr (dow.value - 1)) and 1 == 1) for (b in r.bases)
                 out += Ev(t[b].plusMinutes(r.minutes.toLong()), "custom", b, r.sound, r.label.ifEmpty { Tr.num(kotlin.math.abs(r.minutes)) + " " + Tr["min"] + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + Tr.p(b) }, r.id)
+            // a notification before sunrise, at sunrise (forbidden time begins) and at the zawal time (forbidden time begins)
+            out += Ev(t[P.SUNRISE].minusMinutes(15), "info", P.FAJR, text = "sunSoon")
+            out += Ev(t[P.SUNRISE], "info", P.SUNRISE, text = "sunNow")
+            t.forbidden.firstOrNull { it.first == t[P.ZAWAL] }?.let { out += Ev(it.first, "info", P.ZAWAL, text = "zawalNow") }
+            // the widget blinks in the forbidden times: refresh when they begin and end
+            for (f in t.forbidden) { out += Ev(f.first, "widget"); out += Ev(f.second, "widget") }
             // the widget shows the next prayer: refresh at each prayer and at midnight
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")
@@ -99,12 +105,13 @@ object Events {
 }
 
 object Alarms {
-    const val CH_ADHAN = "adhan_v2"; const val CH_REM = "reminders_quiet"; const val CH_NEXT = "next_prayer"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
+    const val CH_ADHAN = "adhan_v2"; const val CH_INFO = "info_v1"; const val CH_REM = "reminders_quiet"; const val CH_NEXT = "next_prayer"; const val CH_ALARM = "suhoor"; const val CH_IFTAR = "iftar"
 
     fun channels(ctx: Context) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         Tr.lang = Prefs(ctx).lang.ifEmpty { "en" }
         runCatching { nm.deleteNotificationChannel("adhan") }
+        nm.createNotificationChannel(NotificationChannel(CH_INFO, Tr["infoChannel"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
         nm.createNotificationChannel(NotificationChannel(CH_ADHAN, Tr["prayerTime"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null) })
         // reminders without a sound of their own: a notification with vibration only (no bell)
         nm.createNotificationChannel(NotificationChannel(CH_REM, Tr["remTitle"], NotificationManager.IMPORTANCE_HIGH).apply { setSound(null, null); enableVibration(true) })
@@ -163,13 +170,13 @@ object Alarms {
         when (e.kind) {
             "prayer", "nafl", "custom", "suhoor" -> {
                 val title = when (e.kind) {
-                    "prayer" -> Tr.p(e.p!!) + " — " + Tr["prayerTime"]
-                    "nafl" -> Tr.p(e.p!!) + " — " + Tr["naflRem"]
+                    "prayer", "nafl" -> Tr["nowIs"].format(place?.name ?: "", Tr.p(e.p!!).substringBefore(" ("))
                     "suhoor" -> Tr["suhoorTitle"]
                     else -> e.text.ifEmpty { Tr["remTitle"] }
                 }
                 val body = when (e.kind) {
                     "suhoor" -> if (place != null) Tr["suhoorEnds"] + " " + fmt(pr, Schedule.day(pr, place, e.at.toLocalDate().let { if (e.at.hour >= 12) it.plusDays(1) else it })[P.FAJR]) else ""
+                    "prayer", "nafl" -> fmt(pr, e.at)
                     else -> place?.name ?: ""
                 }
                 // the phone on silent / vibrate: only a notification, unless the adhan is wanted then too (suhoor alarm always rings)
@@ -180,6 +187,10 @@ object Alarms {
                     nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                         .setContentTitle(title).setContentText(body).setContentIntent(open).setAutoCancel(true).build())
                 }
+            }
+            "info" -> {
+                nm.notify(5000 + (e.p?.ordinal ?: 0) * 10 + e.text.length, Notification.Builder(ctx, CH_INFO).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
+                    .setContentTitle(Tr[e.text].format(place?.name ?: "")).setContentText(fmt(pr, e.at)).setContentIntent(open).setAutoCancel(true).build())
             }
             "iftar" -> {
                 // a countdown to maghrib with the du'a of iftar

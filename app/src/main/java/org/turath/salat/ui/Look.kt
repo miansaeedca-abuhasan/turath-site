@@ -259,3 +259,15 @@ fun ChoiceRow(selected: Boolean, onClick: () -> Unit, content: @Composable () ->
 fun tickerInk(pr: Prefs): Color =
     if (pr.widgetTicker >= 0) Color(Pal.ink(pr.widgetTicker))
     else if (MaterialTheme.colorScheme.surface.luminance() < .5f) Color(0xFF26C6DA) else Color(0xFF00838F)
+
+
+/** a slim on/off switch: longer than it is high (the standard one looks heavy in lists) */
+@Composable
+fun CompactSwitch(checked: Boolean, onChange: (Boolean) -> Unit) {
+    val track = if (checked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = .28f)
+    val x by androidx.compose.animation.core.animateDpAsState(if (checked) 37.dp else 3.dp, label = "sw")
+    Box(Modifier.size(width = 54.dp, height = 20.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(10.dp)).background(track)
+        .clickable(role = androidx.compose.ui.semantics.Role.Switch) { onChange(!checked) }) {
+        Box(Modifier.offset(x, 3.dp).size(14.dp).clip(androidx.compose.foundation.shape.CircleShape).background(androidx.compose.ui.graphics.Color.White))
+    }
+}

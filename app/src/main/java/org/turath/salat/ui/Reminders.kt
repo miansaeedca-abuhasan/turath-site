@@ -34,7 +34,7 @@ fun SwitchRow(label: String, on: Boolean, sub: String = "", set: (Boolean) -> Un
             Text(label, fontSize = 16.sp, fontWeight = FontWeight.Medium)
             if (sub.isNotEmpty()) Text(sub, fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
         }
-        Switch(checked = on, onCheckedChange = set)
+        CompactSwitch(on, set)
     }
 }
 
@@ -55,7 +55,7 @@ fun RemindersScreen(s: AppState) {
                     Text(Tr.num(minText(r.minutes)) + " " + (if (r.minutes < 0) Tr["before"] else Tr["after"]) + " " + r.bases.joinToString("، ") { Tr.p(it).substringBefore(" (") }, fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
                 }
-                Switch(checked = r.on, onCheckedChange = { v -> pr.reminders = pr.reminders.map { if (it.id == r.id) it.copy(on = v) else it }; s.changed() })
+                CompactSwitch(r.on, { v -> pr.reminders = pr.reminders.map { if (it.id == r.id) it.copy(on = v) else it }; s.changed() })
             }
         }
         // the voluntary prayers, ready made
