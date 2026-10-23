@@ -149,7 +149,16 @@ class Widget : AppWidgetProvider() {
                 if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
                 v.setViewVisibility(R.id.ticker, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
-                if (fb) { v.setTextViewText(R.id.tb0, "⛔ " + Tr["prohibited"]); v.setTextViewText(R.id.tb1, "⛔ " + Tr["prohibited"]) }
+                if (fb) {
+                    val span = t.forbiddenAt(now)!!
+                    val msg = "⛔ " + Tr["prohibited"] + "  " + Alarms.fmt(pr, span.first) + " – " + Alarms.fmt(pr, span.second)
+                    val b = SystemClock.elapsedRealtime() - System.currentTimeMillis()
+                    for ((tv, ch) in listOf(R.id.tb0 to R.id.tc0, R.id.tb1 to R.id.tc1)) {
+                        v.setTextViewText(tv, msg)
+                        v.setChronometer(ch, b + span.second.toInstant().toEpochMilli(), "−%s", true)
+                        v.setChronometerCountDown(ch, true)
+                    }
+                }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
                 v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)

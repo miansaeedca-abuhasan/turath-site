@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.turath.salat.*
 import org.turath.salat.Preview
+import java.time.Duration
 import java.time.ZonedDateTime
 
 /** pages opened from the menu */
@@ -95,13 +96,41 @@ fun WorldPage(s: AppState, back: () -> Unit) {
     }
 }
 
-/** fasting, Ramadan (suhoor alarm, iftar countdown, taraweeh) and Friday */
+/** fasting: the day's fast from Fajr to Maghrib (clock, countdown, length), Ramadan, voluntary / make-up fasts, suhoor and iftar */
 @Composable
 fun FastingPage(s: AppState, back: () -> Unit) {
     val pr = s.prefs
     var suhoorSnd by remember { mutableStateOf(false) }
+    val place = pr.place
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["fastingMenu"], back)
+        if (place != null) {
+            val now = s.now.withZoneSameInstant(Schedule.zone(place))
+            var day = Schedule.day(pr, place, now.toLocalDate())
+            var over = false
+            if (now.isAfter(day[P.MAGHRIB])) { day = Schedule.day(pr, place, now.toLocalDate().plusDays(1)); over = true }
+            val f = day[P.FAJR]; val m = day[P.MAGHRIB]
+            val before = now.isBefore(f)
+            val fake = Schedule.State(P.FAJR, f, P.MAGHRIB, m)
+            val total = Duration.between(f, m).seconds
+            Card0 {
+                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+                    if (over) Text(Tr["fastDone"], fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Box(contentAlignment = Alignment.Center) {
+                        ClockFace(pr.clockStyle, if (over || before) f else now, fake, null, 220.dp)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                        Text(Tr["fastFajr"] + "  " + s.fmt(f), fontWeight = FontWeight.Bold)
+                        Text(Tr["fastMaghrib"] + "  " + s.fmt(m), fontWeight = FontWeight.Bold)
+                    }
+                    Text(if (before || over) Tr["fastStarts"] else Tr["fastLeft"], Modifier.padding(top = 10.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    val left = if (before || over) Duration.between(now, f).seconds else Duration.between(now, m).seconds
+                    Text("\u200E− " + hms(left.coerceAtLeast(0)), fontSize = 34.sp, fontFamily = FontFamily.Monospace, color = MaterialTheme.colorScheme.primary)
+                    Text(Tr["fastTotal"] + ":  " + hms(total), Modifier.padding(top = 4.dp), fontSize = 15.sp)
+                }
+            }
+        }
         SectionTitle(Tr["ramadan"])
         Card0 {
             SwitchRow(Tr["ramadanFast"], pr.ramadan, Tr["ramadanNote"]) { pr.ramadan = it; s.changed() }
@@ -115,13 +144,52 @@ fun FastingPage(s: AppState, back: () -> Unit) {
             HorizontalDivider()
             SwitchRow(Tr["beed"], pr.beed, Tr["beedNote"]) { pr.beed = it; s.changed() }
             HorizontalDivider()
+            SwitchRow(Tr["qaza"], pr.qazaOn, Tr["qazaNote"]) { on ->
+                pr.qazaOn = on; s.changed()
+                if (on) {
+                    // a calendar opens for the first day, then for the last day
+                    val d0 = java.time.LocalDate.now()
+                    android.app.DatePickerDialog(s.act, { _, y, mo, d ->
+                        val from = java.time.LocalDate.of(y, mo + 1, d)
+                        pr.qazaFrom = from.toEpochDay(); if (pr.qazaTo < pr.qazaFrom) pr.qazaTo = pr.qazaFrom; s.changed()
+                        android.app.DatePickerDialog(s.act, { _, y2, mo2, d2 ->
+                            val to = java.time.LocalDate.of(y2, mo2 + 1, d2)
+                            pr.qazaTo = maxOf(to.toEpochDay(), pr.qazaFrom); s.changed()
+                        }, from.year, from.monthValue - 1, from.dayOfMonth).apply { datePicker.minDate = from.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(); setTitle(Tr["qazaTo"]) }.show()
+                    }, d0.year, d0.monthValue - 1, d0.dayOfMonth).apply { setTitle(Tr["qazaFrom"]) }.show()
+                }
+            }
+            if (pr.qazaOn) {
+                fun pick(cur: Long, title: String, set: (Long) -> Unit) {
+                    val c = java.time.LocalDate.ofEpochDay(cur)
+                    android.app.DatePickerDialog(s.act, { _, y, mo, d -> set(java.time.LocalDate.of(y, mo + 1, d).toEpochDay()); s.changed() }, c.year, c.monthValue - 1, c.dayOfMonth)
+                        .apply { setTitle(title) }.show()
+                }
+                Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaFrom, Tr["qazaFrom"]) { pr.qazaFrom = it; if (pr.qazaTo < it) pr.qazaTo = it } }.padding(vertical = 8.dp)) {
+                    Text(Tr["qazaFrom"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaFrom).toString(), color = MaterialTheme.colorScheme.primary)
+                }
+                Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaTo, Tr["qazaTo"]) { pr.qazaTo = maxOf(it, pr.qazaFrom) } }.padding(vertical = 8.dp)) {
+                    Text(Tr["qazaTo"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaTo).toString(), color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            HorizontalDivider()
             Stepper(Tr["suhoor"] + " — " + Tr["minBeforeFajr"], pr.suhoorBefore, 10, 120) { pr.suhoorBefore = it; s.changed() }
             Row(Modifier.fillMaxWidth().clickable { suhoorSnd = true }.padding(vertical = 8.dp)) {
                 Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(pr.suhoorSound), color = MaterialTheme.colorScheme.primary)
             }
             Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
         }
-        SectionTitle(Tr["takbirat"])
+        Spacer(Modifier.height(20.dp))
+    }
+    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, SndUse.REMINDER).filter { it != Snd.NOTIFY }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
+}
+
+/** the takbirat of the two Eids and the days of tashreeq */
+@Composable
+fun TakbiratPage(s: AppState, back: () -> Unit) {
+    val pr = s.prefs
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        TopBar(Tr["takbiratMenu"], back)
         Card0 {
             SwitchRow(Tr["tkFitr"], pr.takbirFitr) { pr.takbirFitr = it; s.changed() }
             SwitchRow(Tr["tkHijjah"], pr.takbirHijjah) { pr.takbirHijjah = it; s.changed() }
@@ -129,7 +197,6 @@ fun FastingPage(s: AppState, back: () -> Unit) {
         }
         Spacer(Modifier.height(20.dp))
     }
-    if (suhoorSnd) SoundPicker(s, Tr["suhoor"], pr.suhoorSound, SoundService.choices(s.act, SndUse.REMINDER).filter { it != Snd.NOTIFY }) { v -> if (v != null) { pr.suhoorSound = v; s.changed() }; suhoorSnd = false }
 }
 
 /** the salawat reminder on unlocking the phone: which recordings, how often, the user's own files */

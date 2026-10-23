@@ -156,7 +156,7 @@ class Prefs(ctx: Context) {
     private fun defaultSound(p: P) = when (p) {
         // Fajr: Shaikh Ali Ahmad Mulla; Dhuhr: Abdul Basit; Asr: Nur ad-Din al-Maghribi; Maghrib: Hamad al-Daghriri; Isha: Saleh al-Nabet
         P.FAJR -> Snd.ADHAN_MAKKAH
-        P.DHUHR -> Snd.ADHAN_BASIT
+        P.DHUHR -> Snd.ADHAN_DAGHRIRI
         P.ASR -> Snd.ADHAN_MAGHRIBI
         P.MAGHRIB -> Snd.ADHAN_DAGHRIRI
         P.ISHA -> Snd.ADHAN_NABET
@@ -211,8 +211,13 @@ class Prefs(ctx: Context) {
         return (ramadan && h.month == 9) ||
             (ashura && h.month == 1 && (h.day == 9 || h.day == 10)) || (arafah && h.month == 12 && h.day == 9) ||
             (monThu && (d.dayOfWeek == java.time.DayOfWeek.MONDAY || d.dayOfWeek == java.time.DayOfWeek.THURSDAY)) ||
-            (beed && h.day in 13..15 && beedAccepted("${h.year}-${h.month}"))
+            (beed && h.day in 13..15 && beedAccepted("${h.year}-${h.month}")) ||
+            (qazaOn && d.toEpochDay() in qazaFrom..qazaTo)
     }
+    /** voluntary or make-up fasts on the days the user chose (from … to, both included) */
+    var qazaOn: Boolean get() = sp.getBoolean("qazaOn", false); set(v) = sp.edit().putBoolean("qazaOn", v).apply()
+    var qazaFrom: Long get() = sp.getLong("qazaFrom", java.time.LocalDate.now().toEpochDay()); set(v) = sp.edit().putLong("qazaFrom", v).apply()
+    var qazaTo: Long get() = sp.getLong("qazaTo", java.time.LocalDate.now().toEpochDay()); set(v) = sp.edit().putLong("qazaTo", v).apply()
 
     var suhoorBefore: Int get() = sp.getInt("suhoor", 45); set(v) = sp.edit().putInt("suhoor", v).apply()
     var iftarBefore: Int get() = sp.getInt("iftar", 15); set(v) = sp.edit().putInt("iftar", v).apply()
