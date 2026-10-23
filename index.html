@@ -4007,9 +4007,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
-  async function findIn(b, q, lang) {
+  // search modes of the two search pages: 'exact' = the words together, in this order · 'all' = all words, any order · 'similar' = any of the words
+  const GSMODE = () => { try { return localStorage.gsmode || 'exact'; } catch (e) { return 'exact'; } };
+  const swd = x => x.replace(/^(?:وال|فال|بال|لل|ال|و|ف)(?=.{2,})/, '');
+  const phraseIn = (t, q) => { const T = norm(t).split(' '), Q = q.map(swd); if (Q.length === 1) return T.some(x => x === q[0] || swd(x) === Q[0]);
+    for (let i = 0; i + Q.length <= T.length; i++) { let ok = true; for (let j = 0; j < Q.length; j++) if (swd(T[i + j]) !== Q[j]) { ok = false; break; } if (ok) return true; } return false; };
+  const allIn = (t, q) => { const w = ' ' + norm(t) + ' '; return q.every(x => w.includes(' ' + x + ' ') || w.includes(' ال' + x + ' ') || w.includes(' و' + x + ' ')); };
+  const anyIn = (t, q) => { const w = ' ' + norm(t) + ' '; return q.some(x => w.includes(' ' + x + ' ') || w.includes(' ال' + x + ' ') || w.includes(' و' + x + ' ')); };
+  const modeTest = (mode, q) => q.length < 2 ? (t => allIn(t, q)) : mode === 'exact' ? (t => phraseIn(t, q)) : mode === 'similar' ? (t => anyIn(t, q)) : (t => allIn(t, q));
+  const modeBar = redo => { const box = el('div', {class: 'seg gsmode', role: 'group'});
+    const draw = () => box.replaceChildren(...[['exact', T('mExact')], ['all', T('mAll')], ['similar', T('mSimilar')]].map(([k, l]) => el('button', {type: 'button', class: 'segb', 'aria-pressed': String(k === GSMODE()), on: {click: () => { try { localStorage.gsmode = k; } catch (e) {} draw(); redo(); }}}, l)));
+    draw(); return box; };
+  async function findIn(b, q, lang, mode) {
     await needAll(b, 'ar'); if (lang) await needAll(b, lang);
-    const hits = [], test = t => { const w = ' ' + norm(t) + ' '; return q.every(x => w.includes(' ' + x + ' ') || w.includes(' ال' + x + ' ') || w.includes(' و' + x + ' ')); };
+    const hits = [], test = modeTest(mode || 'all', q);
     for (const [n, r] of C.data[b.key + '|ar'] || []) { const tr = lang ? row(b, lang, n) : null; if (test(r[1]) || (tr && test(tr[1]))) hits.push(n); }
     return hits;
   }
@@ -4045,11 +4056,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const main = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = DEF_SEL.slice(); save(); paint(); }}}, T('gsMain'));
     const pick = el('details', {class: 'card gspick'}, el('summary', {}, T('gsPick'), ' ', cnt), el('div', {class: 'chips'}, all, main, none), list);
     const out = el('div');
-    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), el('div', {class: 'gsbar'}, go), pick, el('p', {class: 'note'}, T('gsHint')), out);
+    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), modeBar(() => { if (q.value.trim()) run(); }), el('div', {class: 'gsbar'}, go), pick, el('p', {class: 'note'}, T('gsHint')), out);
     paint();
     const run = async () => {
       const v = q.value.trim(); if (!v) return;
       const words = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!words.length) return;
+      const md = /[&+،,]/.test(v) ? 'all' : GSMODE();
       pick.open = false; out.replaceChildren();
       const sum = el('div', {class: 'qsbar'}), totals = []; out.append(sum);
       for (const x of books.filter(x => sel.includes(x.key) && !x.ext)) {
@@ -4057,10 +4069,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         out.append(sec);
         let n = 0, items = [];
         if (x.local) {
-          const d = await api('search?q=' + encodeURIComponent(v) + '&book=' + x.key + '&mode=all');
+          const d = await api('search?q=' + encodeURIComponent(v) + '&book=' + x.key + '&mode=' + md);
           n = d.total || d.results.length; items = d.results.map(r => () => window.row(r));
         } else {
-          const lang = getLang(x.b), hits = await findIn(x.b, words, lang);
+          const lang = getLang(x.b), hits = await findIn(x.b, words, lang, md);
           n = hits.length; items = hits.map(h => () => card(x.b, h, lang, words));
         }
         totals.push(n);
@@ -4144,13 +4156,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     q = el('input', {type: 'search', class: 'filter', placeholder: T('hsPlace'), 'aria-label': T('hsPlace'), id: 'hsq'});
     go = el('button', {class: 'btn lbtn', type: 'button'}, icon('search'), T('gsGo'));
     out = el('div');
-    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), el('div', {class: 'gsbar'}, go), el('p', {class: 'note'}, T('hsHint')), out);
+    box.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), modeBar(() => { if (q.value.trim()) search(); }), el('div', {class: 'gsbar'}, go), el('p', {class: 'note'}, T('hsHint')), out);
     }
     let run = 0;
     const search = async () => {
       const v = q.value.trim(); if (!v) return;
       try { localStorage.hsq = v; } catch (e) {}
       const tk = ++run, words = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!words.length) return;
+      const md = emb || /[&+،,]/.test(v) ? 'all' : GSMODE();
       out.replaceChildren();
       // 1. this site
       const h1 = el('h3', {class: 'grp'}, T('hsSite')), sum = el('p', {class: 'cs'}, T('loading')), site = el('div');
@@ -4159,14 +4172,22 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       out.append(el('h3', {class: 'grp'}, T('hsDorar')), dsec);
       const secs = []; let total = 0;
       try {
-        const d = await api('search?q=' + encodeURIComponent(v) + '&book=jami&mode=all');
+        const d = await api('search?q=' + encodeURIComponent(v) + '&book=jami&mode=' + md);
         const n = d.total || d.results.length;
         if (n) secs.push({name: T('jamiName'), n, items: d.results.map(r => () => window.row(r))});
       } catch (e) {}
       let hits = new Map();
       try { hits = await siteHits(words); } catch (e) {}
       if (tk !== run) return;
-      for (const b of C.idx) { const ns = hits.get(b.key); if (ns && ns.length) { const lang = getLang(b); secs.push({name: bname(b), n: ns.length, b, ns, lang}); } }
+      const vtest = modeTest(md, words);
+      for (const b of C.idx) { let ns = hits.get(b.key); if (ns && ns.length) { const lang = getLang(b);
+        if (md === 'exact' && words.length > 1) {      // the words are in these hadith; keep those where they stand together
+          sum.textContent = T('loading') + ' ' + bname(b);
+          await needRange(b, 'ar', ns[0], ns[ns.length - 1]); if (lang) await needRange(b, lang, ns[0], ns[ns.length - 1]);
+          if (tk !== run) return;
+          ns = ns.filter(n => { const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null; return (a && vtest(a[1])) || (t && vtest(t[1])); });
+        }
+        if (ns.length) secs.push({name: bname(b), n: ns.length, b, ns, lang}); } }
       for (const x of secs) {
         total += x.n;
         const sec = el('details', {class: 'card gsres'}, el('summary', {}, x.name, ' ', el('span', {class: 'cs'}, T('results') + ': ' + fmtN(x.n))));
