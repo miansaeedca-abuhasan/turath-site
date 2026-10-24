@@ -2830,10 +2830,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       fr: 'L’application officielle sera disponible sur Google Play, in shā’ Allāh. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis));
     // legal line: copyright and founder
-    const LG = {ur: ['© ۲۰۲۶ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید'], ar: ['© ٢٠٢٦ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
-      en: ['© 2026 Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
-      hi: ['© 2026 Turath Khair Al-Quroon। सर्वाधिकार सुरक्षित।', 'संस्थापक: Abu-Hasan Mian-Saeed'], gu: ['© 2026 Turath Khair Al-Quroon. સર્વાધિકાર સુરક્ષિત.', 'સ્થાપક: Abu-Hasan Mian-Saeed'],
-      fr: ['© 2026 Turath Khair Al-Quroon. Tous droits réservés.', 'Fondateur : Abu-Hasan Mian-Saeed']}[ui] || ['© 2026 Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'];
+    const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
+      en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
+      hi: ['© 2026 / 1448 हिजरी Turath Khair Al-Quroon। सर्वाधिकार सुरक्षित।', 'संस्थापक: Abu-Hasan Mian-Saeed'], gu: ['© 2026 / 1448 હિજરી Turath Khair Al-Quroon. સર્વાધિકાર સુરક્ષિત.', 'સ્થાપક: Abu-Hasan Mian-Saeed'],
+      fr: ['© 2026 / 1448 H Turath Khair Al-Quroon. Tous droits réservés.', 'Fondateur : Abu-Hasan Mian-Saeed']}[ui] || ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'];
     v.append(el('p', {class: 'note foot legal', style: 'margin:.2rem 0'}, LG[0]), el('p', {class: 'note foot legal', style: 'margin:.1rem 0 .6rem'}, LG[1]));
     visitCount(vis);
     if (window.TODAY) TODAY.homeCards($('#today'));
