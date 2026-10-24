@@ -4351,6 +4351,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const s = b.sections.find(x => String(x[0]) === String(no)), box = $('#list'); box.replaceChildren(); await needChap(b);
     if (!s) { box.append(el('p', {class: 'note'}, T('nf'))); return; }
     bar(fmtN(s[0]) + '. ' + secT(b, s), bname(b), true);
+    try { localStorage['rd:' + b.key] = s[0]; } catch (e) {}
+    const TOC = {ur: 'فہرست ابواب', ar: 'الفهرس', en: 'Contents', bn: 'সূচিপত্র', hi: 'विषय-सूची', gu: 'અનુક્રમણિકા', fr: 'Sommaire'}[ui] || 'Contents';
+    const tocBtn = () => el('a', {class: 'btn lbtn toc', href: '#/s/' + b.key + '?idx'}, TOC);
+    box.append(tocBtn());
     if (s[4]) box.append(el('p', {class: 'ca', lang: 'ar', style: 'margin:.2rem 0'}, s[4]));
     // a section may show a range of another book (سیر: the Khulafa' and the ten from Fazail as-Sahaba)
     const B = (s[5] && s[5].src && bookOf(s[5].src)) || b, lang = getLang(B);
@@ -4379,9 +4383,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     more.addEventListener('click', add); await add();
     // reading in order: the previous / next section (person, kitab) at the end
     const i = b.sections.indexOf(s), pv = b.sections[i - 1], nx = b.sections[i + 1];
-    if (pv || nx) box.append(el('div', {class: 'secnav'},
+    box.append(el('div', {class: 'secnav'},
       nx ? el('a', {class: 'card secnext', href: '#/s/' + b.key + '/' + nx[0]}, el('span', {class: 'cs'}, T('nextSec')), el('span', {class: 'ct', dir: 'auto'}, fmtN(nx[0]) + '. ' + secT(b, nx))) : '',
-      pv ? el('a', {class: 'secprev', href: '#/s/' + b.key + '/' + pv[0]}, T('prevSec') + ': ' + secT(b, pv)) : ''));
+      pv ? el('a', {class: 'secprev', href: '#/s/' + b.key + '/' + pv[0]}, T('prevSec') + ': ' + secT(b, pv)) : '', tocBtn()));
   }
   async function showOne(b, n) {
     const box = $('#list'); box.replaceChildren();
@@ -4809,6 +4813,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (b.ext) { bar(bname(b), '', true); $('#list').replaceChildren(el('div', {class: 'card'}, el('p', {}, T('cExt')), el('a', {class: 'btn lbtn', href: b.ext + '#/s/' + b.key, target: '_blank', rel: 'noopener'}, T('cOpenExt')))); return; }
       if (m[2]) return showOne(b, +m[3]);
       if (m[3]) return showSection(b, m[3]);
+      // a book opens straight into reading, in order (where the reader stopped last time, else the first chapter); the contents page is one button away
+      if (!/[?&]idx/.test(h) && b.sections && b.sections.length) {
+        let last = null; try { last = localStorage['rd:' + b.key]; } catch (e) {}
+        const st = (last != null && b.sections.find(x => String(x[0]) === String(last))) || b.sections[0];
+        try { history.replaceState(null, '', '#/s/' + b.key + '/' + st[0]); } catch (e) {}
+        return showSection(b, st[0]);
+      }
       return showBook(b);
     },
     async list() { return index(); },
