@@ -1490,6 +1490,8 @@ function parentOf(h){
 function goBack(){
   const sh=document.querySelector('.sheetbg');if(sh){sh.remove();return;}
   if(location.hash==='#/b'&&$('#q').value.trim()){$('#q').value='';showHome();return;}
+  {const m=location.hash.match(/^#\/s\/([a-z0-9]+)(\/\d+|\?idx)$/);   // a chapter -> the book's contents; the contents -> home (subject books) or the hadith library
+   if(m&&m[1]!=='rijal'){location.hash=m[2]==='?idx'?(['seerah','fazail','tuhfa','shadharat','siyar'].includes(m[1])?'#/':'#/hb'):'#/s/'+m[1]+'?idx';return;}}
   const st=history.state;if(st&&st.i>1&&history.length>1){history.back();return;}
   const to=parentOf(location.hash);
   if(to!==location.hash)location.hash=to;
@@ -1503,7 +1505,8 @@ function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/veri
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
   const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
-  $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:x[4]?{click:x[4]}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
+  const tabClick=x=>x[4]||(/^#\/s\//.test(x[1])?(ev=>{const h=location.hash;if(h.startsWith(x[1]+'/')||h===x[1]){ev.preventDefault();location.hash=/\?idx/.test(h)?x[1]:x[1]+'?idx';}}):null);
+  $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:tabClick(x)?{click:tabClick(x)}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
 $('#hsbtn').addEventListener('click',()=>{location.hash='#/hs';});
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
@@ -4817,7 +4820,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (!/[?&]idx/.test(h) && b.sections && b.sections.length) {
         let last = null; try { last = localStorage['rd:' + b.key]; } catch (e) {}
         const st = (last != null && b.sections.find(x => String(x[0]) === String(last))) || b.sections[0];
-        try { history.replaceState(null, '', '#/s/' + b.key + '/' + st[0]); } catch (e) {}
+        try { history.replaceState(history.state, '', '#/s/' + b.key + '/' + st[0]); } catch (e) {}
         return showSection(b, st[0]);
       }
       return showBook(b);
