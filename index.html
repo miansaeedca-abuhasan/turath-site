@@ -2301,11 +2301,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const rg = $('#prange');
       const upd = () => { if (P.drag) return; const d = isFinite(A.duration) ? A.duration : 0; rg.max = d || 0; rg.value = A.currentTime || 0; $('#pcur').textContent = P.fm(A.currentTime); $('#pdur').textContent = P.fm(d); };
       P.A = A; P.upd = upd;
-      ['pback', 'pfwd', 'pspd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = false; });
+      ['pback', 'pfwd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = false; });
       if (!A._seekOn) { A._seekOn = 1; ['timeupdate', 'loadedmetadata', 'durationchange', 'emptied'].forEach(e => A.addEventListener(e, () => P.upd && P.upd())); ['loadstart', 'loadedmetadata', 'play'].forEach(e => A.addEventListener(e, () => { if (P.A === A) P.applyRate(); })); ['loadedmetadata', 'durationchange', 'ratechange', 'seeked'].forEach(e => A.addEventListener(e, () => { try { if (P.A === A && 'mediaSession' in navigator && isFinite(A.duration) && A.duration > 0) navigator.mediaSession.setPositionState({duration: A.duration, playbackRate: A.playbackRate || 1, position: Math.min(A.currentTime || 0, A.duration)}); } catch (x) {} })); }
       P.applyRate(); upd();
     },
-    hide() { clearTimeout(P.t); clearTimeout(P.idle); ['pback', 'pfwd', 'pspd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = true; }); const sb = $('#pseek'); if (sb) sb.hidden = true; const tb = $('#ptab'); if (tb) tb.hidden = true; const pl = $('#player'); pl.classList.remove('shut'); pl.hidden = true; document.body.classList.remove('withseek', 'withplayer', 'pshut'); P.cb = null; }};
+    hide() { clearTimeout(P.t); clearTimeout(P.idle); ['pback', 'pfwd'].forEach(id => { const x = $('#' + id); if (x) x.hidden = true; }); const sb = $('#pseek'); if (sb) sb.hidden = true; const tb = $('#ptab'); if (tb) tb.hidden = true; const pl = $('#player'); pl.classList.remove('shut'); pl.hidden = true; document.body.classList.remove('withseek', 'withplayer', 'pshut'); P.cb = null; }};
   // the whole bar slides to the side after 10 seconds and leaves a small tab; the tab (or a touch of the bar) brings it back
   // playback speed (only these steps) and +/-10 seconds, for every recording that has a seek bar
   P.RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
@@ -2328,7 +2328,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     } catch (e) {}
   };
   P.fm = t => { t = Math.max(0, Math.floor(t || 0)); const h = Math.floor(t / 3600), m = Math.floor(t % 3600 / 60), x = t % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
-  P.rearm = () => { clearTimeout(P.t); if (!$('#player').classList.contains('shut')) P.t = setTimeout(() => P.open(false), 10000); };
+  P.rearm = () => { clearTimeout(P.t); if (!$('#player').classList.contains('shut')) P.t = setTimeout(() => P.open(false), 5000); };
   P.open = on => {
     const pl = $('#player'); pl.classList.toggle('shut', !on); document.body.classList.toggle('pshut', !on);
     let tb = $('#ptab');
@@ -2349,7 +2349,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       b('pnext', 'next', () => P.cb && P.cb.next && P.cb.next(), 'Next'),
       el('span', {id: 'ptitle', class: 'ptitle'}, title),
       el('div', {id: 'pseek', class: 'pseek', hidden: true}, el('span', {id: 'pcur'}, '0:00'), rg, el('span', {id: 'pdur'}, '0:00')),
-      el('div', {id: 'pspd', class: 'pspd', hidden: true, dir: 'ltr'}, el('button', {class: 'ib sp', type: 'button', 'aria-label': 'Slower', on: {click: () => P.speed(-1)}}, '\u2212'), el('b', {id: 'prate'}, P.fr(P.rate)), el('button', {class: 'ib sp', type: 'button', 'aria-label': 'Faster', on: {click: () => P.speed(1)}}, '+')),
       b('pset', 'tune', () => P.cb && P.cb.settings ? P.cb.settings() : ttsSettings(), 'Settings'));
     if (!P.touch) { P.touch = 1; $('#player').addEventListener('pointerdown', () => P.rearm()); }
   }
@@ -3151,6 +3150,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
     await need(arKeys().concat(QS.tr, QS.mode === 'pages' ? ['ar_uthmani', 'mushaf', 'mushaf_v1'] : []));
     const verses = range(kind, n);
+    if (AU.on && R && (R.kind !== kind || R.n !== n)) { stopAudio(); PLAYER.hide(); } // a different surah/parah was opened: the old recitation ends
     R = {kind, n, verses, nodes: new Map()};
     bar(title || sName(n), title ? sName(verses[0][0]) : (ui === 'en' ? Q.meta.surahs[n - 1][2] : T('surahN')(LTR() ? n : ad(n))), true);
     tools();
@@ -3493,7 +3493,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   // not used for 20 seconds (and no auto scroll running) -> the bar slides aside too
   let SBT = 0;
-  function sbarIdle() { clearTimeout(SBT); const b = $('#sbar'); if (!b || b.classList.contains('shut') || AS.on) return; SBT = setTimeout(() => { if (!AS.on) sbarShut(true); }, 20000); }
+  function sbarIdle() { clearTimeout(SBT); const b = $('#sbar'); if (!b || b.classList.contains('shut') || AS.on) return; SBT = setTimeout(() => { if (!AS.on) sbarShut(true); }, 5000); }
   function sbarShut(on) { const b = $('#sbar'), t = $('#stab'); if (b) b.classList.toggle('shut', !!on); if (t) t.hidden = !on; if (on && AS.on) stopAuto(); if (on) clearTimeout(SBT); else sbarIdle(); }
   function hideBar() { clearTimeout(SBT); const b = $('#sbar'); if (b) b.remove(); const t = $('#stab'); if (t) t.remove(); document.body.classList.remove('withsbar'); }
   // Quran: jump by surah or parah from where the reader is now
@@ -3596,7 +3596,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (trk) { const ok = await LISTEN.speakAll([{text: verse(trk, s, a), lang: 'ur'}], LISTEN.running); if (tk !== AU.token || ok === false) return; }
     }
     stopAudio(); PLAYER.hide();
-    if (R.kind !== 'r' && R.n < (R.kind === 's' ? 114 : 30)) location.hash = '#/q/' + R.kind + '/' + (R.n + 1) + (R.kind === 's' ? '/1' : '/0') + '/play'; // keep listening: next surah / parah
+    if (R.kind !== 'r' && R.n < (R.kind === 's' ? 114 : 30) && /^#\/q\/[sjr]\//.test(location.hash)) location.hash = '#/q/' + R.kind + '/' + (R.n + 1) + (R.kind === 's' ? '/1' : '/0') + '/play'; // keep listening: next surah / parah
     function fail(res) { toast(audioMsg(res)); stopAudio(); PLAYER.hide(); }
   }
   // hifz: each ayah of from..to repeated ayahRep times, the whole range repeated rangeRep times, with an optional pause
@@ -3835,7 +3835,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (h === '#/q/bm') return showQbm();
       return showQHome();
     },
-    leave() { hideBar(); if (window.QIBLA) QIBLA.stop(); stopAuto(); if (AU.on) { stopAudio(); PLAYER.hide(); } R = null; },
+    leave() { hideBar(); if (window.QIBLA) QIBLA.stop(); stopAuto(); if (!AU.on) R = null; /* recitation keeps playing after Back; only the player's stop button ends it */ },
     stopAudio() { stopAudio(); },
     ayahOfDay, trForLang,
     autoToggle: () => toggleAuto(), scrollBar: nav => scrollBar(nav), hideBar: () => hideBar(), showTime: () => showTime(), autoStop: () => stopAuto(), setSpeed: x => setSpeed(x), get speed() { return QS.speed; }, SMIN, SMAX};
