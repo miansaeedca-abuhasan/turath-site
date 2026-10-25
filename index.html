@@ -2309,7 +2309,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the whole bar slides to the side after 10 seconds and leaves a small tab; the tab (or a touch of the bar) brings it back
   // playback speed (only these steps) and +/-10 seconds, for every recording that has a seek bar
   P.RATES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2];
-  P.rate = (() => { try { const r = +localStorage.prate; return P.RATES.includes(r) ? r : 1; } catch (e) { return 1; } })();
+  P.rate = 1; try { localStorage.removeItem('prate'); } catch (e) {} // always normal speed on every load
   P.fr = r => r + '\u00D7';
   P.applyRate = () => { const A = P.A; if (!A) return; try { A.defaultPlaybackRate = P.rate; A.playbackRate = P.rate; } catch (e) {} const l = $('#prate'); if (l) l.textContent = P.fr(P.rate); };
   P.speed = d => { const i = Math.max(0, Math.min(P.RATES.length - 1, P.RATES.indexOf(P.rate) + d)); P.rate = P.RATES[i]; try { localStorage.prate = P.rate; } catch (e) {} P.applyRate(); P.rearm(); };
@@ -2357,6 +2357,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const SS = window.speechSynthesis;
   const S = {rate: 1, voice: {}, sanad: false, arabic: false, tr: true, uplift: false};
   try { Object.assign(S, JSON.parse(localStorage.tts || '{}')); } catch (e) {}
+  if (!S.v4) { S.v4 = 1; S.rate = 1; }   // normal speed by default
   if (!S.v3) { S.v3 = 1; S.arabic = false; S.sanad = false; S.uplift = false; }   // the special voice uses limited credits: off unless the user turns it on   // Arabic reading by the phone voice is not accurate: off by default
   const save = () => { try { localStorage.tts = JSON.stringify(S); } catch (e) {} };
   let VOICES = [];
@@ -3555,7 +3556,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function playUrl(url, tk) {
     return new Promise(res => {
       const A = AU.a; A.onended = () => res('end'); A.onerror = () => res('err');
-      A.src = url; const p = A.play(); if (p && p.catch) p.catch(e => res(e && e.name === 'NotAllowedError' ? 'blocked' : 'err'));
+      A.src = url; try { A.defaultPlaybackRate = 1; A.playbackRate = 1; } catch (e) {} const p = A.play(); if (p && p.catch) p.catch(e => res(e && e.name === 'NotAllowedError' ? 'blocked' : 'err'));
     });
   }
   function mark(i) {
@@ -8097,7 +8098,7 @@ Object.assign(I.fr, {
     const rep = b('', '⟲', () => { OPT.rep = (OPT.rep + 1) % 3; saveOpt(); paintUI(); }, T.rep);
     const auto = b('wide', '', () => { OPT.auto = !OPT.auto; saveOpt(); paintUI(); }); auto.textContent = '⇥ ' + T.auto;
     const slp = b('wide', '', () => { const modes = [0, 15, 30, 45, 60, -1]; ST.sleepMode = (ST.sleepMode + 1) % modes.length; const x = modes[ST.sleepMode]; ST.sleepEnd = x === -1; ST.sleepAt = x > 0 ? Date.now() + x * 60000 : 0; paintUI(); }, T.slp);
-    const spd = el('select', {class: 'abspd', 'aria-label': T.spd, dir: 'ltr', on: {change: e => { if (window.PLAYER) { PLAYER.rate = +e.target.value; try { localStorage.prate = PLAYER.rate; } catch (x) {} PLAYER.applyRate && PLAYER.applyRate(); } }}}, ...RATES.map(r => el('option', {value: String(r)}, r + '×')));
+    const spd = el('select', {class: 'abspd', 'aria-label': T.spd, dir: 'ltr', on: {change: e => { if (window.PLAYER) { PLAYER.rate = +e.target.value;  PLAYER.applyRate && PLAYER.applyRate(); } }}}, ...RATES.map(r => el('option', {value: String(r)}, r + '×')));
     const rows = p[2].map((f, i) => {
       const lb = f[0] || '', num = n => String(n).replace(/\d+/g, x => N(x)).replace(/-/g, '\u2013');
       const main = lb.startsWith('H:') ? T.hd + ' ' + num(lb.slice(2)) : T.part(N(i + 1)), sub = lb.startsWith('A:') ? T.ayat + ' ' + num(lb.slice(2)) : (bk === 'mk' || bk === 'te' ? lb : '');
