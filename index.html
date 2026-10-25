@@ -2838,7 +2838,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hi: 'आधिकारिक ऐप इन शा अल्लाह गूगल प्ले स्टोर पर उपलब्ध होगा। दूसरी जगहों से आने वाली APK फ़ाइलों से ऐप इंस्टॉल न करें, ताकि आपको असली डेटा और ताज़ा अपडेट का पूरा लाभ मिल सके।',
       gu: 'સત્તાવાર એપ ઇન શાઅલ્લાહ ગૂગલ પ્લે સ્ટોર પર ઉપલબ્ધ થશે. બીજી જગ્યાએથી આવેલી APK ફાઇલોથી એપ ઇન્સ્ટોલ ન કરશો, જેથી તમને અસલ ડેટા અને તાજા અપડેટનો પૂરો લાભ મળે.',
       fr: 'L’application officielle sera disponible sur Google Play, in shā’ Allāh. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
-    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis, ' · ', el('a', {href: '#/owner'}, window.OWNER ? OWNER.label() : 'Owner')));
+    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis, ' ', el('a', {href: '#/owner', 'aria-hidden': 'true', tabindex: '-1', style: 'text-decoration:none;color:inherit;opacity:.5;padding:0 .4rem'}, '\u00B7')));
     // legal line: copyright and founder
     const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
       en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
@@ -5757,11 +5757,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
   function paint() { if (!btn) return; const hm = document.createElement('span'); hm.className = 'hm'; hm.setAttribute('aria-hidden', 'true');
-      ['\u0651', '\u064D', '\u0657'].forEach(m => { const x = document.createElement('span'); x.textContent = '\u0628' + m; hm.appendChild(x); });
+      // the marks drawn as small shapes (shadda, kasratan, inverted damma) so they sit in one line, with no letter under them
+      hm.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 322" width="52" height="19" fill="currentColor" aria-hidden="true"><path d="M68 323Q46 326 32 303Q6 262 30 198Q24 195 20 193Q16 191 13 189Q-7 180 3 159L15 137Q23 122 35 126Q49 131 61 138Q95 94 134 60Q172 27 216 5Q243 -7 253 12Q264 32 235 47Q150 97 100 159Q169 198 151 242Q120 314 68 323ZM74 219Q74 237 80 243Q83 246 87 248Q90 250 93 252Q100 256 107 244Q102 233 74 219Z M532 122Q550 110 561 113Q573 116 565 139L554 170Q548 187 535 196L360 304Q350 310 339 308Q328 306 331 287L334 268Q337 251 354 240ZM528 22Q544 12 554 15Q564 18 560 38L553 64Q547 83 529 94L352 197Q331 208 322 204Q311 199 320 178L329 159Q336 143 347 136Z M839 93Q844 66 860 67Q879 69 880 89Q880 90 880 91Q879 92 879 94Q876 147 859 186Q838 232 798 235Q775 236 754 215Q747 225 739 234Q730 242 719 247Q690 261 665 251Q602 224 648 102Q657 80 675 86Q676 86 677 87Q677 87 678 87Q694 95 688 117Q687 122 686 127Q684 132 683 137Q678 169 697 172Q723 175 741 125Q743 118 746 111Q748 104 750 96Q756 76 772 77H773Q790 81 788 95V98Q787 102 787 107Q786 111 786 115Q786 140 802 143H806Q830 143 837 105Q838 102 839 99Q839 96 839 93Z"/></svg>';
       btn.replaceChildren(hm, document.createTextNode(label())); btn.setAttribute('aria-pressed', String(off)); btn.classList.toggle('on', off); }
   function init() {
     const st = document.createElement('style');
-    st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:calc(7.2rem + env(safe-area-inset-bottom,0px));z-index:40;width:max-content;max-width:calc(100vw - 6rem);height:auto;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;border:1px solid var(--line,#d9d2c3);border-radius:999px;background:var(--card,#fff);color:var(--accent,#0b5d4b);font:600 .8rem/1.4 var(--urdu,serif);box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer;opacity:.95;-webkit-tap-highlight-color:transparent}.harakat-btn .hm{display:inline-flex;align-items:center;gap:.15rem;direction:rtl;padding:0 .35rem;border-radius:999px;background:rgba(217,119,6,.12);color:#c2570c;font:700 1.05rem/1.7 var(--arabic,serif);white-space:nowrap;gap:.3rem}.harakat-btn.on{background:var(--accent,#0b5d4b);border-color:var(--accent,#0b5d4b);color:#fff}.harakat-btn.on .hm{background:rgba(255,255,255,.2);color:#ffd27a}html.sheetopen .harakat-btn{display:none}';
+    st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:calc(7.2rem + env(safe-area-inset-bottom,0px));z-index:40;width:max-content;max-width:calc(100vw - 6rem);height:auto;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;border:1px solid var(--line,#d9d2c3);border-radius:999px;background:var(--card,#fff);color:var(--accent,#0b5d4b);font:600 .8rem/1.4 var(--urdu,serif);box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer;opacity:.95;-webkit-tap-highlight-color:transparent}.harakat-btn .hm{display:inline-flex;align-items:center;gap:.15rem;direction:rtl;padding:0 .35rem;border-radius:999px;color:#d9480f;display:inline-flex;align-items:center;line-height:0;padding:0 .1rem}.harakat-btn.on{background:var(--accent,#0b5d4b);border-color:var(--accent,#0b5d4b);color:#fff}.harakat-btn.on .hm{color:#ffd27a}html.sheetopen .harakat-btn{display:none}';
     document.head.appendChild(st);
     btn = document.createElement('button'); btn.type = 'button'; btn.className = 'harakat-btn';
     btn.onclick = () => { off = !off; try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (e) {} if (off) strip(document.body); else restore(); paint(); };
@@ -7479,7 +7480,7 @@ Object.assign(I.fr, {
     };
     pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
     v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:1rem;max-width:420px;margin:.8rem auto'},
-      el('h2', {style: 'text-align:center;margin:.2rem 0 .6rem'}, 'مالک کا داخلہ'), em, pw, el('div', {style: 'text-align:center;margin-top:.5rem'}, btn('داخل ہوں', go)), msg,
+      el('h2', {style: 'text-align:center;margin:.2rem 0 .6rem'}, 'بانی کا داخلہ'), em, pw, el('div', {style: 'text-align:center;margin-top:.5rem'}, btn('داخل ہوں', go)), msg,
       setup ? null : el('p', {class: 'note'}, 'ابھی ای میل اور پاسورڈ مقرر نہیں ہوئے؛ Cloudflare میں OWNER_USERS رکھیں۔')));
   }
 
@@ -7570,13 +7571,13 @@ Object.assign(I.fr, {
     const open = ix => { [...tabs.children].forEach((b, j) => { b.style.fontWeight = j === ix ? '700' : '400'; b.style.outline = j === ix ? '2px solid var(--accent,#2a7)' : 'none'; }); msg.textContent = ''; body.replaceChildren(TABS[ix][1]()); };
     TABS.forEach((t, ix) => tabs.append(btn(t[0], () => open(ix))));
     v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
-      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'مالک پینل'), btn('خروج', async () => { await post('logout'); show(); })),
+      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'بانی پینل'), btn('خروج', async () => { await post('logout'); show(); })),
       tabs, body, msg));
     open(0);
   }
 
   async function show() {
-    bar('مالک', '', true);
+    bar('بانی', '', true);
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, '…'));
     await load();
     const me = await get('me');
@@ -7584,7 +7585,7 @@ Object.assign(I.fr, {
   }
 
   load();
-  window.OWNER = {route: show, load, banner, hideTiles, ticker, label: () => ({ur: 'مالک', ar: 'المالك', en: 'Owner'}[ui] || 'Owner')};
+  window.OWNER = {route: show, load, banner, hideTiles, ticker, label: () => ({ur: 'بانی', ar: 'المؤسس', en: 'Founder'}[ui] || 'Founder')};
 })();
 
 </script>
