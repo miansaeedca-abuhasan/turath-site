@@ -404,6 +404,8 @@ mark.qhit{background:none;color:#d0312d;font-weight:700}
 .qbtns select{max-width:12rem}
 #sbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(3.7rem + env(safe-area-inset-bottom,0px));z-index:6;width:min(26rem,calc(100% - 1rem));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 12px rgba(20,40,70,.16);padding:.15rem .3rem .1rem;color:var(--accent)}
 body.withplayer #sbar{bottom:calc(6.9rem + env(safe-area-inset-bottom,0px))}
+#sbar{transition:transform .35s ease}#sbar.shut{transform:translateX(calc(-50% + 50vw + 100%));pointer-events:none}
+.stab{position:fixed;right:0;bottom:calc(3.9rem + env(safe-area-inset-bottom,0px));z-index:6;width:2.6rem;height:2.6rem;border:0;border-radius:1.3rem 0 0 1.3rem;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}.stab[hidden]{display:none}body.withplayer:not(.pshut) .stab{bottom:calc(7.2rem + env(safe-area-inset-bottom,0px))}@media (max-width:700px){body.withseek.withplayer:not(.pshut) .stab{bottom:calc(10.6rem + env(safe-area-inset-bottom,0px))}}.stab svg{width:1.4rem;height:1.4rem;fill:currentColor}
 body.withsbar{padding-bottom:calc(8.2rem + env(safe-area-inset-bottom,0px))}
 body.withsbar.withplayer{padding-bottom:calc(11.4rem + env(safe-area-inset-bottom,0px))}
 .sb-row{display:flex;align-items:center;justify-content:space-between;gap:.1rem}
@@ -3473,9 +3475,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         ...nav.next.map(nb)),
       el('div', {class: 'sb-info', dir: LTR() ? 'ltr' : 'rtl'}, T('speed') + ': ', el('b', {id: 'speedv'}, LTR() ? String(QS.speed) : ad(QS.speed)), el('span', {id: 'speedt'})));
     document.body.append(bar); document.body.classList.add('withsbar');
+    // like the player: while a recitation / repeat is playing the bar slides to the side and leaves a small tab; the tab brings it back
+    const oldt = $('#stab'); if (oldt) oldt.remove();
+    document.body.append(el('button', {id: 'stab', class: 'stab', type: 'button', hidden: '', title: T('autoscroll'), 'aria-label': T('autoscroll'), on: {click: () => sbarShut(false)}}, icon('play')));
+    sbarShut(document.body.classList.contains('withplayer'));
+    if (!window.__sbObs && window.MutationObserver) {
+      window.__sbObs = 1; let was = document.body.classList.contains('withplayer');
+      new MutationObserver(() => { const now = document.body.classList.contains('withplayer'); if (now !== was) { was = now; sbarShut(now); } }).observe(document.body, {attributes: true, attributeFilter: ['class']});
+    }
     return el('span', {hidden: ''});
   }
-  function hideBar() { const b = $('#sbar'); if (b) b.remove(); document.body.classList.remove('withsbar'); }
+  function sbarShut(on) { const b = $('#sbar'), t = $('#stab'); if (b) b.classList.toggle('shut', !!on); if (t) t.hidden = !on; if (on && AS.on) stopAuto(); }
+  function hideBar() { const b = $('#sbar'); if (b) b.remove(); const t = $('#stab'); if (t) t.remove(); document.body.classList.remove('withsbar'); }
   // Quran: jump by surah or parah from where the reader is now
   function quranNav() {
     const cur = () => { const p = R && (R.verses[firstVisible()] || R.verses[0]); return p || [1, 1]; };
