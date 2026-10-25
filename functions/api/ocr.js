@@ -1,3 +1,4 @@
+import {isOwner} from '../_lib/owner_auth.js';
 // Reads the text of a picture (a screenshot of a WhatsApp/Facebook post) with Google Gemini, for the «تحقیق و تصدیق» page.
 // The key stays here as a secret (GEMINI_API_KEY); the browser only calls POST /api/ocr {image: base64, mime}. Optional variables: GEMINI_MODEL, OCR_DAILY.
 const MODEL = 'gemini-flash-lite-latest';             // fast model; falls back to MODELS[1] if it fails
@@ -41,7 +42,7 @@ async function handle({request, env}) {
   try { b = await request.json(); } catch (e) { return err(400, 'body'); }
   const mime = String(b.mime || 'image/jpeg'), img = String(b.image || '');
   if (!/^image\/(jpeg|png|webp)$/.test(mime) || img.length < 100 || img.length > 4_500_000) return err(400, 'image');
-  const day0 = new Date().toISOString().slice(0, 10), ipRaw = request.headers.get('CF-Connecting-IP') || 'x', lim = +env.OCR_USER || PER_USER;
+  const day0 = new Date().toISOString().slice(0, 10), ipRaw = request.headers.get('CF-Connecting-IP') || 'x', lim = (await isOwner(request, env)) ? 1e9 : (+env.OCR_USER || PER_USER);
   const ip = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(day0 + '|' + ipRaw)))].slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
   let used = 0;
   const refund = async () => { try { if (env.DB) await env.DB.prepare('UPDATE ocr_ip SET n = MAX(0, n - 1) WHERE k = ?').bind(ip).run(); else await caches.default.put(new Request('https://ocr.cache.local/' + ip), new Response(String(Math.max(0, used - 1)), {headers: {'Cache-Control': 'max-age=86400'}})); } catch (e) {} };
@@ -64,7 +65,7 @@ async function handle({request, env}) {
   }
   if (env.DB) {
     try {
-      const day = new Date().toISOString().slice(0, 10), cap = +env.OCR_DAILY || DAILY;
+      const day = new Date().toISOString().slice(0, 10), cap = lim >= 1e9 ? 1e12 : (+env.OCR_DAILY || DAILY);
       await env.DB.prepare('CREATE TABLE IF NOT EXISTS ocr_use (day TEXT PRIMARY KEY, n INTEGER NOT NULL)').run();
       const r = await env.DB.prepare('SELECT n FROM ocr_use WHERE day = ?').bind(day).first();
       if (r && r.n >= cap) return err(429, 'daily limit');

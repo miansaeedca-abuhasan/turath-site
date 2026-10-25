@@ -1,3 +1,4 @@
+import {isOwner} from '../_lib/owner_auth.js';
 // Urdu voice (Uplift AI) for the «سنیں» player. The API key stays here as a secret (UPLIFT_API_KEY); the browser only calls /api/tts.
 // The same text is paid for once (saved in the R2 bucket bound as AUDIO when there is one, otherwise in the Cloudflare cache); a daily limit of characters protects the credits (D1 table, optional).
 const VOICE = 'seerah-educator';       // override with the UPLIFT_VOICE variable
@@ -23,7 +24,7 @@ export async function onRequest({request, env, waitUntil}) {
   if (hit) return hit;
   if (env.DB) {
     try {
-      const day = new Date().toISOString().slice(0, 10), cap = +env.TTS_DAILY_CHARS || DAILY;
+      const day = new Date().toISOString().slice(0, 10), cap = (await isOwner(request, env)) ? 1e12 : (+env.TTS_DAILY_CHARS || DAILY);
       await env.DB.prepare('CREATE TABLE IF NOT EXISTS tts_use (day TEXT PRIMARY KEY, n INTEGER NOT NULL)').run();
       const r = await env.DB.prepare('SELECT n FROM tts_use WHERE day = ?').bind(day).first();
       if (r && r.n + text.length > cap) return err(429, 'daily limit');

@@ -1500,7 +1500,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -1672,11 +1672,12 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||nr||rb||ab;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||ow||nr||rb||ab;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
-  if(vf)VERIFY.route();
+  if(ow)OWNER.route();
+  else if(vf)VERIFY.route();
   else if(nr)NAR.route(h);
   else if(rb)RB.route(h);
   else if(ab)ABK.route(h);
@@ -1699,7 +1700,7 @@ function route(){
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   // pages that do not need al-Jami al-Kamil's data open at once; the book list comes when the data is in
   const h=location.hash;
-  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/verify|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
+  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
 /* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
 (function(){
@@ -2819,7 +2820,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('listen', ABK.title(), '#/ab')); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     tickerBar(v);
+    if (window.OWNER) OWNER.banner(v);
     v.append(el('div', {class: 'card pad0'}, g));
+    if (window.OWNER) OWNER.hideTiles(g);
     const last = lsGet('qlast', null);
     if (last) v.append(el('a', {class: 'resume', href: '#/q/s/' + last.s + '/' + last.a}, icon('history'), T('resume')));
     v.append(el('div', {id: 'today'}));
@@ -2832,7 +2835,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       hi: 'आधिकारिक ऐप इन शा अल्लाह गूगल प्ले स्टोर पर उपलब्ध होगा। दूसरी जगहों से आने वाली APK फ़ाइलों से ऐप इंस्टॉल न करें, ताकि आपको असली डेटा और ताज़ा अपडेट का पूरा लाभ मिल सके।',
       gu: 'સત્તાવાર એપ ઇન શાઅલ્લાહ ગૂગલ પ્લે સ્ટોર પર ઉપલબ્ધ થશે. બીજી જગ્યાએથી આવેલી APK ફાઇલોથી એપ ઇન્સ્ટોલ ન કરશો, જેથી તમને અસલ ડેટા અને તાજા અપડેટનો પૂરો લાભ મળે.',
       fr: 'L’application officielle sera disponible sur Google Play, in shā’ Allāh. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
-    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis));
+    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis, ' · ', el('a', {href: '#/owner'}, window.OWNER ? OWNER.label() : 'Owner')));
     // legal line: copyright and founder
     const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
       en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
@@ -2857,9 +2860,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (window.SAWIFY) SAWIFY(box);
     };
     show(TICK_DEF[ui] || TICK_DEF.en);
+    const ow = () => window.OWNER && OWNER.load ? OWNER.load().then(() => OWNER.ticker()) : Promise.resolve(null);
     fetch('ticker.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => {
       if (!j) return; const l = j[ui] || j.en; if (l) show(l);
-    }).catch(() => {});
+    }).catch(() => {}).then(ow).then(o => { if (o) show(o); }).catch(() => {});
   }
   // today's ayah (the same ayah all day): Arabic, and the translation in the interface language (none for Arabic)
   const trForUi = () => ui === 'ar' ? null : (QS.tr.find(k => k.startsWith(ui + '_')) || (TR_DEF[ui] || TR_DEF.en)[0]);
@@ -3836,7 +3840,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     hsOpenDorar: 'افتح في الدرر السنية', hsDorarErr: 'تعذّر جلب النتائج من الدرر السنية. افتحها مباشرة من الزر أدناه.', hsDorarSrc: 'هذه النتائج من خدمة الموسوعة الحديثية — الدرر السنية (dorar.net).'});
   const C = {idx: null, data: {}, loading: {}, rev: {}};
   window.COLLS = list => { C.idx = list; list.forEach(b => { if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
-  window.COLLDATA = (b, l, rows) => { const m = (C.data[b + '|' + l] = C.data[b + '|' + l] || new Map()); rows.forEach(r => m.set(r[0], r)); };
+  C.fixes = {};
+  window.COLLDATA = (b, l, rows) => { const m = (C.data[b + '|' + l] = C.data[b + '|' + l] || new Map()); rows.forEach(r => { const f = C.fixes[b + '|' + l + '|' + r[0]]; if (f) { r = r.slice(); r[1] = f; } m.set(r[0], r); }); };
   const load = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); });
   const once = (id, src) => C.loading[id] || (C.loading[id] = load(src));
   async function index() { if (!C.idx) await once('index', 'coll/index.js'); return C.idx; }
@@ -4824,6 +4829,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   setTimeout(() => index().catch(() => {}), 0);
   window.COLL = {
+    // owner panel: text corrections (published settings, keyed book|lang|number) and a reader for the editor
+    applyFixes(fx) { C.fixes = fx || {}; for (const k in C.fixes) { const p = k.split('|'), m = C.data[p[0] + '|' + p[1]], r = m && m.get(+p[2]); if (r) { const c = r.slice(); c[1] = C.fixes[k]; m.set(+p[2], c); } } },
+    admin: {
+      async list() { return (await index()).filter(b => !b.ext); },
+      async text(key, lang, n) {
+        await index(); const b = bookOf(key); if (!b) return null;
+        await needRange(b, lang, n, n); const r = row(b, lang, n); return r ? r[1] : null;
+      }
+    },
     printed(key, n) { const b = C.idx && C.idx.find(x => x.key === key); return b ? (b.an && b.an[n]) || n : n; },
     async route(h) {
       await index();
@@ -7358,6 +7372,187 @@ Object.assign(I.fr, {
     if (pre) { ta.value = pre; run(); }
   }
   window.VERIFY = {route: show, title: () => (S[ui] || S.en).title};
+})();
+
+</script>
+<script>
+// Owner (founder) panel: #/owner. Login = allowed e-mail + one password (checked on the server: functions/api/owner.js).
+// Also applies the owner's published settings for every visitor: banner, news, ticker, hidden tiles, text corrections.
+(function () {
+  const LANGS = [['ur', 'اردو'], ['en', 'English'], ['ar', 'العربية'], ['bn', 'বাংলা'], ['hi', 'हिन्दी'], ['gu', 'ગુજરાતી'], ['fr', 'Français']];
+  const TILES = [['#/s/seerah', 'سیرت'], ['#/s/fazail', 'فضائل صحابہ'], ['#/s/siyar', 'سلف صالحین'], ['#/s/shadharat', 'شذرات'], ['#/s/rijal', 'رواۃ الحدیث'],
+    ['#/nar', 'راوی'], ['#/quiz', 'کوئز'], ['#/verify', 'تحقیق و تصدیق'], ['#/hb', 'کتبِ حدیث'], ['#/bm', 'بُک مارکس (حدیث)'], ['#/q/bm', 'بُک مارکس (قرآن)'], ['#/q/audio', 'قرآن آڈیو']];
+  const qv = () => $('#qv');
+  let CFG = {}, ready = null;
+  const post = async (a, body) => {
+    const r = await fetch('api/owner?a=' + a, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body || {}), cache: 'no-store'});
+    let j = {}; try { j = await r.json(); } catch (e) {}
+    return Object.assign({status: r.status}, j);
+  };
+  const get = async a => { const r = await fetch('api/owner?a=' + a, {cache: 'no-store'}); let j = {}; try { j = await r.json(); } catch (e) {} return Object.assign({status: r.status}, j); };
+
+  /* ---------- the settings every visitor gets ---------- */
+  function apply() {
+    try {
+      if (Array.isArray(CFG.news) && window.NEWS) {
+        const have = new Set(window.NEWS.map(n => n.id));
+        CFG.news.slice().reverse().forEach(n => { if (n && n.id && !have.has(n.id) && n.t && n.i) window.NEWS.unshift({id: n.id, d: n.d, keys: [], t: n.t, i: n.i}); });
+      }
+      if (CFG.fixes && window.COLL && COLL.applyFixes) COLL.applyFixes(CFG.fixes);
+    } catch (e) {}
+  }
+  function load() {
+    if (ready) return ready;
+    ready = fetch('api/owner?a=pub', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).then(j => { CFG = j && typeof j === 'object' ? j : {}; window.SITECFG = CFG; apply(); return CFG; }).catch(() => CFG);
+    return ready;
+  }
+  const pick = o => o && typeof o === 'object' ? (o[ui] || o.en || o.ur || '') : '';
+  const banner = v => {
+    const slot = el('div', {}); v.append(slot);
+    load().then(() => {
+      const b = CFG.banner; if (!b || !b.on) return;
+      const t = pick(b.t); if (!t) return;
+      slot.append(el('div', {class: 'card ownban', role: 'status', dir: 'auto', style: 'margin:.4rem 0;padding:.6rem .8rem;text-align:center;border:1px solid var(--accent,#2a7);font-weight:600'}, t));
+    });
+  };
+  const hideTiles = g => load().then(() => {
+    const h = Array.isArray(CFG.hide) ? CFG.hide : []; if (!h.length) return;
+    [...g.children].forEach(c => { if (h.includes(c.getAttribute('href'))) c.remove(); });
+  });
+  const ticker = () => { const t = CFG.ticker && CFG.ticker[ui]; return Array.isArray(t) && t.length ? t : null; };
+
+  /* ---------- the panel ---------- */
+  const pad2 = n => String(n).padStart(2, '0');
+  const today = () => { const d = new Date(); return pad2(d.getDate()) + '-' + pad2(d.getMonth() + 1) + '-' + d.getFullYear(); };
+  const btn = (txt, fn, cls) => el('button', {type: 'button', class: 'btn lbtn' + (cls ? ' ' + cls : ''), on: {click: fn}}, txt);
+  const lab = t => el('div', {style: 'margin:.5rem 0 .15rem;font-weight:600'}, t);
+  const ta = (val, rows) => el('textarea', {rows: String(rows || 3), dir: 'auto', style: 'width:100%;box-sizing:border-box;font:inherit;padding:.4rem'}, val || '');
+  const inp = (val, ph, type) => el('input', {type: type || 'text', value: val || '', placeholder: ph || '', dir: 'auto', style: 'width:100%;box-sizing:border-box;font:inherit;padding:.4rem;margin:.15rem 0'});
+  const msg = el('p', {class: 'note', style: 'min-height:1.4em;text-align:center'});
+  const say = (t, bad) => { msg.textContent = t; msg.style.color = bad ? '#b00' : '#080'; };
+  const save = async (k, v) => {
+    const r = await post('save', {k, v});
+    if (r.ok) { CFG[k] = v; say('محفوظ ہو گیا ✓ (زائرین کو ایک منٹ کے اندر نظر آئے گا)'); } else if (r.status === 401) { say('سیشن ختم ہو گیا، دوبارہ داخل ہوں۔', true); setTimeout(() => show(), 1200); } else say('محفوظ نہیں ہو سکا۔', true);
+    return !!r.ok;
+  };
+
+  function loginView(v, setup) {
+    v.replaceChildren();
+    const em = inp('', 'ای میل', 'email'), pw = inp('', 'پاسورڈ', 'password');
+    em.setAttribute('autocomplete', 'username'); pw.setAttribute('autocomplete', 'current-password');
+    const go = async () => {
+      say('…');
+      const r = await post('login', {email: em.value, password: pw.value});
+      if (r.ok) { pw.value = ''; show(); } else say(r.error === 'locked' ? 'بہت زیادہ غلط کوششیں؛ پندرہ منٹ بعد آزمائیں۔' : r.error === 'setup' ? 'ابھی ای میل/پاسورڈ Cloudflare میں مقرر نہیں ہوئے۔' : 'ای میل یا پاسورڈ درست نہیں۔', true);
+    };
+    pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
+    v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:1rem;max-width:420px;margin:.8rem auto'},
+      el('h2', {style: 'text-align:center;margin:.2rem 0 .6rem'}, 'مالک کا داخلہ'), em, pw, el('div', {style: 'text-align:center;margin-top:.5rem'}, btn('داخل ہوں', go)), msg,
+      setup ? null : el('p', {class: 'note'}, 'ابھی ای میل اور پاسورڈ مقرر نہیں ہوئے؛ Cloudflare میں OWNER_USERS رکھیں۔')));
+  }
+
+  function tabBanner() {
+    const b = CFG.banner || {on: false, t: {}}, on = el('input', {type: 'checkbox'}); on.checked = !!b.on;
+    const boxes = {}; const wrap = el('div', {}, el('label', {}, on, ' اعلان دکھائیں (ہوم کے اوپر نمایاں پٹی)'));
+    LANGS.forEach(([l, n]) => { boxes[l] = ta((b.t || {})[l], 2); wrap.append(lab(n), boxes[l]); });
+    wrap.append(el('div', {style: 'margin-top:.6rem'}, btn('محفوظ کریں', () => { const t = {}; LANGS.forEach(([l]) => { if (boxes[l].value.trim()) t[l] = boxes[l].value.trim(); }); save('banner', {on: on.checked, t}); })),
+      el('p', {class: 'note'}, 'جس زبان کا اعلان خالی ہو اس میں انگریزی یا اردو متن دکھے گا۔'));
+    return wrap;
+  }
+
+  function tabNews() {
+    const wrap = el('div', {}), list = Array.isArray(CFG.news) ? CFG.news.slice() : [];
+    const t = {}, i = {};
+    const render = () => {
+      box.replaceChildren(...list.map((n, ix) => el('div', {class: 'card', style: 'padding:.5rem;margin:.3rem 0'}, el('b', {dir: 'auto'}, (n.t.ur || n.t.en || '') + ' — ' + n.d), el('div', {dir: 'auto'}, (n.i.ur || n.i.en || []).join(' / ')),
+        btn('حذف', async () => { list.splice(ix, 1); if (await save('news', list)) render(); }, 'danger'))));
+      if (!list.length) box.append(el('p', {class: 'note'}, 'ابھی کوئی خبر نہیں۔'));
+    };
+    const box = el('div', {});
+    const tu = inp('', 'عنوان (اردو)'), iu = ta('', 3), te = inp('', 'Title (English, optional)'), ie = ta('', 3);
+    wrap.append(el('h3', {}, 'نئی خبر'), tu, iu, te, ie, el('div', {style: 'margin:.5rem 0'}, btn('خبر شائع کریں', async () => {
+      if (!tu.value.trim() || !iu.value.trim()) { say('اردو عنوان اور متن لکھیں۔', true); return; }
+      const n = {id: 'o' + Date.now(), d: today(), t: {ur: tu.value.trim()}, i: {ur: iu.value.split('\n').map(x => x.trim()).filter(Boolean)}};
+      if (te.value.trim() && ie.value.trim()) { n.t.en = te.value.trim(); n.i.en = ie.value.split('\n').map(x => x.trim()).filter(Boolean); }
+      list.unshift(n); if (await save('news', list)) { tu.value = iu.value = te.value = ie.value = ''; render(); } else list.shift();
+    })), el('p', {class: 'note'}, 'ہر سطر ایک نکتہ بنے گی۔'), el('h3', {}, 'موجودہ خبریں'), box);
+    render(); return wrap;
+  }
+
+  function tabTicker() {
+    const wrap = el('div', {}), cur = CFG.ticker || {}, boxes = {};
+    wrap.append(el('p', {class: 'note'}, 'ہر سطر ایک پیغام ہے۔ خالی چھوڑیں تو اس زبان کے لیے پرانی اصل پٹی چلتی رہے گی۔'));
+    LANGS.forEach(([l, n]) => { boxes[l] = ta((cur[l] || []).join('\n'), 4); wrap.append(lab(n), boxes[l]); });
+    fetch('ticker.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (!j) return; LANGS.forEach(([l]) => { if (!boxes[l].value.trim() && j[l]) boxes[l].placeholder = j[l].join('\n'); }); }).catch(() => {});
+    wrap.append(el('div', {style: 'margin-top:.6rem'}, btn('محفوظ کریں', () => { const o = {}; LANGS.forEach(([l]) => { const a = boxes[l].value.split('\n').map(x => x.trim()).filter(Boolean); if (a.length) o[l] = a; }); save('ticker', o); })));
+    return wrap;
+  }
+
+  function tabStats() {
+    const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
+    get('stats').then(r => {
+      if (r.error) { wrap.replaceChildren(el('p', {class: 'note'}, 'اعداد نہیں مل سکے۔')); return; }
+      let dn = null; try { dn = new Intl.DisplayNames(['ur'], {type: 'region'}); } catch (e) {}
+      const known = r.c.reduce((s, x) => s + x[1], 0);
+      const rows = r.c.map(([cc, n]) => [cc === 'XX' ? 'نامعلوم ملک' : ((dn && dn.of(cc)) || cc), n]); if (r.n > known) rows.push(['پرانے زائرین (ملک معلوم نہیں)', r.n - known]);
+      wrap.replaceChildren(el('h3', {style: 'text-align:center'}, 'کل زائرین: ' + r.n.toLocaleString('en-US')),
+        el('div', {style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:.2rem .6rem;text-align:center'}, ...rows.map(x => el('div', {}, x[0] + ': ' + x[1]))));
+    });
+    return wrap;
+  }
+
+  function tabFix() {
+    const wrap = el('div', {}), fx = Object.assign({}, CFG.fixes || {});
+    const bs = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}), ls = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}, ...['ar', 'ur', 'en', 'bn', 'hi', 'gu', 'fr'].map(l => el('option', {value: l}, l)));
+    const num = inp('', 'حدیث نمبر', 'number'), area = ta('', 8), info = el('p', {class: 'note'}), listBox = el('div', {});
+    COLL.admin.list().then(L => { L.forEach(b => bs.append(el('option', {value: b.key}, (b.ur || b.ar || b.key)))); });
+    const renderList = () => { listBox.replaceChildren(...Object.keys(fx).map(k => el('div', {class: 'card', style: 'padding:.4rem;margin:.25rem 0'}, el('b', {dir: 'ltr'}, k.replace(/\|/g, ' · ')), el('div', {dir: 'auto'}, fx[k].slice(0, 120) + (fx[k].length > 120 ? '…' : '')),
+      btn('اصلاح ہٹائیں (اصل متن واپس)', async () => { const old = fx[k]; delete fx[k]; if (await save('fixes', fx)) { renderList(); say('اصلاح ہٹا دی گئی؛ صفحہ دوبارہ کھولنے پر اصل متن آئے گا۔'); } else fx[k] = old; }, 'danger'))));
+      if (!Object.keys(fx).length) listBox.append(el('p', {class: 'note'}, 'ابھی کوئی اصلاح نہیں۔')); };
+    wrap.append(el('p', {class: 'note'}, 'کتاب، زبان اور حدیث نمبر چنیں، «متن کھولیں» دبائیں، متن درست کریں اور محفوظ کریں۔ (الجامع الکامل کے متن کی اصلاح فی الحال شامل نہیں۔)'), lab('کتاب'), bs, lab('زبان'), ls, lab('نمبر'), num,
+      el('div', {style: 'margin:.4rem 0'}, btn('متن کھولیں', async () => {
+        const n = +num.value; if (!n) { say('نمبر لکھیں۔', true); return; }
+        const t = await COLL.admin.text(bs.value, ls.value, n);
+        if (t == null) { info.textContent = 'اس زبان میں یہ نمبر نہیں ملا۔'; area.value = ''; return; }
+        area.value = t; info.textContent = fx[bs.value + '|' + ls.value + '|' + n] ? 'اس متن میں پہلے سے آپ کی اصلاح لگی ہوئی ہے۔' : '';
+      })), area, info,
+      el('div', {style: 'margin:.4rem 0'}, btn('اصلاح محفوظ کریں', async () => {
+        const n = +num.value; if (!n || !area.value.trim()) { say('نمبر اور متن لکھیں۔', true); return; }
+        const k = bs.value + '|' + ls.value + '|' + n, old = fx[k]; fx[k] = area.value.trim();
+        if (await save('fixes', fx)) { renderList(); COLL.applyFixes(fx); } else if (old === undefined) delete fx[k]; else fx[k] = old;
+      })), el('h3', {}, 'کی گئی اصلاحات'), listBox);
+    renderList(); return wrap;
+  }
+
+  function tabSettings() {
+    const h = new Set(Array.isArray(CFG.hide) ? CFG.hide : []), wrap = el('div', {}, el('p', {class: 'note'}, 'جن ٹائلوں پر نشان لگائیں گے وہ ہوم سے چھپ جائیں گی (کتاب خود موجود رہے گی، صرف ٹائل چھپے گی)۔'));
+    TILES.forEach(([href, name]) => { const c = el('input', {type: 'checkbox'}); c.checked = h.has(href); c.addEventListener('change', () => { if (c.checked) h.add(href); else h.delete(href); }); wrap.append(el('div', {}, el('label', {}, c, ' ' + name + ' چھپائیں'))); });
+    wrap.append(el('div', {style: 'margin-top:.6rem'}, btn('محفوظ کریں', () => save('hide', [...h]))));
+    return wrap;
+  }
+
+  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  function panel(v) {
+    v.replaceChildren();
+    const body = el('div', {}), tabs = el('div', {style: 'display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;margin:.4rem 0'});
+    const open = ix => { [...tabs.children].forEach((b, j) => { b.style.fontWeight = j === ix ? '700' : '400'; b.style.outline = j === ix ? '2px solid var(--accent,#2a7)' : 'none'; }); msg.textContent = ''; body.replaceChildren(TABS[ix][1]()); };
+    TABS.forEach((t, ix) => tabs.append(btn(t[0], () => open(ix))));
+    v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
+      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'مالک پینل'), btn('خروج', async () => { await post('logout'); show(); })),
+      tabs, body, msg));
+    open(0);
+  }
+
+  async function show() {
+    bar('مالک', '', true);
+    const v = qv(); v.replaceChildren(el('p', {class: 'note'}, '…'));
+    await load();
+    const me = await get('me');
+    if (me.ok) panel(v); else loginView(v, me.setup);
+  }
+
+  load();
+  window.OWNER = {route: show, load, banner, hideTiles, ticker, label: () => ({ur: 'مالک', ar: 'المالك', en: 'Owner'}[ui] || 'Owner')};
 })();
 
 </script>
