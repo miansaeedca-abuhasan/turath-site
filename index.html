@@ -405,7 +405,7 @@ mark.qhit{background:none;color:#d0312d;font-weight:700}
 #sbar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(3.7rem + env(safe-area-inset-bottom,0px));z-index:6;width:min(26rem,calc(100% - 1rem));background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 12px rgba(20,40,70,.16);padding:.15rem .3rem .1rem;color:var(--accent)}
 body.withplayer #sbar{bottom:calc(6.9rem + env(safe-area-inset-bottom,0px))}
 #sbar{transition:transform .35s ease}#sbar.shut{transform:translateX(calc(-50% + 50vw + 100%));pointer-events:none}
-.stab{position:fixed;right:0;bottom:calc(3.9rem + env(safe-area-inset-bottom,0px));z-index:6;width:2.6rem;height:2.6rem;border:0;border-radius:1.3rem 0 0 1.3rem;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}.stab[hidden]{display:none}body.withplayer:not(.pshut) .stab{bottom:calc(7.2rem + env(safe-area-inset-bottom,0px))}@media (max-width:700px){body.withseek.withplayer:not(.pshut) .stab{bottom:calc(10.6rem + env(safe-area-inset-bottom,0px))}}.stab svg{width:1.4rem;height:1.4rem;fill:currentColor}
+.stab{position:fixed;right:0;bottom:calc(3.9rem + env(safe-area-inset-bottom,0px));z-index:6;width:2.6rem;height:2.6rem;border:0;border-radius:1.3rem 0 0 1.3rem;background:var(--bar);color:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.25)}.stab[hidden]{display:none}body.withsbar .harakat-btn{bottom:calc(8.4rem + env(safe-area-inset-bottom,0px))!important}body.withsbar.withplayer:not(.pshut) .harakat-btn{bottom:calc(11.8rem + env(safe-area-inset-bottom,0px))!important}body.withplayer:not(.pshut) .stab{bottom:calc(7.2rem + env(safe-area-inset-bottom,0px))}@media (max-width:700px){body.withseek.withplayer:not(.pshut) .stab{bottom:calc(10.6rem + env(safe-area-inset-bottom,0px))}}.stab svg{width:1.4rem;height:1.4rem;fill:currentColor}
 body.withsbar{padding-bottom:calc(8.2rem + env(safe-area-inset-bottom,0px))}
 body.withsbar.withplayer{padding-bottom:calc(11.4rem + env(safe-area-inset-bottom,0px))}
 .sb-row{display:flex;align-items:center;justify-content:space-between;gap:.1rem}
@@ -3478,6 +3478,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // like the player: while a recitation / repeat is playing the bar slides to the side and leaves a small tab; the tab brings it back
     const oldt = $('#stab'); if (oldt) oldt.remove();
     document.body.append(el('button', {id: 'stab', class: 'stab', type: 'button', hidden: '', title: T('autoscroll'), 'aria-label': T('autoscroll'), on: {click: () => sbarShut(false)}}, icon('play')));
+    ['pointerdown', 'keydown'].forEach(ev => bar.addEventListener(ev, sbarIdle));
     sbarShut(document.body.classList.contains('withplayer'));
     if (!window.__sbObs && window.MutationObserver) {
       window.__sbObs = 1; let was = document.body.classList.contains('withplayer');
@@ -3485,8 +3486,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
     return el('span', {hidden: ''});
   }
-  function sbarShut(on) { const b = $('#sbar'), t = $('#stab'); if (b) b.classList.toggle('shut', !!on); if (t) t.hidden = !on; if (on && AS.on) stopAuto(); }
-  function hideBar() { const b = $('#sbar'); if (b) b.remove(); const t = $('#stab'); if (t) t.remove(); document.body.classList.remove('withsbar'); }
+  // not used for 20 seconds (and no auto scroll running) -> the bar slides aside too
+  let SBT = 0;
+  function sbarIdle() { clearTimeout(SBT); const b = $('#sbar'); if (!b || b.classList.contains('shut') || AS.on) return; SBT = setTimeout(() => { if (!AS.on) sbarShut(true); }, 20000); }
+  function sbarShut(on) { const b = $('#sbar'), t = $('#stab'); if (b) b.classList.toggle('shut', !!on); if (t) t.hidden = !on; if (on && AS.on) stopAuto(); if (on) clearTimeout(SBT); else sbarIdle(); }
+  function hideBar() { clearTimeout(SBT); const b = $('#sbar'); if (b) b.remove(); const t = $('#stab'); if (t) t.remove(); document.body.classList.remove('withsbar'); }
   // Quran: jump by surah or parah from where the reader is now
   function quranNav() {
     const cur = () => { const p = R && (R.verses[firstVisible()] || R.verses[0]); return p || [1, 1]; };
@@ -3533,6 +3537,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function stopAuto() {
     AS.on = false; wake(false);
     const b = $('#asbtn'); if (b) { b.replaceChildren(icon('play')); b.classList.remove('on'); }
+    sbarIdle();
   }
   async function wake(on) {
     try { if (on && !AS.lock && navigator.wakeLock) AS.lock = await navigator.wakeLock.request('screen'); else if (!on && AS.lock && !AU.on) { AS.lock.release(); AS.lock = null; } } catch (e) {}
@@ -4406,6 +4411,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     box.append(el('div', {class: 'secnav'},
       nx ? el('a', {class: 'card secnext', href: '#/s/' + b.key + '/' + nx[0]}, el('span', {class: 'cs'}, T('nextSec')), el('span', {class: 'ct', dir: 'auto'}, fmtN(nx[0]) + '. ' + secT(b, nx))) : '',
       pv ? el('a', {class: 'secprev', href: '#/s/' + b.key + '/' + pv[0]}, T('prevSec') + ': ' + secT(b, pv)) : '', tocBtn()));
+    // auto scroll bar, as in the other reading pages (hides aside after 20 s of not being used)
+    if (window.QURAN && QURAN.scrollBar) { const go = h => () => { location.hash = h; }; const sl = T('chapShort') || T('nextSec');
+      box.append(QURAN.scrollBar({prev: [['prev', sl, pv ? go('#/s/' + b.key + '/' + pv[0]) : null]], next: [['next', sl, nx ? go('#/s/' + b.key + '/' + nx[0]) : null]]})); setTimeout(() => QURAN.showTime(), 50); }
   }
   async function showOne(b, n) {
     const box = $('#list'); box.replaceChildren();
