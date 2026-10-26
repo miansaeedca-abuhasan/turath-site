@@ -183,6 +183,7 @@ body.withseek #player .ptitle{display:none}
 .abri{width:2.4rem;height:2.4rem;border-radius:50%;background:#f5c542;color:#12394a;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .abeq{margin-inline-start:auto;color:#c98f00;font-size:.8rem}
 #player .sk{font-size:.74rem;font-weight:700;width:2.3rem;color:#fff;border:1px solid rgba(255,255,255,.35);height:1.9rem;border-radius:1rem;direction:ltr}
+.datebar{margin:.5rem 0 .6rem;padding:.55rem .8rem;text-align:center;border:1px solid var(--line,#d9d2c3);border-radius:.9rem;background:var(--card,#fff)}.datebar[hidden]{display:none}.datebar .dhj{font-size:1.25rem;font-weight:700;color:var(--accent,#0b5d4b);line-height:1.6}.datebar .dgr{font-size:.85rem;opacity:.8;margin-top:.05rem}
 #player .sk[hidden],#player .pspd[hidden]{display:none}
 #player .pspd{display:inline-flex;align-items:center;direction:ltr;flex:none;font-size:.78rem}
 #player .pspd b{min-width:2.9rem;text-align:center;font-weight:700}
@@ -1668,7 +1669,30 @@ async function showExt(key,num){
     const c=el('div',{class:'chips'});d.cited_by.forEach(n=>c.append(el('a',{class:'chip on',href:'#/h/'+n},String(n))));v.append(c);}
 }
 let lastRouted=null;
+/* ---------- home page date: Hijri (Umm al-Qura, Haramayn time) shown prominently, Gregorian in the visitor's own time zone ---------- */
+const HJM={ur:['محرم الحرام','صفر المظفر','ربیع الاول','ربیع الثانی','جمادی الاولیٰ','جمادی الآخرہ','رجب المرجب','شعبان المعظم','رمضان المبارک','شوال المکرم','ذوالقعدہ','ذوالحجہ'],
+ar:['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'],
+en:['Muharram','Safar','Rabi‘ al-Awwal','Rabi‘ al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha‘ban','Ramadan','Shawwal','Dhu al-Qa‘dah','Dhu al-Hijjah'],
+hi:['मुहर्रम','सफ़र','रबीउल अव्वल','रबीउस्सानी','जुमादल ऊला','जुमादल आख़िरा','रजब','शाबान','रमज़ान','शव्वाल','ज़ुलक़ादा','ज़ुलहिज्जा'],
+bn:['মুহাররম','সফর','রবিউল আউয়াল','রবিউস সানি','জমাদিউল আউয়াল','জমাদিউস সানি','রজব','শা‘বান','রমজান','শাওয়াল','জিলকদ','জিলহজ'],
+gu:['મુહર્રમ','સફર','રબીઉલ અવ્વલ','રબીઉસ સાની','જમાદિલ અવ્વલ','જમાદિલ આખિર','રજબ','શાબાન','રમઝાન','શવ્વાલ','ઝિલકાદ','ઝિલહજ'],
+fr:['Mouharram','Safar','Rabi‘ al-Awwal','Rabi‘ ath-Thani','Joumada al-Oula','Joumada ath-Thania','Rajab','Chaabane','Ramadan','Chawwal','Dhou al-Qi‘da','Dhou al-Hijja']};
+const HJS={ur:'ھ',ar:'هـ',en:'AH',hi:'हि.',bn:'হি.',gu:'હિ.',fr:'AH'};
+function dateBar(){
+  let b=document.getElementById('datebar');
+  if(!b){b=document.createElement('div');b.id='datebar';b.className='datebar';const l=document.getElementById('list');if(!l)return;l.parentNode.insertBefore(b,l);}
+  const on=isHome();b.hidden=!on;if(!on)return;
+  try{
+    const now=new Date(),pt={};
+    new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone:'Asia/Riyadh',day:'numeric',month:'numeric',year:'numeric'}).formatToParts(now).forEach(x=>{pt[x.type]=parseInt(x.value,10);});
+    const loc={ur:'ur',ar:'ar',en:'en-GB',hi:'hi',bn:'bn',gu:'gu',fr:'fr'}[ui]||'en-GB';
+    const gr=new Intl.DateTimeFormat(loc+'-u-ca-gregory'+((ui==='ur'||ui==='ar')?'-nu-arab':''),{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
+    const hj=NUM(pt.day)+' '+(HJM[ui]||HJM.en)[pt.month-1]+' '+NUM(pt.year)+' '+(HJS[ui]||'AH');
+    b.replaceChildren(el('div',{class:'dhj'},hj),el('div',{class:'dgr'},gr));
+  }catch(e){b.hidden=true;}
+}
 function route(){
+  dateBar();
   const h=location.hash,sec=navBar();if(lastRouted!==h){lastRouted=h;histMark();}else isRestore=false;
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
@@ -5763,11 +5787,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
   function paint() { if (!btn) return; const hm = document.createElement('span'); hm.className = 'hm'; hm.setAttribute('aria-hidden', 'true');
       // the marks drawn as small shapes (shadda, kasratan, inverted damma) so they sit in one line, with no letter under them
-      hm.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 322" width="52" height="19" fill="currentColor" aria-hidden="true"><path d="M68 323Q46 326 32 303Q6 262 30 198Q24 195 20 193Q16 191 13 189Q-7 180 3 159L15 137Q23 122 35 126Q49 131 61 138Q95 94 134 60Q172 27 216 5Q243 -7 253 12Q264 32 235 47Q150 97 100 159Q169 198 151 242Q120 314 68 323ZM74 219Q74 237 80 243Q83 246 87 248Q90 250 93 252Q100 256 107 244Q102 233 74 219Z M532 122Q550 110 561 113Q573 116 565 139L554 170Q548 187 535 196L360 304Q350 310 339 308Q328 306 331 287L334 268Q337 251 354 240ZM528 22Q544 12 554 15Q564 18 560 38L553 64Q547 83 529 94L352 197Q331 208 322 204Q311 199 320 178L329 159Q336 143 347 136Z M839 93Q844 66 860 67Q879 69 880 89Q880 90 880 91Q879 92 879 94Q876 147 859 186Q838 232 798 235Q775 236 754 215Q747 225 739 234Q730 242 719 247Q690 261 665 251Q602 224 648 102Q657 80 675 86Q676 86 677 87Q677 87 678 87Q694 95 688 117Q687 122 686 127Q684 132 683 137Q678 169 697 172Q723 175 741 125Q743 118 746 111Q748 104 750 96Q756 76 772 77H773Q790 81 788 95V98Q787 102 787 107Q786 111 786 115Q786 140 802 143H806Q830 143 837 105Q838 102 839 99Q839 96 839 93Z"/></svg>';
+      hm.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 322" width="34" height="12" fill="currentColor" aria-hidden="true"><path d="M68 323Q46 326 32 303Q6 262 30 198Q24 195 20 193Q16 191 13 189Q-7 180 3 159L15 137Q23 122 35 126Q49 131 61 138Q95 94 134 60Q172 27 216 5Q243 -7 253 12Q264 32 235 47Q150 97 100 159Q169 198 151 242Q120 314 68 323ZM74 219Q74 237 80 243Q83 246 87 248Q90 250 93 252Q100 256 107 244Q102 233 74 219Z M532 122Q550 110 561 113Q573 116 565 139L554 170Q548 187 535 196L360 304Q350 310 339 308Q328 306 331 287L334 268Q337 251 354 240ZM528 22Q544 12 554 15Q564 18 560 38L553 64Q547 83 529 94L352 197Q331 208 322 204Q311 199 320 178L329 159Q336 143 347 136Z M839 93Q844 66 860 67Q879 69 880 89Q880 90 880 91Q879 92 879 94Q876 147 859 186Q838 232 798 235Q775 236 754 215Q747 225 739 234Q730 242 719 247Q690 261 665 251Q602 224 648 102Q657 80 675 86Q676 86 677 87Q677 87 678 87Q694 95 688 117Q687 122 686 127Q684 132 683 137Q678 169 697 172Q723 175 741 125Q743 118 746 111Q748 104 750 96Q756 76 772 77H773Q790 81 788 95V98Q787 102 787 107Q786 111 786 115Q786 140 802 143H806Q830 143 837 105Q838 102 839 99Q839 96 839 93Z"/></svg>';
       btn.replaceChildren(hm, document.createTextNode(label())); btn.setAttribute('aria-pressed', String(off)); btn.classList.toggle('on', off); }
   function init() {
     const st = document.createElement('style');
-    st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:calc(7.2rem + env(safe-area-inset-bottom,0px));z-index:40;width:max-content;max-width:calc(100vw - 6rem);height:auto;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;border:1px solid var(--line,#d9d2c3);border-radius:999px;background:var(--card,#fff);color:var(--accent,#0b5d4b);font:600 .8rem/1.4 var(--urdu,serif);box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer;opacity:.95;-webkit-tap-highlight-color:transparent}.harakat-btn .hm{display:inline-flex;align-items:center;gap:.15rem;direction:rtl;padding:0 .35rem;border-radius:999px;color:#d9480f;display:inline-flex;align-items:center;line-height:0;padding:0 .1rem}.harakat-btn.on{background:var(--accent,#0b5d4b);border-color:var(--accent,#0b5d4b);color:#fff}.harakat-btn.on .hm{color:#ffd27a}html.sheetopen .harakat-btn{display:none}';
+    st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:calc(7.2rem + env(safe-area-inset-bottom,0px));z-index:40;width:max-content;max-width:calc(100vw - 6rem);height:auto;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;border:1px solid var(--line,#d9d2c3);border-radius:999px;background:var(--card,#fff);color:var(--accent,#0b5d4b);font:700 1rem/1.4 var(--urdu,serif);box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer;opacity:.95;-webkit-tap-highlight-color:transparent}.harakat-btn .hm{display:inline-flex;align-items:center;gap:.15rem;direction:rtl;padding:0 .35rem;border-radius:999px;color:#d9480f;display:inline-flex;align-items:center;line-height:0;padding:0 .1rem}.harakat-btn.on{background:var(--accent,#0b5d4b);border-color:var(--accent,#0b5d4b);color:#fff}.harakat-btn.on .hm{color:#ffd27a}html.sheetopen .harakat-btn{display:none}';
     document.head.appendChild(st);
     btn = document.createElement('button'); btn.type = 'button'; btn.className = 'harakat-btn';
     btn.onclick = () => { off = !off; try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (e) {} if (off) strip(document.body); else restore(); paint(); };
