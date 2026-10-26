@@ -1511,7 +1511,7 @@ function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/veri
   const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
   const tabClick=x=>x[4]||(/^#\/s\//.test(x[1])?(ev=>{const h=location.hash;if(h.startsWith(x[1]+'/')||h===x[1]){ev.preventDefault();location.hash=/\?idx/.test(h)?x[1]:x[1]+'?idx';}}):null);
   $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:tabClick(x)?{click:tabClick(x)}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
-$('#hsbtn').addEventListener('click',()=>{location.hash='#/hs';});
+$('#hsbtn').addEventListener('click',async()=>{const m=location.hash.match(/^#\/s\/([^/?]+)/);if(m&&window.COLL&&COLL.bookSearch){try{if(await COLL.bookSearch(m[1]))return;}catch(e){}}location.hash='#/hs';});
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
 // the takhrij of a hadith of al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
@@ -4895,7 +4895,42 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   } catch (e) {} }, 3500);
 
   setTimeout(() => index().catch(() => {}), 0);
+
+  // the search button of the top bar, inside an open book: hadith number, words (all / any) or a whole sentence, in this book only
+  async function bookSearch(key) {
+    const b = bookOf(key) || (await index()).find(x => x.key === key); if (!b || b.ext) return false;
+    const lang = getLang(b), inp = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch').replace(/\s*\(.*\)\s*$/, ''), 'aria-label': T('cSecSearch'), style: 'width:100%'});
+    const res = el('div', {class: 'bsres'}); let tm, run;
+    const bar = modeBar(() => { if (inp.value.trim()) run(); });
+    const secOf = n => (b.sections || []).find(s => s[2] <= n && n <= s[3]);
+    run = async () => {
+      const v = inp.value.trim(), num = toNum(v); if (!v) return res.replaceChildren();
+      res.replaceChildren(el('p', {class: 'note'}, T('loading')));
+      if (num != null) {                          // a hadith number: open it in the book
+        const n = b.an && Object.keys(b.an).length && C.rev[b.key] && C.rev[b.key][num] ? C.rev[b.key][num] : num;
+        await needRange(b, 'ar', n, n); if (lang) await needRange(b, lang, n, n);
+        if (!row(b, 'ar', n)) return res.replaceChildren(el('p', {class: 'note'}, T('cNotHere')));
+        const sc = secOf(n); res.replaceChildren(card(b, n, lang));
+        if (sc) res.append(el('a', {class: 'btn lbtn', href: '#/s/' + b.key + '/' + sc[0], on: {click: () => document.querySelectorAll('.sheetbg').forEach(x => x.remove())}}, T('cOpen')));
+        return;
+      }
+      const q = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!q.length) return res.replaceChildren();
+      const hits = await findIn(b, q, lang, GSMODE());
+      res.replaceChildren(el('div', {class: 'qsbar'}, el('span', {class: 'cs'}, T('results') + ': ' + fmtN(hits.length))));
+      let shown = 0; const more = el('button', {class: 'btn more', type: 'button'}, T('more'));
+      const add = () => { hits.slice(shown, shown + 20).forEach((n, i) => { const c = card(b, n, lang, q); c.prepend(el('span', {class: 'rno'}, fmtN(shown + i + 1) + '.'));
+        const sc = secOf(n); if (sc) c.append(el('a', {class: 'btn lbtn', href: '#/s/' + b.key + '/' + sc[0], on: {click: () => document.querySelectorAll('.sheetbg').forEach(x => x.remove())}}, T('cOpen')));
+        res.insertBefore(c, more); }); shown += 20; if (shown >= hits.length) more.remove(); };
+      res.append(more); more.addEventListener('click', add); add();
+    };
+    inp.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 350); });
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') { clearTimeout(tm); run(); } });
+    window.sheet(bname(b), [inp, bar, res], [[T('hClose') || 'Close', null]]);
+    setTimeout(() => inp.focus(), 50);
+    return true;
+  }
   window.COLL = {
+    bookSearch,
     // owner panel: text corrections (published settings, keyed book|lang|number) and a reader for the editor
     applyFixes(fx) { C.fixes = fx || {}; for (const k in C.fixes) { const p = k.split('|'), m = C.data[p[0] + '|' + p[1]], r = m && m.get(+p[2]); if (r) { const c = r.slice(); c[1] = C.fixes[k]; m.set(+p[2], c); } } },
     admin: {
