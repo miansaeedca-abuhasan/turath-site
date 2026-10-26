@@ -84,6 +84,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .fr{font-family:var(--serif);direction:ltr;text-align:left;line-height:1.75}
 .phead{margin:.9rem 0 .2rem;font-size:.95rem;color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 25%,transparent);padding-bottom:.15rem}
 html[lang=ur] .phead{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
+.refcard{padding:.7rem .9rem;margin:.4rem 0}.refcard p{margin:.15rem 0}.reflinks{line-height:1.9}.reflinks a{font-weight:700;margin-inline-start:.9rem}.trtab{display:flex;margin:.1rem 0 .35rem}.trtab span{display:inline-block;padding:.12rem .8rem;border:1px solid var(--line,#d9d2c3);border-bottom:2px solid var(--accent,#0b5d4b);border-radius:.6rem .6rem 0 0;background:var(--card,#fff);color:var(--accent,#0b5d4b);font-size:.85rem;font-weight:700;line-height:1.5}.ptakh{font-size:.92rem;opacity:.92}
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
@@ -3924,6 +3925,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     b.langs.filter(l => l !== 'ar').forEach(l => box.append(el('button', {class: 'chip' + (cur === l ? ' on' : ''), type: 'button', on: {click: () => { setLang(l); redraw(); }}}, LNAME[l] || l)));
     return box;
   }
+  // small tab with the translator's name above a translation: «ترجمہ: name» (book.trn = {lang: name})
+  const TRL = {ur: 'ترجمہ', ar: 'ترجمة', en: 'Translation', bn: 'অনুবাদ', hi: 'अनुवाद', gu: 'અનુવાદ', fr: 'Traduction'};
+  const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   function hobj(b, n, lang) {
     const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null, e = row(b, 'en', n);
@@ -3995,7 +3999,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const P = t => paraEl(t, L);
       if (lang && !rr) c.append(el('p', {class: 'note'}, T('cLangMissing')));
       if (x && x.t) c.insertBefore(el('p', {class: 'ptitle ' + L, lang: L, dir: DIR(L)}, x.t), c.children[1]);
-      if (lang && rr) c.append(H('pTr'), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
+      if (lang && rr) c.append(H('pTr'), trTab(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
+      if (x && x.k) c.append(H('pTakh'), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...x.k.split('\n').filter(t => t.trim()).map(P)));
       // explanation and benefits in the chosen language; when that translation has none, the Arabic ones
       const ra = (row(b, 'ar', n) || [])[3] || {}, part = k => x && x[k] ? [x[k], L] : ra[k] ? [ra[k], 'ar'] : null;
       const PL = (t, l) => paraEl(t, l);
@@ -4056,7 +4061,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         ...rs.flatMap((r, ri) => [rs.length > 1 ? el('p', {class: 'grp'}, rd(ri + 1)) : '',
           ...r.parts.map((u, i) => el('div', {style: 'margin:.5rem 0'}, el('div', {class: 'cs'}, pt(i + 1)), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%', dir: 'ltr'}))),
           el('p', {class: 'cs'}, src(r.host))]))]; };
-    const cover = () => bookAudio().concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
+    // a book whose Urdu translation lives on another site: credit + links (b.ref = {ur, en, ar: [text, credit], u: [[label, url], ...]})
+    const refCard = () => { const r = b.ref; if (!r) return []; const t = r[ui] || r.ur, L = DIR(ui) === 'rtl' ? ui : ui;
+      return [el('div', {class: 'card refcard', lang: ui === 'ar' ? 'ar' : 'ur', dir: 'rtl'}, el('p', {class: 'reflinks'}, t[0], ' ', ...r.u.map(([l, u]) => el('a', {href: u, target: '_blank', rel: 'noopener'}, l))))]; };
+    const cover = () => refCard().concat(bookAudio()).concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
     const row = s => el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
       el('span', {class: 'snum'}, fmtN(s[0])), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, secT(b, s)), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, [RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
     // books with group headings (فضائل صحابہ): each heading opens only its own babs
@@ -5888,9 +5896,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   };
   for (const l in L) { I[l] = Object.assign(I[l] || {}, L[l]); }
   // the headings of «متفرق احادیث» in the first four languages
-  Object.assign(I.ur, {pTr: 'ترجمہ', pExpl: 'تشریح', pBen: 'فوائد'});
-  Object.assign(I.en, {pTr: 'Translation', pExpl: 'Explanation', pBen: 'Benefits'});
-  if (I.ar) Object.assign(I.ar, {pTr: 'الترجمة', pExpl: 'الشرح', pBen: 'من فوائد الحديث'});
+  Object.assign(I.ur, {pTr: 'ترجمہ', pExpl: 'تشریح', pBen: 'فوائد', pTakh: 'تحقیق و تخریج'});
+  Object.assign(I.en, {pTr: 'Translation', pExpl: 'Explanation', pBen: 'Benefits', pTakh: 'Verification & sources'});
+  if (I.ar) Object.assign(I.ar, {pTr: 'الترجمة', pExpl: 'الشرح', pBen: 'من فوائد الحديث', pTakh: 'التحقيق والتخريج'});
   if (I.bn) Object.assign(I.bn, {pTr: 'অনুবাদ', pExpl: 'ব্যাখ্যা', pBen: 'হাদীসের শিক্ষা'});
   // صحیح سیرت مصطفیٰ صلی اللہ علیہ وسلم and the quiz
   const X = {ur: ['صحیح سیرت مصطفیٰ صلی اللہ علیہ وسلم', 'کوئز'], en: ['Sahih Seerah', 'Quiz'], ar: ['صحيح السيرة النبوية', 'المسابقة'],
