@@ -183,7 +183,7 @@ body.withseek #player .ptitle{display:none}
 .abri{width:2.4rem;height:2.4rem;border-radius:50%;background:#f5c542;color:#12394a;display:inline-flex;align-items:center;justify-content:center;flex:none}
 .abeq{margin-inline-start:auto;color:#c98f00;font-size:.8rem}
 #player .sk{font-size:.74rem;font-weight:700;width:2.3rem;color:#fff;border:1px solid rgba(255,255,255,.35);height:1.9rem;border-radius:1rem;direction:ltr}
-.datebar{margin:.3rem 0 .4rem;padding:.2rem .7rem;min-height:0;display:flex;align-items:center;justify-content:space-between;gap:.6rem;border:1px solid var(--line,#d9d2c3);border-radius:.9rem;background:var(--card,#fff)}.datebar[hidden]{display:none}.datebar .dhj{flex:1 1 55%;font-size:1.15rem;font-weight:700;color:var(--accent,#0b5d4b);line-height:1.35;text-align:start}.datebar .dgr{flex:1 1 40%;font-size:.8rem;opacity:.85;line-height:1.35;text-align:end;padding-inline-start:.6rem;border-inline-start:1px solid var(--line,#d9d2c3)}
+.datebar{margin:0 0 .5rem;padding:.2rem .7rem;min-height:0;display:flex;align-items:center;justify-content:space-between;gap:.6rem;border:1px solid var(--line,#d9d2c3);border-radius:.9rem;background:var(--card,#fff)}.datebar[hidden]{display:none}.datebar .dhj{flex:1 1 55%;font-size:1.15rem;font-weight:700;color:var(--accent,#0b5d4b);line-height:1.35;text-align:start}.datebar .dgr{flex:1 1 40%;font-size:.8rem;opacity:.85;line-height:1.35;text-align:end;padding-inline-start:.6rem;border-inline-start:1px solid var(--line,#d9d2c3)}
 #player .sk[hidden],#player .pspd[hidden]{display:none}
 #player .pspd{display:inline-flex;align-items:center;direction:ltr;flex:none;font-size:.78rem}
 #player .pspd b{min-width:2.9rem;text-align:center;font-weight:700}
@@ -216,8 +216,8 @@ body.withplayer .resume.float{display:none}
 .filterbox{display:flex;align-items:center;gap:.5rem;padding:.2rem .9rem;color:var(--accent)}
 .filter{flex:1;min-width:0;border:0;background:none;padding:.6rem 0;outline:none}
 .hbanner{display:block;width:100%;height:auto;border-radius:14px;margin:0 0 .8rem;box-shadow:var(--shadow)}
-.tick{overflow:hidden;direction:ltr;white-space:nowrap;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 .8rem;padding:.5rem 0;color:var(--accent);font-weight:600}
-.tick .tk{display:inline-block;padding-inline-start:100%;animation:tkmove var(--tkd,60s) linear infinite}
+.tick{overflow:hidden;direction:ltr;white-space:nowrap;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 .5rem;padding:.2rem 0;line-height:1.4;font-size:.95rem;color:var(--accent);font-weight:600}
+.tick .tk{margin:0;display:inline-block;padding-inline-start:100%;animation:tkmove var(--tkd,60s) linear infinite}
 .tick:active .tk{animation-play-state:paused}
 .tick .ti{display:inline-block;padding:0 2rem}
 @keyframes tkmove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
@@ -1678,21 +1678,19 @@ bn:['মুহাররম','সফর','রবিউল আউয়াল','�
 gu:['મુહર્રમ','સફર','રબીઉલ અવ્વલ','રબીઉસ સાની','જમાદિલ અવ્વલ','જમાદિલ આખિર','રજબ','શાબાન','રમઝાન','શવ્વાલ','ઝિલકાદ','ઝિલહજ'],
 fr:['Mouharram','Safar','Rabi‘ al-Awwal','Rabi‘ ath-Thani','Joumada al-Oula','Joumada ath-Thania','Rajab','Chaabane','Ramadan','Chawwal','Dhou al-Qi‘da','Dhou al-Hijja']};
 const HJS={ur:'ھ',ar:'هـ',en:'AH',hi:'हि.',bn:'হি.',gu:'હિ.',fr:'AH'};
-function dateBar(){
-  let b=document.getElementById('datebar');
-  if(!b){b=document.createElement('div');b.id='datebar';b.className='datebar';const l=document.getElementById('list');if(!l)return;l.parentNode.insertBefore(b,l);}
-  const on=isHome();b.hidden=!on;if(!on)return;
+window.mkDateBar=function(){
+  const b=document.createElement('div');b.id='datebar';b.className='datebar';
   try{
     const now=new Date(),pt={};
     new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone:'Asia/Riyadh',day:'numeric',month:'numeric',year:'numeric'}).formatToParts(now).forEach(x=>{pt[x.type]=parseInt(x.value,10);});
     const loc={ur:'ur',ar:'ar',en:'en-GB',hi:'hi',bn:'bn',gu:'gu',fr:'fr'}[ui]||'en-GB';
     const gr=new Intl.DateTimeFormat(loc+'-u-ca-gregory'+((ui==='ur'||ui==='ar')?'-nu-arab':''),{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
     const hj=NUM(pt.day)+' '+(HJM[ui]||HJM.en)[pt.month-1]+' '+NUM(pt.year)+' '+(HJS[ui]||'AH');
-    b.replaceChildren(el('div',{class:'dhj'},hj),el('div',{class:'dgr'},gr));
+    const d1=document.createElement('div');d1.className='dhj';d1.textContent=hj;const d2=document.createElement('div');d2.className='dgr';d2.textContent=gr;b.append(d1,d2);
   }catch(e){b.hidden=true;}
-}
+  return b;
+};
 function route(){
-  dateBar();
   const h=location.hash,sec=navBar();if(lastRouted!==h){lastRouted=h;histMark();}else isRestore=false;
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
@@ -2846,6 +2844,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('listen', ABK.title(), '#/ab')); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
+    if (window.mkDateBar) v.append(mkDateBar());
     tickerBar(v);
     if (window.OWNER) OWNER.banner(v);
     v.append(el('div', {class: 'card pad0'}, g));
