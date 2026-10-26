@@ -181,7 +181,7 @@ object Alarms {
                 }
                 // the phone on silent / vibrate: only a notification, unless the adhan is wanted then too (suhoor alarm always rings)
                 val quiet = Audio.silentNow(ctx) && e.kind != "suhoor" && !pr.adhanInSilent
-                if (playSound && !quiet) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", e.p == P.FAJR && e.kind == "prayer")
+                if (playSound && !quiet) SoundService.start(ctx, e.snd, title, body, e.kind == "suhoor", (e.p == P.FAJR && e.kind == "prayer") || (e.p == P.TAHAJJUD && e.snd.adhan))
                 else {
                     val ch = if (e.snd == Snd.NOTIFY) CH_REM else CH_ADHAN
                     nm.notify(e.kind.hashCode() + (e.p?.ordinal ?: 0), Notification.Builder(ctx, ch).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
@@ -255,6 +255,13 @@ object Preview {
         mp = runCatching { MediaPlayer().apply { setAudioAttributes(Audio.attrs(ctx)); setDataSource(ctx, u); setOnCompletionListener { stop() }; prepare(); start() } }.getOrNull()
     }
     fun stop() { runCatching { mp?.stop() }; mp?.release(); mp = null; playing = null }
+    fun position(): Int = runCatching { mp?.currentPosition ?: 0 }.getOrDefault(0)
+    fun duration(): Int = runCatching { mp?.duration ?: 0 }.getOrDefault(0)
+    fun isRunning(): Boolean = runCatching { mp?.isPlaying == true }.getOrDefault(false)
+    fun pause() { runCatching { mp?.pause() } }
+    fun resume() { runCatching { mp?.start() } }
+    fun seekTo(ms: Int) { runCatching { mp?.seekTo(ms.coerceIn(0, duration())) } }
+    fun skip(ms: Int) = seekTo(position() + ms)
 }
 
 /** the phone on vibrate at prayer time, back to ringing afterwards (only if the app put it on vibrate) */
@@ -324,11 +331,16 @@ class SoundService : Service() {
 
         /** the sounds that can be chosen here (only those whose recording is in the app; no phone ringtones or bells):
          *  the five prayers — adhans only; nafl times — iqamah, calls and birds; reminders / alarms — calls and birds */
-        fun choices(ctx: Context, use: SndUse, fajr: Boolean = false): List<Snd> {
+        /** an adhan that has a recording of its own for Fajr («الصلاة خير من النوم») */
+        fun hasFajr(ctx: Context, s: Snd) = s.adhan && s.raw != null && (s.fajrOnly || ctx.resources.getIdentifier(s.raw + "_fajr", "raw", ctx.packageName) != 0)
+
+        fun choices(ctx: Context, use: SndUse, fajr: Boolean = false, tahajjud: Boolean = false): List<Snd> {
             val ok = Snd.entries.filter { it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
             val l = when (use) {
-                SndUse.PRAYER -> ok.filter { it.adhan }
-                SndUse.NAFL -> ok.filter { !it.adhan }
+                // Fajr: only the Fajr adhans; the other prayers: none of them
+                SndUse.PRAYER -> if (fajr) ok.filter { hasFajr(ctx, it) } else ok.filter { it.adhan }
+                // Tahajjud: the Fajr adhans too, with the calls and the birds
+                SndUse.NAFL -> if (tahajjud) ok.filter { !it.adhan || hasFajr(ctx, it) } else ok.filter { !it.adhan }
                 SndUse.REMINDER -> ok.filter { !it.adhan && it.phrase != "iqama" } + Snd.NOTIFY
             }
             val order = listOf("makkah", "madinah", "other", "birds", "phone")

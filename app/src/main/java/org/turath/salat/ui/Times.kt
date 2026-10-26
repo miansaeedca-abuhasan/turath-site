@@ -85,7 +85,7 @@ fun TimesScreen(s: AppState) {
         Text(Tr["hijriChange"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
     }
     if (pickJum) SoundPicker(s, Tr["JUMUAH"], s.prefs.jumuahSound, SoundService.choices(s.act, SndUse.PRAYER, false)) { v -> if (v != null) { s.prefs.jumuahSound = v; s.changed() }; pickJum = false }
-    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, if (p in FIVE) SndUse.PRAYER else SndUse.NAFL, p == P.FAJR), p == P.FAJR) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
+    pick?.let { p -> SoundPicker(s, Tr.p(p), s.prefs.sound(p), SoundService.choices(s.act, if (p in FIVE) SndUse.PRAYER else SndUse.NAFL, p == P.FAJR || p == P.TAHAJJUD, p == P.TAHAJJUD), p == P.FAJR || p == P.TAHAJJUD) { v -> if (v != null) { s.prefs.setSound(p, v); s.changed() }; pick = null } }
 }
 
 /** choose a sound on a page of its own: a tap chooses it and plays it (at the volume the adhan will have) */
@@ -102,6 +102,25 @@ fun SoundPicker(s: AppState, title: String, cur: Snd, list: List<Snd>, fajr: Boo
                     IconButton(onClick = { done(null) }) { Icon(Icons.Outlined.Close, Tr["cancel"]) }
                     Text(title, Modifier.weight(1f), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                     TextButton(onClick = { done(sel) }) { Text(Tr["save"], fontSize = 17.sp) }
+                }
+                if (playing != null) {
+                    var pos by remember { mutableIntStateOf(0) }; var dur by remember { mutableIntStateOf(0) }; var run by remember { mutableStateOf(true) }
+                    LaunchedEffect(playing) { while (true) { pos = Preview.position(); dur = Preview.duration(); run = Preview.isRunning(); kotlinx.coroutines.delay(250) } }
+                    fun mmss(ms: Int) = (ms / 60000).toString() + ":" + "%02d".format(ms / 1000 % 60)
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                        Slider(value = pos.toFloat().coerceAtMost(dur.toFloat().coerceAtLeast(1f)), onValueChange = { pos = it.toInt(); Preview.seekTo(it.toInt()) }, valueRange = 0f..dur.toFloat().coerceAtLeast(1f))
+                        Row(Modifier.fillMaxWidth()) { Text(mmss(pos), fontSize = 13.sp); Spacer(Modifier.weight(1f)); Text(mmss(dur), fontSize = 13.sp) }
+                        Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(onClick = { Preview.stop(); playing = null }) { Icon(Icons.Outlined.Stop, Tr["stop"], Modifier.size(30.dp)) }
+                            IconButton(onClick = { Preview.skip(-5000) }) { Icon(Icons.Outlined.Replay5, null, Modifier.size(34.dp)) }
+                            IconButton(onClick = { if (run) Preview.pause() else Preview.resume(); run = !run }, Modifier.size(64.dp)) {
+                                Icon(if (run) Icons.Outlined.Pause else Icons.Outlined.PlayArrow, null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
+                            }
+                            IconButton(onClick = { Preview.skip(5000) }) { Icon(Icons.Outlined.Forward5, null, Modifier.size(34.dp)) }
+                            Spacer(Modifier.size(48.dp))
+                        }
+                    }
+                    HorizontalDivider()
                 }
                 Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                     var group = ""
