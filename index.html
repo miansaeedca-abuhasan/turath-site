@@ -5769,10 +5769,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function strip(root) {
     root.querySelectorAll('.ar,[lang=ar]').forEach(r => {
       if (r.closest('.qar,.qv,.ayah,[data-keeph]')) return;
-      const w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT);
+      const w = document.createTreeWalker(r, NodeFilter.SHOW_TEXT); let inV = false; // inV: inside a ﴿ ... ﴾ Quran verse, which always keeps its harakat
       for (let n = w.nextNode(); n; n = w.nextNode()) {
-        if (orig.has(n) || !HAS.test(n.nodeValue) || skip(n)) continue;
-        orig.set(n, n.nodeValue); n.nodeValue = n.nodeValue.replace(RE, '');
+        const t = n.nodeValue, was = inV;
+        if (t.indexOf('\uFD3E') >= 0 || t.indexOf('\uFD3F') >= 0 || inV) { // walk the text and strip only outside verses
+          let o = '', v = inV; for (const ch of t) { if (ch === '\uFD3F') { v = true; } else if (ch === '\uFD3E') { v = false; } o += v ? ch : ch.replace(RE, ''); }
+          inV = v;
+          if (orig.has(n) || !HAS.test(t) || skip(n)) continue;
+          if (o !== t) { orig.set(n, t); n.nodeValue = o; } continue;
+        }
+        if (orig.has(n) || !HAS.test(t) || skip(n)) continue;
+        orig.set(n, t); n.nodeValue = t.replace(RE, '');
       }
     });
   }
