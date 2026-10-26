@@ -247,7 +247,7 @@ object Tr {
         "repeatOn" to arrayOf("کن دنوں میں", "أيام التكرار", "Repeat on"),
         "soundSet" to arrayOf("اذان اور آواز", "الأذان والصوت", "Adhan and sound"),
         "adhanSilent" to arrayOf("فون سائلنٹ ہو تب بھی اذان", "الأذان ولو كان الهاتف صامتًا", "Adhan even when the phone is silent"),
-        "adhanSilentNote" to arrayOf("بند ہو تو سائلنٹ یا وائبریشن میں صرف اطلاع آئے گی؛ سحری کا الارم ہمیشہ بجتا ہے", "إن كان مغلقًا ففي الوضع الصامت يظهر إشعار فقط؛ منبّه السحور يرنّ دائمًا", "When off, a silent phone only shows a notification; the suhoor alarm always rings"),
+        "adhanSilentNote" to arrayOf("بند ہو تو سائلنٹ یا وائبریشن میں صرف اطلاع آئے گی؛ سحری کا الارم ہمیشہ سنائی دیتا ہے", "إن كان مغلقًا ففي الوضع الصامت يظهر إشعار فقط؛ منبّه السحور يرنّ دائمًا", "When off, a silent phone only shows a notification; the suhoor alarm always rings"),
         "theme" to arrayOf("رنگ", "الألوان", "Colours"),
         "themeTime" to arrayOf("دن میں سفید، رات میں سیاہ (مغرب سے طلوع تک)", "فاتح نهارًا وداكن ليلًا (من المغرب إلى الشروق)", "Light by day, dark at night (Maghrib to sunrise)"),
         "themeLight" to arrayOf("ہمیشہ سفید", "فاتح دائمًا", "Always light"),
