@@ -325,7 +325,7 @@ class SoundService : Service() {
         /** the sounds that can be chosen here (only those whose recording is in the app; no phone ringtones or bells):
          *  the five prayers — adhans only; nafl times — iqamah, calls and birds; reminders / alarms — calls and birds */
         fun choices(ctx: Context, use: SndUse, fajr: Boolean = false): List<Snd> {
-            val ok = Snd.entries.filter { it.raw != null && rawId(ctx, it, fajr) != 0 }
+            val ok = Snd.entries.filter { it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
             val l = when (use) {
                 SndUse.PRAYER -> ok.filter { it.adhan }
                 SndUse.NAFL -> ok.filter { !it.adhan }

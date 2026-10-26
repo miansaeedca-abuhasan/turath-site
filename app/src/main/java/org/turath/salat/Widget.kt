@@ -81,6 +81,18 @@ class Widget : AppWidgetProvider() {
         fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#00838F") else Color.parseColor("#26C6DA")
         /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
         fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
+        /** the line under the times: one message at a time that slides in and out (a scrolling line does not run on many launchers) */
+        fun fillTicker(ctx: Context, v: RemoteViews, items: List<String>, pr: Prefs) {
+            v.removeAllViews(R.id.tk)
+            for (it in items.take(12)) {
+                val c = RemoteViews(ctx.packageName, R.layout.widget_tick_item)
+                c.setTextViewText(R.id.tkt, it)
+                c.setTextColor(R.id.tkt, tickerColor(pr))
+                size(c, R.id.tkt, 13f, pr)
+                v.addView(R.id.tk, c)
+            }
+        }
+
         private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
 
         /** the background with the chosen transparency, light or dark */
@@ -147,7 +159,7 @@ class Widget : AppWidgetProvider() {
                 val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL])
                 v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
                 if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
-                v.setViewVisibility(R.id.ticker, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
+                v.setViewVisibility(R.id.tk, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
                 if (fb) {
                     val span = t.forbiddenAt(now)!!
@@ -160,8 +172,7 @@ class Widget : AppWidgetProvider() {
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
-                v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
-                v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)
+                fillTicker(ctx, v, ticker(pr, place, now, t).split("◆").map { it.trim() }.filter { it.isNotEmpty() }, pr)
             }
             mgr.updateAppWidget(ids, v)
         }
@@ -273,8 +284,7 @@ class WidgetCal : AppWidgetProvider() {
                 org.turath.salat.ui.ISLAMIC_DAYS.filter { it.m == m && it.d == null }.forEach { items += Tr.hijriMonth(m) + ": " + Tr[it.key] }
                 val now = ZonedDateTime.now(Schedule.zone(place))
                 items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
-                v.setTextViewText(R.id.ticker, items.distinct().joinToString("     ◆     "))
-                v.setTextColor(R.id.ticker, Widget.tickerColor(pr))
+                Widget.fillTicker(ctx, v, items.flatMap { it.split("◆") }.map { it.trim() }.filter { it.isNotEmpty() }.distinct(), pr)
             }
             mgr.updateAppWidget(ids, v)
         }

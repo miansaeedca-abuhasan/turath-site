@@ -12,12 +12,15 @@ val FIVE = listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
 
 /** sound for an alarm or reminder; a sound file missing from the app falls back to the phone's alarm tone */
 /** muezzins whose recordings the app has */
-enum class Mu(val city: String) { MULLA("makkah"), DAGHRIRI("makkah"), BUKHARI("madinah"), NABET("other"), MAGHRIBI("other"), BASIT("other") }
+enum class Mu(val city: String) { MULLA("makkah"), DAGHRIRI("makkah"), BUKHARI("madinah"), NABET("other"), MAGHRIBI("other"), BASIT("other"), HARAM("makkah"), SARHI("madinah"), MAJID("madinah") }
 
 enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null) {
     // adhans (a «_fajr» file of the same name is used for Fajr when the app has one)
     ADHAN_MAKKAH("adhan_makkah", Mu.MULLA), ADHAN_DAGHRIRI("adhan_daghriri", Mu.DAGHRIRI), ADHAN_DAGHRIRI2("adhan_daghriri2", Mu.DAGHRIRI),
     ADHAN_MADINAH("adhan_madinah", Mu.BUKHARI), ADHAN_AQSA("adhan_aqsa"),
+    // more adhans from the two Harams; the «F» ones are Fajr adhans («الصلاة خير من النوم») and are offered for Fajr only
+    ADHAN_MULLA2("adhan_mulla2", Mu.MULLA), ADHAN_MAKKAH_ALL("adhan_makkah_all", Mu.HARAM), ADHAN_SARHI("adhan_sarhi", Mu.SARHI),
+    ADHAN_F_MULLA("adhan_f_mulla", Mu.MULLA), ADHAN_F_DAGHRIRI("adhan_f_daghriri", Mu.DAGHRIRI), ADHAN_F_MAJID("adhan_f_majid", Mu.MAJID),
     // iqamah (for tahajjud, ishraq and duha), when the app has the recordings
     IQAMA_MAKKAH("iqama_makkah", Mu.MULLA, "iqama"), IQAMA_MAKKAH_S("iqama_makkah_short", Mu.MULLA, "iqama"),
     IQAMA_MADINAH("iqama_madinah", Mu.BUKHARI, "iqama"), IQAMA_MADINAH_S("iqama_madinah_short", Mu.BUKHARI, "iqama"),
@@ -40,6 +43,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     TONE(null), NOTIFY(null), SILENT(null);
 
     val adhan get() = name.startsWith("ADHAN")
+    val fajrOnly get() = name.startsWith("ADHAN_F_")
     val bird get() = raw?.startsWith("birds") == true
     val short get() = phrase != null
     /** Makkah, Madinah or other (birds: "birds") */

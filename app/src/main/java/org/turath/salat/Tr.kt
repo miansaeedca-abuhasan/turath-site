@@ -262,6 +262,10 @@ object Tr {
         "duroodAdd" to arrayOf("فون سے آڈیو فائل شامل کریں", "أضف ملفًا صوتيًا من الهاتف", "Add an audio file from the phone"),
         "gmapsNearby" to arrayOf("گوگل میپس میں قریبی مساجد دیکھیں", "اعرض المساجد القريبة في خرائط Google", "See nearby masjids in Google Maps"),
         "adhanW" to arrayOf("اذان", "الأذان", "Adhan"),
+        "r_HARAM" to arrayOf("مسجد الحرام (مختلف مؤذن)", "المسجد الحرام (مؤذنون)", "Masjid al-Haram (various)"),
+        "r_SARHI" to arrayOf("عبدالمجید سریحی (مدینہ)", "عبد المجيد سريحي (المدينة)", "Abdul Majeed Sarhi (Madinah)"),
+        "r_MAJID" to arrayOf("محمد ماجد (مدینہ)", "محمد ماجد (المدينة)", "Muhammad Majid (Madinah)"),
+        "fajrTag" to arrayOf("فجر", "الفجر", "Fajr"),
         "r_MULLA" to arrayOf("علی احمد ملا", "علي أحمد ملا", "Ali Ahmad Mulla"),
         "r_DAGHRIRI" to arrayOf("حمد الدغریری", "حمد الدغريري", "Hamad al-Daghriri"),
         "r_BUKHARI" to arrayOf("عصام بخاری", "عصام بخاري", "Essam Bukhari"),
@@ -475,7 +479,7 @@ object Tr {
     fun snd(s: Snd): String = when {
         s.phrase == "iqama" -> get(s.name)
         s == Snd.ADHAN_AQSA -> get("adhanW") + " — " + get("r_AQSA")
-        s.adhan -> get("adhanW") + " — " + get("r_" + s.mu!!.name) + (if (s == Snd.ADHAN_DAGHRIRI2) " " + num(2) else "")
+        s.adhan -> get("adhanW") + " — " + get("r_" + s.mu!!.name) + (if (s == Snd.ADHAN_DAGHRIRI2 || s == Snd.ADHAN_MULLA2) " " + num(2) else "") + (if (s.fajrOnly) " (" + get("fajrTag") + ")" else "")
         s.phrase != null -> get("p_" + s.phrase) + " — " + get("r_" + s.mu!!.name)
         else -> get(s.name)
     }
