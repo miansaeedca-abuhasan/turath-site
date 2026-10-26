@@ -4046,6 +4046,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function showBook(b) {
     const box = $('#list'); box.replaceChildren(); await needChap(b);
     bar(bname(b), (subOf(b) ? subOf(b) + ' — ' : '') + CNT(b)(fmtN(b.count)), true);
+    // a book whose Urdu translation lives on another site: credit + links (b.ref = {ur, en, ar: [text, credit], u: [[label, url], ...]})
+    const refCard = () => { const r = b.ref; if (!r) return []; const t = r[ui] || r.ur, L = DIR(ui) === 'rtl' ? ui : ui;
+      return [el('div', {class: 'card refcard', lang: ui === 'ar' ? 'ar' : 'ur', dir: 'rtl'}, el('p', {class: 'reflinks'}, t[0], ' ', ...r.u.map(([l, u]) => el('a', {href: u, target: '_blank', rel: 'noopener'}, l))))]; };
+    box.append(...refCard());
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch'), 'aria-label': T('cSecSearch'), id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
@@ -4061,10 +4065,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         ...rs.flatMap((r, ri) => [rs.length > 1 ? el('p', {class: 'grp'}, rd(ri + 1)) : '',
           ...r.parts.map((u, i) => el('div', {style: 'margin:.5rem 0'}, el('div', {class: 'cs'}, pt(i + 1)), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%', dir: 'ltr'}))),
           el('p', {class: 'cs'}, src(r.host))]))]; };
-    // a book whose Urdu translation lives on another site: credit + links (b.ref = {ur, en, ar: [text, credit], u: [[label, url], ...]})
-    const refCard = () => { const r = b.ref; if (!r) return []; const t = r[ui] || r.ur, L = DIR(ui) === 'rtl' ? ui : ui;
-      return [el('div', {class: 'card refcard', lang: ui === 'ar' ? 'ar' : 'ur', dir: 'rtl'}, el('p', {class: 'reflinks'}, t[0], ' ', ...r.u.map(([l, u]) => el('a', {href: u, target: '_blank', rel: 'noopener'}, l))))]; };
-    const cover = () => refCard().concat(bookAudio()).concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
+    const cover = () => bookAudio().concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
     const row = s => el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
       el('span', {class: 'snum'}, fmtN(s[0])), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, secT(b, s)), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, [RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
     // books with group headings (فضائل صحابہ): each heading opens only its own babs
