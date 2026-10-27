@@ -81,14 +81,22 @@ class Widget : AppWidgetProvider() {
         fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#00838F") else Color.parseColor("#26C6DA")
         /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
         fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
-        /** the line under the times crawls slowly from the right to the left (an animated flipper: a «marquee» does not run on many launchers);
-         *  the text is repeated so that the crawl is never empty */
-        fun setTicker(v: RemoteViews, text: String, pr: Prefs) {
-            val unit = text.trim() + "     ◆     "
-            var out = unit
-            while (out.length < 480) out += unit
-            for (id in intArrayOf(R.id.tk0, R.id.tk1)) {
-                v.setTextViewText(id, out); v.setTextColor(id, tickerColor(pr)); size(v, id, 13f, pr)
+        /** the line under the times: each message crosses the widget slowly from the right to the left, one after another
+         *  (a «marquee» does not run on many launchers). A long message is cut into pieces that fit the width. */
+        fun setTicker(ctx: Context, v: RemoteViews, text: String, pr: Prefs) {
+            v.removeAllViews(R.id.tk)
+            val pieces = mutableListOf<String>()
+            for (item in text.split("◆").map { it.trim() }.filter { it.isNotEmpty() }) {
+                var line = ""
+                for (w in item.split(" ")) {
+                    if (line.isNotEmpty() && line.length + 1 + w.length > 34) { pieces += line; line = w } else line = if (line.isEmpty()) w else "$line $w"
+                }
+                if (line.isNotEmpty()) pieces += line
+            }
+            for (p in pieces.take(14)) {
+                val c = RemoteViews(ctx.packageName, R.layout.widget_tick_item)
+                c.setTextViewText(R.id.tkt, p); c.setTextColor(R.id.tkt, tickerColor(pr)); size(c, R.id.tkt, 13f, pr)
+                v.addView(R.id.tk, c)
             }
         }
 
@@ -171,7 +179,7 @@ class Widget : AppWidgetProvider() {
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
-                setTicker(v, ticker(pr, place, now, t), pr)
+                runCatching { setTicker(ctx, v, ticker(pr, place, now, t), pr) }
             }
             mgr.updateAppWidget(ids, v)
         }
@@ -283,7 +291,7 @@ class WidgetCal : AppWidgetProvider() {
                 org.turath.salat.ui.ISLAMIC_DAYS.filter { it.m == m && it.d == null }.forEach { items += Tr.hijriMonth(m) + ": " + Tr[it.key] }
                 val now = ZonedDateTime.now(Schedule.zone(place))
                 items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
-                Widget.setTicker(v, items.distinct().joinToString("     ◆     "), pr)
+                Widget.setTicker(ctx, v, items.distinct().joinToString("     ◆     "), pr)
             }
             mgr.updateAppWidget(ids, v)
         }

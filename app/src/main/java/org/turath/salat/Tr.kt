@@ -448,6 +448,7 @@ object Tr {
         "lmFail" to arrayOf("مسجد کے اوقات نہیں ملے۔ لہٰذا انہیں خود درست کریں۔", "لم تُوجد أوقات المسجد. لذا صحّحها بنفسك.", "The masjid's times were not found. Please correct them yourself."),
         "lmSite" to arrayOf("مسجد کی ویبسائٹ (اگر معلوم ہو)", "موقع المسجد (إن وُجد)", "Masjid website (if known)"),
         "lmRefresh" to arrayOf("ویبسائٹ سے اوقات دوبارہ لیں", "تحديث الأوقات من الموقع", "Read the times again from the website"),
+        "lmWeb" to arrayOf("ویب پر ڈھونڈیں", "ابحث في الويب عن", "Search the web for"),
         "lmUse" to arrayOf("یہی نام رکھیں", "استخدم هذا الاسم", "Use this name"),
         "lmName" to arrayOf("مسجد کا نام", "اسم المسجد", "Masjid name"),
         "lmCity" to arrayOf("شہر", "المدينة", "City"),

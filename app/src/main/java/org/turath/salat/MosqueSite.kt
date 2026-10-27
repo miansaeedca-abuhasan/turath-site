@@ -104,3 +104,58 @@ object MosqueSite {
         return if (best.found > 0) best else null
     }
 }
+
+/** finding a masjid by its name: OpenStreetMap's place search (Nominatim), and the masjid's website by an ordinary web search */
+object MosqueSearch {
+    data class Hit(val name: String, val address: String, val city: String, val km: Double, val website: String)
+
+    private fun httpGet(u: String, ms: Int = 12_000): String? = runCatching {
+        val c = URL(u).openConnection() as HttpURLConnection
+        c.connectTimeout = ms; c.readTimeout = ms
+        c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
+        c.setRequestProperty("Accept-Language", "en")
+        if (c.responseCode == 200) c.inputStream.use { it.readNBytes(2_000_000) }.toString(Charsets.UTF_8) else null
+    }.getOrNull()
+
+    /** masjids with this name, those near (lat, lng) first */
+    fun byName(q: String, lat: Double, lng: Double): List<Hit> {
+        fun ask(text: String): List<Hit> {
+            val box = "%.3f,%.3f,%.3f,%.3f".format(java.util.Locale.US, lng - 0.8, lat + 0.6, lng + 0.8, lat - 0.6)
+            val u = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&extratags=1&limit=15&viewbox=$box&q=" + java.net.URLEncoder.encode(text, "UTF-8")
+            val body = httpGet(u) ?: return emptyList()
+            val arr = runCatching { org.json.JSONArray(body) }.getOrNull() ?: return emptyList()
+            val out = mutableListOf<Hit>()
+            for (i in 0 until arr.length()) {
+                val o = arr.getJSONObject(i)
+                val a = o.optJSONObject("address"); val x = o.optJSONObject("extratags")
+                val name = o.optString("name").ifEmpty { o.optString("display_name").substringBefore(",") }
+                val city = listOf("city", "town", "village", "suburb", "hamlet", "county").firstNotNullOfOrNull { k -> a?.optString(k)?.takeIf { it.isNotEmpty() } } ?: ""
+                val road = listOfNotNull(a?.optString("house_number")?.takeIf { it.isNotEmpty() }, a?.optString("road")?.takeIf { it.isNotEmpty() }).joinToString(" ")
+                val km = Cities.dist(lat, lng, o.optDouble("lat"), o.optDouble("lon"))
+                out += Hit(name, listOf(road, city).filter { it.isNotEmpty() }.joinToString(", "), city, km,
+                    (x?.optString("website") ?: "").ifEmpty { x?.optString("contact:website") ?: "" }.ifEmpty { x?.optString("url") ?: "" })
+            }
+            return out
+        }
+        val first = ask(q).ifEmpty { if (Regex("masjid|mosque|islamic|centre|center|musall|jami", RegexOption.IGNORE_CASE).containsMatchIn(q)) emptyList() else ask("$q masjid") }
+        return first.distinctBy { it.name + it.address }.sortedBy { it.km }.take(8)
+    }
+
+    private val SKIP = Regex("facebook|instagram|twitter|x\\.com|youtube|yelp|google|wikipedia|tripadvisor|mapquest|bing|linkedin|pinterest|tiktok|salatomatic|islamicfinder|muslimpro|waze|foursquare|yellowpages|maps\\.apple", RegexOption.IGNORE_CASE)
+
+    /** the masjid's own website and its times: the first results of a web search are tried one after another */
+    fun viaWeb(name: String, city: String): Pair<String, MosqueSite.Times>? {
+        val q = java.net.URLEncoder.encode("$name $city prayer times iqamah", "UTF-8")
+        val html = httpGet("https://html.duckduckgo.com/html/?q=$q", 15_000) ?: return null
+        val urls = Regex("uddg=([^&\"']+)").findAll(html).map { runCatching { java.net.URLDecoder.decode(it.groupValues[1], "UTF-8") }.getOrDefault("") }
+            .filter { it.startsWith("http") && !SKIP.containsMatchIn(runCatching { URI(it).host }.getOrNull() ?: "") }
+            .distinctBy { runCatching { URI(it).host }.getOrNull() }.take(4).toList()
+        var best: Pair<String, MosqueSite.Times>? = null
+        for (u in urls) {
+            val t = runCatching { MosqueSite.fetch(u) }.getOrNull() ?: continue
+            if (best == null || t.found > best.second.found) best = u to t
+            if (t.iq.size >= 4) break
+        }
+        return best?.takeIf { it.second.found >= 3 }
+    }
+}

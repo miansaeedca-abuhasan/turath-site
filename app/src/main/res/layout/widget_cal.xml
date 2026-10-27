@@ -28,7 +28,7 @@
         <LinearLayout android:id="@+id/r3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" />
         <LinearLayout android:id="@+id/r4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" />
         <LinearLayout android:id="@+id/r5" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:orientation="horizontal" />
-        <ViewFlipper android:id="@+id/tk" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:autoStart="true" android:flipInterval="120000" android:inAnimation="@anim/tk_crawl"><TextView android:id="@+id/tk0" android:layout_width="4000dp" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="none" android:gravity="left" android:textDirection="ltr" android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="" /><TextView android:id="@+id/tk1" android:layout_width="4000dp" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="none" android:gravity="left" android:textDirection="ltr" android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="" /></ViewFlipper>
+        <ViewFlipper android:id="@+id/tk" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:autoStart="true" android:flipInterval="13000" android:inAnimation="@anim/tk_crawl" />
 
     </LinearLayout>
 </FrameLayout>

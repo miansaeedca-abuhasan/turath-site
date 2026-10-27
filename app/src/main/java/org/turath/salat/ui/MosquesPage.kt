@@ -32,7 +32,6 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
     var go by remember { mutableIntStateOf(0) }
     var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
     var reload by remember { mutableIntStateOf(0) }
-    LaunchedEffect(Unit) { if (!act.hasLocation()) { act.onPermResult = { reload++ }; act.askLocation() } }
     LaunchedEffect(go, reload, radius > 50) {
         if (go == 0) return@LaunchedEffect
         state = 0
@@ -51,7 +50,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                     for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
                 Spacer(Modifier.height(10.dp))
-                Button(onClick = { if (state != 0) go++ }, Modifier.fillMaxWidth().height(52.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(26.dp)) {
+                Button(onClick = { if (state != 0) { if (!act.hasLocation()) { act.onPermResult = { go++ }; act.askLocation() } else go++ } }, Modifier.fillMaxWidth().height(52.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(26.dp)) {
                     if (state == 0) { CircularProgressIndicator(Modifier.size(22.dp), color = LocalContentColor.current, strokeWidth = 2.5.dp); Spacer(Modifier.width(10.dp)) }
                     else { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Spacer(Modifier.width(8.dp)) }
                     Text(Tr["mosqSearch"], fontSize = 17.sp, fontWeight = FontWeight.Medium)

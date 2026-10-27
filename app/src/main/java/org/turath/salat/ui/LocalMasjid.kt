@@ -53,29 +53,34 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
     val primary = MaterialTheme.colorScheme.primary
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["lmMenu"], back)
-        // the masjids near the user (OpenStreetMap), filtered by the name as it is typed
-        var near by remember { mutableStateOf<List<Mosques.M>?>(null) }
         var q by remember { mutableStateOf("") }
+        var hits by remember { mutableStateOf<List<MosqueSearch.Hit>>(emptyList()) }
+        var searching by remember { mutableStateOf(false) }
         var status by remember { mutableStateOf("") }          // "", "busy", "ok", "none"
         var site by remember { mutableStateOf(pr.sp.getString("lm_site", "") ?: "") }
         val scope = rememberCoroutineScope()
-        LaunchedEffect(Unit) {
-            val here = Mosques.here(s.act, pr.place)
-            near = if (here == null) emptyList() else withContext(Dispatchers.IO) { runCatching { Mosques.find(s.act, here.first, here.second, 50) }.getOrDefault(emptyList()) }
+        // as the name is typed (a short pause after the last letter) the masjids with that name are looked up
+        LaunchedEffect(q) {
+            hits = emptyList()
+            if (q.trim().length < 3) { searching = false; return@LaunchedEffect }
+            kotlinx.coroutines.delay(700)
+            searching = true
+            hits = withContext(Dispatchers.IO) { runCatching { MosqueSearch.byName(q.trim(), place?.lat ?: 0.0, place?.lng ?: 0.0) }.getOrDefault(emptyList()) }
+            searching = false
         }
-        fun readSite(given: String) {
-            // no website known (the user typed the name): look for the masjid by its name among those nearby
-            var url = given
-            if (url.isBlank()) {
-                val words = name.lowercase().split(" ").filter { it.isNotBlank() }
-                url = near?.firstOrNull { m -> m.website.isNotBlank() && words.isNotEmpty() && words.all { w -> m.name.lowercase().contains(w) } }?.website ?: ""
-                if (url.isNotBlank()) { site = url; pr.sp.edit().putString("lm_site", url).apply() }
-            }
-            if (url.isBlank()) { status = "none"; return }
+        /** the times of the masjid: from its website; if that gives nothing, from the website a web search finds; what the user wrote stays when nothing is found */
+        fun resolve(n: String, c: String, given: String) {
             status = "busy"
             scope.launch {
-                val t = withContext(Dispatchers.IO) { runCatching { MosqueSite.fetch(url) }.getOrNull() }
+                var t: MosqueSite.Times? = null
+                var url = given
+                if (url.isNotBlank()) t = withContext(Dispatchers.IO) { runCatching { MosqueSite.fetch(url) }.getOrNull() }
+                if (t == null || t.found < 3) {
+                    val w = withContext(Dispatchers.IO) { runCatching { MosqueSearch.viaWeb(n, c) }.getOrNull() }
+                    if (w != null) { url = w.first; t = w.second }
+                }
                 if (t == null || t.found == 0) { status = "none"; return@launch }
+                site = url; pr.sp.edit().putString("lm_site", url).apply()
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
                 for ((k, m) in t.iq) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
@@ -83,31 +88,24 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 status = "ok"; ver++; s.changed()
             }
         }
+        fun choose(n: String, c: String, w: String) {
+            name = n; city = c; site = w; q = ""
+            pr.sp.edit().putString("lm_name", n).putString("lm_city", c).putString("lm_site", w).apply()
+            resolve(n, c, w)
+        }
         Card0 {
-            OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) })
-            val list = near
-            if (list == null) Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp); Text("  " + Tr["lmLoading"], fontSize = 13.sp) }
-            else if (q.isNotBlank()) {
-                val words = q.lowercase().split(" ").filter { it.isNotBlank() }
-                val hits = list.filter { m -> words.all { w -> (m.name + " " + m.address).lowercase().contains(w) } }.take(8)
-                if (hits.isEmpty()) {
-                    Text(Tr["lmNone"], Modifier.padding(top = 10.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
-                    TextButton(onClick = {
-                        name = q.trim(); city = place?.name ?: ""; site = ""
-                        pr.sp.edit().putString("lm_name", name).putString("lm_city", city).putString("lm_site", "").apply(); q = ""; status = "none"
-                    }) { Text(Tr["lmUse"] + " «" + q.trim() + "»") }
-                }
-                for (m in hits) Row(Modifier.fillMaxWidth().clickable {
-                    name = m.name; city = m.address.substringAfter(", ", "").substringBefore(",").ifEmpty { place?.name ?: "" }
-                    pr.sp.edit().putString("lm_name", name).putString("lm_city", city).putString("lm_site", m.website).apply()
-                    site = m.website; q = ""; readSite(m.website)
-                }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) },
+                trailingIcon = { if (searching) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) })
+            if (q.trim().length >= 3 && !searching) {
+                for (m in hits) Row(Modifier.fillMaxWidth().clickable { choose(m.name, m.city.ifEmpty { place?.name ?: "" }, m.website) }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(m.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
-                        Text(listOf(m.address, "%.1f km".format(m.km)).filter { it.isNotBlank() }.joinToString("  ·  "), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                        Text(listOf(m.address, Tr.num("%.1f".format(m.km)) + " " + Tr["km"]).filter { it.isNotBlank() }.joinToString("  ·  "), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
                     }
                     if (m.website.isNotBlank()) Icon(Icons.Outlined.Language, null, tint = primary)
                 }
+                // not in the list: the name as typed, its website looked for on the web
+                TextButton(onClick = { choose(q.trim(), place?.name ?: "", "") }) { Icon(Icons.Outlined.Language, null); Text("  " + Tr["lmWeb"] + " «" + q.trim() + "»") }
             }
         }
         when (status) {
@@ -116,7 +114,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
             "none" -> Card0 {
                 Text(Tr["lmFail"], fontSize = 13.sp, color = Color(0xFFB3261E))
                 OutlinedTextField(site, { site = it; pr.sp.edit().putString("lm_site", it).apply() }, Modifier.fillMaxWidth().padding(top = 8.dp), singleLine = true, label = { Text(Tr["lmSite"]) },
-                    trailingIcon = { IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, null) } })
+                    trailingIcon = { IconButton(onClick = { resolve(name, city, site) }) { Icon(Icons.Outlined.Refresh, null) } })
             }
         }
         if (place != null && name.isNotBlank()) {
@@ -139,7 +137,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                         // refresh: the masjid's committee changes the times from time to time
                         Box(Modifier.align(Alignment.TopEnd).size(48.dp), contentAlignment = Alignment.Center) {
                             if (status == "busy") CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
-                            else IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, Tr["lmRefresh"], tint = Color.White) }
+                            else IconButton(onClick = { resolve(name, city, site) }) { Icon(Icons.Outlined.Refresh, Tr["lmRefresh"], tint = Color.White) }
                         }
                     }
                     Row(Modifier.fillMaxWidth().background(primary.copy(alpha = .85f)).padding(horizontal = 16.dp, vertical = 12.dp)) {
