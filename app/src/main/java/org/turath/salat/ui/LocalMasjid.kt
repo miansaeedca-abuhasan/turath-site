@@ -1,0 +1,130 @@
+package org.turath.salat.ui
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import org.turath.salat.*
+import java.time.ZonedDateTime
+
+/** «My local masjid»: the masjid's name and place, and its congregation (iqamah) times, written by the user as they are on the masjid's own
+ *  timetable. The five prayers and up to three Jumu'ah prayers are shown in a table beside the calculated start times, and the phone's
+ *  vibration is set to start at the masjid's time (it can be changed on the vibration page afterwards). */
+object LocalMasjid {
+    fun name(pr: Prefs) = pr.sp.getString("lm_name", "") ?: ""
+    fun city(pr: Prefs) = pr.sp.getString("lm_city", "") ?: ""
+    fun iqamah(pr: Prefs, k: String) = pr.sp.getInt("lm_iq_$k", -1)
+    fun setIqamah(pr: Prefs, k: String, m: Int) = pr.sp.edit().putInt("lm_iq_$k", m).apply()
+    fun jumuah(pr: Prefs): List<Int> = (pr.sp.getString("lm_jum", "") ?: "").split(",").mapNotNull { it.toIntOrNull() }.take(3)
+    fun setJumuah(pr: Prefs, l: List<Int>) = pr.sp.edit().putString("lm_jum", l.take(3).joinToString(",")).apply()
+
+    /** the vibration of a prayer starts when the masjid's iqamah is, counted from the start of the prayer */
+    fun applyVibration(pr: Prefs, key: String, begin: ZonedDateTime, iqamahMin: Int) {
+        val off = (iqamahMin - (begin.hour * 60 + begin.minute)).coerceIn(0, 120)
+        pr.setVibAfter(key, true); pr.setVibFrom(key, off)
+    }
+}
+
+@Composable
+fun LocalMasjidPage(s: AppState, back: () -> Unit) {
+    val pr = s.prefs
+    val place = pr.place
+    var ver by remember { mutableIntStateOf(0) }
+    @Suppress("UNUSED_VARIABLE") val v = ver
+    var name by remember { mutableStateOf(LocalMasjid.name(pr)) }
+    var city by remember { mutableStateOf(LocalMasjid.city(pr).ifEmpty { place?.name ?: "" }) }
+    val primary = MaterialTheme.colorScheme.primary
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+        TopBar(Tr["lmMenu"], back)
+        Card0 {
+            OutlinedTextField(name, { name = it; pr.sp.edit().putString("lm_name", it).apply() }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmName"]) })
+            Spacer(Modifier.height(8.dp))
+            OutlinedTextField(city, { city = it; pr.sp.edit().putString("lm_city", it).apply() }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmCity"]) })
+        }
+        if (place != null && name.isNotBlank()) {
+            val now = s.now.withZoneSameInstant(Schedule.zone(place))
+            val day = Schedule.day(pr, place, now.toLocalDate())
+            val st = Schedule.state(pr, place, now)
+            val zone = Schedule.zone(place)
+            fun at(m: Int) = now.toLocalDate().atStartOfDay(zone).plusMinutes(m.toLong())
+            fun pick(cur: Int, set: (Int) -> Unit) {
+                val c = if (cur >= 0) cur else (now.hour * 60 + now.minute)
+                android.app.TimePickerDialog(s.act, { _, h, m -> set(h * 60 + m); ver++; s.changed() }, c / 60, c % 60, android.text.format.DateFormat.is24HourFormat(s.act)).show()
+            }
+            Card(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), shape = RoundedCornerShape(16.dp)) {
+                Column {
+                    Column(Modifier.fillMaxWidth().background(primary).padding(vertical = 14.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(name, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        if (city.isNotBlank()) Text(city, color = Color.White.copy(alpha = .9f), fontSize = 15.sp)
+                    }
+                    Row(Modifier.fillMaxWidth().background(primary.copy(alpha = .85f)).padding(horizontal = 16.dp, vertical = 12.dp)) {
+                        Text(Tr["lmSalah"], Modifier.weight(1.2f), color = Color.White, fontWeight = FontWeight.Bold)
+                        Text(Tr["lmBegins"], Modifier.weight(1f), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                        Text(Tr["lmIqamah"], Modifier.weight(1f), color = Color.White, fontWeight = FontWeight.Bold, textAlign = TextAlign.End)
+                    }
+                    var n = 0
+                    @Composable
+                    fun row(label: String, begin: String, iq: Int?, hot: Boolean, onClick: (() -> Unit)?, onRemove: (() -> Unit)? = null) {
+                        val bg = if (hot) primary else if (n++ % 2 == 0) MaterialTheme.colorScheme.surface else primary.copy(alpha = .10f)
+                        val ink = if (hot) Color.White else MaterialTheme.colorScheme.onSurface
+                        Row(Modifier.fillMaxWidth().background(bg).padding(horizontal = 16.dp, vertical = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(label, Modifier.weight(1.2f), color = ink, fontSize = 16.sp, fontWeight = if (hot) FontWeight.Bold else FontWeight.Normal)
+                            Text(begin, Modifier.weight(1f), color = ink, fontSize = 16.sp, textAlign = TextAlign.Center)
+                            if (iq != null) {
+                                Row(Modifier.weight(1f).clickable(enabled = onClick != null) { onClick?.invoke() }, horizontalArrangement = Arrangement.End, verticalAlignment = Alignment.CenterVertically) {
+                                    Text(if (iq >= 0) s.fmt(at(iq)) else "— — —", color = if (iq >= 0) ink else ink.copy(alpha = .5f), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                                    if (onRemove != null) Icon(Icons.Outlined.Close, Tr["delete"], Modifier.padding(start = 6.dp).size(18.dp).clickable { onRemove() }, tint = ink.copy(alpha = .7f))
+                                }
+                            } else Spacer(Modifier.weight(1f))
+                        }
+                    }
+                    for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) {
+                        val hot = st.current == p
+                        if (p == P.SUNRISE) row(Tr.p(p).substringBefore(" ("), s.fmt(day[p]), null, hot, null)
+                        else {
+                            val k = p.name
+                            row(Tr.p(p).substringBefore(" ("), s.fmt(day[p]), LocalMasjid.iqamah(pr, k), hot, {
+                                pick(LocalMasjid.iqamah(pr, k)) { m -> LocalMasjid.setIqamah(pr, k, m); LocalMasjid.applyVibration(pr, k, day[p], m) }
+                            })
+                        }
+                    }
+                    val jum = LocalMasjid.jumuah(pr)
+                    jum.forEachIndexed { i, m ->
+                        row(Tr["JUMUAH"] + (if (jum.size > 1) " " + Tr.num(i + 1) else ""), s.fmt(day[P.DHUHR]), m, false, {
+                            pick(m) { x ->
+                                val l = jum.toMutableList(); l[i] = x; LocalMasjid.setJumuah(pr, l)
+                                LocalMasjid.applyVibration(pr, "JUMUAH", day[P.DHUHR], l.min())
+                            }
+                        }, {
+                            val l = jum.toMutableList(); l.removeAt(i); LocalMasjid.setJumuah(pr, l); ver++; s.changed()
+                        })
+                    }
+                    if (jum.size < 3) TextButton(onClick = {
+                        pick(-1) { x ->
+                            val l = (jum + x).sorted(); LocalMasjid.setJumuah(pr, l)
+                            LocalMasjid.applyVibration(pr, "JUMUAH", day[P.DHUHR], l.min())
+                        }
+                    }, Modifier.fillMaxWidth()) { Icon(Icons.Outlined.Add, null); Text("  " + Tr["lmAddJumuah"]) }
+                }
+            }
+            Text(Tr["lmNote"], Modifier.padding(horizontal = 20.dp, vertical = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
+        } else {
+            Text(Tr["lmIntro"], Modifier.padding(20.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
+        }
+        Spacer(Modifier.height(30.dp))
+    }
+}

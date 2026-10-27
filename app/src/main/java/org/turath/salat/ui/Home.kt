@@ -59,7 +59,7 @@ fun HomeScreen(s: AppState) {
                 // forbidden time: the moving line stops, a red message blinks
                 val blink by androidx.compose.animation.core.rememberInfiniteTransition(label = "blink").animateFloat(1f, .15f,
                     androidx.compose.animation.core.infiniteRepeatable(androidx.compose.animation.core.tween(600), androidx.compose.animation.core.RepeatMode.Reverse), label = "a")
-                Text("⛔ " + Tr["prohibited"] + "  " + s.fmt(forb.first) + " – " + s.fmt(forb.second) + "   \u200E− " + hms(Duration.between(now, forb.second).seconds.coerceAtLeast(0)),
+                Text("⛔ " + Tr["prohibitedEnd"] + " - " + s.fmt(forb.second) + "   \u200E− " + hms(Duration.between(now, forb.second).seconds.coerceAtLeast(0)),
                     Modifier.fillMaxWidth().graphicsLayer { alpha = blink }, maxLines = 1, fontSize = 14.sp, fontWeight = FontWeight.Bold,
                     color = Color(0xFFD32F2F), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
             } else

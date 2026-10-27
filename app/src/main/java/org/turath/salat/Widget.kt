@@ -81,6 +81,17 @@ class Widget : AppWidgetProvider() {
         fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#00838F") else Color.parseColor("#26C6DA")
         /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
         fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
+        /** the line under the times crawls slowly from the right to the left (an animated flipper: a «marquee» does not run on many launchers);
+         *  the text is repeated so that the crawl is never empty */
+        fun setTicker(v: RemoteViews, text: String, pr: Prefs) {
+            val unit = text.trim() + "     ◆     "
+            var out = unit
+            while (out.length < 480) out += unit
+            for (id in intArrayOf(R.id.tk0, R.id.tk1)) {
+                v.setTextViewText(id, out); v.setTextColor(id, tickerColor(pr)); size(v, id, 13f, pr)
+            }
+        }
+
         private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
 
         /** the background with the chosen transparency, light or dark */
@@ -147,11 +158,11 @@ class Widget : AppWidgetProvider() {
                 val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL])
                 v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
                 if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
-                v.setViewVisibility(R.id.ticker, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
+                v.setViewVisibility(R.id.tk, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
                 if (fb) {
                     val span = t.forbiddenAt(now)!!
-                    val msg = "⛔ " + Tr["prohibited"] + "  " + Alarms.fmt(pr, span.first) + " – " + Alarms.fmt(pr, span.second)
+                    val msg = "⛔ " + Tr["prohibitedEnd"] + " - " + Alarms.fmt(pr, span.second)
                     val b = SystemClock.elapsedRealtime() - System.currentTimeMillis()
                     for ((tv, ch) in listOf(R.id.tb0 to R.id.tc0, R.id.tb1 to R.id.tc1)) {
                         v.setTextViewText(tv, msg)
@@ -160,8 +171,7 @@ class Widget : AppWidgetProvider() {
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
-                v.setTextViewText(R.id.ticker, ticker(pr, place, now, t))
-                v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)
+                setTicker(v, ticker(pr, place, now, t), pr)
             }
             mgr.updateAppWidget(ids, v)
         }
@@ -273,8 +283,7 @@ class WidgetCal : AppWidgetProvider() {
                 org.turath.salat.ui.ISLAMIC_DAYS.filter { it.m == m && it.d == null }.forEach { items += Tr.hijriMonth(m) + ": " + Tr[it.key] }
                 val now = ZonedDateTime.now(Schedule.zone(place))
                 items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
-                v.setTextViewText(R.id.ticker, items.distinct().joinToString("     ◆     "))
-                v.setTextColor(R.id.ticker, Widget.tickerColor(pr))
+                Widget.setTicker(v, items.distinct().joinToString("     ◆     "), pr)
             }
             mgr.updateAppWidget(ids, v)
         }

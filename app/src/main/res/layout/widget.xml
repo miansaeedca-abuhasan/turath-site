@@ -46,20 +46,15 @@
                 <TextView android:id="@+id/w5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:textSize="14sp" android:maxLines="1"  android:text="0:00" />
             </LinearLayout>
         </LinearLayout>
-        <TextView android:id="@+id/ticker" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" 
-            android:singleLine="true" android:ellipsize="marquee" android:marqueeRepeatLimit="marquee_forever" android:scrollHorizontally="true"
-            android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true"
-            android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="">
-            <requestFocus android:focusable="true" android:focusableInTouchMode="true" android:duplicateParentState="true" />
-        </TextView>
+        <ViewFlipper android:id="@+id/tk" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="2dp" android:autoStart="true" android:flipInterval="120000" android:inAnimation="@anim/tk_crawl"><TextView android:id="@+id/tk0" android:layout_width="4000dp" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="none" android:gravity="left" android:textDirection="ltr" android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="" /><TextView android:id="@+id/tk1" android:layout_width="4000dp" android:layout_height="wrap_content" android:singleLine="true" android:ellipsize="none" android:gravity="left" android:textDirection="ltr" android:textColor="#FFD54F" android:textSize="13sp" android:textStyle="bold" android:text="" /></ViewFlipper>
             <ViewFlipper android:id="@+id/tbl" android:layout_width="match_parent" android:layout_height="wrap_content" android:autoStart="true" android:flipInterval="600" android:visibility="gone">
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center">
-                    <TextView android:id="@+id/tb0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:textColor="#FF3B30" android:textSize="13sp" android:textStyle="bold" android:text="" />
-                    <Chronometer android:id="@+id/tc0" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#FF3B30" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tb0" android:layout_width="0dp" android:layout_weight="1" android:gravity="end" android:layout_height="wrap_content" android:singleLine="true" android:textColor="#FF3B30" android:textSize="12sp" android:textStyle="bold" android:text="" />
+                    <Chronometer android:id="@+id/tc0" android:layout_width="wrap_content" android:singleLine="true" android:minWidth="64dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#FF3B30" android:textSize="13sp" android:textStyle="bold" />
                 </LinearLayout>
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center">
-                    <TextView android:id="@+id/tb1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:singleLine="true" android:textColor="#00FF3B30" android:textSize="13sp" android:textStyle="bold" android:text="" />
-                    <Chronometer android:id="@+id/tc1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#00FF3B30" android:textSize="13sp" android:textStyle="bold" />
+                    <TextView android:id="@+id/tb1" android:layout_width="0dp" android:layout_weight="1" android:gravity="end" android:layout_height="wrap_content" android:singleLine="true" android:textColor="#00FF3B30" android:textSize="12sp" android:textStyle="bold" android:text="" />
+                    <Chronometer android:id="@+id/tc1" android:layout_width="wrap_content" android:singleLine="true" android:minWidth="64dp" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#00FF3B30" android:textSize="13sp" android:textStyle="bold" />
                 </LinearLayout>
             </ViewFlipper>
         <TextView android:id="@+id/date2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="#AAFFFFFF" android:textSize="11sp" android:maxLines="1" android:layout_gravity="center_horizontal" android:text="" />
