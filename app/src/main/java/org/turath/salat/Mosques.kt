@@ -20,7 +20,7 @@ import java.util.Locale
  * denomination and by words in their names; a mosque the user hides is not listed again.
  */
 object Mosques {
-    data class M(val id: String, val name: String, val lat: Double, val lng: Double, val km: Double, var address: String, val sunni: Boolean = false)
+    data class M(val id: String, val name: String, val lat: Double, val lng: Double, val km: Double, var address: String, val sunni: Boolean = false, val website: String = "")
 
     private val DENOM = Regex("shia|shi'a|shiite|twelver|ithna|ismaili|isma'ili|nizari|dawoodi|bohra|bohora|ahmadi|qadiani|lahori|alawi|alevi|druze|nation_of_islam|zaidi", RegexOption.IGNORE_CASE)
     private val NAME = Regex(
@@ -165,7 +165,8 @@ object Mosques {
             val addr = listOf(listOf(t.optString("addr:housenumber"), t.optString("addr:street")).filter { it.isNotEmpty() }.joinToString(" "),
                 t.optString("addr:city"), t.optString("addr:province").ifEmpty { t.optString("addr:state") }, t.optString("addr:postcode"))
                 .filter { it.isNotEmpty() }.joinToString(", ")
-            out += M(id, name, la, lo, Cities.dist(lat, lng, la, lo), addr, SUNNI.containsMatchIn(t.optString("denomination") + " " + t.optString("religious_affiliation")))
+            out += M(id, name, la, lo, Cities.dist(lat, lng, la, lo), addr, SUNNI.containsMatchIn(t.optString("denomination") + " " + t.optString("religious_affiliation")),
+                t.optString("website").ifEmpty { t.optString("contact:website") }.ifEmpty { t.optString("url") })
         }
         skipped = skip.distinct()
         return out.filter { it.km <= km + 0.5 }.sortedBy { it.km }

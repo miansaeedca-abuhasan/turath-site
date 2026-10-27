@@ -18,6 +18,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.turath.salat.*
 import java.time.ZonedDateTime
 
@@ -50,11 +53,66 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
     val primary = MaterialTheme.colorScheme.primary
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["lmMenu"], back)
-        Card0 {
-            OutlinedTextField(name, { name = it; pr.sp.edit().putString("lm_name", it).apply() }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmName"]) })
-            Spacer(Modifier.height(8.dp))
-            OutlinedTextField(city, { city = it; pr.sp.edit().putString("lm_city", it).apply() }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmCity"]) })
+        // the masjids near the user (OpenStreetMap), filtered by the name as it is typed
+        var near by remember { mutableStateOf<List<Mosques.M>?>(null) }
+        var q by remember { mutableStateOf("") }
+        var status by remember { mutableStateOf("") }          // "", "busy", "ok", "none"
+        var site by remember { mutableStateOf(pr.sp.getString("lm_site", "") ?: "") }
+        val scope = rememberCoroutineScope()
+        LaunchedEffect(Unit) {
+            val here = Mosques.here(s.act, pr.place)
+            near = if (here == null) emptyList() else withContext(Dispatchers.IO) { runCatching { Mosques.find(s.act, here.first, here.second, 50) }.getOrDefault(emptyList()) }
         }
+        fun readSite(url: String) {
+            if (url.isBlank()) { status = "none"; return }
+            status = "busy"
+            scope.launch {
+                val t = withContext(Dispatchers.IO) { runCatching { MosqueSite.fetch(url) }.getOrNull() }
+                if (t == null || t.found == 0) { status = "none"; return@launch }
+                val pl = pr.place
+                val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
+                for ((k, m) in t.iq) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
+                if (t.jumuah.isNotEmpty()) { LocalMasjid.setJumuah(pr, t.jumuah); day?.let { d -> LocalMasjid.applyVibration(pr, "JUMUAH", d[P.DHUHR], t.jumuah.min()) } }
+                status = "ok"; ver++; s.changed()
+            }
+        }
+        Card0 {
+            OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) })
+            val list = near
+            if (list == null) Row(Modifier.padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp); Text("  " + Tr["lmLoading"], fontSize = 13.sp) }
+            else if (q.isNotBlank()) {
+                val words = q.lowercase().split(" ").filter { it.isNotBlank() }
+                val hits = list.filter { m -> words.all { w -> (m.name + " " + m.address).lowercase().contains(w) } }.take(8)
+                if (hits.isEmpty()) {
+                    Text(Tr["lmNone"], Modifier.padding(top = 10.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                    TextButton(onClick = {
+                        name = q.trim(); city = place?.name ?: ""; site = ""
+                        pr.sp.edit().putString("lm_name", name).putString("lm_city", city).putString("lm_site", "").apply(); q = ""; status = "none"
+                    }) { Text(Tr["lmUse"] + " «" + q.trim() + "»") }
+                }
+                for (m in hits) Row(Modifier.fillMaxWidth().clickable {
+                    name = m.name; city = m.address.substringAfter(", ", "").substringBefore(",").ifEmpty { place?.name ?: "" }
+                    pr.sp.edit().putString("lm_name", name).putString("lm_city", city).putString("lm_site", m.website).apply()
+                    site = m.website; q = ""; readSite(m.website)
+                }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(m.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                        Text(listOf(m.address, "%.1f km".format(m.km)).filter { it.isNotBlank() }.joinToString("  ·  "), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+                    }
+                    if (m.website.isNotBlank()) Icon(Icons.Outlined.Language, null, tint = primary)
+                }
+            }
+        }
+        when (status) {
+            "busy" -> Row(Modifier.padding(horizontal = 20.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp); Text("  " + Tr["lmReading"], fontSize = 13.sp) }
+            "ok" -> Text(Tr["lmOk"], Modifier.padding(horizontal = 20.dp, vertical = 6.dp), fontSize = 13.sp, color = primary, fontWeight = FontWeight.Bold)
+            "none" -> Card0 {
+                Text(Tr["lmFail"], fontSize = 13.sp, color = Color(0xFFB3261E))
+                OutlinedTextField(site, { site = it; pr.sp.edit().putString("lm_site", it).apply() }, Modifier.fillMaxWidth().padding(top = 8.dp), singleLine = true, label = { Text(Tr["lmSite"]) },
+                    trailingIcon = { IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, null) } })
+            }
+        }
+        if (name.isNotBlank() && site.isNotBlank() && status != "busy") TextButton(onClick = { readSite(site) }, Modifier.padding(horizontal = 12.dp)) { Icon(Icons.Outlined.Refresh, null); Text("  " + Tr["lmRefresh"]) }
         if (place != null && name.isNotBlank()) {
             val now = s.now.withZoneSameInstant(Schedule.zone(place))
             val day = Schedule.day(pr, place, now.toLocalDate())
