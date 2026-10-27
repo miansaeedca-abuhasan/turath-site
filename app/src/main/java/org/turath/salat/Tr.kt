@@ -455,7 +455,7 @@ object Tr {
         "lmBegins" to arrayOf("آغاز", "يبدأ", "Begins"),
         "lmIqamah" to arrayOf("جماعت", "الإقامة", "Iqamah"),
         "lmAddJumuah" to arrayOf("جمعہ کی ایک اور نماز", "إضافة صلاة جمعة", "Add a Jumu'ah prayer"),
-        "lmNote" to arrayOf("جماعت کا وقت اپنی مسجد کی ویبسائٹ یا بورڈ سے لکھیں؛ وقت دبانے سے بدل جاتا ہے۔ وقت لکھتے ہی وائبریشن کا آغاز مسجد کی جماعت پر لگ جاتا ہے، پھر آپ اسے وائبریشن کے صفحے میں اپنی مرضی سے بدل سکتے ہیں۔", "اكتب وقت الإقامة من موقع مسجدك أو لوحته؛ المس الوقت لتغييره. عند كتابته يُضبط بدء الاهتزاز على إقامة المسجد، ويمكنك تعديله من صفحة الاهتزاز.", "Write the congregation times from your masjid's website or board; tap a time to change it. The vibration is set to start at the masjid's time, and you can change it on the vibration page."),
+        "lmNote" to arrayOf("کوئی وقت غلط ہو تو اسے دبا کر درست کر لیں۔ مسجد کی انتظامیہ وقت بدلے تو اوپر ریفریش کا بٹن دبائیں۔ وقت لکھتے ہی وائبریشن کا آغاز مسجد کی جماعت پر لگ جاتا ہے، پھر آپ اسے وائبریشن کے صفحے میں اپنی مرضی سے بدل سکتے ہیں۔", "اكتب وقت الإقامة من موقع مسجدك أو لوحته؛ المس الوقت لتغييره. عند كتابته يُضبط بدء الاهتزاز على إقامة المسجد، ويمكنك تعديله من صفحة الاهتزاز.", "Write the congregation times from your masjid's website or board; tap a time to change it. The vibration is set to start at the masjid's time, and you can change it on the vibration page."),
         "lmIntro" to arrayOf("اپنی مسجد کا نام لکھیں تو اس کے اوقات کا پینل بن جائے گا۔", "اكتب اسم مسجدك لتظهر لوحة أوقاته.", "Write your masjid's name and its timetable panel appears."),
         "prohibitedEnd" to arrayOf("ممنوع وقت ختم", "انتهاء وقت النهي", "Prohibited Time End"),
         "prohibited" to arrayOf("ممنوع وقت", "ممنوع الوقت", "Prohibited Time"),

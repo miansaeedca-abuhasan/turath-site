@@ -112,7 +112,6 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     trailingIcon = { IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, null) } })
             }
         }
-        if (name.isNotBlank() && site.isNotBlank() && status != "busy") TextButton(onClick = { readSite(site) }, Modifier.padding(horizontal = 12.dp)) { Icon(Icons.Outlined.Refresh, null); Text("  " + Tr["lmRefresh"]) }
         if (place != null && name.isNotBlank()) {
             val now = s.now.withZoneSameInstant(Schedule.zone(place))
             val day = Schedule.day(pr, place, now.toLocalDate())
@@ -125,9 +124,16 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
             }
             Card(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 8.dp), shape = RoundedCornerShape(16.dp)) {
                 Column {
-                    Column(Modifier.fillMaxWidth().background(primary).padding(vertical = 14.dp, horizontal = 16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(name, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
-                        if (city.isNotBlank()) Text(city, color = Color.White.copy(alpha = .9f), fontSize = 15.sp)
+                    Box(Modifier.fillMaxWidth().background(primary)) {
+                        Column(Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 48.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(name, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
+                            if (city.isNotBlank()) Text(city, color = Color.White.copy(alpha = .9f), fontSize = 15.sp)
+                        }
+                        // refresh: the masjid's committee changes the times from time to time
+                        if (site.isNotBlank()) Box(Modifier.align(Alignment.TopEnd).size(48.dp), contentAlignment = Alignment.Center) {
+                            if (status == "busy") CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
+                            else IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, Tr["lmRefresh"], tint = Color.White) }
+                        }
                     }
                     Row(Modifier.fillMaxWidth().background(primary.copy(alpha = .85f)).padding(horizontal = 16.dp, vertical = 12.dp)) {
                         Text(Tr["lmSalah"], Modifier.weight(1.2f), color = Color.White, fontWeight = FontWeight.Bold)
