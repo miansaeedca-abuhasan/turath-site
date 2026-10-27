@@ -3981,7 +3981,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   C.shm = {};
   // coll/shmap2_<book>.js: per commentary book a list [first hadith, last hadith, kind, row1, offset1, row2, offset2]; kind 0 = the commentary of that very hadith, 1 = of its chapter (bab)
   window.SHMAP2 = (k, m) => { const o = {}; for (const sk in m) { const mp = new Map(); m[sk].forEach(e => { for (let n = e[0]; n <= Math.min(e[1], e[0] + 400); n++) { if (!mp.has(n)) mp.set(n, []); mp.get(n).push(e); } }); o[sk] = mp; } C.shm[k] = o; };
-  const SHT = new Set(['bukhari', 'abudawud', 'ibnmajah', 'malik', 'tirmidhi']);
+  const SHT = new Set(['bukhari', 'abudawud', 'ibnmajah', 'malik', 'tirmidhi', 'mishkat']);
   const needShm = k => C.shm[k] ? Promise.resolve() : (C.loading['shm_' + k] || (C.loading['shm_' + k] = load('coll/shmap2_' + k + '.js').catch(() => { C.shm[k] = {}; })));
   const shFind = (tk, sk, n) => { const mp = C.shm[tk] && C.shm[tk][sk], l = mp && mp.get(n); return l && l.length ? l : null; };
   const SH_SHORT = 900, SH_CAP = 24000;
