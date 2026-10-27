@@ -63,7 +63,14 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
             val here = Mosques.here(s.act, pr.place)
             near = if (here == null) emptyList() else withContext(Dispatchers.IO) { runCatching { Mosques.find(s.act, here.first, here.second, 50) }.getOrDefault(emptyList()) }
         }
-        fun readSite(url: String) {
+        fun readSite(given: String) {
+            // no website known (the user typed the name): look for the masjid by its name among those nearby
+            var url = given
+            if (url.isBlank()) {
+                val words = name.lowercase().split(" ").filter { it.isNotBlank() }
+                url = near?.firstOrNull { m -> m.website.isNotBlank() && words.isNotEmpty() && words.all { w -> m.name.lowercase().contains(w) } }?.website ?: ""
+                if (url.isNotBlank()) { site = url; pr.sp.edit().putString("lm_site", url).apply() }
+            }
             if (url.isBlank()) { status = "none"; return }
             status = "busy"
             scope.launch {
@@ -130,7 +137,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                             if (city.isNotBlank()) Text(city, color = Color.White.copy(alpha = .9f), fontSize = 15.sp)
                         }
                         // refresh: the masjid's committee changes the times from time to time
-                        if (site.isNotBlank()) Box(Modifier.align(Alignment.TopEnd).size(48.dp), contentAlignment = Alignment.Center) {
+                        Box(Modifier.align(Alignment.TopEnd).size(48.dp), contentAlignment = Alignment.Center) {
                             if (status == "busy") CircularProgressIndicator(Modifier.size(22.dp), strokeWidth = 2.dp, color = Color.White)
                             else IconButton(onClick = { readSite(site) }) { Icon(Icons.Outlined.Refresh, Tr["lmRefresh"], tint = Color.White) }
                         }

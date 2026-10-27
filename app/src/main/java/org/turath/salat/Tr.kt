@@ -445,7 +445,7 @@ object Tr {
         "lmNone" to arrayOf("اس نام کی کوئی مسجد قریب نہیں ملی", "لم يُعثر على مسجد بهذا الاسم قريبًا", "No masjid with this name was found nearby"),
         "lmReading" to arrayOf("مسجد کی ویبسائٹ سے اوقات پڑھے جا رہے ہیں…", "جارٍ قراءة الأوقات من موقع المسجد…", "Reading the times from the masjid's website…"),
         "lmOk" to arrayOf("اوقات مسجد کی ویبسائٹ سے لگ گئے اور وائبریشن اسی کے مطابق ہو گئی", "تم ضبط الأوقات من موقع المسجد وضُبط الاهتزاز عليها", "Times set from the masjid's website, and the vibration follows them"),
-        "lmFail" to arrayOf("اس مسجد کی ویبسائٹ سے اوقات پڑھے نہیں جا سکے۔ ویبسائٹ معلوم ہو تو لکھیں، یا نیچے جماعت کا وقت دبا کر خود لگا دیں۔", "تعذّرت قراءة الأوقات من موقع هذا المسجد. اكتب الموقع إن عرفته أو اضبط الأوقات بنفسك أدناه.", "The times could not be read from this masjid's website. Write its website if you know it, or set the times yourself below."),
+        "lmFail" to arrayOf("مسجد کے اوقات نہیں ملے۔ جو وقت آپ نے رکھے ہیں وہی رہیں گے؛ انہیں نیچے خود درست کریں۔ مسجد کی ویبسائٹ معلوم ہو تو یہاں لکھ دیں۔", "لم تُوجد أوقات المسجد. تبقى الأوقات التي ضبطتها كما هي؛ صحّحها بنفسك أدناه. إن عرفت موقع المسجد فاكتبه هنا.", "The masjid's times were not found. The times you set stay as they are; correct them yourself below. If you know the masjid's website, write it here."),
         "lmSite" to arrayOf("مسجد کی ویبسائٹ (اگر معلوم ہو)", "موقع المسجد (إن وُجد)", "Masjid website (if known)"),
         "lmRefresh" to arrayOf("ویبسائٹ سے اوقات دوبارہ لیں", "تحديث الأوقات من الموقع", "Read the times again from the website"),
         "lmUse" to arrayOf("یہی نام رکھیں", "استخدم هذا الاسم", "Use this name"),
