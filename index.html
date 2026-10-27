@@ -232,6 +232,7 @@ body.withplayer .resume.float{display:none}
 .rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
 .rjline{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.2rem}.rjbooks{font:.78rem/1.4 system-ui;color:var(--muted,#7a7468)}.rjbk{display:inline-block;margin-inline-start:.6rem;font:.72rem/1.6 system-ui;color:var(--muted,#7a7468);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .5rem}
 .rjbody{padding:.6rem .8rem}.rjinner{padding:.3rem .8rem .6rem}.bkno{display:inline-block;min-width:1.6rem;text-align:center;margin-inline-end:.5rem;font:700 .72rem/1.6 system-ui;background:var(--wash,#e6eef6);color:var(--accent,#2f7fc0);border-radius:999px;padding:0 .35rem}.newtag{display:inline-block;margin-inline-start:.5rem;font:700 .65rem/1.4 system-ui;background:#d4380d;color:#fff;border-radius:999px;padding:.05rem .5rem;vertical-align:middle}.newsbody{padding:.5rem .9rem}.newsitem{margin-bottom:.8rem}.newsul{margin:.2rem 0 .4rem;padding-inline-start:1.3rem}.newsul li{margin:.4rem 0;line-height:1.9}
+.shbox{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:12px;padding:.2rem .8rem;background:var(--card2,rgba(127,127,127,.05))}.shbox>summary{cursor:pointer;font-weight:700;padding:.45rem 0;color:var(--accent);display:flex;align-items:center;gap:.5rem}.shbox>summary .shn{background:var(--accent);color:#fff;border-radius:999px;min-width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;padding:0 .4rem}.shitem{border-top:1px solid var(--line,rgba(127,127,127,.25));padding:.6rem 0 .5rem}.shitem:first-child{border-top:0}.shname{font:700 1.1rem/1.7 var(--arabic);color:var(--accent);text-decoration:none}.shtx{font-family:var(--arabic);font-size:1.12rem;line-height:2.1}.shtx p{margin:.3rem 0}.shtools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
 .rjsanad{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;padding:.2rem .7rem}.rjsanad>summary{cursor:pointer;font-weight:600;padding:.4rem 0;color:var(--accent)}.rjsanad .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .6rem}.rjsanad .btn{font:1.05rem/1.9 var(--arabic)}
 .rjchips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .8rem}.rjchips .chip{border:1px solid var(--line,#d9d2c3);background:transparent;color:inherit;border-radius:999px;padding:.25rem .8rem;font:inherit;cursor:pointer}.rjchips .chip.on{background:var(--accent,#0b5d4b);color:#fff;border-color:transparent}
 .rjcard{margin:.2rem 0 .6rem}.rjhead{text-align:center;padding:.5rem .4rem .8rem;border-bottom:1px solid var(--line,#d9d2c3);margin-bottom:.7rem}.rjname{font:700 1.4rem/2.1 var(--arabic);color:var(--accent,#0b5d4b)}
@@ -3888,6 +3889,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   if (I.ar) Object.assign(I.ar, {hsTile: 'البحث الحديثي', hsTitle: 'البحث الحديثي — مع الحكم', hsPlace: 'اكتب ألفاظ الحديث، مثل: لا تغضب', hsHint: 'يُبحث أولًا في جميع كتب هذا الموقع، ثم في الموسوعة الحديثية (الدرر السنية) مع أحكام المحدثين.',
     hsSite: 'في كتب تراث خير القرون', hsDorar: 'الموسوعة الحديثية (الدرر السنية) — مع الحكم', hsGrade: 'خلاصة حكم المحدث', hsRawi: 'الراوي', hsMuh: 'المحدث', hsSrc: 'المصدر', hsNo: 'الصفحة أو الرقم',
     hsOpenDorar: 'افتح في الدرر السنية', hsDorarErr: 'تعذّر جلب النتائج من الدرر السنية. افتحها مباشرة من الزر أدناه.', hsDorarSrc: 'هذه النتائج من خدمة الموسوعة الحديثية — الدرر السنية (dorar.net).'});
+  Object.assign(I.ur, {shTitle: 'شروح', shMore: 'مکمل شرح پڑھیں', shLess: 'کم کریں', shOpen: 'کتاب میں کھولیں', shBab: 'باب کی شرح', shNone: 'شرح لوڈ نہیں ہو سکی۔'});
+  Object.assign(I.en, {shTitle: 'Commentaries', shMore: 'Read the full commentary', shLess: 'Show less', shOpen: 'Open in the book', shBab: 'Commentary on the chapter', shNone: 'The commentary could not be loaded.'});
+  if (I.ar) Object.assign(I.ar, {shTitle: 'الشروح', shMore: 'اقرأ الشرح كاملاً', shLess: 'أقل', shOpen: 'افتح في الكتاب', shBab: 'شرح الباب', shNone: 'تعذّر تحميل الشرح.'});
+  ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {shTitle: {bn: 'ব্যাখ্যা', hi: 'शरहें', gu: 'શરહો', fr: 'Commentaires'}[l], shMore: {bn: 'পূর্ণ ব্যাখ্যা পড়ুন', hi: 'पूरी शरह पढ़ें', gu: 'પૂરી શરહ વાંચો', fr: 'Lire le commentaire complet'}[l], shLess: {bn: 'কম', hi: 'कम', gu: 'ઓછું', fr: 'Moins'}[l], shOpen: {bn: 'বইয়ে খুলুন', hi: 'किताब में खोलें', gu: 'કિતાબમાં ખોલો', fr: 'Ouvrir dans le livre'}[l], shBab: {bn: 'অধ্যায়ের ব্যাখ্যা', hi: 'अध्याय की शरह', gu: 'પ્રકરણની શરહ', fr: 'Commentaire du chapitre'}[l], shNone: {bn: 'লোড হয়নি।', hi: 'लोड नहीं हो सकी।', gu: 'લોડ થઈ શકી નથી.', fr: 'Chargement impossible.'}[l]}); });
   const C = {idx: null, data: {}, loading: {}, rev: {}};
   window.COLLS = list => { C.idx = list; list.forEach(b => { if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
   C.fixes = {};
@@ -3956,6 +3961,49 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const CNT = b => T(b.key === 'shadharat' ? 'cNas' : b.key === 'siyar' ? 'cPara' : 'count');
   const HN = (b, x, y) => { let c = 0; for (let k = x; k <= y; k++) if (!(b.nn && b.nn[k])) c++; return c; };
   const subOf = b => b.sub ? (b.sub[ui] || (ui === 'ur' ? b.sub.ur : (b.sub.en || b.sub.ur))) : '';
+  // ===== «شروح» under a hadith: the commentary on its chapter (bab) from the commentary books, matched at build time (coll/shmap_<book>.js = [first hadith no, first row, last row] per chapter) =====
+  C.shm = {}; window.SHMAP = (k, m) => { C.shm[k] = m; };
+  const SHT = new Set(['bukhari', 'abudawud', 'ibnmajah', 'malik', 'tirmidhi']);
+  const needShm = k => C.shm[k] ? Promise.resolve() : (C.loading['shm_' + k] || (C.loading['shm_' + k] = load('coll/shmap_' + k + '.js').catch(() => { C.shm[k] = {}; })));
+  const shFind = (tk, sk, n) => { const a = C.shm[tk] && C.shm[tk][sk]; if (!a) return null; let lo = 0, hi = a.length / 3 - 1, at = -1;
+    while (lo <= hi) { const m = (lo + hi) >> 1; if (a[3 * m] <= n) { at = m; lo = m + 1; } else hi = m - 1; }
+    return at < 0 || a[3 * at + 1] < 0 ? null : [a[3 * at + 1], a[3 * at + 2]]; };
+  const SH_SHORT = 900, SH_CAP = 24000;
+  function shPanel(b, n, c, acts) {
+    if (!SHT.has(b.key)) return;
+    needShm(b.key).then(() => {
+      const m = C.shm[b.key] || {}, hits = Object.keys(m).map(sk => [bookOf(sk), shFind(b.key, sk, n)]).filter(x => x[0] && x[1]);
+      if (!hits.length) return;
+      const box = el('details', {class: 'shbox'}, el('summary', {}, el('span', {}, T('shTitle')), el('span', {class: 'shn'}, fmtN(hits.length))));
+      let done = false;
+      box.addEventListener('toggle', async () => {
+        if (!box.open || done) return; done = true;
+        const body = el('div', {class: 'shbody'}, el('p', {class: 'cs'}, T('loading') || '…')); box.append(body);
+        const items = await Promise.all(hits.map(async ([sb, [r1, r2]]) => {
+          try {
+            await needRange(sb, 'ar', r1, Math.min(r2, r1 + 60));
+            let txt = '', last = r1;
+            for (let i = r1; i <= r2 && txt.length < SH_CAP; i++) { const r = row(sb, 'ar', i); if (!r) break; txt += (txt ? '\n' : '') + r[1]; last = i; }
+            return [sb, r1, last < r2 || txt.length >= SH_CAP, txt.trim()];
+          } catch (e) { return [sb, r1, false, '']; }
+        }));
+        body.replaceChildren(...items.map(([sb, r1, cut, txt]) => {
+          const au = sb.author && (ui === 'ar' ? sb.author[1] : ui === 'ur' ? sb.author[2] : sb.author[3]);
+          const paras = txt.split('\n').filter(x => x.trim()), full = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...paras.map(x => paraEl(x, 'ar')));
+          let shortTxt = txt.length > SH_SHORT ? txt.slice(0, SH_SHORT).replace(/\s+\S*$/, '') + ' …' : txt;
+          const sh = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...shortTxt.split('\n').filter(x => x.trim()).map(x => paraEl(x, 'ar')));
+          const more = txt.length > SH_SHORT ? el('button', {class: 'btn shmore', type: 'button'}, T('shMore')) : null;
+          let open = false;
+          if (more) more.addEventListener('click', () => { open = !open; wrap.replaceChildren(head, open ? full : sh, tools); more.textContent = T(open ? 'shLess' : 'shMore'); });
+          const head = el('div', {class: 'shhead'}, el('a', {class: 'shname ar', lang: 'ar', dir: 'rtl', href: '#/s/' + sb.key + '/n/' + r1}, sb.ar), au ? el('span', {class: 'cs'}, ' — ' + au) : '');
+          const tools = el('div', {class: 'shtools'}, more || '', el('a', {class: 'btn', href: '#/s/' + sb.key + '/n/' + r1}, T('shOpen')));
+          const wrap = el('div', {class: 'shitem'}, head, sh, tools);
+          return wrap;
+        }));
+      });
+      c.insertBefore(box, acts);
+    }).catch(() => {});
+  }
   function card(b, n, lang, q) {
     if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of al-Jami al-Kamil
       const r = row(b, 'ar', n) || [], nums = String(r[2] || '').split(',').filter(Boolean), c = el('article', {class: 'card atraf'});
@@ -4038,6 +4086,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: async () => { const t = withLink(text(), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share')),
       el('span', {class: 'sp'}));
     c.append(acts);
+    shPanel(b, n, c, acts);
     return c;
   }
 
