@@ -232,7 +232,7 @@ body.withplayer .resume.float{display:none}
 .rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
 .rjline{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-top:.2rem}.rjbooks{font:.78rem/1.4 system-ui;color:var(--muted,#7a7468)}.rjbk{display:inline-block;margin-inline-start:.6rem;font:.72rem/1.6 system-ui;color:var(--muted,#7a7468);border:1px solid var(--line,#d9d2c3);border-radius:999px;padding:0 .5rem}
 .rjbody{padding:.6rem .8rem}.rjinner{padding:.3rem .8rem .6rem}.bkno{display:inline-block;min-width:1.6rem;text-align:center;margin-inline-end:.5rem;font:700 .72rem/1.6 system-ui;background:var(--wash,#e6eef6);color:var(--accent,#2f7fc0);border-radius:999px;padding:0 .35rem}.newtag{display:inline-block;margin-inline-start:.5rem;font:700 .65rem/1.4 system-ui;background:#d4380d;color:#fff;border-radius:999px;padding:.05rem .5rem;vertical-align:middle}.newsbody{padding:.5rem .9rem}.newsitem{margin-bottom:.8rem}.newsul{margin:.2rem 0 .4rem;padding-inline-start:1.3rem}.newsul li{margin:.4rem 0;line-height:1.9}
-.shbox{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:12px;padding:.2rem .8rem;background:var(--card2,rgba(127,127,127,.05))}.shbox>summary{cursor:pointer;font-weight:700;padding:.45rem 0;color:var(--accent);display:flex;align-items:center;gap:.5rem}.shbox>summary .shn{background:var(--accent);color:#fff;border-radius:999px;min-width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;padding:0 .4rem}.shitem{border-top:1px solid var(--line,rgba(127,127,127,.25));padding:.6rem 0 .5rem}.shitem:first-child{border-top:0}.shname{font:700 1.1rem/1.7 var(--arabic);color:var(--accent);text-decoration:none}.shtx{font-family:var(--arabic);font-size:1.12rem;line-height:2.1}.shtx p{margin:.3rem 0}.shtools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
+.shbox{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:12px;padding:.2rem .8rem;background:var(--card2,rgba(127,127,127,.05))}.shbox>summary{cursor:pointer;font-weight:700;padding:.45rem 0;color:var(--accent);display:flex;align-items:center;gap:.5rem}.shbox>summary .shn{background:var(--accent);color:#fff;border-radius:999px;min-width:1.5rem;height:1.5rem;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;padding:0 .4rem}.shitem{border-top:1px solid var(--line,rgba(127,127,127,.25));padding:.6rem 0 .5rem}.shitem:first-child{border-top:0}.shname{font:700 1.1rem/1.7 var(--arabic);color:var(--accent);text-decoration:none}.shtx{font-family:var(--arabic);font-size:1.12rem;line-height:2.1}.shtx p{margin:.3rem 0}.shgrp{margin:.7rem 0 .2rem;color:var(--accent);font:700 1rem/1.6 var(--arabic)}.shtools{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.4rem}
 .rjsanad{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;padding:.2rem .7rem}.rjsanad>summary{cursor:pointer;font-weight:600;padding:.4rem 0;color:var(--accent)}.rjsanad .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .6rem}.rjsanad .btn{font:1.05rem/1.9 var(--arabic)}
 .rjchips{display:flex;flex-wrap:wrap;gap:.4rem;margin:.3rem 0 .8rem}.rjchips .chip{border:1px solid var(--line,#d9d2c3);background:transparent;color:inherit;border-radius:999px;padding:.25rem .8rem;font:inherit;cursor:pointer}.rjchips .chip.on{background:var(--accent,#0b5d4b);color:#fff;border-color:transparent}
 .rjcard{margin:.2rem 0 .6rem}.rjhead{text-align:center;padding:.5rem .4rem .8rem;border-bottom:1px solid var(--line,#d9d2c3);margin-bottom:.7rem}.rjname{font:700 1.4rem/2.1 var(--arabic);color:var(--accent,#0b5d4b)}
@@ -1641,6 +1641,7 @@ async function showHadith(num){
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);try{const sc=sanadChips([d.takhrij]);if(sc)v.append(sc);}catch(e){}}
   v.append(...refBlock(d));
+  if(window.COLL_SH){const shh=el('div',{class:'shhold'});v.append(shh);COLL_SH.forRefs(d.refs).then(bx=>{if(bx)shh.append(bx);});}
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
   const kinds=KIND_ORDER.filter(k=>d.content[k]);
   if(kinds.length){
@@ -2559,6 +2560,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     audioErr: 'This audio could not play. Check internet or try another reciter.', recite: 'Listen to recitation', jami: 'Al-Jame Al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin',
     thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
 
+  Object.assign(I.ur, {qsearchS: 'اس سورت میں: آیت نمبر یا الفاظ', qsSurah: 'اس سورت میں تلاش', qsNoAyah: n => 'اس سورت میں آیت نمبر ' + n + ' نہیں ہے۔', qsGoAyah: 'آیت کھولیں'});
+  Object.assign(I.en, {qsearchS: 'In this surah: ayah number or words', qsSurah: 'Search in this surah', qsNoAyah: n => 'This surah has no ayah number ' + n + '.', qsGoAyah: 'Open ayah'});
+  if (I.ar) Object.assign(I.ar, {qsearchS: 'في هذه السورة: رقم الآية أو كلمات', qsSurah: 'بحث في هذه السورة', qsNoAyah: n => 'ليس في هذه السورة آية رقم ' + n, qsGoAyah: 'افتح الآية'});
+  ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {qsearchS: {bn: 'এই সূরায়: আয়াত নম্বর বা শব্দ', hi: 'इस सूरह में: आयत नंबर या शब्द', gu: 'આ સૂરહમાં: આયત નંબર અથવા શબ્દો', fr: 'Dans cette sourate : numéro ou mots'}[l], qsSurah: {bn: 'এই সূরায় খুঁজুন', hi: 'इस सूरह में खोजें', gu: 'આ સૂરહમાં શોધો', fr: 'Chercher dans cette sourate'}[l], qsNoAyah: n => ({bn: 'এই সূরায় আয়াত ' + n + ' নেই।', hi: 'इस सूरह में आयत ' + n + ' नहीं है।', gu: 'આ સૂરહમાં આયત ' + n + ' નથી.', fr: 'Pas de verset ' + n + '.'}[l]), qsGoAyah: {bn: 'আয়াত খুলুন', hi: 'आयत खोलें', gu: 'આયત ખોલો', fr: 'Ouvrir le verset'}[l]}); });
   Object.assign(I.ur, {copyRange: 'آیات کاپی / شیئر کریں', copyRangeNote: 'سورت اور آیات کی حد چنیں (مثلاً سورۃ البقرہ آیت 25 سے 35 تک)، پھر صرف آیات یا ترجمہ کے ساتھ۔', mushaf: 'مصحف (مسلسل متن)', viewMode: 'قرآن دیکھنے کا انداز', pagesMode: 'مصحف مدینہ (صفحات)', rasm: 'رسم الخط', rasmU: 'عثمانی — مصحف مدینہ', rasmI: 'انڈو پاک',
     tajweed: 'تجوید کے رنگ (عثمانی رسم الخط میں)', tjLegend: 'تجوید کے رنگوں کی وضاحت',
     tjNames: ['ہمزۂ وصل', 'لامِ شمسی', 'نہ پڑھا جانے والا حرف', 'مدِّ طبعی (۲ حرکات)', 'مدِّ عارض / لین (۲، ۴، ۶)', 'مدِّ متصل (۴، ۵)', 'مدِّ منفصل (۴، ۵)', 'مدِّ لازم (۶)', 'غنہ', 'اخفاء', 'اخفائے شفوی', 'ادغام مع الغنہ', 'ادغام بلا غنہ', 'ادغامِ شفوی', 'ادغامِ متجانسین', 'ادغامِ متقاربین', 'اقلاب', 'قلقلہ'],
@@ -3189,6 +3194,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function tools() {
     const x = $('#xtools'); x.replaceChildren();
     const b = (ic, lbl, fn) => el('button', {class: 'ib', type: 'button', title: lbl, 'aria-label': lbl, on: {click: fn}}, icon(ic));
+    if (R && R.kind === 's') x.append(b('search', T('qsSurah'), () => { location.hash = '#/q/ss/' + R.n; }));
     x.append(b(QS.mode === 'tr' ? 'read' : 'list', T('viewMode'), viewSheet),
       b('translate', T('selectTr'), () => pickTr(true)), b('replay', T('hifz'), hifzSheet), b('play', T('recite'), () => playFrom(firstVisible())), b('tune', T('settings'), qSettings));
   }
@@ -3771,10 +3777,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const words = wordsOf(text), hits = hitWords(words, qw);
     return words.map((x, i) => hits.has(i) ? el('mark', {class: 'qhit'}, x.w) : x.w);
   }
-  async function showSearch(q0) {
-    bar(T('qsearch'), T('quran'), true);
+  async function showSearch(q0, scope) {
+    bar(scope ? sName(scope) : T('qsearch'), scope ? T('qsSurah') : T('quran'), true);
     const v = qv(); v.replaceChildren();
-    const inp = el('input', {type: 'search', class: 'filter', placeholder: T('qsearchPh'), 'aria-label': T('qsearch'), value: q0 || '', id: 'qsin'});
+    const inp = el('input', {type: 'search', class: 'filter', placeholder: T(scope ? 'qsearchS' : 'qsearchPh'), 'aria-label': T('qsearch'), value: q0 || '', id: 'qsin'});
     let mode = lsGet('qsmode', 'aya');
     const seg = el('div', {class: 'seg', role: 'group'});
     const head = el('div', {class: 'qshead'});
@@ -3789,6 +3795,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let tm;
     async function run() {
       const raw = inp.value.trim(), q = qnorm(raw);
+      if (scope && /^[0-9٠-٩۰-۹]+$/.test(raw)) {      // an ayah number of this surah
+        const a = +raw.replace(/[٠-٩۰-۹]/g, c => c.charCodeAt(0) & 15), tot = Q.meta.surahs[scope - 1][4]; out.replaceChildren();
+        if (a < 1 || a > tot) { head.replaceChildren(el('p', {class: 'note'}, T('qsNoAyah')(NUM(a)))); return; }
+        head.replaceChildren(); await need(arKeys());
+        out.append(el('li', {class: 'qr'}, el('div', {class: 'qrtop'}, el('span', {class: 'qrno'}, NUM(a) + '.'), el('p', {class: 'qar qra', lang: 'ar'}, verse(AK(), scope, a)),
+          el('div', {class: 'qrside'}, el('a', {class: 'btn', href: '#/q/s/' + scope + '/' + a}, T('qsGoAyah'))))));
+        return;
+      }
       if (q.replace(/\s/g, '').length < 2) { out.replaceChildren(); head.replaceChildren(); return; }
       const qw = q.split(' ');
       const script = /[\u0980-\u09ff]/.test(raw) ? 'bn' : /[\u0600-\u06ff]/.test(raw) ? 'ur' : 'en';          // Arabic letters: the Quran text and the Urdu translations
@@ -3806,7 +3820,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         Q.norm[k].forEach((t, i) => { if ((' ' + t + ' ').includes(' ' + q + ' ')) { if (!found.has(i)) found.set(i, new Set()); found.get(i).add(k); } });
       }
       // keep only verses where the phrase really matches whole words
-      last = [...found.entries()].sort((a, b) => a[0] - b[0]).filter(([i, ks]) => [...ks].some(k => hitWords(wordsOf(Q.data[k][i]), qw).size));
+      last = [...found.entries()].sort((a, b) => a[0] - b[0]).filter(([i, ks]) => (!scope || sa(i)[0] === scope) && [...ks].some(k => hitWords(wordsOf(Q.data[k][i]), qw).size));
       head.replaceChildren(el('div', {class: 'qsbar'}, el('span', {class: 'cs'}, T('results') + ': ' + (NUM(last.length))),
         last.length ? el('button', {class: 'btn lbtn', type: 'button', on: {click: async () => toast(T(await copyText(withLink(last.map(([i]) => { const [s, a] = sa(i); return textOf(s, a); }).join('\n\n'))) ? 'copied' : 'copyfail'))}}, icon('copy'), T('copyAll')) : null));
       out.replaceChildren();
@@ -3829,6 +3843,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (last.length > LIMIT) out.append(el('p', {class: 'note'}, T('moreRes')(last.length - LIMIT)));
     }
     inp.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 300); });
+    if (scope) inp.addEventListener('keydown', e => { if (e.key === 'Enter' && /^[0-9٠-٩۰-۹]+$/.test(inp.value.trim())) { const a = +inp.value.trim().replace(/[٠-٩۰-۹]/g, c => c.charCodeAt(0) & 15); if (a >= 1 && a <= Q.meta.surahs[scope - 1][4]) location.hash = '#/q/s/' + scope + '/' + a; } });
     inp.focus(); if (q0) run();
   }
   const sa = i => { let s = 1; while (s < 114 && Q.OFF[s + 1] <= i) s++; return [s, i - Q.OFF[s] + 1]; };
@@ -3857,6 +3872,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (h === '#/q/para') return showPara();
       if (h === '#/q/ruku') return showRuku();
       if (h === '#/q/audio') return showAudio();
+      const ms = h.match(/^#\/q\/ss\/(\d+)(?:\?(.*))?/); if (ms) return showSearch(decodeURIComponent(ms[2] || ''), +ms[1]);
       if (h.startsWith('#/q/search')) return showSearch(decodeURIComponent(h.split('?')[1] || ''));
       if (h === '#/q/bm') return showQbm();
       return showQHome();
@@ -3889,10 +3905,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   if (I.ar) Object.assign(I.ar, {hsTile: 'البحث الحديثي', hsTitle: 'البحث الحديثي — مع الحكم', hsPlace: 'اكتب ألفاظ الحديث، مثل: لا تغضب', hsHint: 'يُبحث أولًا في جميع كتب هذا الموقع، ثم في الموسوعة الحديثية (الدرر السنية) مع أحكام المحدثين.',
     hsSite: 'في كتب تراث خير القرون', hsDorar: 'الموسوعة الحديثية (الدرر السنية) — مع الحكم', hsGrade: 'خلاصة حكم المحدث', hsRawi: 'الراوي', hsMuh: 'المحدث', hsSrc: 'المصدر', hsNo: 'الصفحة أو الرقم',
     hsOpenDorar: 'افتح في الدرر السنية', hsDorarErr: 'تعذّر جلب النتائج من الدرر السنية. افتحها مباشرة من الزر أدناه.', hsDorarSrc: 'هذه النتائج من خدمة الموسوعة الحديثية — الدرر السنية (dorar.net).'});
-  Object.assign(I.ur, {shTitle: 'شروح', shMore: 'مکمل شرح پڑھیں', shLess: 'کم کریں', shOpen: 'کتاب میں کھولیں', shBab: 'باب کی شرح', shNone: 'شرح لوڈ نہیں ہو سکی۔'});
-  Object.assign(I.en, {shTitle: 'Commentaries', shMore: 'Read the full commentary', shLess: 'Show less', shOpen: 'Open in the book', shBab: 'Commentary on the chapter', shNone: 'The commentary could not be loaded.'});
-  if (I.ar) Object.assign(I.ar, {shTitle: 'الشروح', shMore: 'اقرأ الشرح كاملاً', shLess: 'أقل', shOpen: 'افتح في الكتاب', shBab: 'شرح الباب', shNone: 'تعذّر تحميل الشرح.'});
-  ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {shTitle: {bn: 'ব্যাখ্যা', hi: 'शरहें', gu: 'શરહો', fr: 'Commentaires'}[l], shMore: {bn: 'পূর্ণ ব্যাখ্যা পড়ুন', hi: 'पूरी शरह पढ़ें', gu: 'પૂરી શરહ વાંચો', fr: 'Lire le commentaire complet'}[l], shLess: {bn: 'কম', hi: 'कम', gu: 'ઓછું', fr: 'Moins'}[l], shOpen: {bn: 'বইয়ে খুলুন', hi: 'किताब में खोलें', gu: 'કિતાબમાં ખોલો', fr: 'Ouvrir dans le livre'}[l], shBab: {bn: 'অধ্যায়ের ব্যাখ্যা', hi: 'अध्याय की शरह', gu: 'પ્રકરણની શરહ', fr: 'Commentaire du chapitre'}[l], shNone: {bn: 'লোড হয়নি।', hi: 'लोड नहीं हो सकी।', gu: 'લોડ થઈ શકી નથી.', fr: 'Chargement impossible.'}[l]}); });
+  Object.assign(I.ur, {sxTitle: 'شروح', sxMore: 'مکمل شرح پڑھیں', sxLess: 'کم کریں', sxOpen: 'کتاب میں کھولیں', sxBab: 'باب کی شرح', sxNone: 'شرح لوڈ نہیں ہو سکی۔'});
+  Object.assign(I.en, {sxTitle: 'Commentaries', sxMore: 'Read the full commentary', sxLess: 'Show less', sxOpen: 'Open in the book', sxBab: 'Commentary on the chapter', sxNone: 'The commentary could not be loaded.'});
+  if (I.ar) Object.assign(I.ar, {sxTitle: 'الشروح', sxMore: 'اقرأ الشرح كاملاً', sxLess: 'أقل', sxOpen: 'افتح في الكتاب', sxBab: 'شرح الباب', sxNone: 'تعذّر تحميل الشرح.'});
+  ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {sxTitle: {bn: 'ব্যাখ্যা', hi: 'शरहें', gu: 'શરહો', fr: 'Commentaires'}[l], sxMore: {bn: 'পূর্ণ ব্যাখ্যা পড়ুন', hi: 'पूरी शरह पढ़ें', gu: 'પૂરી શરહ વાંચો', fr: 'Lire le commentaire complet'}[l], sxLess: {bn: 'কম', hi: 'कम', gu: 'ઓછું', fr: 'Moins'}[l], sxOpen: {bn: 'বইয়ে খুলুন', hi: 'किताब में खोलें', gu: 'કિતાબમાં ખોલો', fr: 'Ouvrir dans le livre'}[l], sxBab: {bn: 'অধ্যায়ের ব্যাখ্যা', hi: 'अध्याय की शरह', gu: 'પ્રકરણની શરહ', fr: 'Commentaire du chapitre'}[l], sxNone: {bn: 'লোড হয়নি।', hi: 'लोड नहीं हो सकी।', gu: 'લોડ થઈ શકી નથી.', fr: 'Chargement impossible.'}[l]}); });
   const C = {idx: null, data: {}, loading: {}, rev: {}};
   window.COLLS = list => { C.idx = list; list.forEach(b => { if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
   C.fixes = {};
@@ -3969,16 +3985,36 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     while (lo <= hi) { const m = (lo + hi) >> 1; if (a[3 * m] <= n) { at = m; lo = m + 1; } else hi = m - 1; }
     return at < 0 || a[3 * at + 1] < 0 ? null : [a[3 * at + 1], a[3 * at + 2]]; };
   const SH_SHORT = 900, SH_CAP = 24000;
-  function shPanel(b, n, c, acts) {
-    if (!SHT.has(b.key)) return;
-    needShm(b.key).then(() => {
-      const m = C.shm[b.key] || {}, hits = Object.keys(m).map(sk => [bookOf(sk), shFind(b.key, sk, n)]).filter(x => x[0] && x[1]);
-      if (!hits.length) return;
-      const box = el('details', {class: 'shbox'}, el('summary', {}, el('span', {}, T('shTitle')), el('span', {class: 'shn'}, fmtN(hits.length))));
-      let done = false;
-      box.addEventListener('toggle', async () => {
-        if (!box.open || done) return; done = true;
-        const body = el('div', {class: 'shbody'}, el('p', {class: 'cs'}, T('loading') || '…')); box.append(body);
+  // pairs: [[target book key, hadith no, label]] -> a «شروح» box (null when there is no commentary)
+  async function shBox(pairs) {
+    const groups = [];
+    for (const [tk, n, label] of pairs) {
+      if (!SHT.has(tk) || !n) continue;
+      await needShm(tk);
+      const m = C.shm[tk] || {}, hits = Object.keys(m).map(sk => [bookOf(sk), shFind(tk, sk, n)]).filter(x => x[0] && x[1]);
+      if (hits.length) groups.push([label, hits]);
+    }
+    if (!groups.length) return null;
+    const total = groups.reduce((s, g) => s + g[1].length, 0);
+    const box = el('details', {class: 'shbox'}, el('summary', {}, el('span', {}, T('sxTitle')), el('span', {class: 'shn'}, fmtN(total))));
+    let done = false;
+    box.addEventListener('toggle', async () => {
+      if (!box.open || done) return; done = true;
+      const body = el('div', {class: 'shbody'}, el('p', {class: 'cs'}, T('loading') || '…')); box.append(body);
+      const drawItem = ([sb, r1, cut, txt]) => {
+        const au = sb.author && (ui === 'ar' ? sb.author[1] : ui === 'ur' ? sb.author[2] : sb.author[3]);
+        const full = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...txt.split('\n').filter(x => x.trim()).map(x => paraEl(x, 'ar')));
+        const shortTxt = txt.length > SH_SHORT ? txt.slice(0, SH_SHORT).replace(/\s+\S*$/, '') + ' …' : txt;
+        const sh = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...shortTxt.split('\n').filter(x => x.trim()).map(x => paraEl(x, 'ar')));
+        const more = txt.length > SH_SHORT ? el('button', {class: 'btn shmore', type: 'button'}, T('sxMore')) : null;
+        let open = false;
+        if (more) more.addEventListener('click', () => { open = !open; wrap.replaceChildren(head, open ? full : sh, tools); more.textContent = T(open ? 'sxLess' : 'sxMore'); });
+        const head = el('div', {class: 'shhead'}, el('a', {class: 'shname ar', lang: 'ar', dir: 'rtl', href: '#/s/' + sb.key + '/n/' + r1}, sb.ar), au ? el('span', {class: 'cs'}, ' — ' + au) : '');
+        const tools = el('div', {class: 'shtools'}, more || '', el('a', {class: 'btn', href: '#/s/' + sb.key + '/n/' + r1}, T('sxOpen')));
+        const wrap = el('div', {class: 'shitem'}, head, sh, tools);
+        return wrap;
+      };
+      const parts = await Promise.all(groups.map(async ([label, hits]) => {
         const items = await Promise.all(hits.map(async ([sb, [r1, r2]]) => {
           try {
             await needRange(sb, 'ar', r1, Math.min(r2, r1 + 60));
@@ -3987,22 +4023,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
             return [sb, r1, last < r2 || txt.length >= SH_CAP, txt.trim()];
           } catch (e) { return [sb, r1, false, '']; }
         }));
-        body.replaceChildren(...items.map(([sb, r1, cut, txt]) => {
-          const au = sb.author && (ui === 'ar' ? sb.author[1] : ui === 'ur' ? sb.author[2] : sb.author[3]);
-          const paras = txt.split('\n').filter(x => x.trim()), full = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...paras.map(x => paraEl(x, 'ar')));
-          let shortTxt = txt.length > SH_SHORT ? txt.slice(0, SH_SHORT).replace(/\s+\S*$/, '') + ' …' : txt;
-          const sh = el('div', {class: 'shtx ar', lang: 'ar', dir: 'rtl'}, ...shortTxt.split('\n').filter(x => x.trim()).map(x => paraEl(x, 'ar')));
-          const more = txt.length > SH_SHORT ? el('button', {class: 'btn shmore', type: 'button'}, T('shMore')) : null;
-          let open = false;
-          if (more) more.addEventListener('click', () => { open = !open; wrap.replaceChildren(head, open ? full : sh, tools); more.textContent = T(open ? 'shLess' : 'shMore'); });
-          const head = el('div', {class: 'shhead'}, el('a', {class: 'shname ar', lang: 'ar', dir: 'rtl', href: '#/s/' + sb.key + '/n/' + r1}, sb.ar), au ? el('span', {class: 'cs'}, ' — ' + au) : '');
-          const tools = el('div', {class: 'shtools'}, more || '', el('a', {class: 'btn', href: '#/s/' + sb.key + '/n/' + r1}, T('shOpen')));
-          const wrap = el('div', {class: 'shitem'}, head, sh, tools);
-          return wrap;
-        }));
-      });
-      c.insertBefore(box, acts);
-    }).catch(() => {});
+        return [label ? el('h4', {class: 'shgrp'}, label) : '', ...items.map(drawItem)];
+      }));
+      body.replaceChildren(...parts.flat());
+    });
+    return box;
+  }
+  window.COLL_SH = {
+    // for the refs of an al-Jami al-Kamil hadith: [{key, n}] -> box
+    forRefs: async refs => { try { await index(); const pairs = [];
+        for (const r of (refs || [])) { if (!SHT.has(r.key)) continue; const n = r.n || ((C.rev || {})[r.key] || {})[r.number] || +r.number; if (n) pairs.push([r.key, +n, (bookOf(r.key) ? bookOf(r.key).ar : r.key) + ' (' + fmtN(r.number) + ')']); }
+        return await shBox(pairs); } catch (e) { return null; } }
+  };
+  function shPanel(b, n, c, acts) {
+    if (!SHT.has(b.key)) return;
+    shBox([[b.key, n, '']]).then(box => { if (box) c.insertBefore(box, acts); }).catch(() => {});
   }
   function card(b, n, lang, q) {
     if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of al-Jami al-Kamil
