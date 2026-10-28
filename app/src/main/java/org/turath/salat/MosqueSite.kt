@@ -76,8 +76,10 @@ object MosqueSite {
         var sunset = false
         val all = text.joinToString(" ")
         // a page that shows only one column of times, headed «Iqamah» / «Jamaat», has the congregation times in it
-        val onlyIqamah = Regex("iqama|iqamah|jama'?at|jamaah|congregation", RegexOption.IGNORE_CASE).containsMatchIn(all) &&
-            !Regex("begin|start|adhan|azan|athan", RegexOption.IGNORE_CASE).containsMatchIn(all)
+        // a page that gives each prayer one time only (no table of begin + iqamah) gives the congregation time
+        val pairs = text.any { l -> KEYS.any { (k, re) -> k != "JUM" && re.containsMatchIn(l) } && TIME.findAll(l).count() >= 2 }
+        val onlyIqamah = !pairs || (Regex("iqama|iqamah|jama'?at|jamaah|congregation", RegexOption.IGNORE_CASE).containsMatchIn(all) &&
+            !Regex("begin|start|adhan|azan|athan", RegexOption.IGNORE_CASE).containsMatchIn(all))
         // one row per day with the date first («27/10/2026 …»): Sunrise, Fajr begins and jama'ah, Zuhr begins and jama'ah, Asr (two begin times) and jama'ah, Maghrib, Isha
         for (line in text) {
             val m = Regex("^(\\d{1,2})/(\\d{1,2})/(\\d{2,4})\\b").find(line) ?: continue
