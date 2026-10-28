@@ -448,6 +448,8 @@ object Tr {
         "wMakkah" to arrayOf("مکہ مکرمہ", "مكة المكرمة", "Makkah"), "wMadinah" to arrayOf("مدینہ منورہ", "المدينة المنورة", "Madinah"),
         "wQuds" to arrayOf("بیت المقدس", "بيت المقدس", "Bayt al-Maqdis"),
         "lmMenu" to arrayOf("میری مقامی مسجد", "مسجدي المحلي", "My local masjid"),
+        "audiosMenu" to arrayOf("آڈیوز سنیں", "استماع الأصوات", "Listen to the audios"),
+        "DUA_HILAL" to arrayOf("نئے چاند کی دعا", "دعاء رؤية الهلال", "Du'a for the new moon"),
         "lmGo" to arrayOf("تلاش", "بحث", "Search"),
         "lmSearch" to arrayOf("مسجد کا نام لکھیں", "اكتب اسم المسجد", "Type the masjid's name"),
         "lmLoading" to arrayOf("قریبی مساجد ڈھونڈی جا رہی ہیں…", "جارٍ البحث عن المساجد القريبة…", "Finding masjids near you…"),

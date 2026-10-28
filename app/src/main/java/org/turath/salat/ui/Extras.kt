@@ -297,3 +297,60 @@ fun WorldList(s: AppState, now: ZonedDateTime) {
     }
 }
 
+
+
+/** every audio of the app in one list to listen to: the adhans (and the Fajr adhans), iqamah, calls, birds, takbirat and the du'a of the new moon */
+@Composable
+fun AudiosPage(s: AppState, back: () -> Unit) {
+    val ctx = s.act
+    var playing by remember { mutableStateOf<String?>(null) }
+    DisposableEffect(Unit) { onDispose { Preview.stop() } }
+    // each audio once; the adhans that have a Fajr recording are listed once more for Fajr
+    val rows = remember {
+        val order = listOf("makkah", "madinah", "other", "birds", "phone")
+        val l = mutableListOf<Triple<Snd, Boolean, String>>()
+        for (x in Snd.entries.filter { it.raw != null }.sortedBy { order.indexOf(it.city) * 10 + (if (it.adhan) 0 else if (it.short) 1 else 2) }) {
+            if (SoundService.rawId(ctx, x, false) == 0) continue
+            if (!x.fajrOnly) l += Triple(x, false, x.name)
+            if (x.adhan && SoundService.hasFajr(ctx, x)) l += Triple(x, true, x.name + "_F")
+        }
+        l.toList()
+    }
+    Column(Modifier.fillMaxSize()) {
+        TopBar(Tr["audiosMenu"], back)
+        if (playing != null) {
+            var pos by remember { mutableIntStateOf(0) }; var dur by remember { mutableIntStateOf(0) }; var run by remember { mutableStateOf(true) }
+            LaunchedEffect(playing) { while (true) { pos = Preview.position(); dur = Preview.duration(); run = Preview.isRunning(); kotlinx.coroutines.delay(250) } }
+            fun mmss(ms: Int) = (ms / 60000).toString() + ":" + "%02d".format(ms / 1000 % 60)
+            Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp)) {
+                Slider(value = pos.toFloat().coerceAtMost(dur.toFloat().coerceAtLeast(1f)), onValueChange = { pos = it.toInt(); Preview.seekTo(it.toInt()) }, valueRange = 0f..dur.toFloat().coerceAtLeast(1f))
+                Row(Modifier.fillMaxWidth()) { Text(mmss(pos), fontSize = 13.sp); Spacer(Modifier.weight(1f)); Text(mmss(dur), fontSize = 13.sp) }
+                Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = { Preview.stop(); playing = null }) { Icon(Icons.Outlined.Stop, Tr["stop"], Modifier.size(30.dp)) }
+                    IconButton(onClick = { Preview.skip(-5000) }) { Icon(Icons.Outlined.Replay5, null, Modifier.size(34.dp)) }
+                    IconButton(onClick = { if (run) Preview.pause() else Preview.resume(); run = !run }, Modifier.size(64.dp)) {
+                        Icon(if (run) Icons.Outlined.Pause else Icons.Outlined.PlayArrow, null, Modifier.size(48.dp), tint = MaterialTheme.colorScheme.primary)
+                    }
+                    IconButton(onClick = { Preview.skip(5000) }) { Icon(Icons.Outlined.Forward5, null, Modifier.size(34.dp)) }
+                    Spacer(Modifier.size(48.dp))
+                }
+            }
+            HorizontalDivider()
+        }
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            var group = ""
+            for ((x, fajr, id) in rows) {
+                val g = when (x.city) { "makkah" -> "gMakkah"; "madinah" -> "gMadinah"; "other" -> "gOther"; "birds" -> "gBirds"; else -> "gPhone" }
+                if (g != group) { group = g; Text(Tr[g], Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                Row(Modifier.fillMaxWidth().clickable {
+                    if (playing == id) { Preview.stop(); playing = null }
+                    else { Preview.play(ctx, x, fajr) { playing = null }; playing = id }
+                }.padding(horizontal = 20.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(Tr.sndShort(x) + (if (fajr && !x.fajrOnly) " (" + Tr["fajrTag"] + ")" else ""), Modifier.weight(1f), fontSize = 16.sp)
+                    Icon(if (playing == id) Icons.Outlined.GraphicEq else Icons.Outlined.PlayArrow, null, tint = MaterialTheme.colorScheme.primary)
+                }
+            }
+            Spacer(Modifier.height(24.dp))
+        }
+    }
+}

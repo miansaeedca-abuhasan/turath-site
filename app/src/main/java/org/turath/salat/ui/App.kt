@@ -222,6 +222,7 @@ private fun Menu(s: AppState, open: (String) -> Unit) {
         item("world", Icons.Outlined.Public, Tr["world"])
         item("fasting", Icons.Outlined.NightsStay, Tr["fastingMenu"])
         item("takbirat", Icons.Outlined.Campaign, Tr["takbiratMenu"])
+        item("audios", Icons.Outlined.Headphones, Tr["audiosMenu"])
         item("durood", Icons.Outlined.FavoriteBorder, Tr["duroodMenu"])
         HorizontalDivider(Modifier.padding(vertical = 6.dp))
         item("email", Icons.Outlined.Email, Tr["contact"])
@@ -243,6 +244,7 @@ private fun Page(s: AppState, back: () -> Unit) {
         "localmasjid" -> LocalMasjidPage(s, back)
         "fasting" -> FastingPage(s, back)
         "takbirat" -> TakbiratPage(s, back)
+        "audios" -> AudiosPage(s, back)
         "durood" -> DuroodPage(s, back)
         "about" -> AboutPage(s, back)
         "email" -> {
