@@ -619,7 +619,7 @@ body.vfpage .appbar{position:static}
 #splash{position:fixed;inset:0;z-index:99999;background:#03170f;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .5s ease}
 #splsnd{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translateX(-50%);color:#e9d7a1;font:15px system-ui,sans-serif;background:rgba(0,0,0,.35);border-radius:20px;padding:5px 16px;animation:splp 1.4s ease-in-out infinite;pointer-events:none}#splsnd[hidden]{display:none}@keyframes splp{50%{opacity:.45}}
 #splash[hidden]{display:none}#splash.out{opacity:0;pointer-events:none}
-#splv{width:100%;height:100%;object-fit:cover;background:#03170f}
+#splash,#splv{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}#splv{pointer-events:none;width:100%;height:100%;object-fit:cover;background:#03170f}
 @media (min-aspect-ratio:3/4){#splv{object-fit:contain;width:auto;height:auto;max-width:min(100%,1000px);max-height:92vh;-webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%)}}
 #splskip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);color:#e9d7a1;border:1px solid rgba(233,215,161,.45);border-radius:20px;padding:6px 20px;font:15px system-ui,sans-serif;cursor:pointer}
 </style>
@@ -633,7 +633,14 @@ body.vfpage .appbar{position:static}
   }catch(e){}
   var ui='en';try{ui=localStorage.ui||'en'}catch(e){}
   var h=document.getElementById('splsnd');var hs={ur:'آواز کے لیے سکرین کو چھوئیں',ar:'المس الشاشة لتشغيل الصوت',en:'Touch the screen for sound',bn:'শব্দের জন্য স্ক্রিন স্পর্শ করুন',hi:'आवाज़ के लिए स्क्रीन छुएँ',gu:'અવાજ માટે સ્ક્રીન સ્પર્શો',fr:'Touchez l’écran pour le son'};if(h)h.textContent='🔊 '+(hs[ui]||hs.en);
-  var unm=function(){if(v.muted){v.muted=false;try{v.play()}catch(e){}}if(h)h.hidden=true;};d.addEventListener('pointerdown',unm);d.addEventListener('keydown',unm);
+  var unm=function(e){try{if(e&&e.cancelable)e.preventDefault()}catch(x){}
+    if(v.muted){v.muted=false;var r=null;try{r=v.play()}catch(x){}
+      if(r&&r.catch)r.catch(function(){v.muted=true;try{v.play()}catch(x){}});
+      setTimeout(function(){if(v.paused&&!done){try{var q=v.play();if(q&&q.catch)q.catch(function(){v.muted=true;v.play()})}catch(x){}}},120);}
+    if(h)h.hidden=true;};
+  ['pointerup','touchend','click','keydown'].forEach(function(n){d.addEventListener(n,unm,{passive:false})});
+  ['contextmenu','dragstart','selectstart'].forEach(function(n){d.addEventListener(n,function(e){e.preventDefault()})});
+  v.controls=false;v.disablePictureInPicture=true;v.setAttribute('controlsList','nodownload noplaybackrate nofullscreen noremoteplayback');v.setAttribute('disableRemotePlayback','');
   var done=false,t0=setTimeout(end,9000);
   function end(){if(done)return;done=true;clearTimeout(t0);d.classList.add('out');setTimeout(function(){try{v.pause();v.removeAttribute('src');v.load();}catch(e){}d.remove();},600);}
   d.hidden=false;
@@ -2906,7 +2913,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       fr: 'L’application officielle sera disponible sur Google Play, in shā’ Allāh. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis, ));
     // legal line: copyright and founder
-    const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
+    const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بـانـی: ابـو حـسـن مـیـاں سـعـیـد'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
       en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
       hi: ['© 2026 / 1448 हिजरी Turath Khair Al-Quroon। सर्वाधिकार सुरक्षित।', 'संस्थापक: Abu-Hasan Mian-Saeed'], gu: ['© 2026 / 1448 હિજરી Turath Khair Al-Quroon. સર્વાધિકાર સુરક્ષિત.', 'સ્થાપક: Abu-Hasan Mian-Saeed'],
       fr: ['© 2026 / 1448 H Turath Khair Al-Quroon. Tous droits réservés.', 'Fondateur : Abu-Hasan Mian-Saeed']}[ui] || ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'];
