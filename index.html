@@ -888,7 +888,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=daaef70fe5", "data/d2.js?h=b82f0743dd", "data/d3.js?h=7623ae7862", "data/d4.js?h=e372ef8706", "data/d5.js?h=b7c75abb69", "data/d6.js?h=a715eb7b55", "data/d7.js?h=5afb888c22", "data/d8.js?h=971ca10896", "data/d9.js?h=bcb78eadeb", "data/d10.js?h=611e638909"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=62e545ee25", "data/d2.js?h=20199c4cd3", "data/d3.js?h=a90cb0b9d2", "data/d4.js?h=4bb9975f41", "data/d5.js?h=2ead37b72a", "data/d6.js?h=a36b671c24", "data/d7.js?h=90e82122ca", "data/d8.js?h=f6583e8180", "data/d9.js?h=4cca7697af", "data/d10.js?h=8888ef7898"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -4901,6 +4901,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261028b', d: '28-10-2026', keys: ['sh1350', 'sh8658'],
+      t: {ur: 'دو نئی کتب: العلل اور تفسیر ابن ابی حاتم', en: 'Two new books: al-Ilal and Tafsir Ibn Abi Hatim', ar: 'كتابان جديدان: العلل وتفسير ابن أبي حاتم'},
+      i: {ur: ['العلل لابن ابی حاتم (ابو زرعہ اور ابو حاتم کے کلام کے ساتھ)، اور تفسیر ابن ابی حاتم، دونوں اعراب کے ساتھ۔', 'حفظ الحدیث میں جن احادیث کا ترجمہ بخاری، مسلم، ابو داود، ترمذی، نسائی، ابن ماجہ یا موطا میں موجود ہے وہ ترجمہ ان کے نیچے لگا دیا گیا ہے، منبع کے نام کے ساتھ۔'],
+        en: ['Al-Ilal of Ibn Abi Hatim (with the words of Abu Zur‘ah and Abu Hatim) and Tafsir Ibn Abi Hatim, both vocalised.', 'In Memorizing Hadith, the Urdu translation from Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasai, Ibn Majah or Malik is now shown under each hadith, with the source named.'],
+        ar: ['كتاب العلل لابن أبي حاتم وتفسير ابن أبي حاتم، كلاهما مشكولان.', 'في حفظ الحديث أُضيف الترجمة الأردية من الكتب الستة والموطأ تحت كل حديث مع ذكر المصدر.']}},
     {id: '20261028', d: '28-10-2026', keys: ['hifzhadith'],
       t: {ur: 'حفظ الحدیث: دو سے دس کلمات والی احادیث', en: 'Memorizing Hadith: hadith of two to ten words', ar: 'حفظ الحديث: أحاديث من كلمتين إلى عشر كلمات', bn: 'হিফজুল হাদীস: দুই থেকে দশ শব্দের হাদীস', hi: 'हिफ़्ज़ुल हदीस: दो से दस शब्दों वाली हदीसें', gu: 'હિફ્ઝુલ હદીસ: બે થી દસ શબ્દોની હદીસો', fr: 'Mémoriser le hadith : hadiths de deux à dix mots'},
       i: {ur: ['الجامع الکامل سے وہ احادیث جن میں نبی صلی اللہ علیہ وسلم کے فرمان کے الفاظ دو سے دس تک ہیں، یاد کرنے کے لیے الفاظ کی تعداد کے مطابق۔'],
