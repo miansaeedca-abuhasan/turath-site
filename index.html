@@ -5817,7 +5817,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 /* Desktop side panels: prayer times (method of praytimes.org, same as the Salat Khair al-Quroon app) and app posters. Desktop only. */
 (function () {
   'use strict';
-  const MQ = '(min-width:1320px) and (hover:hover) and (pointer:fine)';
+  const MQ = '(hover:hover) and (pointer:fine)';
   if (!window.matchMedia || !matchMedia(MQ).matches) return;
   const STORE = { turath: '', salat: '' };          // Play Store links: the posters on the left appear when these are filled in
   const METHODS = { mwl: [18, 17, 0], isna: [15, 15, 0], karachi: [18, 18, 0], makkah: [18.5, 0, 90], egypt: [19.5, 17.5, 0], gulf: [19.5, 0, 90], kuwait: [18, 17.5, 0], qatar: [18, 0, 90], singapore: [20, 18, 0], turkey: [18, 17, 0] };
@@ -5924,7 +5924,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ---- state ----
   const byKey = k => C.map(c => ({ key: c[0], en: c[1], ur: c[2], ar: c[3], cc: c[4], lat: c[5], lng: c[6], tz: c[7] })).find(c => c.key === k);
-  const guess = () => { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; const m = C.find(c => c[7] === tz); return m ? m[0] : 'makkah'; };
+  const guess = () => {
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; let m = C.find(c => c[7] === tz);
+    if (!m) { const off = z => { const p = parts(z, new Date()); return Math.round((Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(Date.now() / 60000) * 60000) / 60000); }; try { const o = off(tz); m = C.find(c => off(c[7]) === o && c[7].split('/')[0] === tz.split('/')[0]) || C.find(c => off(c[7]) === o); } catch (e) {} }
+    return m ? m[0] : 'makkah';
+  };
   let st = { city: get('salatCity') || guess(), geo: null, hanafi: get('salatHanafi'), rem: get('salatRem') !== '0' };
   try { st.geo = JSON.parse(get('salatGeo') || 'null'); } catch (e) {}
   const cur = () => {
@@ -5937,17 +5941,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // ---- page ----
   const css = document.createElement('style');
   css.textContent = `
+.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
 .slt{position:fixed;top:5rem;z-index:5;width:16.5rem;max-height:calc(100vh - 6.5rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:thin}
 .slt.R{right:max(1rem,calc(50vw - 23rem - 18rem))}.slt.Lf{left:max(1rem,calc(50vw - 23rem - 18rem))}
-.slt .hd{padding:.75rem .9rem .5rem;background:linear-gradient(160deg,#0d4f48,#127a6b);color:#fff;border-radius:20px 20px 0 0;text-align:center}
+.slt .hd{padding:.55rem .8rem .5rem;background:linear-gradient(160deg,#0d4f48,#127a6b);color:#fff;border-radius:20px 20px 0 0;text-align:center}
 .slt .hd h3{margin:0 0 .35rem;font-size:1.05rem;font-weight:700;letter-spacing:.2px;color:#fff}
 .slt select{width:100%;font-size:.95rem!important;padding:.3rem .5rem;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.14);color:#fff;font:inherit}
 .slt select option{color:#111}
-.slt .clk{display:flex;flex-direction:column;align-items:center;padding:.7rem 0 .2rem}
-.slt svg.an{width:9.2rem;height:9.2rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,.18))}
-.slt .dg{font:700 1.5rem/1.2 'Courier New',ui-monospace,monospace;letter-spacing:1px;color:#0d4f48;margin-top:.3rem;direction:ltr}
-.slt .dt{font-size:.78rem;color:var(--muted,#667)}
-.slt .cd{margin:.55rem .8rem .3rem;padding:.5rem .6rem;border-radius:14px;background:var(--wash,#e8f4ee);text-align:center}
+.slt .clk{display:flex;flex-direction:column;align-items:center;padding:.5rem 0 .1rem}
+.slt svg.an{width:7.6rem;height:7.6rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,.18))}
+.slt .sl{width:14.5rem;overflow:hidden;margin-top:.25rem}.slt .sl>div{display:flex;width:200%;transition:transform .7s ease}.slt .sl span{width:50%;text-align:center;font-size:.8rem;color:#0d4f48;font-weight:600;white-space:nowrap;direction:rtl}
+.slt .hd input{width:calc(100% - 2.2rem);padding:.3rem .5rem;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:.95rem}.slt .hd input::placeholder{color:rgba(255,255,255,.7)}.slt .hd button{width:1.9rem;height:1.9rem;margin-inline-start:.25rem;border:0;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;cursor:pointer;font-size:1rem;vertical-align:middle}
+.slt .cd{margin:.35rem .8rem .25rem;padding:.3rem .6rem;border-radius:14px;background:var(--wash,#e8f4ee);text-align:center}
 .slt .cd small{display:block;color:var(--muted,#667);font-size:.78rem}
 .slt .cd b{display:block;font:700 1.55rem/1.3 'Courier New',ui-monospace,monospace;color:#0d4f48;direction:ltr;letter-spacing:1px}
 .slt .cd span{font-weight:700;color:#0d4f48}
@@ -5973,10 +5978,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let t = '';
     for (let i = 0; i < 60; i++) { const a = i * 6 * R, big = i % 5 === 0; t += '<line x1="' + (50 + Math.sin(a) * (big ? 38 : 41)).toFixed(2) + '" y1="' + (50 - Math.cos(a) * (big ? 38 : 41)).toFixed(2) + '" x2="' + (50 + Math.sin(a) * 44).toFixed(2) + '" y2="' + (50 - Math.cos(a) * 44).toFixed(2) + '" stroke="' + (big ? '#0d4f48' : '#9bb') + '" stroke-width="' + (big ? 1.6 : .6) + '"/>'; }
     for (let h = 1; h <= 12; h++) { const a = h * 30 * R; t += '<text x="' + (50 + Math.sin(a) * 31).toFixed(2) + '" y="' + (50 - Math.cos(a) * 31 + 2.6).toFixed(2) + '" font-size="7.5" text-anchor="middle" fill="#16322e" font-family="system-ui,sans-serif">' + h + '</text>'; }
-    return '<svg class="an" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#fff" stroke="#127a6b" stroke-width="3"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c9a24b" stroke-width=".6"/>' + t +
+    return '<svg class="an" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#fff" stroke="#127a6b" stroke-width="3"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c9a24b" stroke-width=".6"/>' + t + '<rect x="31" y="60" width="38" height="11" rx="3" fill="#0d4f48"/><text id="dg" x="50" y="68.2" text-anchor="middle" font-size="7.6" font-weight="700" fill="#fff" font-family="Courier New,monospace" letter-spacing=".4">--:--:--</text>' +
       '<line id="sh" x1="50" y1="50" x2="50" y2="29" stroke="#0d4f48" stroke-width="3.2" stroke-linecap="round"/><line id="sm" x1="50" y1="50" x2="50" y2="17" stroke="#16322e" stroke-width="2.2" stroke-linecap="round"/><line id="ss" x1="50" y1="56" x2="50" y2="14" stroke="#c9a24b" stroke-width="1" stroke-linecap="round"/><circle cx="50" cy="50" r="2.6" fill="#0d4f48"/></svg>';
   }
   function rot(id, deg) { const e = side.querySelector('#' + id); if (e) e.setAttribute('transform', 'rotate(' + deg + ' 50 50)'); }
+  let slide = 0; setInterval(() => { slide ^= 1; const e = side.querySelector('#sld'); if (e) e.style.transform = 'translateX(' + (slide * (rtl() ? 50 : -50)) + '%)'; }, 4000);
   function tick() {                           // every second: clock hands, digital time, countdown
     if (!CUR) return;
     const t = L[lang()], now = new Date(), p = parts(CUR.tz, now);
@@ -5985,6 +5991,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const cd = side.querySelector('#cd'), cn = side.querySelector('#cn');
     if (cd && cn) {
       let i = TM.findIndex((x, k) => x && k !== 1 && x > now), when = i >= 0 ? TM[i] : null;
+      if (!when && TM[0]) { i = 0; when = new Date(TM[0].getTime() + 864e5); }      // after Isha: tomorrow's Fajr
       if (!when) return;
       let s = Math.max(0, Math.round((when - now) / 1000));
       cn.textContent = t.n[i]; cd.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60);
@@ -5997,10 +6004,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const idx = tm.reduce((a, x, i) => (x && x <= now && i !== 1) ? i : a, -1);
     side.className = 'slt ' + (rtl() ? 'R' : 'Lf'); side.dir = rtl() ? 'rtl' : 'ltr';
     const k = u === 'ur' ? 2 : u === 'ar' ? 3 : 1;
-    const opts = C.slice().sort((a, b) => a[k].localeCompare(b[k], u)).map(x => '<option value="' + x[0] + '"' + (st.city === x[0] ? ' selected' : '') + '>' + x[k] + '</option>').join('');
-    const dateS = new Intl.DateTimeFormat(u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
-    let h = '<div class="hd"><h3>' + t.t + '</h3><select id="spc" aria-label="' + t.city + '"><option value="geo"' + (st.city === 'geo' ? ' selected' : '') + '>' + t.geo + (st.city === 'geo' && st.geo ? ' ✓' : '') + '</option>' + opts + '</select></div>' +
-      '<div class="clk">' + clockSvg() + '<div class="dg" id="dg"></div><div class="dt">' + dateS + '</div></div>' +
+    const opts = C.slice().sort((a, b) => a[k].localeCompare(b[k], u)).map(x => '<option value="' + x[k] + '"></option>').join('');
+    const lc = u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en', dateS = new Intl.DateTimeFormat(lc, { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+    let hijS = ''; try { const hd = new Date(now.getTime() + (tm[4] && now >= tm[4] ? 864e5 : 0)); hijS = new Intl.DateTimeFormat((u === 'ur' ? 'ar' : lc) + '-u-ca-islamic-umalqura', { timeZone: tz, day: 'numeric', month: 'long', year: 'numeric' }).format(hd).replace(/\s?هـ|\s?AH/, '') + ' ' + (u === 'en' ? 'AH' : 'ھ'); } catch (e) {}
+    let h = '<div class="hd"><h3>' + t.t + '</h3><input id="spc" list="spl" value="' + nameOf(c, u) + '" placeholder="' + t.city + '" aria-label="' + t.city + '" autocomplete="off"><button id="spg" type="button" title="' + t.geo + '" aria-label="' + t.geo + '">⌖</button><datalist id="spl">' + opts + '</datalist></div>' +
+      '<div class="clk">' + clockSvg() + '<div class="sl"><div id="sld"><span>' + dateS + '</span><span>' + hijS + '</span></div></div></div>' +
       '<div class="cd"><small>' + t.next + ': <span id="cn"></span></small><b id="cd">--:--:--</b></div>' +
       '<table><thead><tr><th>' + t.sal + '</th><th>' + t.beg + '</th></tr></thead><tbody>';
     tm.forEach((x, i) => { h += '<tr class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><td>' + t.n[i] + '</td><td>' + fmt(x, tz, t.ap) + '</td></tr>'; });
@@ -6015,17 +6023,33 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
     reminder(tm, now, t);
   }
+  const nameOf = (c, u) => { const k = u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en'; return c.name || c[k] || c.en || ''; };
+  function geocode(q) {
+    fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&name=' + encodeURIComponent(q)).then(r => r.json()).then(j => {
+      const r = j && j.results && j.results[0]; if (!r) { toast0(); return; }
+      st.geo = { name: r.name, cc: r.country_code || '', lat: r.latitude, lng: r.longitude, tz: r.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone };
+      put('salatGeo', JSON.stringify(st.geo)); st.city = 'geo'; put('salatCity', 'geo'); side.dataset.h = ''; render();
+    }).catch(toast0);
+  }
+  function toast0() { const i = side.querySelector('#spc'); if (i) { i.style.outline = '2px solid #e0a000'; setTimeout(() => { i.style.outline = ''; }, 1500); } }
+  function choose(v) {
+    v = v.trim(); if (!v) return;
+    const q = v.toLowerCase(), m = C.find(x => [x[1], x[2], x[3]].some(n => n.toLowerCase() === q)) || C.find(x => [x[1], x[2], x[3]].some(n => n.toLowerCase().startsWith(q)));
+    if (m) { st.city = m[0]; put('salatCity', st.city); side.dataset.h = ''; render(); } else geocode(v);
+  }
   function geoPick(auto) {
     if (!navigator.geolocation) return;
     navigator.geolocation.getCurrentPosition(p => {
       st.geo = { name: '', cc: '', lat: p.coords.latitude, lng: p.coords.longitude, tz: Intl.DateTimeFormat().resolvedOptions().timeZone };
-      const n = C.reduce((b, x) => { const d = Math.hypot(x[5] - st.geo.lat, x[6] - st.geo.lng); return !b || d < b[0] ? [d, x] : b; }, null); st.geo.cc = n ? n[1][4] : '';
+      const n = C.reduce((b, x) => { const d = Math.hypot(x[5] - st.geo.lat, x[6] - st.geo.lng); return !b || d < b[0] ? [d, x] : b; }, null); st.geo.cc = n ? n[1][4] : ''; st.geo.name = n ? n[1][1] : '';
       put('salatGeo', JSON.stringify(st.geo)); st.city = 'geo'; put('salatCity', 'geo'); side.dataset.h = ''; render();
-    }, () => { if (!auto) { const s = side.querySelector('#spc'); if (s) s.value = st.city; } }, { timeout: 8000, maximumAge: 3600000 });
+    }, () => {}, { timeout: 8000, maximumAge: 3600000 });
   }
   function bind() {
     const s = side.querySelector('#spc');
-    s.onchange = () => { if (s.value === 'geo') geoPick(false); else { st.city = s.value; put('salatCity', st.city); render(); } };
+    s.onchange = () => choose(s.value); s.onkeydown = e => { if (e.key === 'Enter') choose(s.value); };
+    s.onfocus = () => { s.select(); };
+    side.querySelector('#spg').onclick = () => geoPick(false);
     side.querySelector('#sph').onchange = e => { st.hanafi = e.target.checked ? '1' : '0'; put('salatHanafi', st.hanafi); render(); };
     side.querySelector('#spr').onchange = e => { st.rem = e.target.checked; put('salatRem', st.rem ? '1' : '0'); };
   }
@@ -6044,7 +6068,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
   }
   render(); setInterval(tick, 1000); setInterval(render, 30000);
-  if (!get('salatCity')) geoPick(true);       // first visit: the place is chosen automatically
   addEventListener('storage', render); document.addEventListener('click', () => setTimeout(render, 120));
   const o = new MutationObserver(() => render()); o.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
 })();
