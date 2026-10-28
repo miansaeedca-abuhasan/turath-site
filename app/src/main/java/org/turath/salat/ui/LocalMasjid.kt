@@ -60,13 +60,13 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
         var site by remember { mutableStateOf(pr.sp.getString("lm_site", "") ?: "") }
         val scope = rememberCoroutineScope()
         val ctx = androidx.compose.ui.platform.LocalContext.current
-        // as the name is typed (a short pause after the last letter) the masjids with that name are looked up
-        LaunchedEffect(q) {
-            hits = emptyList()
-            if (q.trim().length < 3) { searching = false; return@LaunchedEffect }
-            kotlinx.coroutines.delay(700)
-            searching = true
-            hits = withContext(Dispatchers.IO) { runCatching { MosqueSearch.byName(q.trim(), place?.lat ?: 0.0, place?.lng ?: 0.0) }.getOrDefault(emptyList()) }
+        // the search starts only when the «Search» tab (or the keyboard's search key) is pressed, not while the name is being typed
+        var go by remember { mutableIntStateOf(0) }
+        var asked by remember { mutableStateOf("") }
+        LaunchedEffect(go) {
+            if (go == 0 || q.trim().length < 2) return@LaunchedEffect
+            asked = q.trim(); hits = emptyList(); searching = true
+            hits = withContext(Dispatchers.IO) { runCatching { MosqueSearch.byName(asked, place?.lat ?: 0.0, place?.lng ?: 0.0) }.getOrDefault(emptyList()) }
             searching = false
         }
         /** the times of the masjid: from its website; if that gives nothing, from the website a web search finds; what the user wrote stays when nothing is found */
@@ -94,7 +94,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     val w = withContext(Dispatchers.IO) { runCatching { MosqueSearch.viaWeb(n, c) }.getOrNull() }
                     if (w != null) { url = w.first; t = w.second }
                 }
-                if (t == null || t.found == 0) { status = "none"; return@launch }
+                if (t == null || t.iq.size + (if (t.maghribAtSunset) 1 else 0) < 3) { status = "none"; return@launch }
                 site = url; pr.sp.edit().putString("lm_site", url).apply()
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
@@ -105,14 +105,16 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
             }
         }
         fun choose(n: String, c: String, w: String) {
-            name = n; city = c; site = w; q = ""
+            name = n; city = c; site = w; q = ""; asked = ""
             pr.sp.edit().putString("lm_name", n).putString("lm_city", c).putString("lm_site", w).apply()
             resolve(n, c, w)
         }
         Card0 {
-            OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) },
-                trailingIcon = { if (searching) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) })
-            if (q.trim().length >= 3 && !searching) {
+            OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) }, singleLine = true,
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
+                keyboardActions = androidx.compose.foundation.text.KeyboardActions(onSearch = { go++ }),
+                trailingIcon = { if (searching) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else TextButton(onClick = { go++ }, enabled = q.trim().length >= 2) { Text(Tr["lmGo"], fontWeight = FontWeight.Bold) } })
+            if (asked.isNotEmpty() && !searching) {
                 for (m in hits) Row(Modifier.fillMaxWidth().clickable { choose(m.name, m.city.ifEmpty { place?.name ?: "" }, m.website) }.padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) {
                         Text(m.name, fontWeight = FontWeight.Bold, fontSize = 15.sp)
@@ -121,7 +123,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     if (m.website.isNotBlank()) Icon(Icons.Outlined.Language, null, tint = primary)
                 }
                 // not in the list: the name as typed, its website looked for on the web
-                TextButton(onClick = { choose(q.trim(), place?.name ?: "", "") }) { Icon(Icons.Outlined.Language, null); Text("  " + Tr["lmWeb"] + " «" + q.trim() + "»") }
+                TextButton(onClick = { choose(asked, place?.name ?: "", "") }) { Icon(Icons.Outlined.Language, null); Text("  " + Tr["lmWeb"] + " «" + asked + "»") }
             }
         }
         when (status) {

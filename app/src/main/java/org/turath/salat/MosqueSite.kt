@@ -38,6 +38,9 @@ object MosqueSite {
             "DHUHR", "JUM" -> if (hh in 1..6) hh += 12
             "ASR", "MAGHRIB", "ISHA" -> if (hh < 12) hh += 12
         }
+        // a time that cannot belong to this prayer is not one of its times (a Jumu'ah at 8 pm is an announcement, not the prayer)
+        val ok = when (key) { "FAJR" -> hh in 2..8; "DHUHR" -> hh in 11..15; "ASR" -> hh in 13..19; "MAGHRIB" -> hh in 15..22; "ISHA" -> hh in 18..23 || hh == 0 || hh == 1; "JUM" -> hh in 11..15 && !(hh == 15 && m > 45); else -> true }
+        if (!ok) return null
         return hh * 60 + m
     }
 
@@ -94,6 +97,30 @@ object MosqueSite {
                 if (cols != null && ms.size == cols.second) { iq[h.third] = ms[cols.first]; continue }
                 if (ms.size >= 2) iq[h.third] = ms.last() else if (onlyIqamah) iq[h.third] = ms.first()
             }
+        }
+        // the page may draw each name and each time in a box of its own (a name on one line, its times on the next lines)
+        if (iq.size < 3) {
+            val tIq = linkedMapOf<String, Int>(); val tJum = mutableListOf<Int>()
+            for ((i, raw) in text.withIndex()) {
+                val ln = raw.trim(' ', '|', ':')
+                if (ln.length > 18 || TIME.containsMatchIn(ln)) continue
+                val key = KEYS.firstOrNull { (_, re) -> re.containsMatchIn(ln) }?.first ?: continue
+                val ms = mutableListOf<Int>()
+                var j = i + 1
+                while (j < text.size && j <= i + 8) {
+                    val l2 = text[j].trim(' ', '|')
+                    val ts = TIME.findAll(l2).toList()
+                    if (ts.isNotEmpty() && TIME.replace(l2, "").length <= 12) {
+                        ts.mapNotNull { minutes(key, it.groupValues[1].toInt(), it.groupValues[2], it.groupValues[3].toInt(), it.groupValues[4].ifEmpty { null }) }.let { ms += it }
+                    } else if (!(ts.isEmpty() && l2.length <= 14 && !l2.any { it.isDigit() } && KEYS.none { (_, re) -> re.containsMatchIn(l2) })) break
+                    j++
+                }
+                if (ms.isEmpty()) continue
+                if (key == "JUM") { tJum += ms.last(); continue }
+                if (key in tIq) continue
+                if (ms.size >= 2) tIq[key] = ms.last() else if (onlyIqamah) tIq[key] = ms.first()
+            }
+            if (tIq.size >= 3) { iq.clear(); iq.putAll(tIq); jum.clear(); jum += tJum }
         }
         return Times(iq, jum.distinct().sorted().take(3), sunset && "MAGHRIB" !in iq)
     }

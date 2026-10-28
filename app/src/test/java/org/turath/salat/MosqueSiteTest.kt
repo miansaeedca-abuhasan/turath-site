@@ -48,4 +48,15 @@ class MosqueSiteTest {
         assertEquals(listOf(13 * 60 + 45, 14 * 60 + 30, 15 * 60 + 30), t.jumuah)
         assertEquals(17 * 60 + 30, MosqueSite.parse(html, java.time.LocalDate.of(2026, 10, 5)).iq["ASR"])
     }
+
+    @Test fun boxesAndJunk() {
+        val html = "<div class='r'><div>Fajr</div><div>6:27 AM</div><div>6:40 AM</div><div>6:50 AM</div></div><div><div>Dhuhr</div><div>1:06 PM</div><div>1:35 PM</div><div>1:45 PM</div></div>" +
+            "<div><div>Asr</div><div>4:32 PM</div><div>4:50 PM</div><div>5:00 PM</div></div><div><div>Maghrib</div><div>6:15 PM</div><div>6:16 PM</div><div>6:17 PM</div></div>" +
+            "<div><div>Isha</div><div>7:28 PM</div><div>7:50 PM</div><div>8:00 PM</div></div><div><div>Jumu'ah</div><div>1:06 PM</div><div>1:30 PM</div><div>2:00 PM</div></div>" +
+            "<p>Jumuah youth program 8:00 pm</p>"
+        val t = MosqueSite.parse(html)
+        assertEquals(6 * 60 + 50, t.iq["FAJR"]); assertEquals(13 * 60 + 45, t.iq["DHUHR"]); assertEquals(17 * 60, t.iq["ASR"])
+        assertEquals(18 * 60 + 17, t.iq["MAGHRIB"]); assertEquals(20 * 60, t.iq["ISHA"])
+        assertEquals(listOf(14 * 60), t.jumuah)
+    }
 }
