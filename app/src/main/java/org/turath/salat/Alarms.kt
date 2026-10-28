@@ -261,6 +261,8 @@ object Audio {
     /** `alarm`: the suhoor alarm, or the adhan wanted on a silent phone — at the alarm volume */
     fun attrs(ctx: Context, alarm: Boolean = false): AudioAttributes = AudioAttributes.Builder()
         .setUsage(if (alarm) AudioAttributes.USAGE_ALARM else usage(Prefs(ctx))).setContentType(AudioAttributes.CONTENT_TYPE_MUSIC).build()
+    /** a phone call is going on (or ringing): no sound of the app at all */
+    fun inCall(ctx: Context) = ctx.getSystemService(AudioManager::class.java).mode.let { it == AudioManager.MODE_IN_CALL || it == AudioManager.MODE_IN_COMMUNICATION || it == AudioManager.MODE_RINGTONE }
     fun silentNow(ctx: Context) = ctx.getSystemService(AudioManager::class.java).ringerMode != AudioManager.RINGER_MODE_NORMAL
 }
 
@@ -270,6 +272,7 @@ object Preview {
     var playing: Snd? = null; private set
     fun play(ctx: Context, s: Snd, fajr: Boolean = false, done: () -> Unit = {}) {
         stop()
+        if (Audio.inCall(ctx)) return
         val u = SoundService.uri(ctx, s, fajr) ?: return
         playing = s
         mp = runCatching {
@@ -348,6 +351,7 @@ class SoundService : Service() {
         var playing by androidx.compose.runtime.mutableStateOf(false)
         fun stop(ctx: Context) { ctx.stopService(Intent(ctx, SoundService::class.java)) }
         fun start(ctx: Context, s: Snd, title: String, body: String, alarm: Boolean, fajr: Boolean = false) {
+            if (Audio.inCall(ctx)) return      // during a phone call nothing of the app is heard
             val i = Intent(ctx, SoundService::class.java).putExtra("snd", s.name).putExtra("title", title).putExtra("body", body).putExtra("alarm", alarm).putExtra("fajr", fajr)
             ctx.startForegroundService(i)
         }
