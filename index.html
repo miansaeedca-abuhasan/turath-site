@@ -5671,18 +5671,22 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const timesLine = (a, now = new Date()) => !a.t ? '' : a.gap ? P('from')(P('asr'), hm(now, a.t.asr))
     : a.m ? P('fajr') + ' ' + hm(now, a.t.fajr) + ' — ' + P('dhuhr') + ' ' + hm(now, a.t.dhuhr)
     : P('asr') + ' ' + hm(now, a.t.asr) + ' — ' + P('maghrib') + ' ' + hm(now, a.t.maghrib);
-  function askLocation(done) {
-    if (!navigator.geolocation) { toast(P('locNo')); return; }
-    navigator.geolocation.getCurrentPosition(pos => {
-      try { localStorage.adhkarLoc = JSON.stringify([+pos.coords.latitude.toFixed(2), +pos.coords.longitude.toFixed(2)]); } catch (e) {}
+  // no permission is asked: the person types or searches the city himself (the place name comes from the open geocoding service)
+  async function findCity(name, done) {
+    try {
+      const r = await (await fetch('https://geocoding-api.open-meteo.com/v1/search?count=1&format=json&language=' + (ui === 'ur' || ui === 'ar' ? 'ar' : 'en') + '&name=' + encodeURIComponent(name))).json();
+      const x = r && r.results && r.results[0]; if (!x) { toast(P('locNo')); return; }
+      try { localStorage.adhkarLoc = JSON.stringify([+x.latitude.toFixed(2), +x.longitude.toFixed(2)]); } catch (e) {}
       toast(P('locOk')); if (NS() && 'caches' in window) buildQueue().catch(() => {}); if (done) done();
-    }, () => toast(P('locNo')), {enableHighAccuracy: false, timeout: 15000, maximumAge: 864e5});
+    } catch (e) { toast(P('locNo')); }
   }
   function locBlock(redraw) {
     const p = place(), st = p.src === 'gps' ? P('locGps') : p.src === 'tz' ? P('locTz')(p.z) : P('locClock');
     const b = el('div', {class: 'locbox'}, el('p', {class: 'grp'}, P('locTitle')), el('p', {class: 'note'}, st + ' — ' + P('locNote')));
     const a = adhkarNow(); if (a.t) b.append(el('p', {class: 'cs'}, P('fajr') + ' ' + hm(new Date(), a.t.fajr) + ' · ' + P('dhuhr') + ' ' + hm(new Date(), a.t.dhuhr) + ' · ' + P('asr') + ' ' + hm(new Date(), a.t.asr) + ' · ' + P('maghrib') + ' ' + hm(new Date(), a.t.maghrib)));
-    // (the location-permission button was removed at the owner's request)
+    const inp = el('input', {type: 'search', class: 'cityin', autocomplete: 'off', placeholder: P('locBtn'), style: 'display:none;margin:.3rem 0;padding:.4rem .6rem;border:1px solid var(--line,#ccc);border-radius:10px;font:inherit;max-width:100%'});
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter' && inp.value.trim()) findCity(inp.value.trim(), redraw); });
+    b.append(el('button', {class: 'btn', type: 'button', on: {click: () => { inp.style.display = inp.style.display === 'none' ? '' : 'none'; if (inp.style.display === '') inp.focus(); }}}, '📍 ', P('locBtn')), ' ', inp);
     if (p.src === 'gps') b.append(' ', el('button', {class: 'btn', type: 'button', on: {click: () => { try { localStorage.removeItem('adhkarLoc'); } catch (e) {} if (redraw) redraw(); }}}, P('locOff')));
     return b;
   }
@@ -5985,7 +5989,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 #sltmsg{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);z-index:99990;max-width:38rem;padding:1rem 1.6rem;border-radius:16px;background:rgba(10,30,24,.55);color:#fff;font-size:1.35rem;line-height:1.8;text-align:center;pointer-events:none;opacity:0;transition:opacity .6s}
 #sltmsg.on{opacity:1}`;
   css.textContent += `
-@media (min-width:1320px){html.sltR .harakat-btn{inset-inline-start:auto!important;right:calc(max(1rem,50vw - 42rem) + 18.4rem)!important;left:auto!important;bottom:auto!important;top:56vh!important}html.sltL .harakat-btn{inset-inline-start:auto!important;left:calc(max(1rem,50vw - 42rem) + 18.4rem)!important;right:auto!important;bottom:auto!important;top:56vh!important}}
+@media (min-width:1320px){html.sltR .harakat-btn{inset-inline-start:auto!important;right:calc(max(1rem,50vw - 42rem) + 18.5rem)!important;left:auto!important;bottom:auto!important;top:8.3rem!important}html.sltL .harakat-btn{inset-inline-start:auto!important;left:calc(max(1rem,50vw - 42rem) + 18.5rem)!important;right:auto!important;bottom:auto!important;top:8.3rem!important}}
 @media (min-width:1000px){.bnav{transition:transform .6s ease}.bnav.slideout{transform:translateX(105%)}
 .bnav.mini{left:auto;right:.8rem;bottom:.7rem;width:auto;border:1px solid var(--line,#ddd);border-radius:999px;padding:0;box-shadow:0 3px 14px rgba(0,0,0,.2);animation:sltin .6s ease}
 .bnav.mini a:not(.navhome),.bnav.mini .navgap{display:none}.bnav.mini a.navhome{padding:.3rem .4rem}.bnav.mini a.navhome span:last-child{display:none}.bnav.mini a.navhome .nico{margin-top:0}}
