@@ -7,7 +7,7 @@ import java.net.URL
 /** Reads a masjid's congregation (iqamah) times from the masjid's own web page. Best effort: it understands a plain timetable
  *  (a table or lines such as «Fajr 06:28 AM 06:40 AM»); a page that draws its times with a script cannot be read. */
 object MosqueSite {
-    data class Times(val iq: Map<String, Int>, val jumuah: List<Int>, val maghribAtSunset: Boolean = false) { val found get() = iq.size + jumuah.size + (if (maghribAtSunset && "MAGHRIB" !in iq) 1 else 0) }
+    data class Times(val iq: Map<String, Int>, val jumuah: List<Int>, val maghribAtSunset: Boolean = false, val maghribAfter: Int = 0) { val found get() = iq.size + jumuah.size + (if (maghribAtSunset && "MAGHRIB" !in iq) 1 else 0) }
 
     private val KEYS = listOf(
         "FAJR" to Regex("fajr|fajar|subh|sobh|الفجر|فجر", RegexOption.IGNORE_CASE),
@@ -40,7 +40,12 @@ object MosqueSite {
         }
         // a time that cannot belong to this prayer is not one of its times (a Jumu'ah at 8 pm is an announcement, not the prayer)
         val ok = when (key) { "FAJR" -> hh in 2..8; "DHUHR" -> hh in 11..15; "ASR" -> hh in 13..19; "MAGHRIB" -> hh in 15..22; "ISHA" -> hh in 18..23 || hh == 0 || hh == 1; "JUM" -> hh in 11..15 && !(hh == 15 && m > 45); else -> true }
-        if (!ok) return null
+        if (!ok) {
+            // «Zuhr 1:30 am» on a page is a slip of the pen for pm
+            val pm = hh + 12
+            if (a == 'a' && pm < 24 && when (key) { "DHUHR" -> pm in 11..15; "ASR" -> pm in 13..19; "MAGHRIB" -> pm in 15..22; "ISHA" -> pm in 18..23; "JUM" -> pm in 11..15; else -> false }) return pm * 60 + m
+            return null
+        }
         return hh * 60 + m
     }
 
@@ -73,12 +78,37 @@ object MosqueSite {
         // a page that shows only one column of times, headed «Iqamah» / «Jamaat», has the congregation times in it
         val onlyIqamah = Regex("iqama|iqamah|jama'?at|jamaah|congregation", RegexOption.IGNORE_CASE).containsMatchIn(all) &&
             !Regex("begin|start|adhan|azan|athan", RegexOption.IGNORE_CASE).containsMatchIn(all)
+        // one row per day with the date first («27/10/2026 …»): Sunrise, Fajr begins and jama'ah, Zuhr begins and jama'ah, Asr (two begin times) and jama'ah, Maghrib, Isha
+        for (line in text) {
+            val m = Regex("^(\\d{1,2})/(\\d{1,2})/(\\d{2,4})\\b").find(line) ?: continue
+            if (m.groupValues[1].toInt() != today.dayOfMonth || m.groupValues[2].toInt() != today.monthValue) continue
+            val ts = TIME.findAll(line.substring(m.range.last + 1)).toList()
+            if (ts.size != 12) continue
+            fun at(k: String, i: Int) = ts[i].let { minutes(k, it.groupValues[1].toInt(), it.groupValues[2], it.groupValues[3].toInt(), it.groupValues[4].ifEmpty { null }) }
+            val r = linkedMapOf<String, Int>()
+            for ((k, i) in listOf("FAJR" to 2, "DHUHR" to 4, "ASR" to 7, "MAGHRIB" to 9, "ISHA" to 11)) at(k, i)?.let { r[k] = it }
+            if (r.size >= 4) return Times(r, emptyList())
+        }
+        // several days one after another, each under its date: only today's part (and what stands outside the day parts, such as the Jumu'ah times)
+        val DATE = Regex("\\b($MON)[a-z]*\\.?\\s+(\\d{1,2})\\b|\\b(\\d{1,2})\\s+($MON)[a-z]*\\b", RegexOption.IGNORE_CASE)
+        val heads = text.withIndex().filter { (_, l) -> l.length <= 70 && DATE.containsMatchIn(l) && Regex("20\\d\\d").containsMatchIn(l) }.map { it.index }
+        var other = emptySet<Int>()     // the lines of the other days
+        if (heads.size >= 2) {
+            fun dayOf(i: Int): Int? = DATE.find(text[i])?.let { m -> if (m.groupValues[1].isNotEmpty()) mon(m.groupValues[1]) * 100 + m.groupValues[2].toInt() else mon(m.groupValues[4]) * 100 + m.groupValues[3].toInt() }
+            val doy = today.monthValue * 100 + today.dayOfMonth
+            val mine = heads.firstOrNull { dayOf(it) == doy }
+            if (mine != null) other = heads.filter { it != mine }.flatMap { h -> (h until (heads.firstOrNull { it > h } ?: text.size)) }.toSet()
+        }
         val iq = linkedMapOf<String, Int>()
         val jum = mutableListOf<Int>()
-        for (line in text) {
+        var after = 0
+        for ((li, line) in text.withIndex()) {
+            val otherDay = li in other
+            if (!otherDay) Regex("(\\d{1,2})\\s*min\\w*\\.?\\s+after\\s+(?:the\\s+)?(?:sunset|adhan|azan|athan|maghrib)", RegexOption.IGNORE_CASE).find(line)?.let { if (Regex("maghrib", RegexOption.IGNORE_CASE).containsMatchIn(line)) { after = it.groupValues[1].toInt(); sunset = true } }
             // the places in the line where a prayer's name stands; the text up to the next name belongs to it
             val hits = KEYS.flatMap { (k, re) -> re.findAll(line).map { Triple(it.range.first, it.range.last + 1, k) }.toList() }.sortedBy { it.first }
             for ((i, h) in hits.withIndex()) {
+                if (otherDay && h.third != "JUM") continue
                 val end = hits.getOrNull(i + 1)?.first ?: line.length
                 val seg = line.substring(h.second, end)
                 val t = TIME.findAll(seg).toList()
@@ -122,7 +152,7 @@ object MosqueSite {
             }
             if (tIq.size >= 3) { iq.clear(); iq.putAll(tIq); jum.clear(); jum += tJum }
         }
-        return Times(iq, jum.distinct().sorted().take(3), sunset && "MAGHRIB" !in iq)
+        return Times(iq, jum.distinct().sorted().take(3), sunset && "MAGHRIB" !in iq, after)
     }
 
     private fun get(u: String): String? {
@@ -140,18 +170,23 @@ object MosqueSite {
         return null
     }
 
+    /** the pages of the same site that a page links to as «prayer times» / «iqamah» / «timetable» */
+    fun prayerLinks(html: String, start: String): List<String> {
+        val host = runCatching { URI(start).host }.getOrNull()
+        return Regex("href\\s*=\\s*[\"']([^\"'#]+)[\"']", RegexOption.IGNORE_CASE).findAll(html).map { it.groupValues[1] }
+            .filter { Regex("prayer|salah|salat|namaz|timing|timetable|iqamah|iqama|schedule", RegexOption.IGNORE_CASE).containsMatchIn(it) }
+            .mapNotNull { runCatching { URI(start).resolve(it.replace(" ", "%20")).toString() }.getOrNull() }
+            .filter { runCatching { URI(it).host }.getOrNull() == host && !it.endsWith(".pdf", true) && !it.contains(Regex("\\.(jpg|png|css|js)$", RegexOption.IGNORE_CASE)) }
+            .distinct().take(3).toList()
+    }
+
     /** the times from a masjid's page; if its first page has none, the pages it links to as «prayer times» / «iqamah» / «timetable» */
     fun fetch(site: String): Times? {
         val start = site.trim().let { if (it.startsWith("http")) it else "https://$it" }
         val html = runCatching { get(start) }.getOrNull() ?: return null
         var best = parse(html)
         if (best.iq.size >= 3) return best
-        val host = runCatching { URI(start).host }.getOrNull()
-        val links = Regex("href\\s*=\\s*[\"']([^\"'#]+)[\"']", RegexOption.IGNORE_CASE).findAll(html).map { it.groupValues[1] }
-            .filter { Regex("prayer|salah|salat|namaz|timing|timetable|iqamah|iqama|schedule", RegexOption.IGNORE_CASE).containsMatchIn(it) }
-            .mapNotNull { runCatching { URI(start).resolve(it.replace(" ", "%20")).toString() }.getOrNull() }
-            .filter { runCatching { URI(it).host }.getOrNull() == host && !it.endsWith(".pdf", true) && !it.contains(Regex("\\.(jpg|png|css|js)$", RegexOption.IGNORE_CASE)) }
-            .distinct().take(3).toList()
+        val links = prayerLinks(html, start)
         for (l in links) {
             val p = runCatching { get(l) }.getOrNull()?.let { parse(it) } ?: continue
             if (p.found > best.found) best = p

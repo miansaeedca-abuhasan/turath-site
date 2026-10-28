@@ -81,6 +81,14 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     val h = MosqueRender.html(ctx, if (url.startsWith("http")) url else "https://$url")
                     val p = h?.let { MosqueSite.parse(it) }
                     if (p != null && p.found > (t?.found ?: 0)) t = p
+                    // the page that holds the times may be another page of the site (drawn by a script too): the links to «prayer times» are opened the same way
+                    if ((t == null || t.found < 3) && h != null) {
+                        for (l in MosqueSite.prayerLinks(h, if (url.startsWith("http")) url else "https://$url").take(2)) {
+                            val p3 = MosqueRender.html(ctx, l)?.let { MosqueSite.parse(it) }
+                            if (p3 != null && p3.found > (t?.found ?: 0)) t = p3
+                            if ((t?.found ?: 0) >= 5) break
+                        }
+                    }
                     // many masjid pages show the times of the Ad-Din display page (portal.ad-din.ca/public/...): that page is then read the same way
                     if ((t == null || t.found < 3) && h != null) {
                         val d = Regex("https?://portal\\.ad-din\\.ca/public/[^\"'\\s<>)]+").find(h)?.value?.replace("&amp;", "&")
@@ -98,7 +106,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 site = url; pr.sp.edit().putString("lm_site", url).apply()
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
-                if (t.maghribAtSunset && day != null) LocalMasjid.setIqamah(pr, "MAGHRIB", day[P.MAGHRIB].let { it.hour * 60 + it.minute })
+                if (t.maghribAtSunset && day != null) LocalMasjid.setIqamah(pr, "MAGHRIB", day[P.MAGHRIB].let { it.hour * 60 + it.minute + t.maghribAfter })
                 for ((k, m) in t.iq) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
                 if (t.jumuah.isNotEmpty()) { LocalMasjid.setJumuah(pr, t.jumuah); day?.let { d -> LocalMasjid.applyVibration(pr, "JUMUAH", d[P.DHUHR], t.jumuah.min()) } }
                 status = "ok"; ver++; s.changed()

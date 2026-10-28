@@ -59,4 +59,23 @@ class MosqueSiteTest {
         assertEquals(18 * 60 + 17, t.iq["MAGHRIB"]); assertEquals(20 * 60, t.iq["ISHA"])
         assertEquals(listOf(14 * 60), t.jumuah)
     }
+
+    @Test fun daysAndRows() {
+        val london = "<table><tr><td>Next: Asr</td><td>Next: Asr IQAMA</td></tr><tr><td>03:59 PM</td><td>04:30 PM</td></tr></table>" +
+            "<h3>Oct 27, 2026 (16 Jamada-I, 1448)</h3><table><tr><td>Fajr</td><td>06:36 AM</td><td>06:50 AM</td></tr><tr><td>Zuhr</td><td>01:10 PM</td><td>01:50 PM</td></tr><tr><td>Asr</td><td>03:59 PM</td><td>04:30 PM</td></tr><tr><td>Maghrib</td><td>06:25 PM</td><td>06:32 PM</td></tr><tr><td>Isha</td><td>07:43 PM</td><td>08:00 PM</td></tr></table>" +
+            "<h3>Oct 28, 2026 (17 Jamada-I, 1448)</h3><table><tr><td>Fajr</td><td>06:37 AM</td><td>06:55 AM</td></tr><tr><td>Zuhr</td><td>01:10 PM</td><td>01:55 PM</td></tr><tr><td>Asr</td><td>03:57 PM</td><td>04:35 PM</td></tr><tr><td>Maghrib</td><td>06:23 PM</td><td>06:30 PM</td></tr><tr><td>Isha</td><td>07:42 PM</td><td>08:05 PM</td></tr></table>" +
+            "<p>First Jumuah: 12:00 PM</p><p>Second Jumuah: 1:15 PM</p>"
+        val t = MosqueSite.parse(london, java.time.LocalDate.of(2026, 10, 28))
+        assertEquals(6 * 60 + 55, t.iq["FAJR"]); assertEquals(20 * 60 + 5, t.iq["ISHA"]); assertEquals(listOf(12 * 60, 13 * 60 + 15), t.jumuah)
+        assertEquals(6 * 60 + 50, MosqueSite.parse(london, java.time.LocalDate.of(2026, 10, 27)).iq["FAJR"])
+        val row = "<table><tr><td>27/10/2026</td><td>16</td><td>5</td><td>1448</td><td>7:53</td><td>6:36</td><td>6:50</td><td>12:09</td><td>12:45</td><td>1:46</td><td>2:17</td><td>2:45</td><td>4:05</td><td>4:12</td><td>5:42</td><td>7:30</td></tr></table>"
+        val r = MosqueSite.parse(row, java.time.LocalDate.of(2026, 10, 27))
+        assertEquals(6 * 60 + 50, r.iq["FAJR"]); assertEquals(12 * 60 + 45, r.iq["DHUHR"]); assertEquals(14 * 60 + 45, r.iq["ASR"]); assertEquals(16 * 60 + 12, r.iq["MAGHRIB"]); assertEquals(19 * 60 + 30, r.iq["ISHA"])
+    }
+
+    @Test fun relativeMaghribAndTypo() {
+        val t = MosqueSite.parse("<p>Fajr: 6:45 AM</p><p>Zuhr: 1:30 am</p><p>Asr: 4:30 PM</p><p>Maghrib: 3 minutes after sunset</p><p>Isha: 8:00 PM</p><p>Jumu'ah 1: 2:00 PM</p><p>Jumu'ah 2: 3:15 PM</p>")
+        assertEquals(13 * 60 + 30, t.iq["DHUHR"]); assertEquals(true, t.maghribAtSunset); assertEquals(3, t.maghribAfter)
+        assertEquals(listOf(14 * 60, 15 * 60 + 15), t.jumuah)
+    }
 }
