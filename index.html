@@ -281,6 +281,7 @@ body.withplayer .resume.float{display:none}
 .shead{text-align:center;margin:1rem 0 .5rem;padding:.6rem;border:2px solid var(--accent);border-radius:16px;background:var(--card)}
 .sname{font:700 1.7rem/1.8 var(--arabic);color:var(--accent)}
 .bism{font-size:calc(var(--qar)*1.1);line-height:1.8;margin-top:.2rem}
+@media (orientation:landscape) and (max-height:520px){main{max-width:none;padding-left:max(1rem,env(safe-area-inset-left,0px));padding-right:max(1rem,env(safe-area-inset-right,0px))}}
 .qar{font-family:var(--qfont);font-size:var(--qar);line-height:2.15;direction:rtl;text-align:right;margin:.2rem 0;word-spacing:normal}
 .qar.sm{display:block;font-size:calc(var(--qar)*.8)}
 .qar.mom{text-align:center}
@@ -635,7 +636,7 @@ body.vfpage .appbar{position:static}
   d.hidden=false;
     v.addEventListener('playing',function(){clearTimeout(t0);});
   v.addEventListener('ended',end);v.addEventListener('error',end);
-  v.src='splash2.mp4';
+  v.src='splash3.mp4';
   var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(end);});
 })();
 </script>
@@ -2687,12 +2688,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const arKeys = () => [AK()].concat(QS.tajweed && QS.rasm !== 'indopak' ? ['tajweed'] : []);
   function applyVars() {
     const r = document.documentElement.style;
-    r.setProperty('--qar', QS.ar + 'px'); r.setProperty('--qtr', QS.trs + 'px');
+    const ls = window.matchMedia && matchMedia('(orientation:landscape) and (max-height:520px)').matches;   // phone turned sideways: bigger letters
+    r.setProperty('--qar', Math.round(QS.ar * (ls ? 1.4 : 1)) + 'px'); r.setProperty('--qtr', Math.round(QS.trs * (ls ? 1.2 : 1)) + 'px');
     r.setProperty('--qfont', QS.rasm === 'indopak' ? '"' + (FONTS[QS.font] || FONTS.indo)[0] + '","Noto Naskh Arabic","Scheherazade New",serif' : '"KFGQPC Hafs","Amiri Quran","Scheherazade New",serif');
     document.documentElement.classList.toggle('tajweed', !!QS.tajweed);
     document.documentElement.classList.toggle('indo', QS.rasm === 'indopak' && QS.font === 'indo');
   }
   applyVars();
+  try { matchMedia('(orientation:landscape) and (max-height:520px)').addEventListener('change', applyVars); } catch (e) {}
   // each interface language keeps its own Quran translations (Arabic: none)
   const TR_DEF = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
   QS.trBy = QS.trBy || {};
