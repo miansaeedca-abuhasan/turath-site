@@ -5675,7 +5675,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const p = place(), st = p.src === 'gps' ? P('locGps') : p.src === 'tz' ? P('locTz')(p.z) : P('locClock');
     const b = el('div', {class: 'locbox'}, el('p', {class: 'grp'}, P('locTitle')), el('p', {class: 'note'}, st + ' — ' + P('locNote')));
     const a = adhkarNow(); if (a.t) b.append(el('p', {class: 'cs'}, P('fajr') + ' ' + hm(new Date(), a.t.fajr) + ' · ' + P('dhuhr') + ' ' + hm(new Date(), a.t.dhuhr) + ' · ' + P('asr') + ' ' + hm(new Date(), a.t.asr) + ' · ' + P('maghrib') + ' ' + hm(new Date(), a.t.maghrib)));
-    b.append(el('button', {class: 'btn', type: 'button', on: {click: () => askLocation(redraw)}}, '📍 ', P('locBtn')));
+    // (the location-permission button was removed at the owner's request)
     if (p.src === 'gps') b.append(' ', el('button', {class: 'btn', type: 'button', on: {click: () => { try { localStorage.removeItem('adhkarLoc'); } catch (e) {} if (redraw) redraw(); }}}, P('locOff')));
     return b;
   }
@@ -5941,7 +5941,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (!m) { const off = z => { const p = parts(z, new Date()); return Math.round((Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - Math.floor(Date.now() / 60000) * 60000) / 60000); }; try { const o = off(tz); m = C.find(c => off(c[7]) === o && c[7].split('/')[0] === tz.split('/')[0]) || C.find(c => off(c[7]) === o); } catch (e) {} }
     return m ? m[0] : 'makkah';
   };
-  let st = { city: get('salatCity') || guess(), geo: null, hanafi: get('salatHanafi'), rem: get('salatRem') !== '0' };
+  let st = { city: get('salatCity') || guess(), geo: null, hanafi: get('salatHanafi'), rem: false };
   try { st.geo = JSON.parse(get('salatGeo') || 'null'); } catch (e) {}
   const cur = () => {
     if (st.city === 'geo' && st.geo) return st.geo;
@@ -6043,7 +6043,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       '<div class="cd"><small>' + t.next + ': <span id="cn"></span></small><b id="cd">--:--:--</b></div>' +
       '<div class="pr">';
     tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
-    h += '</div><div class="op"><label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label><label><input type="checkbox" id="spr"' + (st.rem ? ' checked' : '') + '> ' + t.rem + '</label></div>';
+    h += '</div><div class="op"><label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label></div>';
     if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); }
     tick();
     const any = STORE.turath || STORE.salat;
@@ -6073,7 +6073,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     s.onchange = () => choose(s.value); s.onkeydown = e => { if (e.key === 'Enter') choose(s.value); };
     s.onfocus = () => { s.select(); };
     side.querySelector('#sph').onchange = e => { st.hanafi = e.target.checked ? '1' : '0'; put('salatHanafi', st.hanafi); render(); };
-    side.querySelector('#spr').onchange = e => { st.rem = e.target.checked; put('salatRem', st.rem ? '1' : '0'); };
   }
   // from the adhan until 25 minutes later: a transparent message every 3 minutes
   let lastShown = 0;
