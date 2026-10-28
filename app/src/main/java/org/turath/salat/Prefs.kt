@@ -41,7 +41,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     CANARY7("birds_canary7"), CANARY8("birds_canary8"), CANARY9("birds_canary9"), CANARY10("birds_canary10"), GOLDFINCH("birds_goldfinch"), THRUSH("birds_thrush"), BLACKCAP("birds_blackcap"),
     ROOSTER("birds_rooster"), BULBUL("birds_bulbul"), LARK("birds_lark"), WARBLER("birds_warbler"), FINCH("birds_finch"), ORIOLE("birds_oriole"),
     // the du'a of the new moon (played by itself on the first night of a hijri month; not offered in the sound lists)
-    DUA_HILAL("dua_hilal"),
+    DUA_HILAL("dua_hilal"), DUROOD_JUMUAH("durood_jumuah"),
     TONE(null), NOTIFY(null), SILENT(null);
 
     val adhan get() = name.startsWith("ADHAN")
@@ -191,6 +191,7 @@ class Prefs(ctx: Context) {
     var persistent: Boolean get() = sp.getBoolean("persist", false); set(v) = sp.edit().putBoolean("persist", v).apply()
     var monThu: Boolean get() = sp.getBoolean("monthu", false); set(v) = sp.edit().putBoolean("monthu", v).apply()
     var hilalDua: Boolean get() = sp.getBoolean("hilalDua", true); set(v) = sp.edit().putBoolean("hilalDua", v).apply()
+    var salJumuah: Boolean get() = sp.getBoolean("salJumuah", true); set(v) = sp.edit().putBoolean("salJumuah", v).apply()
     var beed: Boolean get() = sp.getBoolean("beed", false); set(v) = sp.edit().putBoolean("beed", v).apply()
     // Ramadan: suhoor alarm and iftar reminder every day; the phone on vibrate after Isha for the taraweeh
     var ramadan: Boolean get() = sp.getBoolean("ramadan", true); set(v) = sp.edit().putBoolean("ramadan", v).apply()

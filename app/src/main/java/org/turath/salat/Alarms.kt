@@ -62,6 +62,16 @@ object Events {
                 out += Ev(t[P.MAGHRIB].plusMinutes(30), "hilal", P.MAGHRIB, Snd.DUA_HILAL)
                 out += Ev(t[P.MAGHRIB].plusMinutes(Hilal.HOURS * 60L + 1), "widget")
             }
+            // salawat: Thursday from 40 minutes after Maghrib until an hour after Isha (three times); Friday from Fajr until Maghrib, every two hours
+            if (pr.salJumuah) {
+                if (dow == java.time.DayOfWeek.THURSDAY) {
+                    val a = t[P.MAGHRIB].plusMinutes(40); val b = t[P.ISHA].plusMinutes(60)
+                    if (b.isAfter(a)) for (k in 0..2) out += Ev(a.plusSeconds(java.time.Duration.between(a, b).seconds * k / 2), "salawat", null, Snd.DUROOD_JUMUAH, "thu")
+                } else if (dow == java.time.DayOfWeek.FRIDAY) {
+                    var at = t[P.FAJR].plusHours(2)
+                    while (at.isBefore(t[P.MAGHRIB].minusMinutes(15))) { out += Ev(at, "salawat", null, Snd.DUROOD_JUMUAH, "fri"); at = at.plusHours(2) }
+                }
+            }
             // before / after each prayer
             for (p in FIVE) {
                 if (pr.before(p) > 0) out += Ev(t[p].minusMinutes(pr.before(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.before(p)) + " " + Tr["min"] + " " + Tr["before"] + " " + Tr.p(p))
@@ -223,6 +233,13 @@ object Alarms {
                     .setContentTitle(title).setContentText(Tr["hilalAr"]).setStyle(Notification.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(Hilal.HOURS * 3600_000L).build())
                 Widget.update(ctx)
             }
+            "salawat" -> {
+                val title = Tr["salTitle"]; val body = if (e.text == "fri") Tr["salVerse"] else Tr["salThu"]
+                val quiet = Audio.silentNow(ctx) && !pr.adhanInSilent
+                if (playSound && !quiet) SoundService.start(ctx, Snd.DUROOD_JUMUAH, title, body, false)
+                else nm.notify(4004, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
+                    .setContentTitle(title).setContentText(body.substringBefore("\n")).setStyle(Notification.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(30 * 60_000L).build())
+            }
             "vibon" -> Vibrate.on(ctx, pr)
             "viboff" -> Vibrate.off(ctx, pr)
             "widget" -> Widget.update(ctx)
@@ -348,7 +365,7 @@ class SoundService : Service() {
         fun hasFajr(ctx: Context, s: Snd) = s.adhan && s.raw != null && (s.fajrOnly || ctx.resources.getIdentifier(s.raw + "_fajr", "raw", ctx.packageName) != 0)
 
         fun choices(ctx: Context, use: SndUse, fajr: Boolean = false, tahajjud: Boolean = false): List<Snd> {
-            val ok = Snd.entries.filter { it != Snd.DUA_HILAL && it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
+            val ok = Snd.entries.filter { it != Snd.DUA_HILAL && it != Snd.DUROOD_JUMUAH && it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
             val l = when (use) {
                 // Fajr: only the Fajr adhans; the other prayers: none of them
                 SndUse.PRAYER -> if (fajr) ok.filter { hasFajr(ctx, it) } else ok.filter { it.adhan }
