@@ -613,7 +613,7 @@ body.vfpage .appbar{position:static}
 </style>
 </head>
 <body>
-<div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><button id="splskip" type="button"></button></div>
+<div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video></div>
 <style>
 #splash{position:fixed;inset:0;z-index:99999;background:#03170f;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .5s ease}
 #splash[hidden]{display:none}#splash.out{opacity:0;pointer-events:none}
@@ -623,19 +623,17 @@ body.vfpage .appbar{position:static}
 </style>
 <script>
 (function(){
-  var d=document.getElementById('splash'),v=document.getElementById('splv'),b=document.getElementById('splskip');
+  var d=document.getElementById('splash'),v=document.getElementById('splv'),b=null;
   try{
     var h=location.hash;
     if(sessionStorage.splash==='1'||localStorage.nosplash==='1'||(h&&h!=='#'&&h!=='#/'&&h!=='#/home')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
     sessionStorage.splash='1';
   }catch(e){}
   var ui='en';try{ui=localStorage.ui||'en'}catch(e){}
-  b.textContent={ur:'چھوڑیں',ar:'تخطّي',en:'Skip',bn:'এড়িয়ে যান',hi:'छोड़ें',gu:'છોડો',fr:'Passer'}[ui]||'Skip';
   var done=false,t0=setTimeout(end,4000);
   function end(){if(done)return;done=true;clearTimeout(t0);d.classList.add('out');setTimeout(function(){try{v.pause();v.removeAttribute('src');v.load();}catch(e){}d.remove();},600);}
   d.hidden=false;
-  d.addEventListener('click',end);b.addEventListener('click',function(e){e.stopPropagation();end();});
-  v.addEventListener('playing',function(){clearTimeout(t0);});
+    v.addEventListener('playing',function(){clearTimeout(t0);});
   v.addEventListener('ended',end);v.addEventListener('error',end);
   v.src='splash.mp4';
   var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(end);});
