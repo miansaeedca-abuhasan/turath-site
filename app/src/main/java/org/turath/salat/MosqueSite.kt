@@ -92,6 +92,23 @@ object MosqueSite {
             for ((k, i) in listOf("FAJR" to 2, "DHUHR" to 4, "ASR" to 7, "MAGHRIB" to 9, "ISHA" to 11)) at(k, i)?.let { r[k] = it }
             if (r.size >= 4) return Times(r, emptyList())
         }
+        // a header row of prayer names and, under it, a row of times (one cell for each name)
+        for ((i, l) in text.withIndex()) {
+            if (i + 1 >= text.size || TIME.containsMatchIn(l)) continue
+            val hc = l.split("|").map { it.trim() }
+            val keys = hc.map { c -> if (c.length <= 20) KEYS.firstOrNull { (_, re) -> re.containsMatchIn(c) }?.first else null }
+            if (keys.filterNotNull().filter { it != "JUM" }.distinct().size < 4) continue
+            val vc = text[i + 1].split("|").map { it.trim() }
+            if (vc.size != hc.size) continue
+            val r = linkedMapOf<String, Int>(); var jm: Int? = null
+            for ((j, k) in keys.withIndex()) {
+                if (k == null) continue
+                val t = TIME.find(vc[j]) ?: continue
+                val mm = minutes(k, t.groupValues[1].toInt(), t.groupValues[2], t.groupValues[3].toInt(), t.groupValues[4].ifEmpty { null }) ?: continue
+                if (k == "JUM") jm = mm else r.putIfAbsent(k, mm)
+            }
+            if (r.size >= 4) return Times(r, listOfNotNull(jm))
+        }
         // several days one after another, each under its date: only today's part (and what stands outside the day parts, such as the Jumu'ah times)
         val DATE = Regex("\\b($MON)[a-z]*\\.?\\s+(\\d{1,2})\\b|\\b(\\d{1,2})\\s+($MON)[a-z]*\\b", RegexOption.IGNORE_CASE)
         val heads = text.withIndex().filter { (_, l) -> l.length <= 70 && DATE.containsMatchIn(l) && !TIME.containsMatchIn(l) && KEYS.none { (_, re) -> re.containsMatchIn(l) } }.map { it.index }
@@ -107,6 +124,7 @@ object MosqueSite {
         var after = 0
         for ((li, line) in text.withIndex()) {
             val otherDay = li in other
+            if (!otherDay) Regex("sunset\\s*\\+\\s*(\\d{1,2})\\s*min", RegexOption.IGNORE_CASE).find(line)?.let { if (Regex("maghrib|magrib", RegexOption.IGNORE_CASE).containsMatchIn(line)) { after = it.groupValues[1].toInt(); sunset = true } }
             if (!otherDay) Regex("(\\d{1,2})\\s*min\\w*\\.?\\s+after\\s+(?:the\\s+)?(?:sunset|adhan|azan|athan|maghrib)", RegexOption.IGNORE_CASE).find(line)?.let { if (Regex("maghrib", RegexOption.IGNORE_CASE).containsMatchIn(line)) { after = it.groupValues[1].toInt(); sunset = true } }
             // the places in the line where a prayer's name stands; the text up to the next name belongs to it
             val hits = KEYS.flatMap { (k, re) -> re.findAll(line).map { Triple(it.range.first, it.range.last + 1, k) }.toList() }.sortedBy { it.first }

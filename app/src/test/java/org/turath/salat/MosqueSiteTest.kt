@@ -78,4 +78,15 @@ class MosqueSiteTest {
         assertEquals(13 * 60 + 30, t.iq["DHUHR"]); assertEquals(true, t.maghribAtSunset); assertEquals(3, t.maghribAfter)
         assertEquals(listOf(14 * 60, 15 * 60 + 15), t.jumuah)
     }
+
+    @Test fun oddWritings() {
+        val t = MosqueSite.parse("<p>FAJER 640AM</p><p>DUHUR 1:30 PM</p><p>Asr 5.00</p><p>Maghrib Sunset + 5 minutes</p><p>ISH'AA 09:00 PM</p><p>Jumaa 1:30 PM</p>")
+        assertEquals(6 * 60 + 40, t.iq["FAJR"]); assertEquals(13 * 60 + 30, t.iq["DHUHR"]); assertEquals(17 * 60, t.iq["ASR"]); assertEquals(21 * 60, t.iq["ISHA"])
+        assertEquals(true, t.maghribAtSunset); assertEquals(5, t.maghribAfter); assertEquals(listOf(13 * 60 + 30), t.jumuah)
+    }
+
+    @Test fun headerRowThenTimes() {
+        val t = MosqueSite.parse("<table><tr><th>Fajr</th><th>Sunrise</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Isha</th><th>Jumu'a</th></tr><tr><td>6:40</td><td>7:50</td><td>1:30</td><td>3:55</td><td>6:15</td><td>7:45</td><td>1:30</td></tr></table>")
+        assertEquals(6 * 60 + 40, t.iq["FAJR"]); assertEquals(15 * 60 + 55, t.iq["ASR"]); assertEquals(19 * 60 + 45, t.iq["ISHA"]); assertEquals(listOf(13 * 60 + 30), t.jumuah)
+    }
 }
