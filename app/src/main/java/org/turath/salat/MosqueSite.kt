@@ -10,12 +10,12 @@ object MosqueSite {
     data class Times(val iq: Map<String, Int>, val jumuah: List<Int>, val maghribAtSunset: Boolean = false, val maghribAfter: Int = 0) { val found get() = iq.size + jumuah.size + (if (maghribAtSunset && "MAGHRIB" !in iq) 1 else 0) }
 
     private val KEYS = listOf(
-        "FAJR" to Regex("fajr|fajar|subh|sobh|الفجر|فجر", RegexOption.IGNORE_CASE),
-        "DHUHR" to Regex("dhuhr|zuhr|zohr|dhur|duhr|zuhar|dhohr|الظهر|ظهر|ظہر", RegexOption.IGNORE_CASE),
-        "ASR" to Regex("\\basr\\b|\\basar\\b|العصر|عصر", RegexOption.IGNORE_CASE),
-        "MAGHRIB" to Regex("maghrib|magrib|maghreb|المغرب|مغرب", RegexOption.IGNORE_CASE),
-        "ISHA" to Regex("\\bisha\\b|\\besha\\b|ishaa|isha'a|العشاء|عشاء|عشا", RegexOption.IGNORE_CASE),
-        "JUM" to Regex("jumu|jumm|jum'a|jumah|friday|الجمعة|جمعة|جمعہ", RegexOption.IGNORE_CASE))
+        "FAJR" to Regex("fajr|fajar|fajer|subh|sobh|imsak|الفجر|فجر", RegexOption.IGNORE_CASE),
+        "DHUHR" to Regex("dhuhr|zuhr|zuhur|zohr|zohar|dhur|duhr|duhur|duhar|zuhar|dhohr|öğle|ogle|الظهر|ظهر|ظہر", RegexOption.IGNORE_CASE),
+        "ASR" to Regex("\\basr\\b|\\basar\\b|ikindi|العصر|عصر", RegexOption.IGNORE_CASE),
+        "MAGHRIB" to Regex("maghrib|magrib|maghreb|akşam|المغرب|مغرب", RegexOption.IGNORE_CASE),
+        "ISHA" to Regex("\\bisha\\b|\\besha\\b|ishaa|ish'aa|isha'a|yatsı|العشاء|عشاء|عشا", RegexOption.IGNORE_CASE),
+        "JUM" to Regex("jumu|jumm|jum'a|jumaa|jumah|cuma|friday|الجمعة|جمعة|جمعہ", RegexOption.IGNORE_CASE))
     private val TIME = Regex("(?<![\\d:.])(\\d{1,2})([:.])(\\d{2})(?!\\d)\\s*(a\\.?\\s?m\\.?|p\\.?\\s?m\\.?)?", RegexOption.IGNORE_CASE)
 
     /** the page as lines of text; the cells of a table row stay on one line */
@@ -24,13 +24,14 @@ object MosqueSite {
         s = s.replace(Regex("(?i)</t[dh]\\s*>"), " | ").replace(Regex("(?i)</(tr|p|div|li|h[1-6]|table|section)\\s*>|<br\\s*/?>"), "\n")
         s = s.replace(Regex("(?s)<[^>]*>"), " ")
         s = s.replace("&nbsp;", " ").replace("&amp;", "&").replace("&#8217;", "'").replace("&#039;", "'").replace("&apos;", "'").replace("&rsquo;", "'").replace("\u00a0", " ")
+        s = s.replace(Regex("(?i)\\b(1[0-2]|[1-9])([0-5]\\d)\\s*([ap])\\.?m\\b"), "\$1:\$2 \$3m")     // «640AM» → «6:40 am»
         return s.split('\n').map { it.replace(Regex("[ \\t]+"), " ").trim() }.filter { it.isNotEmpty() }
     }
 
     private fun minutes(key: String, h: Int, sep: String, m: Int, ap: String?): Int? {
         if (h > 23 || m > 59) return null
         val a = ap?.lowercase()?.firstOrNull()
-        if (sep == "." && a == null) return null
+        if (sep == "." && a == null && m % 5 != 0) return null
         var hh = h
         if (a == 'p' && hh < 12) hh += 12
         if (a == 'a' && hh == 12) hh = 0
@@ -93,7 +94,7 @@ object MosqueSite {
         }
         // several days one after another, each under its date: only today's part (and what stands outside the day parts, such as the Jumu'ah times)
         val DATE = Regex("\\b($MON)[a-z]*\\.?\\s+(\\d{1,2})\\b|\\b(\\d{1,2})\\s+($MON)[a-z]*\\b", RegexOption.IGNORE_CASE)
-        val heads = text.withIndex().filter { (_, l) -> l.length <= 70 && DATE.containsMatchIn(l) && Regex("20\\d\\d").containsMatchIn(l) }.map { it.index }
+        val heads = text.withIndex().filter { (_, l) -> l.length <= 70 && DATE.containsMatchIn(l) && !TIME.containsMatchIn(l) && KEYS.none { (_, re) -> re.containsMatchIn(l) } }.map { it.index }
         var other = emptySet<Int>()     // the lines of the other days
         if (heads.size >= 2) {
             fun dayOf(i: Int): Int? = DATE.find(text[i])?.let { m -> if (m.groupValues[1].isNotEmpty()) mon(m.groupValues[1]) * 100 + m.groupValues[2].toInt() else mon(m.groupValues[4]) * 100 + m.groupValues[3].toInt() }
