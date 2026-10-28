@@ -888,7 +888,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=b617fbbd41", "data/d2.js?h=b5f27bf4ac", "data/d3.js?h=15329c8e74", "data/d4.js?h=a89cdc6067", "data/d5.js?h=c93af56f6c", "data/d6.js?h=201fc7079a", "data/d7.js?h=45ce1d1656", "data/d8.js?h=992e4e7267", "data/d9.js?h=e625a0b383", "data/d10.js?h=048b32262e"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=daaef70fe5", "data/d2.js?h=b82f0743dd", "data/d3.js?h=7623ae7862", "data/d4.js?h=e372ef8706", "data/d5.js?h=b7c75abb69", "data/d6.js?h=a715eb7b55", "data/d7.js?h=5afb888c22", "data/d8.js?h=971ca10896", "data/d9.js?h=bcb78eadeb", "data/d10.js?h=611e638909"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -900,6 +900,7 @@ en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadit
  grade:{agreed:'Agreed upon',s:'Sahih',h:'Hasan',d:"Da'if"},
  kind:{translation:'Translation',intro_kitab:'Book Introduction',intro_majmu:'Collection Introduction',intro:'Chapter Introduction',sharh:'Commentary',alfaz:'Word Commentary',buhuth:'Discussion of the Hadith',duroos:'Lessons',extra:'Additional Notes'},
  field:{matn:'Text',sanad:'Isnad',chapter:'Chapter',takhrij:'Takhrij',translation:'Translation',sharh:'Commentary',alfaz:'Words',buhuth:'Discussion',duroos:'Lessons',extra:'Notes',number:'Number',semantic:'Meaning',ref:'Reference',intro:'Intro',intro_kitab:'Intro',intro_majmu:'Intro'}}};
+const SHORT_BOOK={ur:{bukhari:'بخاری',muslim:'مسلم',abudawud:'ابو داود',tirmidhi:'ترمذی',nasai:'نسائی',ibnmajah:'ابن ماجہ',ahmad:'مسند احمد',malik:'موطا مالک',darimi:'دارمی'},ar:{bukhari:'البخاري',muslim:'مسلم',abudawud:'أبو داود',tirmidhi:'الترمذي',nasai:'النسائي',ibnmajah:'ابن ماجه',ahmad:'أحمد',malik:'مالك',darimi:'الدارمي'}};
 const EN_BOOK={bukhari:'al-Bukhari',muslim:'Muslim',abudawud:'Abu Dawud',tirmidhi:'al-Tirmidhi',nasai:"al-Nasa'i",ibnmajah:'Ibn Majah',ahmad:'Ahmad',malik:'Malik',darimi:'al-Darimi',ibnhibban:'Ibn Hibban',hakim:'al-Hakim'};
 const KIND_ORDER=['translation','intro_kitab','intro_majmu','intro','sharh','alfaz','buhuth','duroos','extra'];
 const ICON={
@@ -1549,14 +1550,17 @@ function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value
 function refBlock(d){const out=[];d.refs=d.refs||[];
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
-    d.refs.forEach(r=>{const nm=ui!=='ur'&&ui!=='ar'&&EN_BOOK[r.key]?EN_BOOK[r.key]:(r.n&&COLL.name(r.key))||r.label;
-      const inColl=COLL.has(r.key);
+    let openBtn=null;
+    d.refs.forEach(r=>{const inColl=COLL.has(r.key);const sn=(SHORT_BOOK[ui]||{})[r.key];
+      const nm=sn||(inColl?(ui!=='ur'&&ui!=='ar'&&EN_BOOK[r.key]?EN_BOOK[r.key]:COLL.name(r.key)):r.label);
       const lz=lafzRefs(d.takhrij).has(r.key+'|'+r.number);
-      chips.append(el('button',{class:'chip'+(r.available||inColl?' on':'')+(lz?' lafz':''),title:lz?LAFZ_NOTE():null,type:'button',on:{click:async()=>{
+      const btn=el('button',{class:'chip'+(r.available||inColl?' on':'')+(lz?' lafz':''),title:lz?LAFZ_NOTE():null,type:'button','aria-expanded':'false',on:{click:async()=>{
+      if(openBtn===btn){rb.hidden=true;rb.replaceChildren();btn.setAttribute('aria-expanded','false');openBtn=null;return;}   // the same reference again: closes
+      if(openBtn)openBtn.setAttribute('aria-expanded','false');openBtn=btn;btn.setAttribute('aria-expanded','true');
       rb.hidden=false;rb.replaceChildren(el('b',{},nm+' ('+r.number+')'));
       if(inColl&&await COLL.refBox(r.key,r.number,rb,r.n))return;
       if(r.available){const x=await api('ref?book='+encodeURIComponent(r.key)+'&num='+r.number);rb.append(el('p',{class:'ar'},x.matn||''),el('a',{href:'#/x/'+encodeURIComponent(r.key)+'/'+r.number},T('open')));}
-      else rb.append(el('p',{class:'note'},T('nobook')));}}},nm+' '+r.number));});
+      else rb.append(el('p',{class:'note'},T('nobook')));}}},nm+' '+r.number);chips.append(btn);});
     out.push(chips,rb);}
 return out;}
 window.refBlock=refBlock;
