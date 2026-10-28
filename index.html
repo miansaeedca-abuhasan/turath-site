@@ -5814,6 +5814,201 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
 </script>
 <script>
+/* Desktop side panels: prayer times (method of praytimes.org, same as the Salat Khair al-Quroon app) and app posters. Desktop only. */
+(function () {
+  'use strict';
+  const MQ = '(min-width:1320px) and (hover:hover) and (pointer:fine)';
+  if (!window.matchMedia || !matchMedia(MQ).matches) return;
+  const STORE = { turath: '', salat: '' };          // Play Store links: the posters on the left appear when these are filled in
+  const METHODS = { mwl: [18, 17, 0], isna: [15, 15, 0], karachi: [18, 18, 0], makkah: [18.5, 0, 90], egypt: [19.5, 17.5, 0], gulf: [19.5, 0, 90], kuwait: [18, 17.5, 0], qatar: [18, 0, 90], singapore: [20, 18, 0], turkey: [18, 17, 0] };
+  const DEF = { SA: 'makkah', YE: 'makkah', AE: 'gulf', OM: 'gulf', BH: 'gulf', KW: 'kuwait', QA: 'qatar', EG: 'egypt', SD: 'egypt', LY: 'egypt', SY: 'egypt', LB: 'egypt', JO: 'egypt', PS: 'egypt', IQ: 'egypt', PK: 'karachi', IN: 'karachi', BD: 'karachi', AF: 'karachi', NP: 'karachi', LK: 'karachi', US: 'isna', CA: 'isna', MX: 'isna', MY: 'singapore', SG: 'singapore', ID: 'singapore', BN: 'singapore', TR: 'turkey' };
+  const HANAFI = { PK: 1, IN: 1, BD: 1, AF: 1, TR: 1 };
+  // key, English, Urdu, Arabic, country, lat, lng, time zone
+  const C = [
+    ['makkah','Makkah','مکہ مکرمہ','مكة المكرمة','SA',21.4225,39.8262,'Asia/Riyadh'],['madinah','Madinah','مدینہ منورہ','المدينة المنورة','SA',24.4709,39.6122,'Asia/Riyadh'],
+    ['riyadh','Riyadh','ریاض','الرياض','SA',24.7136,46.6753,'Asia/Riyadh'],['jeddah','Jeddah','جدہ','جدة','SA',21.4858,39.1925,'Asia/Riyadh'],
+    ['quds','Bayt al-Maqdis','بیت المقدس','بيت المقدس','PS',31.7767,35.2345,'Asia/Jerusalem'],['dubai','Dubai','دبئی','دبي','AE',25.2048,55.2708,'Asia/Dubai'],
+    ['abudhabi','Abu Dhabi','ابوظہبی','أبو ظبي','AE',24.4539,54.3773,'Asia/Dubai'],['doha','Doha','دوحہ','الدوحة','QA',25.2854,51.531,'Asia/Qatar'],
+    ['kuwait','Kuwait City','کویت سٹی','مدينة الكويت','KW',29.3759,47.9774,'Asia/Kuwait'],['muscat','Muscat','مسقط','مسقط','OM',23.588,58.3829,'Asia/Muscat'],
+    ['manama','Manama','منامہ','المنامة','BH',26.2285,50.586,'Asia/Bahrain'],['sanaa','Sanaa','صنعاء','صنعاء','YE',15.3694,44.191,'Asia/Aden'],
+    ['baghdad','Baghdad','بغداد','بغداد','IQ',33.3152,44.3661,'Asia/Baghdad'],['amman','Amman','عمان','عمّان','JO',31.9454,35.9284,'Asia/Amman'],
+    ['damascus','Damascus','دمشق','دمشق','SY',33.5138,36.2765,'Asia/Damascus'],['beirut','Beirut','بیروت','بيروت','LB',33.8938,35.5018,'Asia/Beirut'],
+    ['cairo','Cairo','قاہرہ','القاهرة','EG',30.0444,31.2357,'Africa/Cairo'],['alexandria','Alexandria','اسکندریہ','الإسكندرية','EG',31.2001,29.9187,'Africa/Cairo'],
+    ['khartoum','Khartoum','خرطوم','الخرطوم','SD',15.5007,32.5599,'Africa/Khartoum'],['tripoli','Tripoli','طرابلس','طرابلس','LY',32.8872,13.1913,'Africa/Tripoli'],
+    ['tunis','Tunis','تونس','تونس','TN',36.8065,10.1815,'Africa/Tunis'],['algiers','Algiers','الجزائر','الجزائر','DZ',36.7538,3.0588,'Africa/Algiers'],
+    ['casablanca','Casablanca','کاسابلانکا','الدار البيضاء','MA',33.5731,-7.5898,'Africa/Casablanca'],['rabat','Rabat','رباط','الرباط','MA',34.0209,-6.8416,'Africa/Casablanca'],
+    ['dakar','Dakar','ڈاکار','داكار','SN',14.7167,-17.4677,'Africa/Dakar'],['lagos','Lagos','لاگوس','لاغوس','NG',6.5244,3.3792,'Africa/Lagos'],
+    ['kano','Kano','کانو','كانو','NG',12.0022,8.592,'Africa/Lagos'],['nairobi','Nairobi','نیروبی','نيروبي','KE',-1.2921,36.8219,'Africa/Nairobi'],
+    ['mogadishu','Mogadishu','موغادیشو','مقديشو','SO',2.0469,45.3182,'Africa/Mogadishu'],['addis','Addis Ababa','ادیس ابابا','أديس أبابا','ET',9.03,38.74,'Africa/Addis_Ababa'],
+    ['johannesburg','Johannesburg','جوہانسبرگ','جوهانسبرغ','ZA',-26.2041,28.0473,'Africa/Johannesburg'],['capetown','Cape Town','کیپ ٹاؤن','كيب تاون','ZA',-33.9249,18.4241,'Africa/Johannesburg'],
+    ['istanbul','Istanbul','استنبول','إسطنبول','TR',41.0082,28.9784,'Europe/Istanbul'],['ankara','Ankara','انقرہ','أنقرة','TR',39.9334,32.8597,'Europe/Istanbul'],
+    ['tehran','Tehran','تہران','طهران','IR',35.6892,51.389,'Asia/Tehran'],['kabul','Kabul','کابل','كابل','AF',34.5553,69.2075,'Asia/Kabul'],
+    ['karachi','Karachi','کراچی','كراتشي','PK',24.8607,67.0011,'Asia/Karachi'],['lahore','Lahore','لاہور','لاهور','PK',31.5497,74.3436,'Asia/Karachi'],
+    ['islamabad','Islamabad','اسلام آباد','إسلام آباد','PK',33.6844,73.0479,'Asia/Karachi'],['peshawar','Peshawar','پشاور','بيشاور','PK',34.0151,71.5249,'Asia/Karachi'],
+    ['quetta','Quetta','کوئٹہ','كويتا','PK',30.1798,66.975,'Asia/Karachi'],['faisalabad','Faisalabad','فیصل آباد','فيصل آباد','PK',31.4504,73.135,'Asia/Karachi'],
+    ['multan','Multan','ملتان','ملتان','PK',30.1575,71.5249,'Asia/Karachi'],['rawalpindi','Rawalpindi','راولپنڈی','راولبندي','PK',33.5651,73.0169,'Asia/Karachi'],
+    ['delhi','Delhi','دہلی','دلهي','IN',28.6139,77.209,'Asia/Kolkata'],['mumbai','Mumbai','ممبئی','مومباي','IN',19.076,72.8777,'Asia/Kolkata'],
+    ['hyderabad','Hyderabad','حیدرآباد','حيدر أباد','IN',17.385,78.4867,'Asia/Kolkata'],['kolkata','Kolkata','کولکتہ','كلكتا','IN',22.5726,88.3639,'Asia/Kolkata'],
+    ['ahmedabad','Ahmedabad','احمد آباد','أحمد أباد','IN',23.0225,72.5714,'Asia/Kolkata'],['dhaka','Dhaka','ڈھاکہ','دكا','BD',23.8103,90.4125,'Asia/Dhaka'],
+    ['kathmandu','Kathmandu','کھٹمنڈو','كاتماندو','NP',27.7172,85.324,'Asia/Kathmandu'],['colombo','Colombo','کولمبو','كولومبو','LK',6.9271,79.8612,'Asia/Colombo'],
+    ['kualalumpur','Kuala Lumpur','کوالالمپور','كوالالمبور','MY',3.139,101.6869,'Asia/Kuala_Lumpur'],['singapore','Singapore','سنگاپور','سنغافورة','SG',1.3521,103.8198,'Asia/Singapore'],
+    ['jakarta','Jakarta','جکارتہ','جاكرتا','ID',-6.2088,106.8456,'Asia/Jakarta'],['bangkok','Bangkok','بنکاک','بانكوك','TH',13.7563,100.5018,'Asia/Bangkok'],
+    ['manila','Manila','منیلا','مانيلا','PH',14.5995,120.9842,'Asia/Manila'],['beijing','Beijing','بیجنگ','بكين','CN',39.9042,116.4074,'Asia/Shanghai'],
+    ['tokyo','Tokyo','ٹوکیو','طوكيو','JP',35.6762,139.6503,'Asia/Tokyo'],['tashkent','Tashkent','تاشقند','طشقند','UZ',41.2995,69.2401,'Asia/Tashkent'],
+    ['baku','Baku','باکو','باكو','AZ',40.4093,49.8671,'Asia/Baku'],['moscow','Moscow','ماسکو','موسكو','RU',55.7558,37.6173,'Europe/Moscow'],
+    ['london','London','لندن','لندن','GB',51.5074,-0.1278,'Europe/London'],['birmingham','Birmingham','برمنگھم','برمنغهام','GB',52.4862,-1.8904,'Europe/London'],
+    ['manchester','Manchester','مانچسٹر','مانشستر','GB',53.4808,-2.2426,'Europe/London'],['paris','Paris','پیرس','باريس','FR',48.8566,2.3522,'Europe/Paris'],
+    ['berlin','Berlin','برلن','برلين','DE',52.52,13.405,'Europe/Berlin'],['madrid','Madrid','میڈرڈ','مدريد','ES',40.4168,-3.7038,'Europe/Madrid'],
+    ['rome','Rome','روم','روما','IT',41.9028,12.4964,'Europe/Rome'],['amsterdam','Amsterdam','ایمسٹرڈیم','أمستردام','NL',52.3676,4.9041,'Europe/Amsterdam'],
+    ['stockholm','Stockholm','سٹاک ہوم','ستوكهولم','SE',59.3293,18.0686,'Europe/Stockholm'],['sarajevo','Sarajevo','سراجیوو','سراييفو','BA',43.8563,18.4131,'Europe/Sarajevo'],
+    ['newyork','New York','نیویارک','نيويورك','US',40.7128,-74.006,'America/New_York'],['chicago','Chicago','شکاگو','شيكاغو','US',41.8781,-87.6298,'America/Chicago'],
+    ['houston','Houston','ہیوسٹن','هيوستن','US',29.7604,-95.3698,'America/Chicago'],['losangeles','Los Angeles','لاس اینجلس','لوس أنجلوس','US',34.0522,-118.2437,'America/Los_Angeles'],
+    ['washington','Washington, D.C.','واشنگٹن','واشنطن','US',38.9072,-77.0369,'America/New_York'],['toronto','Toronto','ٹورنٹو','تورنتو','CA',43.6532,-79.3832,'America/Toronto'],
+    ['mississauga','Mississauga','مسی ساگا','ميسيساغا','CA',43.589,-79.6441,'America/Toronto'],['montreal','Montreal','مونٹریال','مونتريال','CA',45.5017,-73.5673,'America/Toronto'],
+    ['vancouver','Vancouver','وینکوور','فانكوفر','CA',49.2827,-123.1207,'America/Vancouver'],['calgary','Calgary','کیلگری','كالغاري','CA',51.0447,-114.0719,'America/Edmonton'],
+    ['mexico','Mexico City','میکسیکو سٹی','مكسيكو سيتي','MX',19.4326,-99.1332,'America/Mexico_City'],['saopaulo','São Paulo','ساؤ پالو','ساو باولو','BR',-23.5505,-46.6333,'America/Sao_Paulo'],
+    ['sydney','Sydney','سڈنی','سيدني','AU',-33.8688,151.2093,'Australia/Sydney'],['melbourne','Melbourne','میلبورن','ملبورن','AU',-37.8136,144.9631,'Australia/Melbourne'],
+    ['auckland','Auckland','آکلینڈ','أوكلاند','NZ',-36.8509,174.7645,'Pacific/Auckland']
+  ];
+  const L = {
+    ur: { t: 'نماز کے اوقات', n: ['فجر', 'طلوعِ آفتاب', 'ظہر', 'عصر', 'مغرب', 'عشاء'], city: 'شہر', geo: 'میرا مقام', hanafi: 'عصر: حنفی', rem: 'نماز کی یاد دہانی', next: 'اگلی نماز', msg: 'ابھی نماز کی تیاری کریں، اسے نماز کے بعد میں دیکھیے گا', ap: ['صبح', 'شام'], more: 'ہمارا ایپ', pl: 'پلے سٹور سے حاصل کریں', turath: 'تراث خیرالقرون', salat: 'صلاۃ خیرالقرون' },
+    ar: { t: 'أوقات الصلاة', n: ['الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء'], city: 'المدينة', geo: 'موقعي', hanafi: 'العصر: حنفي', rem: 'تذكير الصلاة', next: 'الصلاة القادمة', msg: 'استعدّ للصلاة الآن، وتصفّح هذا بعد الصلاة', ap: ['ص', 'م'], more: 'تطبيقاتنا', pl: 'حمّله من متجر Play', turath: 'تراث خير القرون', salat: 'صلاة خير القرون' },
+    en: { t: 'Prayer times', n: ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], city: 'City', geo: 'My location', hanafi: 'Asr: Hanafi', rem: 'Prayer reminder', next: 'Next prayer', msg: 'Get ready for the prayer now. Come back to this after the prayer.', ap: ['am', 'pm'], more: 'Our apps', pl: 'Get it on Google Play', turath: 'Turath Khair Al-Quroon', salat: 'Salat Khair Al-Quroon' }
+  };
+  const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const put = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+  const lang = () => { const u = get('ui') || 'en'; return L[u] ? u : 'en'; };
+  const rtl = () => { const u = get('ui') || 'en'; return u === 'ur' || u === 'ar'; };
+
+  // ---- calculation (port of the Salat Khair al-Quroon app's PrayerCalc) ----
+  const R = Math.PI / 180, D = 180 / Math.PI, mod = (a, n) => ((a % n) + n) % n;
+  const julian = (y, m, d) => { if (m <= 2) { y -= 1; m += 12; } const a = Math.floor(y / 100), b = 2 - a + Math.floor(a / 4); return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + b - 1524.5; };
+  function sun(jd) {
+    const d = jd - 2451545.0, g = mod(357.529 + 0.98560028 * d, 360), q = mod(280.459 + 0.98564736 * d, 360);
+    const l = mod(q + 1.915 * Math.sin(g * R) + 0.020 * Math.sin(2 * g * R), 360), e = 23.439 - 0.00000036 * d;
+    const ra = D * Math.atan2(Math.cos(e * R) * Math.sin(l * R), Math.cos(l * R)) / 15, decl = D * Math.asin(Math.sin(e * R) * Math.sin(l * R));
+    let eqt = q / 15 - mod(ra, 24); eqt = mod(eqt + 12, 24) - 12; return [decl, eqt];
+  }
+  function compute(y, m, d, lat, lng, tz, mt, asrF) {
+    const jd = julian(y, m, d) - lng / 360;
+    const noon = t => mod(12 - sun(jd + t / 24)[1], 24);
+    const ang = (a, t, before) => { const decl = sun(jd + t / 24)[0]; const x = (-Math.sin(a * R) - Math.sin(decl * R) * Math.sin(lat * R)) / (Math.cos(decl * R) * Math.cos(lat * R)); if (x > 1 || x < -1) return NaN; const h = D * Math.acos(x) / 15; return noon(t) + (before ? -h : h); };
+    const asrT = t => { const decl = sun(jd + t / 24)[0]; const a = -D * Math.atan(1 / (asrF + Math.tan(R * Math.abs(lat - decl)))); return ang(a, t, false); };
+    let fa = 5, sr = 6, dh = 12, asr = 13, ss = 18, ish = 18;
+    for (let i = 0; i < 2; i++) {
+      fa = ang(mt[0], isNaN(fa) ? 5 : fa, true); sr = ang(0.833, isNaN(sr) ? 6 : sr, true); dh = noon(dh);
+      asr = asrT(isNaN(asr) ? 13 : asr); ss = ang(0.833, isNaN(ss) ? 18 : ss, false); ish = mt[2] > 0 ? NaN : ang(mt[1], isNaN(ish) ? 18 : ish, false);
+    }
+    const off = tz - lng / 15; fa += off; sr += off; dh += off; asr += off; ss += off; ish = mt[2] > 0 ? ss + mt[2] / 60 : ish + off;
+    const night = 24 - (ss - sr);
+    if (!isNaN(sr) && !isNaN(ss)) {
+      const fp = mt[0] / 60 * night; if (isNaN(fa) || sr - fa > fp) fa = sr - fp;
+      if (mt[2] === 0) { const ip = mt[1] / 60 * night; if (isNaN(ish) || ish - ss > ip) ish = ss + ip; }
+    }
+    return [fa, sr, dh, asr, ss, ish];
+  }
+  function parts(tz, date) {
+    const f = new Intl.DateTimeFormat('en-US', { timeZone: tz, hourCycle: 'h23', year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+    const o = {}; f.formatToParts(date).forEach(p => { if (p.type !== 'literal') o[p.type] = +p.value; });
+    return o;
+  }
+  function todayTimes(city, hanafi, now) {
+    const p = parts(city.tz, now), asUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+    const tz = (asUTC - Math.floor(now.getTime() / 1000) * 1000) / 3600000;
+    const mt = METHODS[DEF[city.cc] && METHODS[DEF[city.cc]] ? DEF[city.cc] : 'mwl'] || METHODS.mwl;
+    const h = compute(p.year, p.month, p.day, city.lat, city.lng, tz, mt, hanafi ? 2 : 1);
+    const base = Date.UTC(p.year, p.month - 1, p.day) - tz * 3600000;
+    return h.map(x => isNaN(x) ? null : new Date(base + Math.round(x * 60) * 60000));   // rounded to the minute
+  }
+  const fmt = (dt, tz, ap) => { if (!dt) return '—'; const p = parts(tz, dt); const h12 = p.hour % 12 || 12; return h12 + ':' + String(p.minute).padStart(2, '0') + ' ' + (p.hour < 12 ? ap[0] : ap[1]); };
+
+  // ---- state ----
+  const byKey = k => C.map(c => ({ key: c[0], en: c[1], ur: c[2], ar: c[3], cc: c[4], lat: c[5], lng: c[6], tz: c[7] })).find(c => c.key === k);
+  const guess = () => { const tz = Intl.DateTimeFormat().resolvedOptions().timeZone; const m = C.find(c => c[7] === tz); return m ? m[0] : 'makkah'; };
+  let st = { city: get('salatCity') || guess(), geo: null, hanafi: get('salatHanafi'), rem: get('salatRem') !== '0' };
+  try { st.geo = JSON.parse(get('salatGeo') || 'null'); } catch (e) {}
+  const cur = () => {
+    if (st.city === 'geo' && st.geo) return st.geo;
+    const c = byKey(st.city === 'geo' ? guess() : st.city) || byKey('makkah');
+    return c;
+  };
+  const useHanafi = c => st.hanafi === null ? !!HANAFI[c.cc] : st.hanafi === '1';
+
+  // ---- page ----
+  const css = document.createElement('style');
+  css.textContent = `
+.sp{position:fixed;top:5.2rem;z-index:5;width:15.5rem;max-height:calc(100vh - 7rem);overflow:auto;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.12);padding:.7rem .8rem;font-size:.92rem;line-height:1.6}
+.sp.R{right:max(1rem,calc(50vw - 23rem - 17rem))}.sp.Lf{left:max(1rem,calc(50vw - 23rem - 17rem))}
+.sp h3{margin:0 0 .4rem;font-size:1.05rem;color:var(--accent,#2a7)}
+.sp select{width:100%;margin:.15rem 0;padding:.3rem;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);color:inherit;font:inherit}
+.sp .pt{display:flex;justify-content:space-between;gap:.5rem;padding:.2rem .45rem;border-radius:8px}
+.sp .pt.sr{opacity:.65}.sp .pt.now{background:var(--wash,#e8f4ee);font-weight:700;color:var(--accent,#2a7);animation:spblink 1s steps(2,start) infinite}
+@keyframes spblink{50%{opacity:.25}}
+.sp .nx{margin:.35rem 0;font-size:.85rem;color:var(--muted,#667)}
+.sp label{display:flex;align-items:center;gap:.4rem;font-size:.85rem;margin-top:.25rem;cursor:pointer}
+.sp .app{display:flex;align-items:center;gap:.6rem;padding:.5rem;margin:.4rem 0;border:1px solid var(--line,#ddd);border-radius:12px;text-decoration:none;color:inherit}
+.sp .app img{width:3.4rem;height:3.4rem;border-radius:12px}.sp .app b{display:block}.sp .app small{color:var(--muted,#667)}
+#spmsg{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);z-index:99990;max-width:38rem;padding:1rem 1.6rem;border-radius:16px;background:rgba(10,30,24,.55);color:#fff;font-size:1.35rem;line-height:1.8;text-align:center;backdrop-filter:blur(3px);pointer-events:none;opacity:0;transition:opacity .6s}
+#spmsg.on{opacity:1}`;
+  document.head.appendChild(css);
+  const msg = document.createElement('div'); msg.id = 'spmsg'; document.body.appendChild(msg);
+  const side = document.createElement('div'), apps = document.createElement('div');
+  document.body.append(side, apps);
+
+  function render() {
+    const u = lang(), t = L[u], c = cur(), tz = c.tz, hanafi = useHanafi(c);
+    const now = new Date(), tm = todayTimes(c, hanafi, now);
+    const idx = tm.reduce((a, x, i) => (x && x <= now && i !== 1) ? i : a, -1);
+    const nxt = tm.findIndex((x, i) => x && x > now && i !== 1);
+    side.className = 'sp ' + (rtl() ? 'R' : 'Lf'); side.dir = rtl() ? 'rtl' : 'ltr';
+    const nm = c.name || (c[u] || c.en);
+    const opts = C.slice().sort((a, b) => { const k = u === 'ur' ? 2 : u === 'ar' ? 3 : 1; return a[k].localeCompare(b[k], u); }).map(x => '<option value="' + x[0] + '"' + (st.city === x[0] ? ' selected' : '') + '>' + (u === 'ur' ? x[2] : u === 'ar' ? x[3] : x[1]) + '</option>').join('');
+    let h = '<h3>' + t.t + '</h3><select id="spc" aria-label="' + t.city + '"><option value="geo"' + (st.city === 'geo' ? ' selected' : '') + '>' + t.geo + (st.city === 'geo' && st.geo ? ' ✓' : '') + '</option>' + opts + '</select>';
+    tm.forEach((x, i) => { h += '<div class="pt' + (i === 1 ? ' sr' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? ' now' : '') + '"><span>' + t.n[i] + '</span><span>' + fmt(x, tz, t.ap) + '</span></div>'; });
+    if (nxt >= 0) { const m = Math.round((tm[nxt] - now) / 60000); h += '<div class="nx">' + t.next + ': ' + t.n[nxt] + ' — ' + Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') + '</div>'; }
+    h += '<label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label><label><input type="checkbox" id="spr"' + (st.rem ? ' checked' : '') + '> ' + t.rem + '</label>';
+    if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); }
+    // posters (appear when the store links are filled in)
+    const any = STORE.turath || STORE.salat;
+    apps.className = 'sp ' + (rtl() ? 'Lf' : 'R'); apps.dir = rtl() ? 'rtl' : 'ltr'; apps.hidden = !any;
+    if (any && !apps.dataset.h) {
+      apps.dataset.h = '1';
+      apps.innerHTML = '<h3>' + t.more + '</h3>' + [['turath', t.turath], ['salat', t.salat]].filter(a => STORE[a[0]]).map(a => '<a class="app" href="' + STORE[a[0]] + '" target="_blank" rel="noopener"><img src="icon-192.png" alt=""><span><b>' + a[1] + '</b><small>' + t.pl + '</small></span></a>').join('');
+    }
+    reminder(tm, now, t);
+  }
+  function bind() {
+    const s = side.querySelector('#spc');
+    s.onchange = () => {
+      if (s.value === 'geo') {
+        if (!navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(p => { st.geo = { name: '', cc: '', lat: p.coords.latitude, lng: p.coords.longitude, tz: Intl.DateTimeFormat().resolvedOptions().timeZone }; const n = C.reduce((b, x) => { const d = Math.hypot(x[5] - st.geo.lat, x[6] - st.geo.lng); return !b || d < b[0] ? [d, x] : b; }, null); st.geo.cc = n ? n[1][4] : ''; put('salatGeo', JSON.stringify(st.geo)); st.city = 'geo'; put('salatCity', 'geo'); render(); }, () => { s.value = st.city; });
+      } else { st.city = s.value; put('salatCity', st.city); render(); }
+    };
+    side.querySelector('#sph').onchange = e => { st.hanafi = e.target.checked ? '1' : '0'; put('salatHanafi', st.hanafi); render(); };
+    side.querySelector('#spr').onchange = e => { st.rem = e.target.checked; put('salatRem', st.rem ? '1' : '0'); };
+  }
+  // from the adhan until 25 minutes later: a transparent message every 3 minutes
+  let lastShown = 0;
+  function reminder(tm, now, t) {
+    if (!st.rem) return;
+    for (const i of [0, 2, 3, 4, 5]) {
+      const x = tm[i]; if (!x) continue;
+      const el = now - x;
+      if (el >= 0 && el <= 25 * 60000) {
+        const slot = Math.floor(el / 180000), key = i * 100 + slot + '-' + x.getTime();
+        if (lastShown !== key) { lastShown = key; msg.textContent = t.msg; msg.dir = rtl() ? 'rtl' : 'ltr'; msg.classList.add('on'); setTimeout(() => msg.classList.remove('on'), 8000); }
+        return;
+      }
+    }
+  }
+  render(); setInterval(render, 20000);
+  addEventListener('storage', render); document.addEventListener('click', () => setTimeout(render, 120));
+  const o = new MutationObserver(() => render()); o.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
+})();
+
+</script>
+<script>
 // Offline packs: the person chooses what to keep on the phone (Quran, tafsir, hadith books …).
 // Files are stored in the 'turath-off' cache under their exact URLs, which the service worker serves first; offline.json lists the packs.
 (() => {
