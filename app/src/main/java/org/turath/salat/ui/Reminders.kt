@@ -66,6 +66,7 @@ fun RemindersScreen(s: AppState) {
             }
         }
         Card0 {
+            SwitchRow(Tr["hilalSw"], pr.hilalDua, Tr["hilalSwNote"]) { pr.hilalDua = it; s.changed() }
             SwitchRow(Tr["azkarM"], pr.azkarMorning, Tr["azkarMNote"]) { pr.azkarMorning = it; s.changed() }
             SwitchRow(Tr["azkarE"], pr.azkarEvening, Tr["azkarENote"]) { pr.azkarEvening = it; s.changed() }
         }

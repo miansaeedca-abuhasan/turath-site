@@ -42,6 +42,7 @@ class Widget : AppWidgetProvider() {
             // sunrise until Ishraq, and the zawal time before Dhuhr: only the «Prohibited Time» message moves
             t.forbiddenAt(now)?.let { f -> if (f.first == t[P.SUNRISE] || f.first == t[P.ZAWAL]) return (Tr["prohibited"] + "     ◆     ").repeat(3).trim() }
             val l = mutableListOf<String>()
+            if (Hilal.active(pr, place, now)) l += "🌙 " + Tr["hilalTitle"] + ": " + Hilal.text().replace("\n", "     ")
             val h = Schedule.hijriNow(pr, place, now)
             // the two Eids: the greeting first, in the language of the app
             if ((h.month == 10 && h.day == 1) || (h.month == 12 && h.day == 10)) l += Tr["eidMsg"]
@@ -81,23 +82,10 @@ class Widget : AppWidgetProvider() {
         fun tickerColor(pr: Prefs) = if (pr.widgetTicker >= 0) Pal.ink(pr.widgetTicker) else if (pr.widgetLight) Color.parseColor("#00838F") else Color.parseColor("#26C6DA")
         /** the prayer's name; on Fridays Dhuhr is shown as Jumu'ah */
         fun pname(p: P, now: ZonedDateTime) = if (p == P.DHUHR && now.dayOfWeek == java.time.DayOfWeek.FRIDAY) Tr["JUMUAH"] else Tr.p(p).substringBefore(" (")
-        /** the line under the times: each message crosses the widget slowly from the right to the left, one after another
-         *  (a «marquee» does not run on many launchers). A long message is cut into pieces that fit the width. */
-        fun setTicker(ctx: Context, v: RemoteViews, text: String, pr: Prefs) {
-            v.removeAllViews(R.id.tk)
-            val pieces = mutableListOf<String>()
-            for (item in text.split("◆").map { it.trim() }.filter { it.isNotEmpty() }) {
-                var line = ""
-                for (w in item.split(" ")) {
-                    if (line.isNotEmpty() && line.length + 1 + w.length > 34) { pieces += line; line = w } else line = if (line.isEmpty()) w else "$line $w"
-                }
-                if (line.isNotEmpty()) pieces += line
-            }
-            for (p in pieces.take(14)) {
-                val c = RemoteViews(ctx.packageName, R.layout.widget_tick_item)
-                c.setTextViewText(R.id.tkt, p); c.setTextColor(R.id.tkt, tickerColor(pr)); size(c, R.id.tkt, 13f, pr)
-                v.addView(R.id.tk, c)
-            }
+        /** the moving line under the times (a marquee, as before). Urdu and Arabic text starts with a right-to-left mark so that it moves in its own direction */
+        fun setTicker(v: RemoteViews, text: String, pr: Prefs) {
+            v.setTextViewText(R.id.ticker, (if (Tr.rtl) "\u200F" else "") + text)
+            v.setTextColor(R.id.ticker, tickerColor(pr)); size(v, R.id.ticker, 13f, pr)
         }
 
         private fun size(v: RemoteViews, id: Int, sp: Float, pr: Prefs) = v.setTextViewTextSize(id, android.util.TypedValue.COMPLEX_UNIT_SP, sp * pr.widgetSize / 100f)
@@ -166,7 +154,6 @@ class Widget : AppWidgetProvider() {
                 val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL])
                 v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
                 if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
-                v.setViewVisibility(R.id.tk, if (fb) android.view.View.GONE else android.view.View.VISIBLE)
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
                 if (fb) {
                     val span = t.forbiddenAt(now)!!
@@ -179,7 +166,9 @@ class Widget : AppWidgetProvider() {
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
-                runCatching { setTicker(ctx, v, ticker(pr, place, now, t), pr) }
+                setTicker(v, ticker(pr, place, now, t), pr)
+                // in the forbidden time the red message lies over the line; the line itself stays in place (hiding it would stop it) but is made clear
+                if (fb) v.setTextColor(R.id.ticker, 0x00000000)
             }
             mgr.updateAppWidget(ids, v)
         }
@@ -291,7 +280,7 @@ class WidgetCal : AppWidgetProvider() {
                 org.turath.salat.ui.ISLAMIC_DAYS.filter { it.m == m && it.d == null }.forEach { items += Tr.hijriMonth(m) + ": " + Tr[it.key] }
                 val now = ZonedDateTime.now(Schedule.zone(place))
                 items += Widget.ticker(pr, place, now, Schedule.day(pr, place, now.toLocalDate()))
-                Widget.setTicker(ctx, v, items.distinct().joinToString("     ◆     "), pr)
+                Widget.setTicker(v, items.distinct().joinToString("     ◆     "), pr)
             }
             mgr.updateAppWidget(ids, v)
         }

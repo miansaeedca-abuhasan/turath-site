@@ -7,7 +7,7 @@ import java.net.URL
 /** Reads a masjid's congregation (iqamah) times from the masjid's own web page. Best effort: it understands a plain timetable
  *  (a table or lines such as «Fajr 06:28 AM 06:40 AM»); a page that draws its times with a script cannot be read. */
 object MosqueSite {
-    data class Times(val iq: Map<String, Int>, val jumuah: List<Int>) { val found get() = iq.size + jumuah.size }
+    data class Times(val iq: Map<String, Int>, val jumuah: List<Int>, val maghribAtSunset: Boolean = false) { val found get() = iq.size + jumuah.size + (if (maghribAtSunset && "MAGHRIB" !in iq) 1 else 0) }
 
     private val KEYS = listOf(
         "FAJR" to Regex("fajr|fajar|subh|sobh|الفجر|فجر", RegexOption.IGNORE_CASE),
@@ -41,8 +41,31 @@ object MosqueSite {
         return hh * 60 + m
     }
 
-    fun parse(html: String): Times {
+    private val MON = "jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec"
+    private val RANGE = Regex("($MON)[a-z]*\\.?\\s*(\\d{1,2})\\s*(?:-|–|—|to|till|until)\\s*(?:($MON)[a-z]*\\.?\\s*)?(\\d{1,2})", RegexOption.IGNORE_CASE)
+    private fun mon(s: String) = MON.split("|").indexOf(s.lowercase().take(3)) + 1
+
+    /** a timetable in columns by date («Oct 01-10 | Oct 11-20 | Oct 21-31»): the index of the column that holds today, and how many columns there are */
+    private fun dateColumns(text: List<String>, today: java.time.LocalDate): Pair<Int, Int>? {
+        for (line in text) {
+            val rs = RANGE.findAll(line).toList()
+            if (rs.size < 2) continue
+            val doy = today.monthValue * 100 + today.dayOfMonth
+            for ((i, r) in rs.withIndex()) {
+                val m1 = mon(r.groupValues[1]); val d1 = r.groupValues[2].toInt()
+                val m2 = if (r.groupValues[3].isEmpty()) m1 else mon(r.groupValues[3]); val d2 = r.groupValues[4].toInt()
+                val a = m1 * 100 + d1; val b = m2 * 100 + d2
+                if (if (a <= b) doy in a..b else (doy >= a || doy <= b)) return i to rs.size
+            }
+            return rs.size - 1 to rs.size
+        }
+        return null
+    }
+
+    fun parse(html: String, today: java.time.LocalDate = java.time.LocalDate.now()): Times {
         val text = lines(html)
+        val cols = dateColumns(text, today)
+        var sunset = false
         val all = text.joinToString(" ")
         // a page that shows only one column of times, headed «Iqamah» / «Jamaat», has the congregation times in it
         val onlyIqamah = Regex("iqama|iqamah|jama'?at|jamaah|congregation", RegexOption.IGNORE_CASE).containsMatchIn(all) &&
@@ -56,17 +79,23 @@ object MosqueSite {
                 val end = hits.getOrNull(i + 1)?.first ?: line.length
                 val seg = line.substring(h.second, end)
                 val t = TIME.findAll(seg).toList()
-                if (t.isEmpty()) continue
+                if (t.isEmpty()) { if (h.third == "MAGHRIB" && Regex("sunset|ghurub|ghuroob|adhan|azan|athan|immediately|after the sun", RegexOption.IGNORE_CASE).containsMatchIn(seg)) sunset = true; continue }
                 // the name must be followed closely by its first time (otherwise it is a sentence)
                 if (t.first().range.first > 40) continue
                 val ms = t.mapNotNull { minutes(h.third, it.groupValues[1].toInt(), it.groupValues[2], it.groupValues[3].toInt(), it.groupValues[4].ifEmpty { null }) }
                 if (ms.isEmpty()) continue
-                if (h.third == "JUM") { jum += ms.last(); continue }
+                if (h.third == "JUM") {
+                    // «1st Iqamah 1:45, 2nd Iqamah 2:30»: every time is a prayer; in a row of a table the last time is the iqamah
+                    val many = Regex("iqama|1st|2nd|3rd|first|second|third", RegexOption.IGNORE_CASE).findAll(seg).count() >= 2
+                    if (many) jum += ms else jum += ms.last()
+                    continue
+                }
                 if (h.third in iq) continue
+                if (cols != null && ms.size == cols.second) { iq[h.third] = ms[cols.first]; continue }
                 if (ms.size >= 2) iq[h.third] = ms.last() else if (onlyIqamah) iq[h.third] = ms.first()
             }
         }
-        return Times(iq, jum.distinct().sorted().take(3))
+        return Times(iq, jum.distinct().sorted().take(3), sunset && "MAGHRIB" !in iq)
     }
 
     private fun get(u: String): String? {

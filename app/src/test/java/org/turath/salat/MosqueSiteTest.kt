@@ -33,4 +33,19 @@ class MosqueSiteTest {
         val t = MosqueSite.parse("<h2>Iqamah times</h2><p>Fajr 6:15 am</p><p>Dhuhr 1:30 pm</p><p>Asr 5:00</p>")
         assertEquals(6 * 60 + 15, t.iq["FAJR"]); assertEquals(13 * 60 + 30, t.iq["DHUHR"]); assertEquals(17 * 60, t.iq["ASR"])
     }
+
+    @Test fun dateColumns() {
+        val html = """<table><tr><th>Prayer</th><th>Iqamah Oct 01-10</th><th>Oct 11-20</th><th>Oct 21-31</th></tr>
+            <tr><td>Fajar</td><td>6:30 am</td><td>6:45 am</td><td>6:45 am</td></tr>
+            <tr><td>Zuhar</td><td>1:35 pm</td><td>1:35 pm</td><td>1:35 pm</td></tr>
+            <tr><td>Asar</td><td>5:30 pm</td><td>5:15 pm</td><td>5:00 pm</td></tr>
+            <tr><td>Maghrib</td><td>Sunset</td><td>Sunset</td><td>Sunset</td></tr>
+            <tr><td>Isha</td><td>8:30 pm</td><td>8:15 pm</td><td>8:00 pm</td></tr></table>
+            <p>Jumma: 1st Iqamah at 1:45 pm, 2nd Iqamah at 2:30 pm, 3rd Iqamah at 3:30 pm</p>"""
+        val t = MosqueSite.parse(html, java.time.LocalDate.of(2026, 10, 27))
+        assertEquals(6 * 60 + 45, t.iq["FAJR"]); assertEquals(17 * 60, t.iq["ASR"]); assertEquals(20 * 60, t.iq["ISHA"])
+        assertEquals(true, t.maghribAtSunset)
+        assertEquals(listOf(13 * 60 + 45, 14 * 60 + 30, 15 * 60 + 30), t.jumuah)
+        assertEquals(17 * 60 + 30, MosqueSite.parse(html, java.time.LocalDate.of(2026, 10, 5)).iq["ASR"])
+    }
 }

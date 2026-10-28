@@ -57,6 +57,11 @@ object Events {
             // the evening before the 13th: ask whether to fast the white days
             if (pr.beed && h.day == 12 && !pr.beedAccepted(key) && !pr.beedDeclined(key))
                 out += Ev(t[P.ISHA].plusMinutes(10), "beedask", text = key)
+            // the first night of a hijri month: the du'a of the new moon, 30 minutes after Maghrib (read on the widget for some hours)
+            if (pr.hilalDua && Schedule.hijriOf(pr, d.plusDays(1)).day == 1) {
+                out += Ev(t[P.MAGHRIB].plusMinutes(30), "hilal", P.MAGHRIB, Snd.DUA_HILAL)
+                out += Ev(t[P.MAGHRIB].plusMinutes(Hilal.HOURS * 60L + 1), "widget")
+            }
             // before / after each prayer
             for (p in FIVE) {
                 if (pr.before(p) > 0) out += Ev(t[p].minusMinutes(pr.before(p).toLong()), "custom", p, pr.prePostSound, Tr.num(pr.before(p)) + " " + Tr["min"] + " " + Tr["before"] + " " + Tr.p(p))
@@ -210,6 +215,14 @@ object Alarms {
                     .addAction(Notification.Action.Builder(null, Tr["accept"], act(true)).build())
                     .addAction(Notification.Action.Builder(null, Tr["decline"], act(false)).build()).setAutoCancel(true).setTimeoutAfter(6 * 3600_000L).build())
             }
+            "hilal" -> {
+                val title = Tr["hilalTitle"]; val body = Hilal.text()
+                val quiet = Audio.silentNow(ctx) && !pr.adhanInSilent
+                if (playSound && !quiet) SoundService.start(ctx, Snd.DUA_HILAL, title, body, false)
+                else nm.notify(4003, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
+                    .setContentTitle(title).setContentText(Tr["hilalAr"]).setStyle(Notification.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(Hilal.HOURS * 3600_000L).build())
+                Widget.update(ctx)
+            }
             "vibon" -> Vibrate.on(ctx, pr)
             "viboff" -> Vibrate.off(ctx, pr)
             "widget" -> Widget.update(ctx)
@@ -335,7 +348,7 @@ class SoundService : Service() {
         fun hasFajr(ctx: Context, s: Snd) = s.adhan && s.raw != null && (s.fajrOnly || ctx.resources.getIdentifier(s.raw + "_fajr", "raw", ctx.packageName) != 0)
 
         fun choices(ctx: Context, use: SndUse, fajr: Boolean = false, tahajjud: Boolean = false): List<Snd> {
-            val ok = Snd.entries.filter { it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
+            val ok = Snd.entries.filter { it != Snd.DUA_HILAL && it.raw != null && (fajr || !it.fajrOnly) && rawId(ctx, it, fajr) != 0 }
             val l = when (use) {
                 // Fajr: only the Fajr adhans; the other prayers: none of them
                 SndUse.PRAYER -> if (fajr) ok.filter { hasFajr(ctx, it) } else ok.filter { it.adhan }
@@ -400,4 +413,19 @@ class SoundService : Service() {
     }
 
     override fun onDestroy() { mp?.release(); mp = null; playing = false; super.onDestroy() }
+}
+
+/** the du'a of the new moon */
+object Hilal {
+    const val HOURS = 4
+    /** the Arabic, then the translation (none in the Arabic screens) */
+    fun text() = Tr["hilalAr"] + if (Tr.lang == "ar") "" else "\n" + Tr["hilalTr"]
+    /** from 30 minutes after Maghrib on the first night of a hijri month, for some hours */
+    fun active(pr: Prefs, place: Place, now: ZonedDateTime): Boolean {
+        if (!pr.hilalDua) return false
+        val d = now.toLocalDate()
+        if (Schedule.hijriOf(pr, d.plusDays(1)).day != 1) return false
+        val mg = Schedule.day(pr, place, d)[P.MAGHRIB]
+        return !now.isBefore(mg.plusMinutes(30)) && now.isBefore(mg.plusHours(HOURS.toLong()))
+    }
 }

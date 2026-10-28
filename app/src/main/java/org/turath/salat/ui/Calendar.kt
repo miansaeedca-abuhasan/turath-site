@@ -47,6 +47,19 @@ val ISLAMIC_DAYS = listOf(
     IDay(12, null, null, "dFarewell"),
 )
 
+data class Upcoming(val m: Int, val d: Int?, val key: String, val at: LocalDate)
+
+/** the next Ramadan, Eid al-Fitr, ten days of Dhul-Hijjah and Eid al-Adha that are not more than 100 days away, nearest first, with the days left */
+fun comingUp(pr: Prefs, today: LocalDate, hijriYear: Int): List<Pair<Upcoming, Int>> {
+    val out = mutableListOf<Pair<Upcoming, Int>>()
+    for ((m, d, key) in listOf(Triple(9, 1, "dRamadan"), Triple(10, 1, "dFitr"), Triple(12, 1, "dTenDays"), Triple(12, 10, "dAdha"))) {
+        val at = (hijriYear..hijriYear + 1).mapNotNull { gregOf(pr, it, m, d) }.firstOrNull { !it.isBefore(today) } ?: continue
+        val left = java.time.temporal.ChronoUnit.DAYS.between(today, at).toInt()
+        if (left in 0..100) out += Upcoming(m, d, key, at) to left
+    }
+    return out.sortedBy { it.second }
+}
+
 /** the special days of a hijri date (for the cells and the day's sheet) */
 fun specialsOf(m: Int, d: Int): List<String> {
     val l = ISLAMIC_DAYS.filter { it.m == m && it.d != null && d >= it.d && d <= (it.to ?: it.d) }.map { Tr[it.key] }.toMutableList()
@@ -128,6 +141,25 @@ fun CalendarScreen(s: AppState) {
             }
         }
         Spacer(Modifier.height(10.dp))
+        // coming up: Ramadan, the two Eids and the ten days of Dhul-Hijjah, once they are within 100 days (the days are counted again when the hijri date is adjusted)
+        val today = s.now.toLocalDate()
+        val coming = comingUp(s.prefs, today, nowH.year)
+        if (coming.isNotEmpty()) {
+            SectionTitle(Tr["comingUp"])
+            Card0 {
+                for ((c, left) in coming) Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Column(Modifier.weight(1f)) {
+                        Text(Tr[c.key], fontWeight = FontWeight.Bold)
+                        Text(Tr.num(c.d!!) + " " + Tr.hijriMonth(c.m) + " · " + Tr.num(java.time.format.DateTimeFormatter.ofPattern("EEEE, d MMMM yyyy", java.util.Locale(Tr.lang)).format(c.at)),
+                            fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .65f))
+                    }
+                    Text(when (left) { 0 -> Tr["inToday"]; 1 -> Tr["inOneDay"]; else -> Tr["inDays"].replace("%s", Tr.num(left)) },
+                        Modifier.clip(RoundedCornerShape(50)).background(MaterialTheme.colorScheme.primary.copy(alpha = .15f)).padding(horizontal = 10.dp, vertical = 4.dp),
+                        fontSize = 12.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
         // this month: the known days, then what happened in it (month only), then the user's events
         val dayItems = (1..len).flatMap { d -> specialsOf(m, d).map { d to it } }.distinctBy { it.second }
         val monthItems = ISLAMIC_DAYS.filter { it.m == m && it.d == null }

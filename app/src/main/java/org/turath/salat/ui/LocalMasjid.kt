@@ -59,6 +59,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
         var status by remember { mutableStateOf("") }          // "", "busy", "ok", "none"
         var site by remember { mutableStateOf(pr.sp.getString("lm_site", "") ?: "") }
         val scope = rememberCoroutineScope()
+        val ctx = androidx.compose.ui.platform.LocalContext.current
         // as the name is typed (a short pause after the last letter) the masjids with that name are looked up
         LaunchedEffect(q) {
             hits = emptyList()
@@ -75,6 +76,20 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 var t: MosqueSite.Times? = null
                 var url = given
                 if (url.isNotBlank()) t = withContext(Dispatchers.IO) { runCatching { MosqueSite.fetch(url) }.getOrNull() }
+                if ((t == null || t.found < 3) && url.isNotBlank()) {
+                    // the times may be drawn by a script on the page: the page is opened in an invisible browser and read as it then looks
+                    val h = MosqueRender.html(ctx, if (url.startsWith("http")) url else "https://$url")
+                    val p = h?.let { MosqueSite.parse(it) }
+                    if (p != null && p.found > (t?.found ?: 0)) t = p
+                    // many masjid pages show the times of the Ad-Din display page (portal.ad-din.ca/public/...): that page is then read the same way
+                    if ((t == null || t.found < 3) && h != null) {
+                        val d = Regex("https?://portal\\.ad-din\\.ca/public/[^\"'\\s<>)]+").find(h)?.value?.replace("&amp;", "&")
+                        if (d != null) {
+                            val p2 = MosqueRender.html(ctx, d)?.let { MosqueSite.parse(it) }
+                            if (p2 != null && p2.found > (t?.found ?: 0)) t = p2
+                        }
+                    }
+                }
                 if (t == null || t.found < 3) {
                     val w = withContext(Dispatchers.IO) { runCatching { MosqueSearch.viaWeb(n, c) }.getOrNull() }
                     if (w != null) { url = w.first; t = w.second }
@@ -83,6 +98,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 site = url; pr.sp.edit().putString("lm_site", url).apply()
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
+                if (t.maghribAtSunset && day != null) LocalMasjid.setIqamah(pr, "MAGHRIB", day[P.MAGHRIB].let { it.hour * 60 + it.minute })
                 for ((k, m) in t.iq) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
                 if (t.jumuah.isNotEmpty()) { LocalMasjid.setJumuah(pr, t.jumuah); day?.let { d -> LocalMasjid.applyVibration(pr, "JUMUAH", d[P.DHUHR], t.jumuah.min()) } }
                 status = "ok"; ver++; s.changed()
