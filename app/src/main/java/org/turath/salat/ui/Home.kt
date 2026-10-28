@@ -70,10 +70,11 @@ fun HomeScreen(s: AppState) {
             Icon(if (s.prefs.placeByGps) Icons.Outlined.MyLocation else Icons.Outlined.PushPin, null, tint = MaterialTheme.colorScheme.primary)
             Text(" " + place.name, fontSize = 28.sp, fontWeight = FontWeight.Bold)
         }
-        Text(if (s.prefs.placeByGps) Tr["placeGps"] else Tr["placeManual"], fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f))
         Spacer(Modifier.height(4.dp))
-        Text(now.dayOfWeek.getDisplayName(TextStyle.FULL, loc) + " · " + Tr.hijri(Schedule.hijriNow(s.prefs, place, now)), fontSize = 15.sp, color = MaterialTheme.colorScheme.primary)
-        Text(Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", loc))), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
+        // the place, then the Hijri date, then the day, then the Gregorian date
+        Text(Tr.hijri(Schedule.hijriNow(s.prefs, place, now)), Modifier.fillMaxWidth(), fontSize = 16.sp, color = MaterialTheme.colorScheme.primary, textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text(now.dayOfWeek.getDisplayName(TextStyle.FULL, loc), Modifier.fillMaxWidth(), fontSize = 15.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .8f), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
+        Text(Tr.num(now.toLocalDate().format(java.time.format.DateTimeFormatter.ofPattern("d MMMM yyyy", loc))), Modifier.fillMaxWidth(), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f), textAlign = androidx.compose.ui.text.style.TextAlign.Center)
         Spacer(Modifier.height(16.dp))
         var pickClock by remember { mutableStateOf(false) }
         Box(Modifier.clip(androidx.compose.foundation.shape.CircleShape).clickable { pickClock = true }) { ClockFace(s.prefs.clockStyle, now, st, cd, 230.dp) }
