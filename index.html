@@ -5871,9 +5871,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     ['auckland','Auckland','آکلینڈ','أوكلاند','NZ',-36.8509,174.7645,'Pacific/Auckland']
   ];
   const L = {
-    ur: { t: 'نماز کے اوقات', n: ['فجر', 'طلوعِ آفتاب', 'ظہر', 'عصر', 'مغرب', 'عشاء'], city: 'شہر', geo: 'میرا مقام', hanafi: 'عصر: حنفی', rem: 'نماز کی یاد دہانی', next: 'اگلی نماز', msg: 'ابھی نماز کی تیاری کریں، اسے نماز کے بعد میں دیکھیے گا', ap: ['صبح', 'شام'], more: 'ہمارا ایپ', pl: 'پلے سٹور سے حاصل کریں', turath: 'تراث خیرالقرون', salat: 'صلاۃ خیرالقرون' },
-    ar: { t: 'أوقات الصلاة', n: ['الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء'], city: 'المدينة', geo: 'موقعي', hanafi: 'العصر: حنفي', rem: 'تذكير الصلاة', next: 'الصلاة القادمة', msg: 'استعدّ للصلاة الآن، وتصفّح هذا بعد الصلاة', ap: ['ص', 'م'], more: 'تطبيقاتنا', pl: 'حمّله من متجر Play', turath: 'تراث خير القرون', salat: 'صلاة خير القرون' },
-    en: { t: 'Prayer times', n: ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], city: 'City', geo: 'My location', hanafi: 'Asr: Hanafi', rem: 'Prayer reminder', next: 'Next prayer', msg: 'Get ready for the prayer now. Come back to this after the prayer.', ap: ['am', 'pm'], more: 'Our apps', pl: 'Get it on Google Play', turath: 'Turath Khair Al-Quroon', salat: 'Salat Khair Al-Quroon' }
+    ur: { t: 'نماز کے اوقات', n: ['فجر', 'طلوعِ آفتاب', 'ظہر', 'عصر', 'مغرب', 'عشاء'], city: 'شہر', geo: 'میرا مقام', sal: 'نماز', beg: 'آغاز', hanafi: 'عصر: حنفی', rem: 'نماز کی یاد دہانی', next: 'اگلی نماز', msg: 'ابھی نماز کی تیاری کریں، اسے نماز کے بعد میں دیکھیے گا', ap: ['صبح', 'شام'], more: 'ہمارا ایپ', pl: 'پلے سٹور سے حاصل کریں', turath: 'تراث خیرالقرون', salat: 'صلاۃ خیرالقرون' },
+    ar: { t: 'أوقات الصلاة', n: ['الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء'], city: 'المدينة', geo: 'موقعي', sal: 'الصلاة', beg: 'تبدأ', hanafi: 'العصر: حنفي', rem: 'تذكير الصلاة', next: 'الصلاة القادمة', msg: 'استعدّ للصلاة الآن، وتصفّح هذا بعد الصلاة', ap: ['ص', 'م'], more: 'تطبيقاتنا', pl: 'حمّله من متجر Play', turath: 'تراث خير القرون', salat: 'صلاة خير القرون' },
+    en: { t: 'Prayer times', n: ['Fajr', 'Sunrise', 'Dhuhr', 'Asr', 'Maghrib', 'Isha'], city: 'City', geo: 'My location', sal: 'Salah', beg: 'Begins', hanafi: 'Asr: Hanafi', rem: 'Prayer reminder', next: 'Next prayer', msg: 'Get ready for the prayer now. Come back to this after the prayer.', ap: ['am', 'pm'], more: 'Our apps', pl: 'Get it on Google Play', turath: 'Turath Khair Al-Quroon', salat: 'Salat Khair Al-Quroon' }
   };
   const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
   const put = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
@@ -5937,54 +5937,95 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // ---- page ----
   const css = document.createElement('style');
   css.textContent = `
-.sp{position:fixed;top:5.2rem;z-index:5;width:15.5rem;max-height:calc(100vh - 7rem);overflow:auto;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);border-radius:14px;box-shadow:0 4px 18px rgba(0,0,0,.12);padding:.7rem .8rem;font-size:.92rem;line-height:1.6}
-.sp.R{right:max(1rem,calc(50vw - 23rem - 17rem))}.sp.Lf{left:max(1rem,calc(50vw - 23rem - 17rem))}
-.sp h3{margin:0 0 .4rem;font-size:1.05rem;color:var(--accent,#2a7)}
-.sp select{width:100%;margin:.15rem 0;padding:.3rem;border:1px solid var(--line,#ccc);border-radius:8px;background:var(--paper,#fff);color:inherit;font:inherit}
-.sp .pt{display:flex;justify-content:space-between;gap:.5rem;padding:.2rem .45rem;border-radius:8px}
-.sp .pt.sr{opacity:.65}.sp .pt.now{background:var(--wash,#e8f4ee);font-weight:700;color:var(--accent,#2a7);animation:spblink 1s steps(2,start) infinite}
-@keyframes spblink{50%{opacity:.25}}
-.sp .nx{margin:.35rem 0;font-size:.85rem;color:var(--muted,#667)}
-.sp label{display:flex;align-items:center;gap:.4rem;font-size:.85rem;margin-top:.25rem;cursor:pointer}
-.sp .app{display:flex;align-items:center;gap:.6rem;padding:.5rem;margin:.4rem 0;border:1px solid var(--line,#ddd);border-radius:12px;text-decoration:none;color:inherit}
-.sp .app img{width:3.4rem;height:3.4rem;border-radius:12px}.sp .app b{display:block}.sp .app small{color:var(--muted,#667)}
-#spmsg{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);z-index:99990;max-width:38rem;padding:1rem 1.6rem;border-radius:16px;background:rgba(10,30,24,.55);color:#fff;font-size:1.35rem;line-height:1.8;text-align:center;backdrop-filter:blur(3px);pointer-events:none;opacity:0;transition:opacity .6s}
-#spmsg.on{opacity:1}`;
+.slt{position:fixed;top:5rem;z-index:5;width:16.5rem;max-height:calc(100vh - 6.5rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:thin}
+.slt.R{right:max(1rem,calc(50vw - 23rem - 18rem))}.slt.Lf{left:max(1rem,calc(50vw - 23rem - 18rem))}
+.slt .hd{padding:.75rem .9rem .5rem;background:linear-gradient(160deg,#0d4f48,#127a6b);color:#fff;border-radius:20px 20px 0 0;text-align:center}
+.slt .hd h3{margin:0 0 .35rem;font-size:1.05rem;font-weight:700;letter-spacing:.2px;color:#fff}
+.slt select{width:100%;font-size:.95rem!important;padding:.3rem .5rem;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.14);color:#fff;font:inherit}
+.slt select option{color:#111}
+.slt .clk{display:flex;flex-direction:column;align-items:center;padding:.7rem 0 .2rem}
+.slt svg.an{width:9.2rem;height:9.2rem;filter:drop-shadow(0 3px 6px rgba(0,0,0,.18))}
+.slt .dg{font:700 1.5rem/1.2 'Courier New',ui-monospace,monospace;letter-spacing:1px;color:#0d4f48;margin-top:.3rem;direction:ltr}
+.slt .dt{font-size:.78rem;color:var(--muted,#667)}
+.slt .cd{margin:.55rem .8rem .3rem;padding:.5rem .6rem;border-radius:14px;background:var(--wash,#e8f4ee);text-align:center}
+.slt .cd small{display:block;color:var(--muted,#667);font-size:.78rem}
+.slt .cd b{display:block;font:700 1.55rem/1.3 'Courier New',ui-monospace,monospace;color:#0d4f48;direction:ltr;letter-spacing:1px}
+.slt .cd span{font-weight:700;color:#0d4f48}
+.slt table{width:calc(100% - 1.2rem);margin:.3rem .6rem .2rem;border-collapse:separate;border-spacing:0;border-radius:12px;overflow:hidden;font-size:.9rem}
+.slt th{background:#0d4f48;color:#fff;padding:.35rem .6rem;font-weight:700;text-align:start}
+.slt td{padding:.3rem .6rem}.slt td:last-child{text-align:end;direction:ltr;white-space:nowrap}
+.slt tr:nth-child(even) td{background:rgba(13,79,72,.08)}
+.slt tr.sr td{opacity:.7}
+.slt tr.now td{background:#0d4f48;color:#fff;font-weight:700;animation:sltb 1.1s steps(2,start) infinite}
+@keyframes sltb{50%{background:#1a8a78}}
+.slt .op{padding:.2rem .9rem .75rem}.slt label{display:flex;align-items:center;gap:.4rem;font-size:.82rem;margin-top:.2rem;cursor:pointer}
+.slt .app{display:flex;align-items:center;gap:.7rem;padding:.6rem .8rem;margin:.5rem .7rem;border:1px solid var(--line,#ddd);border-radius:14px;text-decoration:none;color:inherit;background:var(--paper,#fff)}
+.slt .app img{width:3.4rem;height:3.4rem;border-radius:14px}.slt .app b{display:block}.slt .app small{color:var(--muted,#667)}
+#sltmsg{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);z-index:99990;max-width:38rem;padding:1rem 1.6rem;border-radius:16px;background:rgba(10,30,24,.55);color:#fff;font-size:1.35rem;line-height:1.8;text-align:center;pointer-events:none;opacity:0;transition:opacity .6s}
+#sltmsg.on{opacity:1}`;
   document.head.appendChild(css);
-  const msg = document.createElement('div'); msg.id = 'spmsg'; document.body.appendChild(msg);
+  const msg = document.createElement('div'); msg.id = 'sltmsg'; document.body.appendChild(msg);
   const side = document.createElement('div'), apps = document.createElement('div');
   document.body.append(side, apps);
-
+  let TM = [], CUR = null;
+  const pad = n => String(n).padStart(2, '0');
+  function clockSvg() {
+    let t = '';
+    for (let i = 0; i < 60; i++) { const a = i * 6 * R, big = i % 5 === 0; t += '<line x1="' + (50 + Math.sin(a) * (big ? 38 : 41)).toFixed(2) + '" y1="' + (50 - Math.cos(a) * (big ? 38 : 41)).toFixed(2) + '" x2="' + (50 + Math.sin(a) * 44).toFixed(2) + '" y2="' + (50 - Math.cos(a) * 44).toFixed(2) + '" stroke="' + (big ? '#0d4f48' : '#9bb') + '" stroke-width="' + (big ? 1.6 : .6) + '"/>'; }
+    for (let h = 1; h <= 12; h++) { const a = h * 30 * R; t += '<text x="' + (50 + Math.sin(a) * 31).toFixed(2) + '" y="' + (50 - Math.cos(a) * 31 + 2.6).toFixed(2) + '" font-size="7.5" text-anchor="middle" fill="#16322e" font-family="system-ui,sans-serif">' + h + '</text>'; }
+    return '<svg class="an" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#fff" stroke="#127a6b" stroke-width="3"/><circle cx="50" cy="50" r="46" fill="none" stroke="#c9a24b" stroke-width=".6"/>' + t +
+      '<line id="sh" x1="50" y1="50" x2="50" y2="29" stroke="#0d4f48" stroke-width="3.2" stroke-linecap="round"/><line id="sm" x1="50" y1="50" x2="50" y2="17" stroke="#16322e" stroke-width="2.2" stroke-linecap="round"/><line id="ss" x1="50" y1="56" x2="50" y2="14" stroke="#c9a24b" stroke-width="1" stroke-linecap="round"/><circle cx="50" cy="50" r="2.6" fill="#0d4f48"/></svg>';
+  }
+  function rot(id, deg) { const e = side.querySelector('#' + id); if (e) e.setAttribute('transform', 'rotate(' + deg + ' 50 50)'); }
+  function tick() {                           // every second: clock hands, digital time, countdown
+    if (!CUR) return;
+    const t = L[lang()], now = new Date(), p = parts(CUR.tz, now);
+    rot('sh', (p.hour % 12) * 30 + p.minute / 2); rot('sm', p.minute * 6 + p.second / 10); rot('ss', p.second * 6);
+    const dg = side.querySelector('#dg'); if (dg) dg.textContent = pad(p.hour) + ':' + pad(p.minute) + ':' + pad(p.second);
+    const cd = side.querySelector('#cd'), cn = side.querySelector('#cn');
+    if (cd && cn) {
+      let i = TM.findIndex((x, k) => x && k !== 1 && x > now), when = i >= 0 ? TM[i] : null;
+      if (!when) return;
+      let s = Math.max(0, Math.round((when - now) / 1000));
+      cn.textContent = t.n[i]; cd.textContent = pad(Math.floor(s / 3600)) + ':' + pad(Math.floor(s % 3600 / 60)) + ':' + pad(s % 60);
+      if (s === 0) render();
+    }
+  }
   function render() {
     const u = lang(), t = L[u], c = cur(), tz = c.tz, hanafi = useHanafi(c);
-    const now = new Date(), tm = todayTimes(c, hanafi, now);
+    CUR = c; const now = new Date(), tm = todayTimes(c, hanafi, now); TM = tm;
     const idx = tm.reduce((a, x, i) => (x && x <= now && i !== 1) ? i : a, -1);
-    const nxt = tm.findIndex((x, i) => x && x > now && i !== 1);
-    side.className = 'sp ' + (rtl() ? 'R' : 'Lf'); side.dir = rtl() ? 'rtl' : 'ltr';
-    const nm = c.name || (c[u] || c.en);
-    const opts = C.slice().sort((a, b) => { const k = u === 'ur' ? 2 : u === 'ar' ? 3 : 1; return a[k].localeCompare(b[k], u); }).map(x => '<option value="' + x[0] + '"' + (st.city === x[0] ? ' selected' : '') + '>' + (u === 'ur' ? x[2] : u === 'ar' ? x[3] : x[1]) + '</option>').join('');
-    let h = '<h3>' + t.t + '</h3><select id="spc" aria-label="' + t.city + '"><option value="geo"' + (st.city === 'geo' ? ' selected' : '') + '>' + t.geo + (st.city === 'geo' && st.geo ? ' ✓' : '') + '</option>' + opts + '</select>';
-    tm.forEach((x, i) => { h += '<div class="pt' + (i === 1 ? ' sr' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? ' now' : '') + '"><span>' + t.n[i] + '</span><span>' + fmt(x, tz, t.ap) + '</span></div>'; });
-    if (nxt >= 0) { const m = Math.round((tm[nxt] - now) / 60000); h += '<div class="nx">' + t.next + ': ' + t.n[nxt] + ' — ' + Math.floor(m / 60) + ':' + String(m % 60).padStart(2, '0') + '</div>'; }
-    h += '<label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label><label><input type="checkbox" id="spr"' + (st.rem ? ' checked' : '') + '> ' + t.rem + '</label>';
+    side.className = 'slt ' + (rtl() ? 'R' : 'Lf'); side.dir = rtl() ? 'rtl' : 'ltr';
+    const k = u === 'ur' ? 2 : u === 'ar' ? 3 : 1;
+    const opts = C.slice().sort((a, b) => a[k].localeCompare(b[k], u)).map(x => '<option value="' + x[0] + '"' + (st.city === x[0] ? ' selected' : '') + '>' + x[k] + '</option>').join('');
+    const dateS = new Intl.DateTimeFormat(u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+    let h = '<div class="hd"><h3>' + t.t + '</h3><select id="spc" aria-label="' + t.city + '"><option value="geo"' + (st.city === 'geo' ? ' selected' : '') + '>' + t.geo + (st.city === 'geo' && st.geo ? ' ✓' : '') + '</option>' + opts + '</select></div>' +
+      '<div class="clk">' + clockSvg() + '<div class="dg" id="dg"></div><div class="dt">' + dateS + '</div></div>' +
+      '<div class="cd"><small>' + t.next + ': <span id="cn"></span></small><b id="cd">--:--:--</b></div>' +
+      '<table><thead><tr><th>' + t.sal + '</th><th>' + t.beg + '</th></tr></thead><tbody>';
+    tm.forEach((x, i) => { h += '<tr class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><td>' + t.n[i] + '</td><td>' + fmt(x, tz, t.ap) + '</td></tr>'; });
+    h += '</tbody></table><div class="op"><label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label><label><input type="checkbox" id="spr"' + (st.rem ? ' checked' : '') + '> ' + t.rem + '</label></div>';
     if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); }
-    // posters (appear when the store links are filled in)
+    tick();
     const any = STORE.turath || STORE.salat;
-    apps.className = 'sp ' + (rtl() ? 'Lf' : 'R'); apps.dir = rtl() ? 'rtl' : 'ltr'; apps.hidden = !any;
+    apps.className = 'slt ' + (rtl() ? 'Lf' : 'R'); apps.dir = rtl() ? 'rtl' : 'ltr'; apps.hidden = !any;
     if (any && !apps.dataset.h) {
       apps.dataset.h = '1';
-      apps.innerHTML = '<h3>' + t.more + '</h3>' + [['turath', t.turath], ['salat', t.salat]].filter(a => STORE[a[0]]).map(a => '<a class="app" href="' + STORE[a[0]] + '" target="_blank" rel="noopener"><img src="icon-192.png" alt=""><span><b>' + a[1] + '</b><small>' + t.pl + '</small></span></a>').join('');
+      apps.innerHTML = '<div class="hd"><h3>' + t.more + '</h3></div>' + [['turath', t.turath], ['salat', t.salat]].filter(a => STORE[a[0]]).map(a => '<a class="app" href="' + STORE[a[0]] + '" target="_blank" rel="noopener"><img src="icon-192.png" alt=""><span><b>' + a[1] + '</b><small>' + t.pl + '</small></span></a>').join('');
     }
     reminder(tm, now, t);
   }
+  function geoPick(auto) {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(p => {
+      st.geo = { name: '', cc: '', lat: p.coords.latitude, lng: p.coords.longitude, tz: Intl.DateTimeFormat().resolvedOptions().timeZone };
+      const n = C.reduce((b, x) => { const d = Math.hypot(x[5] - st.geo.lat, x[6] - st.geo.lng); return !b || d < b[0] ? [d, x] : b; }, null); st.geo.cc = n ? n[1][4] : '';
+      put('salatGeo', JSON.stringify(st.geo)); st.city = 'geo'; put('salatCity', 'geo'); side.dataset.h = ''; render();
+    }, () => { if (!auto) { const s = side.querySelector('#spc'); if (s) s.value = st.city; } }, { timeout: 8000, maximumAge: 3600000 });
+  }
   function bind() {
     const s = side.querySelector('#spc');
-    s.onchange = () => {
-      if (s.value === 'geo') {
-        if (!navigator.geolocation) return;
-        navigator.geolocation.getCurrentPosition(p => { st.geo = { name: '', cc: '', lat: p.coords.latitude, lng: p.coords.longitude, tz: Intl.DateTimeFormat().resolvedOptions().timeZone }; const n = C.reduce((b, x) => { const d = Math.hypot(x[5] - st.geo.lat, x[6] - st.geo.lng); return !b || d < b[0] ? [d, x] : b; }, null); st.geo.cc = n ? n[1][4] : ''; put('salatGeo', JSON.stringify(st.geo)); st.city = 'geo'; put('salatCity', 'geo'); render(); }, () => { s.value = st.city; });
-      } else { st.city = s.value; put('salatCity', st.city); render(); }
-    };
+    s.onchange = () => { if (s.value === 'geo') geoPick(false); else { st.city = s.value; put('salatCity', st.city); render(); } };
     side.querySelector('#sph').onchange = e => { st.hanafi = e.target.checked ? '1' : '0'; put('salatHanafi', st.hanafi); render(); };
     side.querySelector('#spr').onchange = e => { st.rem = e.target.checked; put('salatRem', st.rem ? '1' : '0'); };
   }
@@ -6002,7 +6043,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }
     }
   }
-  render(); setInterval(render, 20000);
+  render(); setInterval(tick, 1000); setInterval(render, 30000);
+  if (!get('salatCity')) geoPick(true);       // first visit: the place is chosen automatically
   addEventListener('storage', render); document.addEventListener('click', () => setTimeout(render, 120));
   const o = new MutationObserver(() => render()); o.observe(document.documentElement, { attributes: true, attributeFilter: ['lang', 'dir'] });
 })();
