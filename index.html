@@ -613,6 +613,34 @@ body.vfpage .appbar{position:static}
 </style>
 </head>
 <body>
+<div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><button id="splskip" type="button"></button></div>
+<style>
+#splash{position:fixed;inset:0;z-index:99999;background:#03170f;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .5s ease}
+#splash[hidden]{display:none}#splash.out{opacity:0;pointer-events:none}
+#splv{width:100%;height:100%;object-fit:cover;background:#03170f}
+@media (min-aspect-ratio:3/4){#splv{object-fit:contain}}
+#splskip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);color:#e9d7a1;border:1px solid rgba(233,215,161,.45);border-radius:20px;padding:6px 20px;font:15px system-ui,sans-serif;cursor:pointer}
+</style>
+<script>
+(function(){
+  var d=document.getElementById('splash'),v=document.getElementById('splv'),b=document.getElementById('splskip');
+  try{
+    var h=location.hash;
+    if(sessionStorage.splash==='1'||localStorage.nosplash==='1'||(h&&h!=='#'&&h!=='#/'&&h!=='#/home')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+    sessionStorage.splash='1';
+  }catch(e){}
+  var ui='en';try{ui=localStorage.ui||'en'}catch(e){}
+  b.textContent={ur:'چھوڑیں',ar:'تخطّي',en:'Skip',bn:'এড়িয়ে যান',hi:'छोड़ें',gu:'છોડો',fr:'Passer'}[ui]||'Skip';
+  var done=false,t0=setTimeout(end,4000);
+  function end(){if(done)return;done=true;clearTimeout(t0);d.classList.add('out');setTimeout(function(){try{v.pause();v.removeAttribute('src');v.load();}catch(e){}d.remove();},600);}
+  d.hidden=false;
+  d.addEventListener('click',end);b.addEventListener('click',function(e){e.stopPropagation();end();});
+  v.addEventListener('playing',function(){clearTimeout(t0);});
+  v.addEventListener('ended',end);v.addEventListener('error',end);
+  v.src='splash.mp4';
+  var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(end);});
+})();
+</script>
 <header class="appbar"><button id="back" class="ib" type="button" aria-label="Back" hidden></button>
 <div class="ttl"><div id="t1"></div><div id="t2"></div></div>
 <div id="xtools" class="xt"></div>
@@ -858,7 +886,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=848a6c7bdb", "data/d2.js?h=fe395f00ae", "data/d3.js?h=fd759c4965", "data/d4.js?h=8c4d93ab1e", "data/d5.js?h=9546c30bd7", "data/d6.js?h=7f8cd9f594", "data/d7.js?h=93d6ea7937", "data/d8.js?h=0e7a2f3e9b", "data/d9.js?h=485a33e588", "data/d10.js?h=fa23bff9f7"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=b617fbbd41", "data/d2.js?h=b5f27bf4ac", "data/d3.js?h=15329c8e74", "data/d4.js?h=a89cdc6067", "data/d5.js?h=c93af56f6c", "data/d6.js?h=201fc7079a", "data/d7.js?h=45ce1d1656", "data/d8.js?h=992e4e7267", "data/d9.js?h=e625a0b383", "data/d10.js?h=048b32262e"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
