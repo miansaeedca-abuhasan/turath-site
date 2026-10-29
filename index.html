@@ -1514,6 +1514,7 @@ function restoreScroll(y){let n=0;const go=()=>{scrollTo(0,y);n++;if(n<40&&(n<4|
 function parentOf(h){
   let m;
   if(h.startsWith('#/t/'))return '#/';
+  if(h.startsWith('#/hifz'))return h==='#/hifz'?'#/':'#/hifz';
   if((m=h.match(/^(#\/quiz(?:\/[ak](?:\/[a-z]+)?)?)\/[^/]+$/)))return m[1];
   if(h==='#/quiz')return '#/';
   if(/^#\/rb(\/|$)/.test(h))return RB.parent(h);
@@ -1543,7 +1544,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -1743,7 +1744,7 @@ function route(){
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||vf||ow||nr||rb||ab;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
@@ -1753,6 +1754,7 @@ function route(){
   else if(rb)RB.route(h);
   else if(ab)ABK.route(h);
   else if(qz)QUIZ.route(h);
+  else if(hz)HIFZ.route(h);
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
   else if(sc)COLL.route(h);
@@ -1771,7 +1773,7 @@ function route(){
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   // pages that do not need al-Jami al-Kamil's data open at once; the book list comes when the data is in
   const h=location.hash;
-  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
+  if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/hifz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
 /* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
 (function(){
@@ -2631,6 +2633,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     layers: 'M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z',
     history: 'M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z',
     translate: 'M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.98-4.17 3.71-6.53H17V4h-7V2H8v2H1v1.99h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z',
+    mic: 'M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z',
+    eye: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
+    event: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
     replay: 'M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z',
     minus: 'M19 13H5v-2h14v2z', tafsir: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z', prevp: 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z', nextp: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z', plus: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'});
 
@@ -2894,7 +2899,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
+      tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('replay', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('listen', ABK.title(), '#/ab')); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     if (window.mkDateBar) v.append(mkDateBar());
@@ -3916,6 +3921,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- routes: #/  #/q  #/q/para  #/q/ruku  #/q/s/2/255[/play]  #/q/j/30  #/q/r/5  #/q/audio  #/q/search  #/q/bm ---------- */
   window.QURAN = {
+    ready: () => need(['ar_uthmani']),
+    ayahText: (s, a) => verse('ar_uthmani', s, a),
+    surahs: () => Q.meta.surahs,
+    sName,
+    ayahUrl: (s, a) => ayahUrl(RECITERS.find(r => r.k === QS.reciter && r.f) || RECITERS[0], s, a),
     async verseTexts() { await need(['ar_uthmani']); return {t: Q.data.ar_uthmani, sa, surah: s => Q.meta.surahs[s - 1]}; },
     route(h) {
       stopAuto();
@@ -4920,6 +4930,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029d', d: '29-10-2026', keys: [],
+      t: {ur: 'نئی: حفظ کا الگ زمرہ', en: 'New: Hifz section', ar: 'جديد: قسم الحفظ'},
+      i: {ur: ['ہوم پر «حفظ» کا نیا زمرہ آ گیا ہے۔ اس میں تکرار، «سبق سناؤ» (مائیک پر سبق سنائیں اور آخر میں غلطیاں دیکھیں)، «یاد سے پڑھو» (آیت کے الفاظ چھپا کر) اور «روزانہ دہرائی» کا شیڈول ہے۔', 'سبق سنانے کے لیے کروم براؤزر اور انٹرنیٹ چاہیے۔ بچے کی آواز براؤزر کی آواز پہچاننے والی سروس کو جاتی ہے، ہماری سائٹ اسے محفوظ نہیں کرتی؛ بچوں کے لیے والدین کی اجازت اور نگرانی ضروری ہے۔ یہ استاد کا متبادل نہیں؛ تجوید کی غلطیاں نہیں پکڑتا۔'],
+        en: ['A new “Hifz” section is on the home page: repeat, “Recite to me” (recite into the microphone and see your mistakes at the end), “Recall” (hidden words) and a daily revision schedule.', 'Reciting needs Chrome and the internet. The voice goes to the browser’s speech-recognition service; this site does not store it. Children need a parent’s permission and supervision. It is not a replacement for a teacher and does not catch tajweed mistakes.'],
+        ar: ['قسم جديد «الحفظ» في الصفحة الرئيسية: التكرار، و«سمّع لي» (اقرأ أمام المايكروفون وانظر أخطاءك في النهاية)، و«استظهار» بإخفاء الكلمات، وجدول المراجعة اليومية.', 'التسميع يحتاج كروم والإنترنت. يُرسل الصوت إلى خدمة التعرف على الكلام في المتصفح ولا يحفظه الموقع. الأطفال يحتاجون إذن الوالدين وإشرافهم. وليس بديلًا عن المعلّم ولا يلتقط أخطاء التجويد.']}},
     {id: '20261029c', d: '29-10-2026', keys: [],
       t: {ur: 'قرآن: تکرار (حفظ) آسان ہو گئی', en: 'Quran: repeat (hifz) made simpler', ar: 'القرآن: التكرار (الحفظ) أصبح أسهل'},
       i: {ur: ['تکرار کا بٹن دبانے پر قرآن مصحف کی شکل میں آ جاتا ہے اور سیٹنگ ونڈو کھلتی ہے۔ ونڈو میں اب صرف سورت، آیات اور تکرار کے بٹن (1، 3، 5، 10، 20) ہیں، باقی ترتیبات «مزید ترتیبات» میں ہیں۔'],
@@ -7586,6 +7601,374 @@ Object.assign(I.fr, {
     play(w, c, Math.max(1, +lv)).catch(fail);
   }
   window.QUIZ = {route, cert: makeCert};
+})();
+
+</script>
+<script>
+// حفظ: one place for memorising the Quran — repeat (the reader's own dialog), «سبق سناؤ» (the child recites into the microphone, the words are
+// compared with the Quran and the mistakes are shown at the end), «یاد سے پڑھو» (ayahs with hidden words) and a daily revision schedule.
+// Voice: the browser's own speech recognition (webkitSpeechRecognition); nothing is sent to or stored by this site. Routes: #/hifz, #/hifz/say, #/hifz/recall, #/hifz/plan
+(function () {
+  const E = (t, a, ...k) => el(t, a, ...k.flat().filter(x => x != null && x !== false));
+  const RTL = () => ui === 'ur' || ui === 'ar';
+  const UD = n => ui === 'ur' ? String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]) : ui === 'ar' ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(n);
+  const S = {
+    ur: {
+      title: 'حفظ', sub: 'تکرار، سبق، دہرائی',
+      hero: 'قرآن مجید حفظ کریں', heroSub: 'سنیں، دہرائیں، سنائیں اور یاد سے پڑھیں۔ ہر دن تھوڑا، مگر پابندی سے۔',
+      today: 'آج کی دہرائی', todayNone: 'آج کوئی دہرائی باقی نہیں۔ نیا سبق شیڈول میں شامل کریں۔', todayN: n => n + ' سبق باقی ہیں', streak: n => n + ' دن مسلسل', streak0: 'آج سے آغاز کریں',
+      cards: {rep: ['تکرار', 'ایک آیت یا آیات کا حصہ بار بار سنیں'], say: ['سبق سناؤ', 'مائیک پر سبق سنائیں، آخر میں غلطیاں دیکھیں'], recall: ['یاد سے پڑھو', 'آیت کے الفاظ چھپا کر یاد سے پڑھیں'],
+        plan: ['روزانہ دہرائی', 'سبق، سبقی اور منزل کا شیڈول'], hadith: ['حفظ الحدیث', 'مختصر احادیث ترجمے کے ساتھ']},
+      surah: 'سورت', from: 'آیت سے', to: 'آیت تک', go: 'شروع کریں', pick: 'سبق چنیں', len5: '5 آیات', lenAll: 'پوری سورت',
+      tooLong: 'یہ حد بہت لمبی ہے۔ ایک بار میں تقریباً 600 الفاظ تک کا سبق چنیں۔',
+      consentT: 'والدین کے لیے ضروری بات', consent: ['«سبق سناؤ» میں بچے کی آواز آپ کے براؤزر کی آواز پہچاننے والی سروس کو بھیجی جاتی ہے (کروم میں یہ گوگل کی سروس ہے)، تاکہ وہ اسے لفظوں میں بدلے۔ اس کے لیے انٹرنیٹ چاہیے۔',
+        'تراث خیرالقرون آواز کو نہ محفوظ کرتا ہے اور نہ کہیں بھیجتا ہے۔ چھوٹے بچوں کے لیے والدین کی اجازت اور نگرانی ضروری ہے۔',
+        'یہ استاد کا متبادل نہیں۔ یہ چھوٹے ہوئے اور بدلے ہوئے الفاظ پکڑتا ہے؛ تجوید، مخارج اور زبر زیر کی غلطیاں نہیں پکڑتا، اور کبھی آواز غلط بھی سمجھ سکتا ہے۔'],
+      consentOK: 'اجازت ہے، شروع کریں', close: 'بند کریں',
+      noSR: 'اس براؤزر میں آواز پہچاننے کی سہولت نہیں۔ اینڈرائیڈ یا کمپیوٹر پر کروم میں کھولیں۔ «یاد سے پڑھو» اور «تکرار» اس کے بغیر بھی چلتے ہیں۔',
+      open: 'کتاب کھلی', closed: 'کتاب بند', tapStart: 'مائیک دبائیں اور سبق سنائیں', listening: 'سن رہا ہوں… پڑھتے رہیں', finish: 'ختم کریں — غلطیاں دکھائیں', heard: 'سنائی دیا',
+      errMic: 'مائیک کی اجازت نہیں ملی۔ براؤزر میں اس سائٹ کو مائیک کی اجازت دیں۔', errNet: 'آواز پہچاننے کی سروس نہیں چل سکی۔ انٹرنیٹ دیکھیں۔', errNone: 'کچھ سنائی نہیں دیا۔ مائیک کے قریب ہو کر دوبارہ کوشش کریں۔',
+      resT: 'نتیجہ', acc: p => 'درستی ' + p + '٪', readOf: (a, b) => b + ' میں سے ' + a + ' الفاظ آپ نے پڑھے', allRead: 'پورا سبق مکمل ہوا',
+      stars: ['کوشش جاری رکھیں', 'اچھی کوشش', 'ماشاءاللہ، بہت اچھے', 'ماشاءاللہ، بہت خوب'],
+      legend: {ok: 'ٹھیک', wrong: 'بدلا ہوا لفظ', miss: 'چھوٹ گیا', rest: 'پڑھا نہیں'}, youSaid: 'آپ نے کہا', extra: 'زائد الفاظ', mistakes: n => 'غلطیاں: ' + n, noMistakes: 'کوئی غلطی نہیں پکڑی گئی',
+      listenFix: 'غلط آیات سنیں', again: 'دوبارہ سنائیں', toRecall: 'یاد سے پڑھو', addPlan: 'شیڈول میں شامل کریں', planSet: n => 'اگلی دہرائی ' + n + ' دن بعد', planAdded: 'شیڈول میں شامل ہو گیا', listenAyah: 'سنیں',
+      note: 'نوٹ: یہ مشین کی سمجھ ہے، کبھی آواز غلط بھی سمجھ لیتی ہے۔ آخری فیصلہ استاد کا ہے۔',
+      lv: ['آسان', 'درمیانہ', 'مشکل', 'بغیر مدد'], lvD: ['ہر تیسرا لفظ چھپا', 'آدھے الفاظ چھپے', 'صرف پہلا لفظ ظاہر', 'سب الفاظ چھپے'], lvT: 'درجہ',
+      reveal: 'سب دکھائیں', hide: 'دوبارہ چھپائیں', know: 'یاد تھا', miss: 'دوبارہ', ayahOf: (i, n) => 'آیت ' + i + ' از ' + n, tapHint: 'چھپے لفظ پر دبا کر دیکھ سکتے ہیں', recDone: 'مکمل', recScore: (a, b) => b + ' میں سے ' + a + ' آیات یاد تھیں', retry: 'دوبارہ کریں',
+      planT: 'روزانہ دہرائی', planDue: 'آج کے سبق', planAll: 'تمام سبق', planNone: 'ابھی کوئی سبق نہیں۔ نیچے سے شامل کریں۔', planAdd: 'نیا سبق شامل کریں', planAddB: 'شامل کریں', planDel: 'ہٹائیں', planDelQ: 'یہ سبق ہٹا دیا جائے؟',
+      due: 'آج', dueIn: n => n + ' دن بعد', late: n => n + ' دن دیر', step: n => 'مرحلہ ' + n, hear: 'سنیں', say: 'سنائیں', recall: 'یاد سے', done: 'آج ہو گیا', hard: 'مشکل رہا', planHelp: 'ہر سبق 1، 2، 4، 7، 14، 30، 60 دن کے وقفے سے دہرایا جاتا ہے۔ مشکل رہے تو کل دوبارہ آتا ہے۔', fail: 'قرآن کا متن لوڈ نہیں ہو سکا۔ انٹرنیٹ دیکھیں۔'},
+    en: {
+      title: 'Hifz', sub: 'Repeat, recite, revise',
+      hero: 'Memorise the Quran', heroSub: 'Listen, repeat, recite and recall. A little every day, but regularly.',
+      today: 'Today’s revision', todayNone: 'Nothing due today. Add a new lesson to the schedule.', todayN: n => n + ' lessons due', streak: n => n + '-day streak', streak0: 'Start today',
+      cards: {rep: ['Repeat', 'Listen to an ayah or a part again and again'], say: ['Recite to me', 'Recite into the microphone and see your mistakes at the end'], recall: ['Recall', 'Hide the words and say the ayah from memory'],
+        plan: ['Daily revision', 'A schedule for new lessons and old ones'], hadith: ['Memorise hadith', 'Short hadith with translation']},
+      surah: 'Surah', from: 'From ayah', to: 'To ayah', go: 'Start', pick: 'Choose the lesson', len5: '5 ayahs', lenAll: 'Whole surah',
+      tooLong: 'That part is too long. Choose about 600 words or fewer at a time.',
+      consentT: 'For parents', consent: ['In “Recite to me” the child’s voice is sent to your browser’s speech-recognition service (in Chrome this is Google’s) so that it can turn it into words. This needs the internet.',
+        'Turath Khair Al-Quroon does not record or store the voice and does not send it anywhere. Young children need a parent’s permission and supervision.',
+        'This is not a replacement for a teacher. It catches missed and changed words; it does not catch tajweed, makharij or vowel mistakes, and it can mishear.'],
+      consentOK: 'I agree, start', close: 'Close',
+      noSR: 'This browser has no speech recognition. Open the site in Chrome on Android or a computer. “Recall” and “Repeat” work without it.',
+      open: 'Book open', closed: 'Book closed', tapStart: 'Tap the microphone and recite', listening: 'Listening… keep reciting', finish: 'Finish — show my mistakes', heard: 'Heard',
+      errMic: 'The microphone was not allowed. Allow the microphone for this site in the browser.', errNet: 'The speech service did not work. Check the internet.', errNone: 'Nothing was heard. Come closer to the microphone and try again.',
+      resT: 'Result', acc: p => 'Accuracy ' + p + '%', readOf: (a, b) => 'You recited ' + a + ' of ' + b + ' words', allRead: 'The whole lesson was recited',
+      stars: ['Keep trying', 'Good effort', 'Mashaa Allah, very good', 'Mashaa Allah, excellent'],
+      legend: {ok: 'Correct', wrong: 'Changed word', miss: 'Missed', rest: 'Not recited'}, youSaid: 'You said', extra: 'Extra words', mistakes: n => 'Mistakes: ' + n, noMistakes: 'No mistakes caught',
+      listenFix: 'Listen to the wrong ayahs', again: 'Recite again', toRecall: 'Recall it', addPlan: 'Add to schedule', planSet: n => 'Next revision in ' + n + ' days', planAdded: 'Added to the schedule', listenAyah: 'Listen',
+      note: 'Note: this is a machine’s understanding and it can mishear. The teacher has the last word.',
+      lv: ['Easy', 'Medium', 'Hard', 'No help'], lvD: ['Every third word hidden', 'Half the words hidden', 'Only the first word shown', 'All words hidden'], lvT: 'Level',
+      reveal: 'Show all', hide: 'Hide again', know: 'I knew it', miss: 'Again', ayahOf: (i, n) => 'Ayah ' + i + ' of ' + n, tapHint: 'Tap a hidden word to peek', recDone: 'Done', recScore: (a, b) => 'You knew ' + a + ' of ' + b + ' ayahs', retry: 'Do it again',
+      planT: 'Daily revision', planDue: 'Today’s lessons', planAll: 'All lessons', planNone: 'No lessons yet. Add one below.', planAdd: 'Add a new lesson', planAddB: 'Add', planDel: 'Remove', planDelQ: 'Remove this lesson?',
+      due: 'Today', dueIn: n => 'in ' + n + ' days', late: n => n + ' days late', step: n => 'Step ' + n, hear: 'Listen', say: 'Recite', recall: 'Recall', done: 'Done today', hard: 'Was hard', planHelp: 'Each lesson comes back after 1, 2, 4, 7, 14, 30 and 60 days. If it was hard it returns tomorrow.', fail: 'The Quran text could not load. Check the internet.'},
+    ar: {
+      title: 'الحفظ', sub: 'التكرار والتسميع والمراجعة',
+      hero: 'احفظ القرآن الكريم', heroSub: 'استمع وكرّر وسمّع واستظهر. القليل كل يوم لكن بانتظام.',
+      today: 'مراجعة اليوم', todayNone: 'لا مراجعة اليوم. أضف درسًا جديدًا إلى الجدول.', todayN: n => 'دروس اليوم: ' + UD(n), streak: n => UD(n) + ' أيام متتالية', streak0: 'ابدأ اليوم',
+      cards: {rep: ['التكرار', 'استمع إلى آية أو مقطع مرارًا'], say: ['سمّع لي', 'اقرأ أمام المايكروفون وانظر أخطاءك في النهاية'], recall: ['استظهار', 'أخفِ الكلمات واقرأ الآية من الحفظ'],
+        plan: ['المراجعة اليومية', 'جدول للدروس الجديدة والقديمة'], hadith: ['حفظ الحديث', 'أحاديث قصيرة مع الترجمة']},
+      surah: 'السورة', from: 'من آية', to: 'إلى آية', go: 'ابدأ', pick: 'اختر الدرس', len5: '٥ آيات', lenAll: 'السورة كاملة',
+      tooLong: 'هذا المقطع طويل. اختر نحو ٦٠٠ كلمة أو أقل في المرة.',
+      consentT: 'للوالدين', consent: ['في «سمّع لي» يُرسَل صوت الطفل إلى خدمة التعرف على الكلام في متصفحك (في كروم هي خدمة جوجل) لتحويله إلى كلمات، ويلزم الإنترنت.',
+        'لا يسجّل «تراث خير القرون» الصوت ولا يحفظه ولا يرسله إلى أي جهة. الأطفال الصغار يحتاجون إذن الوالدين وإشرافهم.',
+        'هذا ليس بديلًا عن المعلّم؛ فهو يلتقط الكلمات المتروكة والمبدَّلة، ولا يلتقط أخطاء التجويد والمخارج والحركات، وقد يسيء السماع.'],
+      consentOK: 'موافق، ابدأ', close: 'إغلاق',
+      noSR: 'هذا المتصفح لا يدعم التعرف على الكلام. افتح الموقع في كروم على أندرويد أو الحاسوب. «استظهار» و«التكرار» يعملان بدونه.',
+      open: 'المصحف مفتوح', closed: 'المصحف مغلق', tapStart: 'اضغط المايكروفون وابدأ القراءة', listening: 'أستمع… واصل القراءة', finish: 'إنهاء — أرني الأخطاء', heard: 'المسموع',
+      errMic: 'لم يُسمح بالمايكروفون. اسمح به لهذا الموقع من المتصفح.', errNet: 'لم تعمل خدمة التعرف على الكلام. تحقق من الإنترنت.', errNone: 'لم يُسمع شيء. اقترب من المايكروفون وأعد المحاولة.',
+      resT: 'النتيجة', acc: p => 'الدقة ' + UD(p) + '٪', readOf: (a, b) => 'قرأتَ ' + UD(a) + ' من ' + UD(b) + ' كلمة', allRead: 'اكتمل الدرس كله',
+      stars: ['واصل المحاولة', 'محاولة جيدة', 'ما شاء الله، جيد جدًا', 'ما شاء الله، ممتاز'],
+      legend: {ok: 'صحيح', wrong: 'كلمة مبدَّلة', miss: 'متروكة', rest: 'لم تُقرأ'}, youSaid: 'قلتَ', extra: 'كلمات زائدة', mistakes: n => 'الأخطاء: ' + UD(n), noMistakes: 'لم تُلتقط أخطاء',
+      listenFix: 'استمع إلى الآيات الخاطئة', again: 'أعد التسميع', toRecall: 'استظهار', addPlan: 'أضف إلى الجدول', planSet: n => 'المراجعة القادمة بعد ' + UD(n) + ' أيام', planAdded: 'أُضيف إلى الجدول', listenAyah: 'استمع',
+      note: 'ملاحظة: هذا فهم آلي وقد يخطئ في السماع. والكلمة الأخيرة للمعلّم.',
+      lv: ['سهل', 'متوسط', 'صعب', 'بلا مساعدة'], lvD: ['كل كلمة ثالثة مخفية', 'نصف الكلمات مخفي', 'أول كلمة فقط ظاهرة', 'كل الكلمات مخفية'], lvT: 'المستوى',
+      reveal: 'أظهر الكل', hide: 'أخفِ من جديد', know: 'كنت أحفظها', miss: 'من جديد', ayahOf: (i, n) => 'الآية ' + UD(i) + ' من ' + UD(n), tapHint: 'اضغط على الكلمة المخفية لتراها', recDone: 'تم', recScore: (a, b) => 'حفظتَ ' + UD(a) + ' من ' + UD(b) + ' آيات', retry: 'أعد',
+      planT: 'المراجعة اليومية', planDue: 'دروس اليوم', planAll: 'كل الدروس', planNone: 'لا دروس بعد. أضف درسًا أدناه.', planAdd: 'إضافة درس جديد', planAddB: 'إضافة', planDel: 'حذف', planDelQ: 'حذف هذا الدرس؟',
+      due: 'اليوم', dueIn: n => 'بعد ' + UD(n) + ' أيام', late: n => 'متأخر ' + UD(n) + ' أيام', step: n => 'المرحلة ' + UD(n), hear: 'استمع', say: 'سمّع', recall: 'استظهار', done: 'تم اليوم', hard: 'كان صعبًا', planHelp: 'يعود كل درس بعد ١ و٢ و٤ و٧ و١٤ و٣٠ و٦٠ يومًا. وإن كان صعبًا عاد غدًا.', fail: 'تعذّر تحميل نص القرآن. تحقق من الإنترنت.'}
+  };
+  const L = () => S[ui] || S.en;
+  const $q = () => document.querySelector('#qv');
+  const Qn = () => window.QURAN;
+  /* ---------- storage ---------- */
+  const get = (k, d) => { try { const v = localStorage.getItem('hifz:' + k); return v ? JSON.parse(v) : d; } catch (e) { return d; } };
+  const put = (k, v) => { try { localStorage.setItem('hifz:' + k, JSON.stringify(v)); } catch (e) {} };
+  const pad = n => String(n).padStart(2, '0');
+  const dstr = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const today = () => dstr(new Date());
+  const daysBetween = (a, b) => Math.round((new Date(b + 'T12:00:00') - new Date(a + 'T12:00:00')) / 864e5);
+  const addDays = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return dstr(d); };
+  const LADDER = [1, 2, 4, 7, 14, 30, 60];
+  const plan = () => get('plan', []);
+  const savePlan = p => put('plan', p);
+  const logToday = () => { const l = get('log', []); const t = today(); if (!l.includes(t)) { l.push(t); put('log', l.slice(-400)); } };
+  const streak = () => { const l = new Set(get('log', [])); let d = today(), n = 0; if (!l.has(d)) d = addDays(d, -1); while (l.has(d)) { n++; d = addDays(d, -1); } return n; };
+  const find = (s, f, t) => plan().find(x => x.s === s && x.f === f && x.t === t);
+  // a lesson was practised: score 0..1; good (>= .7) moves it up the ladder, a poor result brings it back tomorrow
+  function reviewed(s, f, t, score) {
+    logToday();
+    const p = plan(), x = p.find(y => y.s === s && y.f === f && y.t === t); if (!x) return null;
+    x.step = score >= 0.7 ? Math.min(LADDER.length, (x.step || 0) + 1) : 0; x.last = today(); x.score = Math.round(score * 100);
+    const gap = LADDER[Math.max(0, x.step - 1)] || 1; x.due = addDays(today(), score >= 0.7 ? gap : 1); savePlan(p); return score >= 0.7 ? gap : 1;
+  }
+  /* ---------- text helpers ---------- */
+  const NORM = w => w.replace(/[ؐ-ًؚ-ٰٟۖ-ۭ࣓-ࣿـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/[^ء-ي]/g, '');
+  function lev(a, b) { const m = a.length, n = b.length; if (!m) return n; if (!n) return m; let p = Array.from({length: n + 1}, (_, j) => j); for (let i = 1; i <= m; i++) { const c = [i]; for (let j = 1; j <= n; j++) c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); p = c; } return p[n]; }
+  const sim = (a, b) => (!a && !b) ? 1 : 1 - lev(a, b) / Math.max(a.length, b.length);
+  const TH = 0.72;
+  // expected: [{w, n (normalised), ay}], heard: [normalised words] -> status per expected word + the extra heard words
+  function align(exp, heard) {
+    const n = exp.length, m = heard.length, W = m + 1, cost = new Float32Array((n + 1) * W), mv = new Uint8Array((n + 1) * W);
+    for (let i = 1; i <= n; i++) { cost[i * W] = i; mv[i * W] = 2; }
+    for (let j = 1; j <= m; j++) { cost[j] = j; mv[j] = 3; }
+    for (let i = 1; i <= n; i++) for (let j = 1; j <= m; j++) {
+      const s = sim(exp[i - 1].n, heard[j - 1]), c = s >= TH ? (1 - s) * 0.4 : 1;
+      let best = cost[(i - 1) * W + j - 1] + c, k = s >= TH ? 0 : 1;
+      const d = cost[(i - 1) * W + j] + 1; if (d < best) { best = d; k = 2; }
+      const ins = cost[i * W + j - 1] + 1; if (ins < best) { best = ins; k = 3; }
+      cost[i * W + j] = best; mv[i * W + j] = k;
+    }
+    const st = new Array(n).fill('miss'), said = new Array(n).fill(''), extra = [];
+    let i = n, j = m;
+    while (i > 0 || j > 0) {
+      const k = mv[i * W + j];
+      if (i > 0 && j > 0 && k <= 1) { st[i - 1] = k === 0 ? 'ok' : 'wrong'; if (k === 1) said[i - 1] = heard[j - 1]; i--; j--; }
+      else if (i > 0 && (j === 0 || k === 2)) { i--; }
+      else { extra.push(heard[j - 1]); j--; }
+    }
+    let last = -1; st.forEach((x, q) => { if (x === 'ok' || x === 'wrong') last = q; });
+    for (let q = last + 1; q < n; q++) st[q] = 'rest';
+    return {st, said, extra: extra.reverse(), last};
+  }
+  /* ---------- small ui helpers ---------- */
+  const page = (...kids) => { $q().replaceChildren(E('div', {class: 'hz', lang: ui, dir: RTL() ? 'rtl' : 'ltr'}, ...kids)); window.scrollTo(0, 0); };
+  const note = t => E('p', {class: 'cs'}, t);
+  const toastMsg = t => { const e = document.getElementById('toast'); if (!e) return; e.textContent = t; e.classList.add('on'); clearTimeout(toastMsg.t); toastMsg.t = setTimeout(() => e.classList.remove('on'), 2600); };
+  const params = h => new URLSearchParams((h.split('?')[1] || ''));
+  const href = (kind, s, f, t, extra) => '#/hifz/' + kind + '?s=' + s + '&f=' + f + '&t=' + t + (extra || '');
+  let AUD = null;
+  const stopAudio = () => { if (AUD) { try { AUD.pause(); } catch (e) {} AUD = null; } };
+  function playList(list, btn) { // list of [s, a]
+    stopAudio(); let i = 0;
+    const next = () => { if (i >= list.length) { stopAudio(); return; } const [s, a] = list[i++]; AUD = new Audio(Qn().ayahUrl(s, a)); AUD.onended = next; AUD.onerror = () => toastMsg('…'); AUD.play().catch(() => toastMsg('…')); };
+    next();
+  }
+  async function ready() { await Qn().ready(); }
+  const wordsOf = (s, f, t) => { const out = []; for (let a = f; a <= t; a++) Qn().ayahText(s, a).split(/\s+/).filter(Boolean).forEach(w => out.push({w, n: NORM(w), ay: a})); return out; };
+  const aya = a => E('span', {class: 'hzend'}, UD(a));
+  /* ---------- range form ---------- */
+  function rangeForm(init, label, onGo, extra) {
+    const sel = E('select', {'aria-label': L().surah});
+    Qn().surahs().forEach((m, i) => sel.append(E('option', {value: i + 1}, UD(i + 1) + '. ' + Qn().sName(i + 1))));
+    const num = v => E('input', {type: 'number', min: '1', value: String(v), inputmode: 'numeric', class: 'hnum'});
+    const f = num(init.f), t = num(init.t);
+    sel.value = init.s;
+    const n = () => Qn().surahs()[sel.value - 1][4];
+    const sync = () => { f.max = t.max = n(); if (+f.value > n()) f.value = 1; if (+t.value > n() || +t.value < +f.value) t.value = Math.min(n(), +f.value + 4); };
+    sel.addEventListener('change', () => { f.value = 1; t.value = Math.min(n(), 5); sync(); });
+    const row = (l, x) => E('label', {class: 'srow'}, E('span', {}, l), x);
+    const chips = E('div', {class: 'seg', role: 'group'},
+      E('button', {type: 'button', class: 'segb', on: {click: () => { t.value = Math.min(n(), +f.value + 4); }}}, L().len5),
+      E('button', {type: 'button', class: 'segb', on: {click: () => { f.value = 1; t.value = n(); }}}, L().lenAll));
+    sync();
+    return E('div', {class: 'card hzform'}, E('h3', {}, label), row(L().surah, sel), row(L().from, f), row(L().to, t), chips, extra || null,
+      E('button', {type: 'button', class: 'hzgo', on: {click: () => { sync(); const s = +sel.value, a = Math.max(1, Math.min(n(), Math.round(+f.value) || 1)), b = Math.max(a, Math.min(n(), Math.round(+t.value) || a)); put('last', {s, f: a, t: b}); onGo(s, a, b); }}}, L().go));
+  }
+  const lastRange = () => Object.assign({s: 1, f: 1, t: 5}, get('last', {}));
+  /* ---------- hub ---------- */
+  function showHub() {
+    bar(L().title, L().sub, true);
+    const p = plan(), t = today(), due = p.filter(x => x.due <= t), sk = streak();
+    const hero = E('div', {class: 'hzhero'}, E('div', {class: 'hzh1'}, L().hero), E('p', {}, L().heroSub),
+      E('div', {class: 'hzpills'}, E('span', {class: 'hzpill'}, '✦ ' + (sk ? L().streak(UD(sk)) : L().streak0)), E('span', {class: 'hzpill'}, due.length ? L().todayN(UD(due.length)) : L().today + ' ✓')));
+    const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), E('small', {}, c[1]))); };
+    const la = lastRange();
+    page(hero,
+      due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
+      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/q/s/' + la.s + '/' + la.f + '/hifz'), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
+  }
+  const rangeName = x => Qn().sName(x.s) + ' ' + UD(x.f) + (x.t !== x.f ? '–' + UD(x.t) : '');
+  function lessonRow(x, compact) {
+    const d = daysBetween(today(), x.due), when = d <= 0 ? (d < 0 ? L().late(UD(-d)) : L().due) : L().dueIn(UD(d));
+    return E('div', {class: 'hzles' + (d <= 0 ? ' due' : '')}, E('div', {class: 'hzlt'}, E('b', {}, rangeName(x)), E('small', {}, when + (x.score != null ? ' · ' + x.score + '%' : '') + ' · ' + L().step(UD(x.step || 0)))),
+      E('div', {class: 'hzact'}, E('a', {class: 'btn', href: '#/q/s/' + x.s + '/' + x.f}, L().hear), E('a', {class: 'btn', href: href('say', x.s, x.f, x.t)}, L().say), E('a', {class: 'btn', href: href('recall', x.s, x.f, x.t)}, L().recall),
+        compact ? null : E('button', {type: 'button', class: 'btn', on: {click: () => { if (confirm(L().planDelQ)) { savePlan(plan().filter(y => y.id !== x.id)); showPlan(); } }}}, L().planDel)));
+  }
+  /* ---------- plan ---------- */
+  function showPlan() {
+    bar(L().planT, L().title, true);
+    const p = plan().slice().sort((a, b) => a.due < b.due ? -1 : 1), t = today(), due = p.filter(x => x.due <= t);
+    const la = lastRange();
+    page(note(L().planHelp),
+      E('div', {class: 'card'}, E('h3', {}, L().planDue), ...(due.length ? due.map(x => lessonRow(x, false)) : [note(L().todayNone)])),
+      p.length > due.length ? E('div', {class: 'card'}, E('h3', {}, L().planAll), ...p.filter(x => x.due > t).map(x => lessonRow(x, false))) : (p.length ? null : note(L().planNone)),
+      rangeForm(la, L().planAdd, (s, f, tt) => { const l = plan(); if (!l.some(x => x.s === s && x.f === f && x.t === tt)) l.push({id: Date.now().toString(36), s, f, t: tt, step: 0, due: today(), added: today()}); savePlan(l); toastMsg(L().planAdded); showPlan(); }));
+    document.querySelector('.hzgo').textContent = L().planAddB;
+  }
+  /* ---------- recall (hide the words) ---------- */
+  function hiddenSet(words, lv, key) {
+    const hid = new Set(); words.forEach((x, i) => {
+      const first = i === 0 || x.ay !== words[i - 1].ay;
+      if (lv === 0) { if (i % 3 === 2) hid.add(i); } else if (lv === 1) { if (i % 2 === 1) hid.add(i); } else if (lv === 2) { if (!first) hid.add(i); } else hid.add(i);
+    });
+    return hid;
+  }
+  async function showRecall(h) {
+    bar(L().cards.recall[0], L().title, true);
+    const q = params(h);
+    if (!q.get('s')) { const la = lastRange(); return page(rangeForm(la, L().pick, (s, f, t) => { location.hash = href('recall', s, f, t, '&lv=0'); }, null)); }
+    page(note('…'));
+    try { await ready(); } catch (e) { return page(note(L().fail)); }
+    const s = +q.get('s'), f = +q.get('f'), t = +q.get('t'), lv = Math.max(0, Math.min(3, +q.get('lv') || 0));
+    const n = t - f + 1; let cur = f, known = 0;
+    const lvBar = E('div', {class: 'seg', role: 'group', 'aria-label': L().lvT}, ...L().lv.map((x, i) => E('a', {class: 'segb', href: href('recall', s, f, t, '&lv=' + i), 'aria-pressed': String(i === lv), title: L().lvD[i]}, x)));
+    const body = E('div', {class: 'hzrc'});
+    const draw = () => {
+      const words = wordsOf(s, cur, cur), hid = hiddenSet(words, lv), shown = new Set();
+      const line = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'});
+      const paint = () => { line.replaceChildren(...words.map((x, i) => (hid.has(i) && !shown.has(i)) ? E('button', {type: 'button', class: 'hzb', style: 'min-width:' + Math.max(1.6, x.n.length * 0.62) + 'em', 'aria-label': '…', on: {click: () => { shown.add(i); paint(); }}}, '•••') : E('span', {class: 'hzw'}, x.w + ' ')), aya(cur)); };
+      paint();
+      const next = ok => { if (ok) known++; if (cur < t) { cur++; draw(); } else finish(); };
+      body.replaceChildren(E('div', {class: 'cs hzcnt'}, Qn().sName(s) + ' — ' + L().ayahOf(UD(cur - f + 1), UD(n))), line, note(L().tapHint),
+        E('div', {class: 'hzrow'}, E('button', {type: 'button', class: 'btn', on: {click: () => { words.forEach((_, i) => shown.add(i)); paint(); }}}, L().reveal), E('button', {type: 'button', class: 'btn', on: {click: () => { shown.clear(); paint(); }}}, L().hide),
+          E('button', {type: 'button', class: 'btn', on: {click: () => playList([[s, cur]])}}, L().listenAyah)),
+        E('div', {class: 'hzrow'}, E('button', {type: 'button', class: 'hzno', on: {click: () => next(false)}}, '✗ ' + L().miss), E('button', {type: 'button', class: 'hzyes', on: {click: () => next(true)}}, '✓ ' + L().know)));
+    };
+    const finish = () => {
+      stopAudio(); const sc = known / n, gap = reviewed(s, f, t, sc), st = sc >= .9 ? 3 : sc >= .7 ? 2 : sc >= .5 ? 1 : 0;
+      body.replaceChildren(E('div', {class: 'hzscore'}, E('div', {class: 'hzbig'}, Math.round(sc * 100) + '%'), E('div', {class: 'hzstars'}, '★'.repeat(st) + '☆'.repeat(3 - st)), E('p', {}, L().stars[st]), E('p', {class: 'cs'}, L().recScore(UD(known), UD(n)))),
+        gap ? note(L().planSet(UD(gap))) : (find(s, f, t) ? null : addPlanBtn(s, f, t)),
+        E('div', {class: 'hzrow'}, E('a', {class: 'hzgo', href: href('recall', s, f, t, '&lv=' + lv + '&r=' + Date.now())}, L().retry), E('a', {class: 'btn', href: href('say', s, f, t)}, L().cards.say[0])));
+    };
+    page(E('div', {class: 'card'}, E('h3', {}, rangeName({s, f, t})), E('p', {class: 'cs'}, L().lvT + ': ' + L().lvD[lv]), lvBar), E('div', {class: 'card'}, body));
+    draw();
+  }
+  const addPlanBtn = (s, f, t) => { const b = E('button', {type: 'button', class: 'btn', on: {click: () => { const l = plan(); l.push({id: Date.now().toString(36), s, f, t, step: 0, due: addDays(today(), 1), added: today()}); savePlan(l); b.replaceWith(note(L().planAdded)); }}}, L().addPlan); return b; };
+  /* ---------- say (recite into the microphone) ---------- */
+  const SRc = () => window.SpeechRecognition || window.webkitSpeechRecognition;
+  function consent(go) {
+    if (get('consent', 0)) return go();
+    const bg = E('div', {class: 'sheetbg'}), box = E('div', {class: 'sheet hzsheet', role: 'dialog', dir: RTL() ? 'rtl' : 'ltr', lang: ui});
+    box.append(E('h3', {}, L().consentT), ...L().consent.map(x => E('p', {}, x)),
+      E('div', {class: 'sheetbtns'}, E('button', {type: 'button', class: 'btn', on: {click: () => bg.remove()}}, L().close), E('button', {type: 'button', class: 'btn hzok', on: {click: () => { put('consent', 1); bg.remove(); go(); }}}, L().consentOK)));
+    bg.append(box); document.body.append(bg);
+  }
+  async function showSay(h) {
+    bar(L().cards.say[0], L().title, true);
+    const q = params(h);
+    if (!q.get('s')) { const la = lastRange(); return page(rangeForm(la, L().pick, (s, f, t) => { location.hash = href('say', s, f, t); }), SRc() ? null : note(L().noSR)); }
+    page(note('…'));
+    try { await ready(); } catch (e) { return page(note(L().fail)); }
+    const s = +q.get('s'), f = +q.get('f'), t = +q.get('t'), words = wordsOf(s, f, t);
+    if (words.length > 600) return page(note(L().tooLong), E('a', {class: 'btn', href: '#/hifz/say'}, L().pick));
+    if (!SRc()) return page(E('div', {class: 'card'}, note(L().noSR)));
+    let openBook = get('open', true);
+    const stage = E('div', {class: 'card hzstage'});
+    const showSession = () => {
+      let rec = null, finals = [], interim = '', on = false, stopping = false, started = 0, timer = null;
+      const mic = E('button', {type: 'button', class: 'hzmic', 'aria-label': L().tapStart}, icon('mic'));
+      const status = E('p', {class: 'cs hzstat'}, L().tapStart), live = E('p', {class: 'cs hzlive', dir: 'rtl', lang: 'ar'});
+      const fin = E('button', {type: 'button', class: 'hzgo', hidden: true}, L().finish);
+      const text = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'});
+      const drawText = () => { text.replaceChildren(...words.map((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; const b = []; if (first && i) b.push(aya(words[i - 1].ay)); b.push(openBook ? E('span', {class: 'hzw'}, x.w + ' ') : E('span', {class: 'hzb mute'}, '•••')); return b; }).flat(), aya(t)); };
+      const tog = E('div', {class: 'seg', role: 'group'}, ...[[true, L().open], [false, L().closed]].map(([v, l]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(openBook === v), on: {click: () => { openBook = v; put('open', v); [...tog.children].forEach((c, i) => c.setAttribute('aria-pressed', String((i === 0) === v))); drawText(); }}}, l)));
+      const tick = () => { const sec = Math.floor((Date.now() - started) / 1000); status.textContent = L().listening + ' · ' + UD(pad(Math.floor(sec / 60)) + ':' + pad(sec % 60)); };
+      const build = () => {
+        const R = new (SRc())(); R.lang = 'ar-SA'; R.continuous = true; R.interimResults = true; R.maxAlternatives = 1;
+        R.onresult = e => { interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finals.push(r[0].transcript); else interim += r[0].transcript; } const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false; };
+        R.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopping = true; on = false; cleanup(); status.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? L().errMic : L().errNet; };
+        R.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (on && !stopping) { try { R.start(); } catch (e) {} } };
+        return R;
+      };
+      const cleanup = () => { on = false; clearInterval(timer); mic.classList.remove('on'); fin.hidden = !finals.length; };
+      mic.addEventListener('click', () => {
+        if (on) { stopping = true; try { rec.stop(); } catch (e) {} cleanup(); status.textContent = L().tapStart; return; }
+        rec = build(); stopping = false; on = true; started = Date.now(); mic.classList.add('on'); fin.hidden = true; try { rec.start(); } catch (e) {} timer = setInterval(tick, 500); tick();
+      });
+      fin.addEventListener('click', () => { stopping = true; on = false; try { rec && rec.stop(); } catch (e) {} clearInterval(timer); if (interim.trim()) finals.push(interim); results(finals.join(' ')); });
+      stage.replaceChildren(E('h3', {}, rangeName({s, f, t})), tog, text, E('div', {class: 'hzmicw'}, mic), status, live, fin);
+      drawText();
+      window.__hzStop = () => { stopping = true; on = false; try { rec && rec.stop(); } catch (e) {} clearInterval(timer); };
+    };
+    const results = transcript => {
+      const heard = transcript.split(/\s+/).map(NORM).filter(Boolean);
+      if (!heard.length) { stage.replaceChildren(note(L().errNone), E('a', {class: 'hzgo', href: href('say', s, f, t, '&r=' + Date.now())}, L().again)); return; }
+      const A = align(words, heard), up = A.last + 1, ok = A.st.filter(x => x === 'ok').length, wrong = A.st.filter(x => x === 'wrong').length, miss = A.st.filter(x => x === 'miss').length;
+      const acc = up ? ok / up : 0, pct = Math.round(acc * 100), st = acc >= .9 ? 3 : acc >= .75 ? 2 : acc >= .5 ? 1 : 0;
+      const gap = reviewed(s, f, t, acc);
+      const bad = new Set(); words.forEach((x, i) => { if (A.st[i] === 'wrong' || A.st[i] === 'miss') bad.add(x.ay); });
+      const view = E('div', {class: 'hzayah hzres', lang: 'ar', dir: 'rtl'});
+      words.forEach((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; if (first && i) view.append(aya(words[i - 1].ay));
+        const w = E('span', {class: 'hzw ' + A.st[i]}, x.w + ' '); if (A.st[i] === 'wrong' && A.said[i]) w.append(E('small', {class: 'hzsaid'}, A.said[i])); view.append(w); });
+      view.append(aya(t));
+      const mlist = [...bad];
+      stage.replaceChildren(
+        E('div', {class: 'hzscore'}, E('div', {class: 'hzbig'}, pct + '%'), E('div', {class: 'hzstars'}, '★'.repeat(st) + '☆'.repeat(3 - st)), E('p', {}, L().stars[st]),
+          E('p', {class: 'cs'}, up >= words.length ? L().allRead : L().readOf(UD(up), UD(words.length)))),
+        E('div', {class: 'hzleg'}, ...['ok', 'wrong', 'miss', 'rest'].map(k => E('span', {}, E('i', {class: 'hzw ' + k}, 'ـــ'), ' ' + L().legend[k]))),
+        view,
+        A.extra.length ? E('p', {class: 'cs'}, L().extra + ': ', E('span', {lang: 'ar', dir: 'rtl'}, A.extra.slice(0, 12).join('، '))) : null,
+        E('p', {}, wrong + miss ? L().mistakes(UD(wrong + miss)) : L().noMistakes),
+        gap ? note(L().planSet(UD(gap))) : (find(s, f, t) ? null : addPlanBtn(s, f, t)),
+        E('div', {class: 'hzrow'}, mlist.length ? E('button', {type: 'button', class: 'btn', on: {click: () => playList(mlist.map(a => [s, a]))}}, L().listenFix) : null,
+          E('a', {class: 'hzgo', href: href('say', s, f, t, '&r=' + Date.now())}, L().again), E('a', {class: 'btn', href: href('recall', s, f, t)}, L().toRecall)),
+        note(L().note));
+    };
+    page(stage);
+    consent(showSession);
+    if (!get('consent', 0)) stage.replaceChildren(note('…'));
+  }
+  /* ---------- routes ---------- */
+  function route(h) {
+    document.querySelectorAll('.sheetbg').forEach(x => x.remove());
+    stopAudio(); if (window.__hzStop) { try { window.__hzStop(); } catch (e) {} window.__hzStop = null; }
+    const m = h.match(/^#\/hifz(?:\/([a-z]+))?/) || [], k = m[1];
+    const go = async fn => { try { await Qn().ready(); } catch (e) {} fn(h); };
+    if (k === 'say') return go(showSay);
+    if (k === 'recall') return go(showRecall);
+    if (k === 'plan') return go(showPlan);
+    return go(showHub);
+  }
+  const css = E('style', {}, `
+.hz{display:flex;flex-direction:column;gap:.2rem;padding-bottom:1.2rem}
+.hzhero{background:linear-gradient(135deg,var(--bar),#0f5b52);color:#fff;border-radius:20px;padding:1.2rem 1.3rem;margin:.6rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hzhero:after{content:"";position:absolute;inset-inline-end:-2.2rem;top:-2.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
+.hzh1{font-size:1.35rem;font-weight:700;line-height:1.7}.hzhero p{margin:.2rem 0 .7rem;opacity:.95}
+.hzpills{display:flex;flex-wrap:wrap;gap:.4rem}.hzpill{background:rgba(255,255,255,.18);border-radius:999px;padding:.05rem .8rem;font-size:.9rem}
+.hzgrid{display:grid;grid-template-columns:1fr;gap:.1rem}
+.hzcard{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.1rem;border:0;width:100%;text-align:start;cursor:pointer;font:inherit;color:var(--ink);border-inline-start:5px solid var(--accent)}
+.hzcard:hover{background:var(--wash)}.hzcard .tico{flex:none;width:2.8rem;height:2.8rem;border-radius:14px;background:var(--wash);display:flex;align-items:center;justify-content:center;color:var(--accent)}.hzcard .tico svg{width:1.6rem;height:1.6rem;fill:currentColor}
+.hzct{display:flex;flex-direction:column;line-height:1.7}.hzct small{color:var(--muted);font-size:.85rem}
+.hzdue h3,.hz h3{margin:.1rem 0 .4rem;color:var(--accent)}
+.hzles{border-top:1px solid var(--line);padding:.55rem 0}.hzles:first-of-type{border-top:0}.hzles.due .hzlt b:before{content:"● ";color:#e0582d}
+.hzlt{display:flex;flex-direction:column;line-height:1.6}.hzlt small{color:var(--muted)}.hzact{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem}
+.hzform .srow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:.35rem 0}.hzform select,.hzform .hnum{border:1px solid var(--line);border-radius:12px;padding:.25rem .6rem;background:var(--card);min-width:7rem}
+.hzform .seg{margin:.5rem 0}
+.hzgo{display:inline-block;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:.35rem 1.6rem;font:inherit;cursor:pointer;margin:.4rem .2rem;text-decoration:none}
+.hzrow{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.5rem 0}
+.hzayah{font-family:var(--quran);font-size:var(--qar,1.7rem);line-height:2.5;text-align:center;padding:.4rem .2rem}
+.hzres{text-align:justify;text-align-last:center}
+.hzend{display:inline-flex;align-items:center;justify-content:center;width:1.7em;height:1.7em;border:1.5px solid var(--accent);border-radius:50%;font:600 .55em/1 var(--sans);color:var(--accent);margin:0 .25em;vertical-align:middle}
+.hzw{position:relative}.hzw.ok{color:#1d7f4e}
+.hzw.wrong{color:#c0392b;text-decoration:underline wavy #c0392b;text-underline-offset:.35em;padding-bottom:.9em}
+.hzw.miss{color:#c0392b;background:rgba(224,88,45,.14);border-radius:8px;outline:1.5px dashed #e0582d;outline-offset:2px}
+.hzw.rest{opacity:.38}
+i.hzw{font-style:normal;letter-spacing:.1em}
+.hzsaid{position:absolute;inset-inline:0;bottom:-.1em;text-align:center;font:.38em/1 var(--arabic);color:#c0392b;white-space:nowrap}
+.hzleg{display:flex;flex-wrap:wrap;gap:.2rem .9rem;justify-content:center;font-size:.85rem;color:var(--muted)}
+.hzb{display:inline-block;border:0;border-radius:10px;background:var(--wash);color:var(--accent);cursor:pointer;font:inherit;padding:0 .5em;margin:0 .15em;line-height:1.6}.hzb.mute{cursor:default;letter-spacing:.15em}
+.hzmicw{display:flex;justify-content:center;margin:.8rem 0 .2rem}
+.hzmic{width:92px;height:92px;border-radius:50%;border:0;background:var(--accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(20,60,100,.3);position:relative}
+.hzmic svg{width:44px;height:44px;fill:currentColor}
+.hzmic.on{background:#c0392b;animation:hzp 1.4s ease-out infinite}
+@keyframes hzp{0%{box-shadow:0 0 0 0 rgba(192,57,43,.5)}100%{box-shadow:0 0 0 26px rgba(192,57,43,0)}}
+.hzstat,.hzlive{text-align:center;margin:.2rem 0}.hzlive{min-height:1.6em;opacity:.7;font-size:1rem}
+.hzscore{text-align:center}.hzbig{font:700 2.8rem/1.2 var(--sans);color:var(--accent)}.hzstars{font-size:1.7rem;color:#e0a82d;letter-spacing:.2em}
+.hzyes,.hzno{border:0;border-radius:999px;padding:.3rem 1.4rem;font:inherit;cursor:pointer;color:#fff}.hzyes{background:#1d7f4e}.hzno{background:#c0392b}
+.hzcnt{text-align:center}.hzsheet p{line-height:1.9}.hzok{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media (min-width:640px){.hzgrid{grid-template-columns:1fr 1fr;gap:0 .8rem}}
+`);
+  document.head.append(css);
+  window.HIFZ = {route, title: () => L().title};
 })();
 
 </script>
