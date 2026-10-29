@@ -3922,7 +3922,19 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- routes: #/  #/q  #/q/para  #/q/ruku  #/q/s/2/255[/play]  #/q/j/30  #/q/r/5  #/q/audio  #/q/search  #/q/bm ---------- */
   window.QURAN = {
-    ready: () => need(['ar_uthmani']),
+    ready: async () => { await need(['ar_uthmani']); try { await need(['tajweed']); } catch (e) {} },
+    // the words of one verse as lists of text / coloured tajweed spans (colours always on, Uthmani script with all its marks)
+    ayahWordParts: (s, a) => {
+      const k = vi(s, a), t = (Q.data.ar_uthmani || [])[k] || '', ann = Q.data.tajweed && Q.data.tajweed[k] ? tjAnn(k) : [];
+      const out = []; let o = 0;
+      t.split(' ').forEach(w => {
+        const from = o, to = o + w.length; o = to + 1; const parts = []; let p = from;
+        ann.forEach(([r, st, len]) => { const x = Math.max(st, p), y = Math.min(st + len, to); if (y <= x) return; if (x > p) parts.push(t.slice(p, x)); parts.push(el('span', {class: 'tj tj' + r}, t.slice(x, y))); p = y; });
+        if (p < to) parts.push(t.slice(p, to));
+        out.push({w, parts});
+      });
+      return out;
+    },
     reciters: () => RECITERS.filter(r => !r.surah).map(r => ({k: r.k, label: recLabel(r), f: r.f})),
     hzReciter: () => { const r = RECITERS.find(x => x.k === QS.hzRec && !x.surah) || RECITERS.find(x => x.k === QS.reciter && !x.surah) || RECITERS.find(x => !x.surah); return r.k; },
     setHzReciter: k => { QS.hzRec = k; qsave(); },
@@ -7823,7 +7835,7 @@ Object.assign(I.fr, {
   /* ---------- repeat: the Arabic only, a tap on a word plays that word ---------- */
   const p3 = n => String(n).padStart(3, '0');
   const sleep = ms => new Promise(r => setTimeout(r, ms));
-  function ayahWords(s, a) { const out = []; Qn().ayahText(s, a).split(/\s+/).filter(Boolean).forEach(w => { if (!NORM(w) && out.length) out[out.length - 1] += ' ' + w; else out.push(w); }); return out; }
+  function ayahWords(s, a) { const out = []; Qn().ayahWordParts(s, a).filter(x => x.w).forEach(x => { if (!NORM(x.w) && out.length) { out[out.length - 1].w += ' ' + x.w; out[out.length - 1].parts.push(' ', ...x.parts); } else out.push({w: x.w, parts: x.parts.slice()}); }); return out; }
   async function showRep(h) {
     bar(L().cards.rep[0], L().title, true);
     const q = params(h), la = lastRange();
@@ -7835,8 +7847,8 @@ Object.assign(I.fr, {
     let token = 0, playing = false;
     const status = E('p', {class: 'cs hzstat'}, L().wordHint);
     const playBtn = E('button', {type: 'button', class: 'hzgo wide hzplay'}, L().play);
-    const text = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'}), spans = {};
-    for (let a = f; a <= t; a++) { const box = E('span', {class: 'hzay', 'data-a': a}); ayahWords(s, a).forEach((w, i) => { box.append(E('span', {class: 'hzw tap', on: {click: ev => wordTap(a, i + 1, ev.currentTarget)}}, w), ' '); }); box.append(aya(a), ' '); text.append(box); spans[a] = box; }
+    const text = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'}), spans = {};
+    for (let a = f; a <= t; a++) { const box = E('span', {class: 'hzay', 'data-a': a}); ayahWords(s, a).forEach((w, i) => { box.append(E('span', {class: 'hzw tap', on: {click: ev => wordTap(a, i + 1, ev.currentTarget)}}, ...w.parts), ' '); }); box.append(aya(a), ' '); text.append(box); spans[a] = box; }
     const mark = a => { Object.values(spans).forEach(x => x.classList.remove('cur')); if (a && spans[a]) { spans[a].classList.add('cur'); spans[a].scrollIntoView({block: 'center', behavior: 'smooth'}); } };
     const setPlaying = v => { playing = v; playBtn.textContent = v ? L().stop : L().play; playBtn.classList.toggle('stop', v); if (!v) mark(0); };
     const playUrl = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
@@ -7917,7 +7929,7 @@ Object.assign(I.fr, {
     const body = E('div', {class: 'hzrc'});
     const draw = () => {
       const words = wordsOf(s, cur, cur), hid = hiddenSet(words, lv), shown = new Set();
-      const line = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'});
+      const line = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
       const paint = () => { line.replaceChildren(...words.map((x, i) => (hid.has(i) && !shown.has(i)) ? E('button', {type: 'button', class: 'hzb', style: 'min-width:' + Math.max(1.6, x.n.length * 0.62) + 'em', 'aria-label': '…', on: {click: () => { shown.add(i); paint(); }}}, '•••') : E('span', {class: 'hzw'}, x.w + ' ')), aya(cur)); };
       paint();
       const next = ok => { if (ok) known++; if (cur < t) { cur++; draw(); } else finish(); };
@@ -7962,7 +7974,7 @@ Object.assign(I.fr, {
       const mic = E('button', {type: 'button', class: 'hzmic', 'aria-label': L().tapStart}, icon('mic'));
       const status = E('p', {class: 'cs hzstat'}, L().tapStart), live = E('p', {class: 'cs hzlive', dir: 'rtl', lang: 'ar'});
       const fin = E('button', {type: 'button', class: 'hzgo', hidden: true}, L().finish);
-      const text = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'});
+      const text = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
       const drawText = () => { text.replaceChildren(...words.map((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; const b = []; if (first && i) b.push(aya(words[i - 1].ay)); b.push(openBook ? E('span', {class: 'hzw'}, x.w + ' ') : E('span', {class: 'hzb mute'}, '•••')); return b; }).flat(), aya(t)); };
       const tog = E('div', {class: 'seg', role: 'group'}, ...[[true, L().open], [false, L().closed]].map(([v, l]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(openBook === v), on: {click: () => { openBook = v; put('open', v); [...tog.children].forEach((c, i) => c.setAttribute('aria-pressed', String((i === 0) === v))); drawText(); }}}, l)));
       const tick = () => { const sec = Math.floor((Date.now() - started) / 1000); status.textContent = L().listening + ' · ' + UD(pad(Math.floor(sec / 60)) + ':' + pad(sec % 60)); };
@@ -7993,7 +8005,7 @@ Object.assign(I.fr, {
       const acc = up ? ok / up : 0, pct = Math.round(acc * 100), st = acc >= .9 ? 3 : acc >= .75 ? 2 : acc >= .5 ? 1 : 0;
       const gap = reviewed(s, f, t, acc);
       const bad = new Set(); words.forEach((x, i) => { if (A.st[i] === 'wrong' || A.st[i] === 'miss') bad.add(x.ay); });
-      const view = E('div', {class: 'hzayah hzres', lang: 'ar', dir: 'rtl'});
+      const view = E('div', {class: 'hzayah hzres', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
       words.forEach((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; if (first && i) view.append(aya(words[i - 1].ay));
         const w = E('span', {class: 'hzw ' + A.st[i]}, x.w + ' '); if (A.st[i] === 'wrong' && A.said[i]) w.append(E('small', {class: 'hzsaid'}, A.said[i])); view.append(w); });
       view.append(aya(t));
@@ -8049,6 +8061,23 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 .hzsaid{position:absolute;inset-inline:0;bottom:-.1em;text-align:center;font:.38em/1 var(--arabic);color:#c0392b;white-space:nowrap}
 .hzleg{display:flex;flex-wrap:wrap;gap:.2rem .9rem;justify-content:center;font-size:.85rem;color:var(--muted)}
 .hzb{display:inline-block;border:0;border-radius:10px;background:var(--wash);color:var(--accent);cursor:pointer;font:inherit;padding:0 .5em;margin:0 .15em;line-height:1.6}.hzb.mute{cursor:default;letter-spacing:.15em}
+.hzgo.stop,.hzplay.stop{background:#c0392b}.hzplay{margin:.2rem 0}
+.grp{margin:.5rem 0 .2rem;color:var(--accent);font-weight:600}
+.hzstage2{text-align:center}.hzay{border-radius:12px;transition:background .25s}.hzay.cur{background:rgba(224,168,45,.22);box-shadow:0 0 0 4px rgba(224,168,45,.22)}
+.hzw.tap{cursor:pointer;border-radius:8px;transition:background .2s}.hzw.tap:active,.hzw.say{background:rgba(23,120,110,.22)}
+.hzhero{background:linear-gradient(135deg,var(--bar),#0f5b52);color:#fff;border-radius:20px;padding:1.2rem 1.3rem;margin:.6rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.hzhero:after{content:"";position:absolute;inset-inline-end:-2.2rem;top:-2.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
+.hzh1{font-size:1.35rem;font-weight:700;line-height:1.7}.hzhero p{margin:.2rem 0 .7rem;opacity:.95}
+.hzpills{display:flex;flex-wrap:wrap;gap:.4rem}.hzpill{background:rgba(255,255,255,.18);border-radius:999px;padding:.05rem .8rem;font-size:.9rem}
+.hzgrid{display:grid;grid-template-columns:1fr;gap:.1rem}
+.hzcard{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.1rem;border:0;width:100%;text-align:start;cursor:pointer;font:inherit;color:var(--ink);margin:.35rem 0}
+.hzcard:hover{background:var(--wash)}.hzcard .tico{flex:none;width:2.8rem;height:2.8rem;border-radius:14px;background:var(--wash);display:flex;align-items:center;justify-content:center;color:var(--accent)}.hzcard .tico svg{width:1.6rem;height:1.6rem;fill:currentColor}
+.hzct{display:flex;flex-direction:column;line-height:2.1;min-width:0}.hzct b{font-size:1.15rem}.hzct small{line-height:1.9}.hzct small{color:var(--muted);font-size:.85rem}
+.hzdue h3,.hz h3{margin:.1rem 0 .4rem;color:var(--accent)}
+.hzles{border-top:1px solid var(--line);padding:.55rem 0}.hzles:first-of-type{border-top:0}.hzles.due .hzlt b:before{content:"● ";color:#e0582d}
+.hzlt{display:flex;flex-direction:column;line-height:1.6}.hzlt small{color:var(--muted)}.hzact{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem}
+.hzform .srow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:.35rem 0}.hzform .hnum{border:1px solid var(--line);border-radius:12px;padding:.25rem .6rem;background:var(--card);min-width:7rem}
+
 .hzcard .tico{width:3rem;height:3rem;border-radius:16px;background:color-mix(in srgb,var(--hc) 14%,var(--card));color:var(--hc)}.hzcard .tico svg{width:1.7rem;height:1.7rem;fill:currentColor}.hzcard{border-inline-start:6px solid var(--hc)}
 .hzmicw{display:flex;justify-content:center;margin:.8rem 0 .2rem}
 .hzmic{width:92px;height:92px;border-radius:50%;border:0;background:var(--accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(20,60,100,.3);position:relative}
