@@ -2636,6 +2636,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     mic: 'M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z',
     eye: 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z',
     event: 'M17 12h-5v5h5v-5zM16 1v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-1V1h-2zm3 18H5V8h14v11z',
+    speaker: 'M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z',
+    timer: 'M15 1H9v2h6V1zm-4 13h2V8h-2v6zm8.03-6.61 1.42-1.42c-.43-.51-.9-.99-1.41-1.41l-1.42 1.42A8.96 8.96 0 0 0 12 4c-4.97 0-9 4.03-9 9s4.02 9 9 9 9-4.03 9-9c0-2.12-.74-4.07-1.97-5.61zM12 20c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z',
     replay: 'M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z',
     minus: 'M19 13H5v-2h14v2z', tafsir: 'M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z', prevp: 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z', nextp: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z', plus: 'M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z'});
 
@@ -7699,13 +7701,13 @@ Object.assign(I.fr, {
       due: 'اليوم', dueIn: n => 'بعد ' + UD(n) + ' أيام', late: n => 'متأخر ' + UD(n) + ' أيام', step: n => 'المرحلة ' + UD(n), hear: 'استمع', say: 'سمّع', recall: 'استظهار', done: 'تم اليوم', hard: 'كان صعبًا', planHelp: 'يعود كل درس بعد ١ و٢ و٤ و٧ و١٤ و٣٠ و٦٠ يومًا. وإن كان صعبًا عاد غدًا.', fail: 'تعذّر تحميل نص القرآن. تحقق من الإنترنت.'}
   };
 
-  Object.assign(S.ur, {ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'ہر بار کے بعد وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
+  Object.assign(S.ur, {ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
     prog: (a, k, K, r, R) => 'آیت ' + a + ' — بار ' + k + '/' + K + (R > 1 ? ' — حصہ ' + r + '/' + R : ''), errAudio: 'آواز نہیں چل سکی۔ انٹرنیٹ دیکھیں۔', wordFail: 'اس لفظ کی آواز نہیں چل سکی۔', done2: 'مکمل ہو گیا',
     openChrome: 'کروم میں کھولیں', micApp: 'اگر آپ ایپ میں ہیں تو فون کی سیٹنگ میں جا کر ایپ کو مائیکروفون کی اجازت دیں، یا اسی سائٹ کو کروم میں کھولیں۔', startNew: 'شروع کریں', again2: 'دوبارہ'});
-  Object.assign(S.en, {ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause after each time (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
+  Object.assign(S.en, {ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
     prog: (a, k, K, r, R) => 'Ayah ' + a + ' — time ' + k + '/' + K + (R > 1 ? ' — round ' + r + '/' + R : ''), errAudio: 'The audio could not play. Check the internet.', wordFail: 'That word could not be played.', done2: 'Finished',
     openChrome: 'Open in Chrome', micApp: 'If you are in the app, open the phone settings and allow the microphone for the app, or open this site in Chrome.', startNew: 'Start', again2: 'Again'});
-  Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة بعد كل مرة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
+  Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
     prog: (a, k, K, r, R) => 'الآية ' + UD(a) + ' — المرة ' + UD(k) + '/' + UD(K) + (R > 1 ? ' — الدورة ' + UD(r) + '/' + UD(R) : ''), errAudio: 'تعذّر تشغيل الصوت. تحقق من الإنترنت.', wordFail: 'تعذّر تشغيل هذه الكلمة.', done2: 'تم',
     openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم.', startNew: 'ابدأ', again2: 'مرة أخرى'});
   const L = () => S[ui] || S.en;
@@ -7799,23 +7801,23 @@ Object.assign(I.fr, {
   /* ---------- the lesson form (always at the top of Repeat / Recite / Recall) ---------- */
   const clampN = (v, a, b) => Math.max(a, Math.min(b, Math.round(+v || a)));
   function reload(kind, s, f, t, extra) { const nh = href(kind, s, f, t, extra); try { history.replaceState(history.state, '', nh); } catch (e) { location.hash = nh; return; } route(nh); }
-  function formCard(s, f, t, onGo, extra, label, auto) {
-    const sel = E('select', {'aria-label': L().surah, class: 'hzsel'});
+  // one field of the lesson form: a small coloured icon, the label and a plain box (no preset numbers; the child types them)
+  const tileF = (ic, label, ctl, color, span) => E('label', {class: 'hzfield' + (span ? ' span2' : ''), style: '--fc:' + color}, E('span', {class: 'hzfl'}, icon(ic), E('b', {}, label)), ctl);
+  const numBox = (v, min, max) => E('input', {type: 'number', min: String(min), max: String(max), value: String(v), inputmode: 'numeric', class: 'hzin', placeholder: '–'});
+  function formCard(s, f, t, onGo, fields, label, auto) {
+    const sel = E('select', {'aria-label': L().surah, class: 'hzin hzselect'});
     Qn().surahs().forEach((m, i) => sel.append(E('option', {value: i + 1}, UD(i + 1) + '. ' + Qn().sName(i + 1))));
     sel.value = s;
-    const inp = v => E('input', {type: 'number', min: '1', value: String(v), inputmode: 'numeric', class: 'hnum'});
-    const fi = inp(f), ti = inp(t), n = () => Qn().surahs()[sel.value - 1][4];
+    const fi = numBox(f, 1, 286), ti = numBox(t, 1, 286), n = () => Qn().surahs()[sel.value - 1][4];
     const sync = () => { fi.max = ti.max = n(); if (+fi.value > n()) fi.value = 1; if (+ti.value > n() || +ti.value < +fi.value) ti.value = Math.min(n(), +fi.value + 4); };
     sel.addEventListener('change', () => { fi.value = 1; ti.value = Math.min(n(), 5); sync(); });
-    const chip = (l, fn) => E('button', {type: 'button', class: 'segb', on: {click: () => { fn(); sync(); if (auto) go(); }}}, l);
     const go = () => { sync(); const ss = +sel.value, a = clampN(fi.value, 1, n()), b = clampN(ti.value, a, n()); put('last', {s: ss, f: a, t: b}); onGo(ss, a, b); };
     sync();
     if (auto) [sel, fi, ti].forEach(x => x.addEventListener('change', () => go()));
     return {get: () => ({s: +sel.value, f: clampN(fi.value, 1, n()), t: clampN(ti.value, clampN(fi.value, 1, n()), n())}), go,
-      node: E('div', {class: 'card hzform'}, label ? E('h3', {}, label) : null, sel,
-        E('div', {class: 'hzfr'}, E('label', {class: 'hzn'}, E('span', {}, L().from), fi), E('label', {class: 'hzn'}, E('span', {}, L().to), ti),
-          E('div', {class: 'seg hzchips'}, chip(L().len5, () => { ti.value = Math.min(n(), +fi.value + 4); }), chip(L().lenAll, () => { fi.value = 1; ti.value = n(); }))),
-        extra || null, auto ? null : E('button', {type: 'button', class: 'hzgo wide', on: {click: go}}, L().startNew))};
+      node: E('div', {class: 'card hzform'}, label ? E('h3', {}, label) : null,
+        E('div', {class: 'hzfgrid'}, tileF('hadith', L().surah, sel, '#17786e', true), tileF('layers', L().from, fi, '#2b7bb9'), tileF('list', L().to, ti, '#2b7bb9'), ...(fields || [])),
+        auto ? null : E('button', {type: 'button', class: 'hzgo wide', on: {click: go}}, L().startNew))};
   }
   const segPick = (vals, cur, onPick) => { const b = E('div', {class: 'seg', role: 'group'}); const draw = () => b.replaceChildren(...vals.map(v => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(v === cur), on: {click: () => { cur = v; onPick(v); draw(); }}}, UD(v)))); draw(); return b; };
   /* ---------- repeat: the Arabic only, a tap on a word plays that word ---------- */
@@ -7857,10 +7859,10 @@ Object.assign(I.fr, {
     }
     playBtn.addEventListener('click', () => { if (playing) stopAll(); else run(); });
     const save = () => put('rep', {a: RP.a, r: RP.r, g: RP.g});
-    const gapIn = E('input', {type: 'number', min: '0', max: '30', value: String(RP.g), inputmode: 'numeric', class: 'hnum'}); gapIn.addEventListener('input', () => { RP.g = clampN(gapIn.value, 0, 30); save(); });
-    const recSel = E('select', {'aria-label': L().reciterL, class: 'hzsel'}); Qn().reciters().forEach(r => recSel.append(E('option', {value: r.k}, r.label))); recSel.value = RP.rec; recSel.addEventListener('change', () => { RP.rec = recSel.value; Qn().setHzReciter(RP.rec); });
-    const more = E('details', {class: 'hzmore'}, E('summary', {}, L().moreSet), E('label', {class: 'srow'}, E('span', {}, L().pauseSec), gapIn), E('label', {class: 'srow'}, E('span', {}, L().reciterL), recSel));
-    const extra = E('div', {}, E('p', {class: 'grp'}, L().ayahTimes), segPick([1, 3, 5, 10, 20], RP.a, v => { RP.a = v; save(); }), E('p', {class: 'grp'}, L().sectTimes), segPick([1, 2, 3, 5, 10], RP.r, v => { RP.r = v; save(); }), more);
+    const eachIn = numBox(RP.a, 1, 100), sectIn = numBox(RP.r, 1, 100), gapIn = numBox(RP.g, 0, 30);
+    eachIn.addEventListener('input', () => { RP.a = clampN(eachIn.value, 1, 100); save(); }); sectIn.addEventListener('input', () => { RP.r = clampN(sectIn.value, 1, 100); save(); }); gapIn.addEventListener('input', () => { RP.g = clampN(gapIn.value, 0, 30); save(); });
+    const recSel = E('select', {'aria-label': L().reciterL, class: 'hzin hzselect'}); Qn().reciters().forEach(r => recSel.append(E('option', {value: r.k}, r.label))); recSel.value = RP.rec; recSel.addEventListener('change', () => { RP.rec = recSel.value; Qn().setHzReciter(RP.rec); });
+    const extra = [tileF('replay', L().ayahTimes, eachIn, '#c0762c'), tileF('event', L().sectTimes, sectIn, '#8a4fb3'), tileF('timer', L().pauseSec, gapIn, '#5c7284'), tileF('speaker', L().reciterL, recSel, '#1d7f4e')];
     const fc = formCard(s, f, t, (ss, a, b) => { stopAll(); reload('rep', ss, a, b); }, extra, null, true);
     page(fc.node, E('div', {class: 'card'}, E('div', {class: 'hzstage2'}, playBtn, status), text));
   }
@@ -7870,7 +7872,8 @@ Object.assign(I.fr, {
     const p = plan(), t = today(), due = p.filter(x => x.due <= t), sk = streak();
     const hero = E('div', {class: 'hzhero'}, E('div', {class: 'hzh1'}, L().hero), E('p', {}, L().heroSub),
       E('div', {class: 'hzpills'}, E('span', {class: 'hzpill'}, '✦ ' + (sk ? L().streak(UD(sk)) : L().streak0)), E('span', {class: 'hzpill'}, due.length ? L().todayN(UD(due.length)) : L().today + ' ✓')));
-    const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), E('small', {}, c[1]))); };
+    const HC = {rep: '#c0762c', say: '#c0392b', recall: '#6a4fb3', plan: '#2b7bb9', hadith: '#17786e'};
+    const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', style: '--hc:' + (HC[k] || '#17786e'), href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), E('small', {}, c[1]))); };
     const la = lastRange();
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
@@ -7929,7 +7932,7 @@ Object.assign(I.fr, {
         gap ? note(L().planSet(UD(gap))) : (find(s, f, t) ? null : addPlanBtn(s, f, t)),
         E('div', {class: 'hzrow'}, E('button', {type: 'button', class: 'hzgo', on: {click: () => reload('recall', s, f, t, '&lv=' + lv)}}, L().retry), E('a', {class: 'btn', href: href('say', s, f, t)}, L().cards.say[0])));
     };
-    const fc = formCard(s, f, t, (ss, a, b) => reload('recall', ss, a, b, '&lv=' + lv), E('div', {}, E('p', {class: 'grp'}, L().lvT + ': ' + L().lvD[lv]), lvBar), null, true);
+    const fc = formCard(s, f, t, (ss, a, b) => reload('recall', ss, a, b, '&lv=' + lv), [E('div', {class: 'hzfield span2', style: '--fc:#6a4fb3'}, E('span', {class: 'hzfl'}, icon('eye'), E('b', {}, L().lvT + ': ' + L().lvD[lv])), lvBar)], null, true);
     page(fc.node, E('div', {class: 'card'}, body));
     draw();
   }
@@ -8025,30 +8028,14 @@ Object.assign(I.fr, {
   }
   const css = E('style', {}, `
 .hz{display:flex;flex-direction:column;gap:.2rem;padding-bottom:5rem}
-.hzsel{width:100%;border:1px solid var(--line);border-radius:14px;padding:.45rem .7rem;background:var(--card);font:inherit;margin:.2rem 0 .5rem}
-.hzfr{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:flex-end;margin-bottom:.4rem}
-.hzn{display:flex;flex-direction:column;gap:.1rem;font-size:.85rem;color:var(--muted)}.hzn .hnum{width:5.2rem;border:1px solid var(--line);border-radius:12px;padding:.4rem .6rem;background:var(--card);font:inherit;color:var(--ink)}
-.hzchips{margin-inline-start:auto}.hzgo.wide{display:block;width:100%;margin:.6rem 0 .2rem;padding:.55rem 1rem;font-size:1.05rem}
-.hzgo.stop,.hzplay.stop{background:#c0392b}.hzplay{margin:.2rem 0}
-.hzmore{border:1px solid var(--line);border-radius:14px;margin:.7rem 0 .3rem;padding:.1rem .7rem}.hzmore summary{cursor:pointer;padding:.5rem 0;color:var(--accent);font-weight:600;list-style:none;display:flex;align-items:center;gap:.5rem}
-.hzmore summary::-webkit-details-marker{display:none}.hzmore summary:before{content:"";width:.55rem;height:.55rem;border-inline-end:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(45deg);transition:transform .2s;margin-top:-.2rem}.hzmore[open] summary:before{transform:rotate(-135deg);margin-top:.2rem}
-.hzmore .srow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:.4rem 0}.hzmore .hnum{width:4.5rem;border:1px solid var(--line);border-radius:12px;padding:.3rem .5rem;background:var(--card)}.hzmore .hzsel{width:auto;max-width:60%;margin:0}
-.grp{margin:.5rem 0 .2rem;color:var(--accent);font-weight:600}
-.hzstage2{text-align:center}.hzay{border-radius:12px;transition:background .25s}.hzay.cur{background:rgba(224,168,45,.22);box-shadow:0 0 0 4px rgba(224,168,45,.22)}
-.hzw.tap{cursor:pointer;border-radius:8px;transition:background .2s}.hzw.tap:active,.hzw.say{background:rgba(23,120,110,.22)}
-.hzhero{background:linear-gradient(135deg,var(--bar),#0f5b52);color:#fff;border-radius:20px;padding:1.2rem 1.3rem;margin:.6rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
-.hzhero:after{content:"";position:absolute;inset-inline-end:-2.2rem;top:-2.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
-.hzh1{font-size:1.35rem;font-weight:700;line-height:1.7}.hzhero p{margin:.2rem 0 .7rem;opacity:.95}
-.hzpills{display:flex;flex-wrap:wrap;gap:.4rem}.hzpill{background:rgba(255,255,255,.18);border-radius:999px;padding:.05rem .8rem;font-size:.9rem}
-.hzgrid{display:grid;grid-template-columns:1fr;gap:.1rem}
-.hzcard{display:flex;align-items:center;gap:.9rem;padding:.9rem 1.1rem;border:0;width:100%;text-align:start;cursor:pointer;font:inherit;color:var(--ink);border-inline-start:5px solid var(--accent)}
-.hzcard:hover{background:var(--wash)}.hzcard .tico{flex:none;width:2.8rem;height:2.8rem;border-radius:14px;background:var(--wash);display:flex;align-items:center;justify-content:center;color:var(--accent)}.hzcard .tico svg{width:1.6rem;height:1.6rem;fill:currentColor}
-.hzct{display:flex;flex-direction:column;line-height:1.7}.hzct small{color:var(--muted);font-size:.85rem}
-.hzdue h3,.hz h3{margin:.1rem 0 .4rem;color:var(--accent)}
-.hzles{border-top:1px solid var(--line);padding:.55rem 0}.hzles:first-of-type{border-top:0}.hzles.due .hzlt b:before{content:"● ";color:#e0582d}
-.hzlt{display:flex;flex-direction:column;line-height:1.6}.hzlt small{color:var(--muted)}.hzact{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.35rem}
-.hzform .srow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:.35rem 0}.hzform select,.hzform .hnum{border:1px solid var(--line);border-radius:12px;padding:.25rem .6rem;background:var(--card);min-width:7rem}
-.hzform .seg{margin:.5rem 0}
+.hzfgrid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.hzfield.span2{grid-column:1/-1}
+.hzfield{display:flex;flex-direction:column;gap:.15rem;padding:.55rem .8rem .6rem;border-radius:18px;background:color-mix(in srgb,var(--fc) 9%,var(--card));border:1.5px solid color-mix(in srgb,var(--fc) 28%,transparent);border-inline-start:6px solid var(--fc);transition:box-shadow .2s,border-color .2s}
+.hzfield:focus-within{border-color:var(--fc);box-shadow:0 0 0 4px color-mix(in srgb,var(--fc) 18%,transparent)}
+.hzfl{display:flex;align-items:center;gap:.4rem;color:var(--fc);font-size:.88rem;line-height:1.5}.hzfl b{font-weight:700}.hzfl svg{width:1.15rem;height:1.15rem;fill:currentColor;flex:none}
+.hzin{width:100%;border:0;background:transparent;font:700 1.45rem/1.5 var(--sans);color:var(--ink);text-align:center;padding:.1rem 0;outline:0;min-width:0}.hzin::placeholder{color:var(--muted);font-weight:400}
+.hzselect{font-size:1.05rem;text-align:start;font-family:inherit;appearance:auto}
+.hzgo.wide{display:block;width:100%;font-size:1.25rem;font-weight:700;padding:.7rem 1rem;margin:.2rem 0 .4rem;box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 35%,transparent)}.hzgo.wide.stop{background:#c0392b;box-shadow:0 6px 16px rgba(192,57,43,.3)}
+.hzfield .seg{margin:.3rem 0 0;justify-content:center}
 .hzgo{display:inline-block;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:.35rem 1.6rem;font:inherit;cursor:pointer;margin:.4rem .2rem;text-decoration:none}
 .hzrow{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.5rem 0}
 .hzayah{font-family:var(--quran);font-size:var(--qar,1.7rem);line-height:2.5;text-align:center;padding:.4rem .2rem}
@@ -8062,6 +8049,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 .hzsaid{position:absolute;inset-inline:0;bottom:-.1em;text-align:center;font:.38em/1 var(--arabic);color:#c0392b;white-space:nowrap}
 .hzleg{display:flex;flex-wrap:wrap;gap:.2rem .9rem;justify-content:center;font-size:.85rem;color:var(--muted)}
 .hzb{display:inline-block;border:0;border-radius:10px;background:var(--wash);color:var(--accent);cursor:pointer;font:inherit;padding:0 .5em;margin:0 .15em;line-height:1.6}.hzb.mute{cursor:default;letter-spacing:.15em}
+.hzcard .tico{width:3rem;height:3rem;border-radius:16px;background:color-mix(in srgb,var(--hc) 14%,var(--card));color:var(--hc)}.hzcard .tico svg{width:1.7rem;height:1.7rem;fill:currentColor}.hzcard{border-inline-start:6px solid var(--hc)}
 .hzmicw{display:flex;justify-content:center;margin:.8rem 0 .2rem}
 .hzmic{width:92px;height:92px;border-radius:50%;border:0;background:var(--accent);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(20,60,100,.3);position:relative}
 .hzmic svg{width:44px;height:44px;fill:currentColor}
