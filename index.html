@@ -3157,9 +3157,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- hifz: repeat one ayah, or a range of ayahs, as many times as set ---------- */
   // the repeat button: the reader first turns into the mushaf (flowing text, or the Madinah pages when those are on), then the settings open
-  async function hifzOpen() {
-    if (R && QS.mode !== 'mushaf' && QS.mode !== 'pages') { QS.mode = 'mushaf'; qsave(); tools(); await redraw(); }
-    hifzSheet();
+  async function hifzOpen() {   // the repeat button opens the repeat page of the Hifz section (Arabic only, tap a word to hear it)
+    const h = QS.hifz || {}, s = R && R.kind === 's' ? R.n : (h.s || 1);
+    location.hash = '#/hifz/rep?s=' + s + (R && R.kind === 's' ? '' : '&f=' + (h.from || 1) + '&t=' + (h.to || 7));
   }
   async function hifzSheet() {
     await need([]);
@@ -3922,10 +3922,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- routes: #/  #/q  #/q/para  #/q/ruku  #/q/s/2/255[/play]  #/q/j/30  #/q/r/5  #/q/audio  #/q/search  #/q/bm ---------- */
   window.QURAN = {
     ready: () => need(['ar_uthmani']),
+    reciters: () => RECITERS.filter(r => !r.surah).map(r => ({k: r.k, label: recLabel(r), f: r.f})),
+    hzReciter: () => { const r = RECITERS.find(x => x.k === QS.hzRec && !x.surah) || RECITERS.find(x => x.k === QS.reciter && !x.surah) || RECITERS.find(x => !x.surah); return r.k; },
+    setHzReciter: k => { QS.hzRec = k; qsave(); },
+    ayahUrlBy: (k, s, a) => ayahUrl(RECITERS.find(r => r.k === k) || RECITERS[0], s, a),
     ayahText: (s, a) => verse('ar_uthmani', s, a),
     surahs: () => Q.meta.surahs,
     sName,
-    ayahUrl: (s, a) => ayahUrl(RECITERS.find(r => r.k === QS.reciter && r.f) || RECITERS[0], s, a),
     async verseTexts() { await need(['ar_uthmani']); return {t: Q.data.ar_uthmani, sa, surah: s => Q.meta.surahs[s - 1]}; },
     route(h) {
       stopAuto();
@@ -4930,6 +4933,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029f', d: '29-10-2026', keys: [],
+      t: {ur: 'حفظ: تکرار کا نیا صفحہ', en: 'Hifz: new repeat page', ar: 'الحفظ: صفحة التكرار الجديدة'},
+      i: {ur: ['تکرار کا بٹن اب حفظ کے زمرے کا نیا صفحہ کھولتا ہے: صرف قرآن کی آیات، اور کسی لفظ پر دبانے سے وہ لفظ سنائی دیتا ہے۔ اوپر سورت، آیت سے، آیت تک، ہر آیت کتنی بار اور پورا حصہ کتنی بار؛ باقی سیٹنگ ایک تیر کے پیچھے ہے۔', 'سبق سنانے اور یاد سے پڑھنے کے صفحوں میں بھی اوپر آیات کے نمبر بدلنے کی جگہ ہے، اور سبق کے بعد وہی صفحہ دوبارہ کھلا رہتا ہے۔'],
+        en: ['The repeat button now opens a new page in the Hifz section: the Arabic only, and tapping a word plays that word. At the top: surah, from, to, each ayah times and whole part times; the other settings are behind an arrow.', 'The recite and recall pages also keep the ayah numbers at the top, and the same page stays open after a lesson.'],
+        ar: ['زر التكرار يفتح الآن صفحة جديدة في قسم الحفظ: الآيات فقط، والضغط على كلمة يُسمعك تلك الكلمة. في الأعلى: السورة ومن وإلى وتكرار كل آية وتكرار المقطع؛ وبقية الإعدادات خلف سهم.', 'وصفحتا التسميع والاستظهار تحتفظان بأرقام الآيات في الأعلى وتبقى الصفحة نفسها مفتوحة بعد الدرس.']}},
     {id: '20261029e', d: '29-10-2026', keys: ['siyar'],
       t: {ur: 'سلف صالحین: 59 مزید شخصیات کے احوال', en: 'The Salaf: more details for 59 more people', ar: 'السلف الصالح: زيادة في أحوال ٥٩ ترجمة'},
       i: {ur: ['59 مزید شخصیات کے حالات میں تاریخ الاسلام، تاریخ دمشق، طبقات ابن سعد، حلیۃ الاولیاء اور الاصابہ سے واقعات اور اقوال شامل کیے گئے، ہر عبارت کے آخر میں کتاب کی جلد اور صفحہ کے ساتھ۔'],
@@ -6337,7 +6345,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function apply() { if (off) strip(document.body); }
   function sched() { if (pend || !off) return; pend = true; requestAnimationFrame(() => { pend = false; orig.forEach((v, n) => { if (!n.isConnected) orig.delete(n); }); strip(document.body); }); }
   function show() {
-    const h = location.hash, hide = /^#\/(q|quiz|nar|n|ab|owner)(\/|$)/.test(h) || h === '#/q' || /^#?\/?(home)?$/.test(h);
+    const h = location.hash, hide = /^#\/(q|quiz|hifz|nar|n|ab|owner)(\/|$)/.test(h) || h === '#/q' || /^#?\/?(home)?$/.test(h);
     if (btn) btn.style.display = hide ? 'none' : '';
   }
   function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
@@ -7691,6 +7699,16 @@ Object.assign(I.fr, {
       planT: 'المراجعة اليومية', planDue: 'دروس اليوم', planAll: 'كل الدروس', planNone: 'لا دروس بعد. أضف درسًا أدناه.', planAdd: 'إضافة درس جديد', planAddB: 'إضافة', planDel: 'حذف', planDelQ: 'حذف هذا الدرس؟',
       due: 'اليوم', dueIn: n => 'بعد ' + UD(n) + ' أيام', late: n => 'متأخر ' + UD(n) + ' أيام', step: n => 'المرحلة ' + UD(n), hear: 'استمع', say: 'سمّع', recall: 'استظهار', done: 'تم اليوم', hard: 'كان صعبًا', planHelp: 'يعود كل درس بعد ١ و٢ و٤ و٧ و١٤ و٣٠ و٦٠ يومًا. وإن كان صعبًا عاد غدًا.', fail: 'تعذّر تحميل نص القرآن. تحقق من الإنترنت.'}
   };
+
+  Object.assign(S.ur, {ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'ہر بار کے بعد وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
+    prog: (a, k, K, r, R) => 'آیت ' + a + ' — بار ' + k + '/' + K + (R > 1 ? ' — حصہ ' + r + '/' + R : ''), errAudio: 'آواز نہیں چل سکی۔ انٹرنیٹ دیکھیں۔', wordFail: 'اس لفظ کی آواز نہیں چل سکی۔', done2: 'مکمل ہو گیا',
+    openChrome: 'کروم میں کھولیں', micApp: 'اگر آپ ایپ میں ہیں تو فون کی سیٹنگ میں جا کر ایپ کو مائیکروفون کی اجازت دیں، یا نیچے کے بٹن سے کروم میں کھولیں۔', startNew: 'شروع کریں', again2: 'دوبارہ'});
+  Object.assign(S.en, {ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause after each time (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
+    prog: (a, k, K, r, R) => 'Ayah ' + a + ' — time ' + k + '/' + K + (R > 1 ? ' — round ' + r + '/' + R : ''), errAudio: 'The audio could not play. Check the internet.', wordFail: 'That word could not be played.', done2: 'Finished',
+    openChrome: 'Open in Chrome', micApp: 'If you are in the app, open the phone settings and allow the microphone for the app, or use the button below to open it in Chrome.', startNew: 'Start', again2: 'Again'});
+  Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة بعد كل مرة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
+    prog: (a, k, K, r, R) => 'الآية ' + UD(a) + ' — المرة ' + UD(k) + '/' + UD(K) + (R > 1 ? ' — الدورة ' + UD(r) + '/' + UD(R) : ''), errAudio: 'تعذّر تشغيل الصوت. تحقق من الإنترنت.', wordFail: 'تعذّر تشغيل هذه الكلمة.', done2: 'تم',
+    openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم بالزر أدناه.', startNew: 'ابدأ', again2: 'مرة أخرى'});
   const L = () => S[ui] || S.en;
   const $q = () => document.querySelector('#qv');
   const Qn = () => window.QURAN;
@@ -7754,7 +7772,7 @@ Object.assign(I.fr, {
   const stopAudio = () => { if (AUD) { try { AUD.pause(); } catch (e) {} AUD = null; } };
   function playList(list, btn) { // list of [s, a]
     stopAudio(); let i = 0;
-    const next = () => { if (i >= list.length) { stopAudio(); return; } const [s, a] = list[i++]; AUD = new Audio(Qn().ayahUrl(s, a)); AUD.onended = next; AUD.onerror = () => toastMsg('…'); AUD.play().catch(() => toastMsg('…')); };
+    const next = () => { if (i >= list.length) { stopAudio(); return; } const [s, a] = list[i++]; AUD = new Audio(Qn().ayahUrlBy(Qn().hzReciter(), s, a)); AUD.onended = next; AUD.onerror = () => toastMsg('…'); AUD.play().catch(() => toastMsg('…')); };
     next();
   }
   async function ready() { await Qn().ready(); }
@@ -7779,6 +7797,74 @@ Object.assign(I.fr, {
       E('button', {type: 'button', class: 'hzgo', on: {click: () => { sync(); const s = +sel.value, a = Math.max(1, Math.min(n(), Math.round(+f.value) || 1)), b = Math.max(a, Math.min(n(), Math.round(+t.value) || a)); put('last', {s, f: a, t: b}); onGo(s, a, b); }}}, L().go));
   }
   const lastRange = () => Object.assign({s: 1, f: 1, t: 5}, get('last', {}));
+  /* ---------- the lesson form (always at the top of Repeat / Recite / Recall) ---------- */
+  const clampN = (v, a, b) => Math.max(a, Math.min(b, Math.round(+v || a)));
+  function reload(kind, s, f, t, extra) { const nh = href(kind, s, f, t, extra); try { history.replaceState(history.state, '', nh); } catch (e) { location.hash = nh; return; } route(nh); }
+  function formCard(s, f, t, onGo, extra, label, auto) {
+    const sel = E('select', {'aria-label': L().surah, class: 'hzsel'});
+    Qn().surahs().forEach((m, i) => sel.append(E('option', {value: i + 1}, UD(i + 1) + '. ' + Qn().sName(i + 1))));
+    sel.value = s;
+    const inp = v => E('input', {type: 'number', min: '1', value: String(v), inputmode: 'numeric', class: 'hnum'});
+    const fi = inp(f), ti = inp(t), n = () => Qn().surahs()[sel.value - 1][4];
+    const sync = () => { fi.max = ti.max = n(); if (+fi.value > n()) fi.value = 1; if (+ti.value > n() || +ti.value < +fi.value) ti.value = Math.min(n(), +fi.value + 4); };
+    sel.addEventListener('change', () => { fi.value = 1; ti.value = Math.min(n(), 5); sync(); });
+    const chip = (l, fn) => E('button', {type: 'button', class: 'segb', on: {click: () => { fn(); sync(); if (auto) go(); }}}, l);
+    const go = () => { sync(); const ss = +sel.value, a = clampN(fi.value, 1, n()), b = clampN(ti.value, a, n()); put('last', {s: ss, f: a, t: b}); onGo(ss, a, b); };
+    sync();
+    if (auto) [sel, fi, ti].forEach(x => x.addEventListener('change', () => go()));
+    return {get: () => ({s: +sel.value, f: clampN(fi.value, 1, n()), t: clampN(ti.value, clampN(fi.value, 1, n()), n())}), go,
+      node: E('div', {class: 'card hzform'}, label ? E('h3', {}, label) : null, sel,
+        E('div', {class: 'hzfr'}, E('label', {class: 'hzn'}, E('span', {}, L().from), fi), E('label', {class: 'hzn'}, E('span', {}, L().to), ti),
+          E('div', {class: 'seg hzchips'}, chip(L().len5, () => { ti.value = Math.min(n(), +fi.value + 4); }), chip(L().lenAll, () => { fi.value = 1; ti.value = n(); }))),
+        extra || null, auto ? null : E('button', {type: 'button', class: 'hzgo wide', on: {click: go}}, L().startNew))};
+  }
+  const segPick = (vals, cur, onPick) => { const b = E('div', {class: 'seg', role: 'group'}); const draw = () => b.replaceChildren(...vals.map(v => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(v === cur), on: {click: () => { cur = v; onPick(v); draw(); }}}, UD(v)))); draw(); return b; };
+  /* ---------- repeat: the Arabic only, a tap on a word plays that word ---------- */
+  const p3 = n => String(n).padStart(3, '0');
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  function ayahWords(s, a) { const out = []; Qn().ayahText(s, a).split(/\s+/).filter(Boolean).forEach(w => { if (!NORM(w) && out.length) out[out.length - 1] += ' ' + w; else out.push(w); }); return out; }
+  async function showRep(h) {
+    bar(L().cards.rep[0], L().title, true);
+    const q = params(h), la = lastRange();
+    if (!q.get('s')) return reload('rep', la.s, la.f, la.t);
+    page(note('…'));
+    try { await ready(); } catch (e) { return page(note(L().fail)); }
+    const s = clampN(q.get('s'), 1, 114), n = Qn().surahs()[s - 1][4], f = clampN(q.get('f') || 1, 1, n), t = clampN(q.get('t') || Math.min(n, f + 6), f, n);
+    const RP = Object.assign({a: 3, r: 1, g: 0}, get('rep', {})); RP.rec = Qn().hzReciter();
+    let token = 0, playing = false;
+    const status = E('p', {class: 'cs hzstat'}, L().wordHint);
+    const playBtn = E('button', {type: 'button', class: 'hzgo wide hzplay'}, L().play);
+    const text = E('div', {class: 'hzayah', lang: 'ar', dir: 'rtl'}), spans = {};
+    for (let a = f; a <= t; a++) { const box = E('span', {class: 'hzay', 'data-a': a}); ayahWords(s, a).forEach((w, i) => { box.append(E('span', {class: 'hzw tap', on: {click: ev => wordTap(a, i + 1, ev.currentTarget)}}, w), ' '); }); box.append(aya(a), ' '); text.append(box); spans[a] = box; }
+    const mark = a => { Object.values(spans).forEach(x => x.classList.remove('cur')); if (a && spans[a]) { spans[a].classList.add('cur'); spans[a].scrollIntoView({block: 'center', behavior: 'smooth'}); } };
+    const setPlaying = v => { playing = v; playBtn.textContent = v ? L().stop : L().play; playBtn.classList.toggle('stop', v); if (!v) mark(0); };
+    const playUrl = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
+    const stopAll = () => { token++; stopAudio(); setPlaying(false); };
+    window.__hzStop = stopAll;
+    async function wordTap(a, w, elx) {
+      stopAll(); status.textContent = L().wordHint; elx.classList.add('say'); setTimeout(() => elx.classList.remove('say'), 1100);
+      const urls = ['https://audio.qurancdn.com/wbw/', 'https://verses.quran.com/wbw/'].map(b => b + p3(s) + '_' + p3(a) + '_' + p3(w) + '.mp3');
+      for (const u of urls) { if (await playUrl(u) === 'end') return; }
+      toastMsg(L().wordFail);
+    }
+    async function run() {
+      const tk = ++token; setPlaying(true);
+      for (let r = 1; r <= RP.r; r++) for (let a = f; a <= t; a++) for (let k = 1; k <= RP.a; k++) {
+        if (tk !== token) return; mark(a); status.textContent = L().prog(UD(a), UD(k), UD(RP.a), UD(r), UD(RP.r));
+        if (await playUrl(Qn().ayahUrlBy(RP.rec, s, a)) === 'err') { if (tk === token) { status.textContent = L().errAudio; setPlaying(false); } return; }
+        if (tk !== token) return; if (RP.g) { await sleep(RP.g * 1000); if (tk !== token) return; }
+      }
+      if (tk === token) { status.textContent = L().done2; setPlaying(false); logToday(); }
+    }
+    playBtn.addEventListener('click', () => { if (playing) stopAll(); else run(); });
+    const save = () => put('rep', {a: RP.a, r: RP.r, g: RP.g});
+    const gapIn = E('input', {type: 'number', min: '0', max: '30', value: String(RP.g), inputmode: 'numeric', class: 'hnum'}); gapIn.addEventListener('input', () => { RP.g = clampN(gapIn.value, 0, 30); save(); });
+    const recSel = E('select', {'aria-label': L().reciterL, class: 'hzsel'}); Qn().reciters().forEach(r => recSel.append(E('option', {value: r.k}, r.label))); recSel.value = RP.rec; recSel.addEventListener('change', () => { RP.rec = recSel.value; Qn().setHzReciter(RP.rec); });
+    const more = E('details', {class: 'hzmore'}, E('summary', {}, L().moreSet), E('label', {class: 'srow'}, E('span', {}, L().pauseSec), gapIn), E('label', {class: 'srow'}, E('span', {}, L().reciterL), recSel));
+    const extra = E('div', {}, E('p', {class: 'grp'}, L().ayahTimes), segPick([1, 3, 5, 10, 20], RP.a, v => { RP.a = v; save(); }), E('p', {class: 'grp'}, L().sectTimes), segPick([1, 2, 3, 5, 10], RP.r, v => { RP.r = v; save(); }), more);
+    const fc = formCard(s, f, t, (ss, a, b) => { stopAll(); reload('rep', ss, a, b); }, extra, null, true);
+    page(fc.node, E('div', {class: 'card'}, E('div', {class: 'hzstage2'}, playBtn, status), text));
+  }
   /* ---------- hub ---------- */
   function showHub() {
     bar(L().title, L().sub, true);
@@ -7789,7 +7875,7 @@ Object.assign(I.fr, {
     const la = lastRange();
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
-      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/q/s/' + la.s + '/' + la.f + '/hifz'), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
+      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
   }
   const rangeName = x => Qn().sName(x.s) + ' ' + UD(x.f) + (x.t !== x.f ? '–' + UD(x.t) : '');
   function lessonRow(x, compact) {
@@ -7820,12 +7906,12 @@ Object.assign(I.fr, {
   async function showRecall(h) {
     bar(L().cards.recall[0], L().title, true);
     const q = params(h);
-    if (!q.get('s')) { const la = lastRange(); return page(rangeForm(la, L().pick, (s, f, t) => { location.hash = href('recall', s, f, t, '&lv=0'); }, null)); }
+    if (!q.get('s')) { const la = lastRange(); return reload('recall', la.s, la.f, la.t, '&lv=0'); }
     page(note('…'));
     try { await ready(); } catch (e) { return page(note(L().fail)); }
     const s = +q.get('s'), f = +q.get('f'), t = +q.get('t'), lv = Math.max(0, Math.min(3, +q.get('lv') || 0));
     const n = t - f + 1; let cur = f, known = 0;
-    const lvBar = E('div', {class: 'seg', role: 'group', 'aria-label': L().lvT}, ...L().lv.map((x, i) => E('a', {class: 'segb', href: href('recall', s, f, t, '&lv=' + i), 'aria-pressed': String(i === lv), title: L().lvD[i]}, x)));
+    const lvBar = E('div', {class: 'seg', role: 'group', 'aria-label': L().lvT}, ...L().lv.map((x, i) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(i === lv), title: L().lvD[i], on: {click: () => reload('recall', s, f, t, '&lv=' + i)}}, x)));
     const body = E('div', {class: 'hzrc'});
     const draw = () => {
       const words = wordsOf(s, cur, cur), hid = hiddenSet(words, lv), shown = new Set();
@@ -7842,9 +7928,10 @@ Object.assign(I.fr, {
       stopAudio(); const sc = known / n, gap = reviewed(s, f, t, sc), st = sc >= .9 ? 3 : sc >= .7 ? 2 : sc >= .5 ? 1 : 0;
       body.replaceChildren(E('div', {class: 'hzscore'}, E('div', {class: 'hzbig'}, Math.round(sc * 100) + '%'), E('div', {class: 'hzstars'}, '★'.repeat(st) + '☆'.repeat(3 - st)), E('p', {}, L().stars[st]), E('p', {class: 'cs'}, L().recScore(UD(known), UD(n)))),
         gap ? note(L().planSet(UD(gap))) : (find(s, f, t) ? null : addPlanBtn(s, f, t)),
-        E('div', {class: 'hzrow'}, E('a', {class: 'hzgo', href: href('recall', s, f, t, '&lv=' + lv + '&r=' + Date.now())}, L().retry), E('a', {class: 'btn', href: href('say', s, f, t)}, L().cards.say[0])));
+        E('div', {class: 'hzrow'}, E('button', {type: 'button', class: 'hzgo', on: {click: () => reload('recall', s, f, t, '&lv=' + lv)}}, L().retry), E('a', {class: 'btn', href: href('say', s, f, t)}, L().cards.say[0])));
     };
-    page(E('div', {class: 'card'}, E('h3', {}, rangeName({s, f, t})), E('p', {class: 'cs'}, L().lvT + ': ' + L().lvD[lv]), lvBar), E('div', {class: 'card'}, body));
+    const fc = formCard(s, f, t, (ss, a, b) => reload('recall', ss, a, b, '&lv=' + lv), E('div', {}, E('p', {class: 'grp'}, L().lvT + ': ' + L().lvD[lv]), lvBar), null, true);
+    page(fc.node, E('div', {class: 'card'}, body));
     draw();
   }
   const addPlanBtn = (s, f, t) => { const b = E('button', {type: 'button', class: 'btn', on: {click: () => { const l = plan(); l.push({id: Date.now().toString(36), s, f, t, step: 0, due: addDays(today(), 1), added: today()}); savePlan(l); b.replaceWith(note(L().planAdded)); }}}, L().addPlan); return b; };
@@ -7860,7 +7947,7 @@ Object.assign(I.fr, {
   async function showSay(h) {
     bar(L().cards.say[0], L().title, true);
     const q = params(h);
-    if (!q.get('s')) { const la = lastRange(); return page(rangeForm(la, L().pick, (s, f, t) => { location.hash = href('say', s, f, t); }), SRc() ? null : note(L().noSR)); }
+    if (!q.get('s')) { const la = lastRange(); return reload('say', la.s, la.f, la.t); }
     page(note('…'));
     try { await ready(); } catch (e) { return page(note(L().fail)); }
     const s = +q.get('s'), f = +q.get('f'), t = +q.get('t'), words = wordsOf(s, f, t);
@@ -7880,13 +7967,16 @@ Object.assign(I.fr, {
       const build = () => {
         const R = new (SRc())(); R.lang = 'ar-SA'; R.continuous = true; R.interimResults = true; R.maxAlternatives = 1;
         R.onresult = e => { interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finals.push(r[0].transcript); else interim += r[0].transcript; } const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false; };
-        R.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopping = true; on = false; cleanup(); status.textContent = e.error === 'not-allowed' || e.error === 'service-not-allowed' ? L().errMic : L().errNet; };
+        R.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopping = true; on = false; cleanup(); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') micHelp(); else status.textContent = L().errNet; };
         R.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (on && !stopping) { try { R.start(); } catch (e) {} } };
         return R;
       };
       const cleanup = () => { on = false; clearInterval(timer); mic.classList.remove('on'); fin.hidden = !finals.length; };
-      mic.addEventListener('click', () => {
+      const micHelp = () => { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp), E('a', {class: 'btn', href: 'https://turathkhairalquroon.com/' + href('say', s, f, t), target: '_blank', rel: 'noopener'}, L().openChrome)); };
+      mic.addEventListener('click', async () => {
         if (on) { stopping = true; try { rec.stop(); } catch (e) {} cleanup(); status.textContent = L().tapStart; return; }
+        if (!get('consent', 0)) return consent(() => mic.click());
+        try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({audio: true}); st.getTracks().forEach(x => x.stop()); } } catch (e) { micHelp(); return; }
         rec = build(); stopping = false; on = true; started = Date.now(); mic.classList.add('on'); fin.hidden = true; try { rec.start(); } catch (e) {} timer = setInterval(tick, 500); tick();
       });
       fin.addEventListener('click', () => { stopping = true; on = false; try { rec && rec.stop(); } catch (e) {} clearInterval(timer); if (interim.trim()) finals.push(interim); results(finals.join(' ')); });
@@ -7896,7 +7986,7 @@ Object.assign(I.fr, {
     };
     const results = transcript => {
       const heard = transcript.split(/\s+/).map(NORM).filter(Boolean);
-      if (!heard.length) { stage.replaceChildren(note(L().errNone), E('a', {class: 'hzgo', href: href('say', s, f, t, '&r=' + Date.now())}, L().again)); return; }
+      if (!heard.length) { stage.replaceChildren(note(L().errNone), E('button', {type: 'button', class: 'hzgo', on: {click: () => reload('say', s, f, t)}}, L().again)); return; }
       const A = align(words, heard), up = A.last + 1, ok = A.st.filter(x => x === 'ok').length, wrong = A.st.filter(x => x === 'wrong').length, miss = A.st.filter(x => x === 'miss').length;
       const acc = up ? ok / up : 0, pct = Math.round(acc * 100), st = acc >= .9 ? 3 : acc >= .75 ? 2 : acc >= .5 ? 1 : 0;
       const gap = reviewed(s, f, t, acc);
@@ -7915,12 +8005,12 @@ Object.assign(I.fr, {
         E('p', {}, wrong + miss ? L().mistakes(UD(wrong + miss)) : L().noMistakes),
         gap ? note(L().planSet(UD(gap))) : (find(s, f, t) ? null : addPlanBtn(s, f, t)),
         E('div', {class: 'hzrow'}, mlist.length ? E('button', {type: 'button', class: 'btn', on: {click: () => playList(mlist.map(a => [s, a]))}}, L().listenFix) : null,
-          E('a', {class: 'hzgo', href: href('say', s, f, t, '&r=' + Date.now())}, L().again), E('a', {class: 'btn', href: href('recall', s, f, t)}, L().toRecall)),
+          E('button', {type: 'button', class: 'hzgo', on: {click: () => reload('say', s, f, t)}}, L().again), E('a', {class: 'btn', href: href('recall', s, f, t)}, L().toRecall)),
         note(L().note));
     };
-    page(stage);
-    consent(showSession);
-    if (!get('consent', 0)) stage.replaceChildren(note('…'));
+    const fc = formCard(s, f, t, (ss, a, b) => reload('say', ss, a, b), null, null, true);
+    page(fc.node, stage);
+    showSession();
   }
   /* ---------- routes ---------- */
   function route(h) {
@@ -7928,13 +8018,25 @@ Object.assign(I.fr, {
     stopAudio(); if (window.__hzStop) { try { window.__hzStop(); } catch (e) {} window.__hzStop = null; }
     const m = h.match(/^#\/hifz(?:\/([a-z]+))?/) || [], k = m[1];
     const go = async fn => { try { await Qn().ready(); } catch (e) {} fn(h); };
+    if (k === 'rep') return go(showRep);
     if (k === 'say') return go(showSay);
     if (k === 'recall') return go(showRecall);
     if (k === 'plan') return go(showPlan);
     return go(showHub);
   }
   const css = E('style', {}, `
-.hz{display:flex;flex-direction:column;gap:.2rem;padding-bottom:1.2rem}
+.hz{display:flex;flex-direction:column;gap:.2rem;padding-bottom:5rem}
+.hzsel{width:100%;border:1px solid var(--line);border-radius:14px;padding:.45rem .7rem;background:var(--card);font:inherit;margin:.2rem 0 .5rem}
+.hzfr{display:flex;flex-wrap:wrap;gap:.5rem .8rem;align-items:flex-end;margin-bottom:.4rem}
+.hzn{display:flex;flex-direction:column;gap:.1rem;font-size:.85rem;color:var(--muted)}.hzn .hnum{width:5.2rem;border:1px solid var(--line);border-radius:12px;padding:.4rem .6rem;background:var(--card);font:inherit;color:var(--ink)}
+.hzchips{margin-inline-start:auto}.hzgo.wide{display:block;width:100%;margin:.6rem 0 .2rem;padding:.55rem 1rem;font-size:1.05rem}
+.hzgo.stop,.hzplay.stop{background:#c0392b}.hzplay{margin:.2rem 0}
+.hzmore{border:1px solid var(--line);border-radius:14px;margin:.7rem 0 .3rem;padding:.1rem .7rem}.hzmore summary{cursor:pointer;padding:.5rem 0;color:var(--accent);font-weight:600;list-style:none;display:flex;align-items:center;gap:.5rem}
+.hzmore summary::-webkit-details-marker{display:none}.hzmore summary:before{content:"";width:.55rem;height:.55rem;border-inline-end:2.5px solid currentColor;border-bottom:2.5px solid currentColor;transform:rotate(45deg);transition:transform .2s;margin-top:-.2rem}.hzmore[open] summary:before{transform:rotate(-135deg);margin-top:.2rem}
+.hzmore .srow{display:flex;align-items:center;justify-content:space-between;gap:.8rem;margin:.4rem 0}.hzmore .hnum{width:4.5rem;border:1px solid var(--line);border-radius:12px;padding:.3rem .5rem;background:var(--card)}.hzmore .hzsel{width:auto;max-width:60%;margin:0}
+.grp{margin:.5rem 0 .2rem;color:var(--accent);font-weight:600}
+.hzstage2{text-align:center}.hzay{border-radius:12px;transition:background .25s}.hzay.cur{background:rgba(224,168,45,.22);box-shadow:0 0 0 4px rgba(224,168,45,.22)}
+.hzw.tap{cursor:pointer;border-radius:8px;transition:background .2s}.hzw.tap:active,.hzw.say{background:rgba(23,120,110,.22)}
 .hzhero{background:linear-gradient(135deg,var(--bar),#0f5b52);color:#fff;border-radius:20px;padding:1.2rem 1.3rem;margin:.6rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .hzhero:after{content:"";position:absolute;inset-inline-end:-2.2rem;top:-2.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
 .hzh1{font-size:1.35rem;font-weight:700;line-height:1.7}.hzhero p{margin:.2rem 0 .7rem;opacity:.95}
