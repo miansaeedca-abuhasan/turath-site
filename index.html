@@ -2747,7 +2747,6 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     {k: 'sudais', g: 'makkah', ur: 'عبدالرحمن السدیس', en: 'Abdul Rahman Al-Sudais', f: 'Abdurrahmaan_As-Sudais_64kbps'},
     {k: 'shuraim', g: 'makkah', ur: 'سعود الشریم', en: "Saud Al-Shuraim", f: 'Saood_ash-Shuraym_64kbps'},
     {k: 'muaiqly', g: 'makkah', ur: 'ماہر المعیقلی', en: 'Maher Al-Muaiqly', f: 'Maher_AlMuaiqly_64kbps'},
-    {k: 'dossary', g: 'makkah', ur: 'یاسر الدوسری', en: 'Yasser Al-Dosari', f: 'Yasser_Ad-Dussary_128kbps'},
     {k: 'alijaber', g: 'makkah', ur: 'علی جابر', en: 'Ali Jaber', f: 'Ali_Jaber_64kbps'},
     {k: 'hudhaify', g: 'madinah', ur: 'علی بن عبدالرحمن الحذیفی', en: 'Ali Al-Hudhaify', f: 'Hudhaify_64kbps'},
     {k: 'budair', g: 'madinah', ur: 'صلاح البدیر', en: 'Salah Al-Budair', f: 'Salah_Al_Budair_128kbps'},
@@ -4147,7 +4146,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
-      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, (() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('a', sb && sb.ext ? {href: sb.ext + h, target: '_blank', rel: 'noopener'} : {href: h}, '(' + lk + ')')]; })())); }
+      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, (() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
     else if (d.grade) c.append(/[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade));
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
@@ -7702,13 +7701,13 @@ Object.assign(I.fr, {
 
   Object.assign(S.ur, {ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'ہر بار کے بعد وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
     prog: (a, k, K, r, R) => 'آیت ' + a + ' — بار ' + k + '/' + K + (R > 1 ? ' — حصہ ' + r + '/' + R : ''), errAudio: 'آواز نہیں چل سکی۔ انٹرنیٹ دیکھیں۔', wordFail: 'اس لفظ کی آواز نہیں چل سکی۔', done2: 'مکمل ہو گیا',
-    openChrome: 'کروم میں کھولیں', micApp: 'اگر آپ ایپ میں ہیں تو فون کی سیٹنگ میں جا کر ایپ کو مائیکروفون کی اجازت دیں، یا نیچے کے بٹن سے کروم میں کھولیں۔', startNew: 'شروع کریں', again2: 'دوبارہ'});
+    openChrome: 'کروم میں کھولیں', micApp: 'اگر آپ ایپ میں ہیں تو فون کی سیٹنگ میں جا کر ایپ کو مائیکروفون کی اجازت دیں، یا اسی سائٹ کو کروم میں کھولیں۔', startNew: 'شروع کریں', again2: 'دوبارہ'});
   Object.assign(S.en, {ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause after each time (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
     prog: (a, k, K, r, R) => 'Ayah ' + a + ' — time ' + k + '/' + K + (R > 1 ? ' — round ' + r + '/' + R : ''), errAudio: 'The audio could not play. Check the internet.', wordFail: 'That word could not be played.', done2: 'Finished',
-    openChrome: 'Open in Chrome', micApp: 'If you are in the app, open the phone settings and allow the microphone for the app, or use the button below to open it in Chrome.', startNew: 'Start', again2: 'Again'});
+    openChrome: 'Open in Chrome', micApp: 'If you are in the app, open the phone settings and allow the microphone for the app, or open this site in Chrome.', startNew: 'Start', again2: 'Again'});
   Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة بعد كل مرة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
     prog: (a, k, K, r, R) => 'الآية ' + UD(a) + ' — المرة ' + UD(k) + '/' + UD(K) + (R > 1 ? ' — الدورة ' + UD(r) + '/' + UD(R) : ''), errAudio: 'تعذّر تشغيل الصوت. تحقق من الإنترنت.', wordFail: 'تعذّر تشغيل هذه الكلمة.', done2: 'تم',
-    openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم بالزر أدناه.', startNew: 'ابدأ', again2: 'مرة أخرى'});
+    openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم.', startNew: 'ابدأ', again2: 'مرة أخرى'});
   const L = () => S[ui] || S.en;
   const $q = () => document.querySelector('#qv');
   const Qn = () => window.QURAN;
@@ -7972,7 +7971,7 @@ Object.assign(I.fr, {
         return R;
       };
       const cleanup = () => { on = false; clearInterval(timer); mic.classList.remove('on'); fin.hidden = !finals.length; };
-      const micHelp = () => { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp), E('a', {class: 'btn', href: 'https://turathkhairalquroon.com/' + href('say', s, f, t), target: '_blank', rel: 'noopener'}, L().openChrome)); };
+      const micHelp = () => { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); };
       mic.addEventListener('click', async () => {
         if (on) { stopping = true; try { rec.stop(); } catch (e) {} cleanup(); status.textContent = L().tapStart; return; }
         if (!get('consent', 0)) return consent(() => mic.click());
