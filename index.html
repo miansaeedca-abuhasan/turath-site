@@ -2611,15 +2611,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   Object.assign(I.ur, {copyRange: 'آیات کاپی / شیئر کریں', copyRangeNote: 'سورت اور آیات کی حد چنیں (مثلاً سورۃ البقرہ آیت 25 سے 35 تک)، پھر صرف آیات یا ترجمہ کے ساتھ۔', mushaf: 'مصحف (مسلسل متن)', viewMode: 'قرآن دیکھنے کا انداز', pagesMode: 'مصحف مدینہ (صفحات)', rasm: 'رسم الخط', rasmU: 'عثمانی — مصحف مدینہ', rasmI: 'انڈو پاک',
     tajweed: 'تجوید کے رنگ (عثمانی رسم الخط میں)', tjLegend: 'تجوید کے رنگوں کی وضاحت',
     tjNames: ['ہمزۂ وصل', 'لامِ شمسی', 'نہ پڑھا جانے والا حرف', 'مدِّ طبعی (۲ حرکات)', 'مدِّ عارض / لین (۲، ۴، ۶)', 'مدِّ متصل (۴، ۵)', 'مدِّ منفصل (۴، ۵)', 'مدِّ لازم (۶)', 'غنہ', 'اخفاء', 'اخفائے شفوی', 'ادغام مع الغنہ', 'ادغام بلا غنہ', 'ادغامِ شفوی', 'ادغامِ متجانسین', 'ادغامِ متقاربین', 'اقلاب', 'قلقلہ'],
-    hifz: 'حفظ — تکرار سے تلاوت', hifzNote: 'ایک آیت کو جتنی بار چاہیں دہرائیں، یا آیات کا حصہ (مثلاً ۱ سے ۲۰) منتخب کریں اور پورے حصے کو بھی جتنی بار چاہیں دہرائیں۔',
-    hFrom: 'آیت سے', hTo: 'آیت تک', hAyahRep: 'ہر آیت کتنی بار', hAyahRepHint: 'ایک ہی آیت کے لیے «سے» اور «تک» میں ایک ہی نمبر لکھیں', hRangeRep: 'پورا حصہ کتنی بار', hRangeRepHint: 'منتخب آیات ترتیب سے پڑھنے کے بعد دوبارہ شروع سے',
+    hifz: 'حفظ — تکرار سے تلاوت', hifzNote: 'سورت اور آیات چنیں، ہر آیت کتنی بار دہرانی ہے وہ دبائیں، پھر شروع کریں۔',
+    hMore: 'مزید ترتیبات (پوری حد دہرانا، وقفہ، قاری)', hFrom: 'آیت سے', hTo: 'آیت تک', hAyahRep: 'ہر آیت کتنی بار', hAyahRepHint: 'ایک ہی آیت کے لیے «سے» اور «تک» میں ایک ہی نمبر لکھیں', hRangeRep: 'پورا حصہ کتنی بار', hRangeRepHint: 'منتخب آیات ترتیب سے پڑھنے کے بعد دوبارہ شروع سے',
     hGap: 'ہر بار کے بعد وقفہ (سیکنڈ)', hRepN: (a, b) => 'تکرار ' + a + '/' + b, hRoundN: (a, b) => 'دور ' + a + '/' + b,
     previewAudio: 'Claude کے اس لنک میں باہر کی ویب سائٹ سے تلاوت کی آواز چلانے کی اجازت نہیں۔ اپنی ویب سائٹ اور ایپ میں تلاوت چلے گی۔', hifzNoSurah: 'حفظ کی تکرار کے لیے آیت وار تلاوت والا قاری منتخب کریں۔', hifzDone: 'تکرار مکمل ہوگئی'});
   Object.assign(I.en, {copyRange: 'Copy / share ayahs', copyRangeNote: 'Choose the surah and the ayahs (e.g. al-Baqarah 25 to 35), then the Arabic only or with the translation.', mushaf: 'Mushaf (flowing text)', viewMode: 'How to show the Quran', pagesMode: 'Madinah Mushaf (pages)', rasm: 'Script', rasmU: 'Uthmani — Madinah Mushaf', rasmI: 'Indo-Pak',
     tajweed: 'Tajweed colours (Uthmani script)', tjLegend: 'Tajweed colour guide',
     tjNames: ['Hamzat al-wasl', 'Lam shamsiyyah', 'Silent letter', 'Natural madd (2)', "Madd 'arid / leen (2, 4, 6)", 'Madd muttasil (4, 5)', 'Madd munfasil (4, 5)', 'Madd lazim (6)', 'Ghunnah', 'Ikhfa', 'Ikhfa shafawi', 'Idgham with ghunnah', 'Idgham without ghunnah', 'Idgham shafawi', 'Idgham mutajanisayn', 'Idgham mutaqaribayn', 'Iqlab', 'Qalqalah'],
-    hifz: 'Hifz — repeat recitation', hifzNote: 'Repeat one ayah as many times as you like, or choose a part (e.g. ayah 1 to 20) and repeat the whole part too.',
-    hFrom: 'From ayah', hTo: 'To ayah', hAyahRep: 'Each ayah, times', hAyahRepHint: 'For one ayah, put the same number in From and To', hRangeRep: 'Whole part, times', hRangeRepHint: 'After the chosen ayahs, start again from the first',
+    hifz: 'Hifz — repeat recitation', hifzNote: 'Choose the surah and ayahs, tap how many times each ayah repeats, then Start.',
+    hMore: 'More settings (repeat whole part, pause, reciter)', hFrom: 'From ayah', hTo: 'To ayah', hAyahRep: 'Each ayah, times', hAyahRepHint: 'For one ayah, put the same number in From and To', hRangeRep: 'Whole part, times', hRangeRepHint: 'After the chosen ayahs, start again from the first',
     hGap: 'Pause after each time (seconds)', hRepN: (a, b) => 'repeat ' + a + '/' + b, hRoundN: (a, b) => 'round ' + a + '/' + b,
     previewAudio: 'This Claude link may not play sound from other websites. Recitation plays on your own website and in the app.', hifzNoSurah: 'For hifz repetition choose a reciter with ayah-by-ayah audio.', hifzDone: 'Repetition finished'});
   Object.assign(ICON, {
@@ -3151,6 +3151,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function redraw() { if (!R) return; await need(arKeys().concat(QS.tr)); drawReader(true); }
 
   /* ---------- hifz: repeat one ayah, or a range of ayahs, as many times as set ---------- */
+  // the repeat button: the reader first turns into the mushaf (flowing text, or the Madinah pages when those are on), then the settings open
+  async function hifzOpen() {
+    if (R && QS.mode !== 'mushaf' && QS.mode !== 'pages') { QS.mode = 'mushaf'; qsave(); tools(); await redraw(); }
+    hifzSheet();
+  }
   async function hifzSheet() {
     await need([]);
     const H = Object.assign({s: 1, from: 1, to: 7, ayahRep: 3, rangeRep: 1, gap: 0}, QS.hifz);
@@ -3168,8 +3173,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const cur = () => { const r = recOf(); return ayahOnly(r) ? r : RECITERS.find(ayahOnly); };
     const hsum = el('summary', {}, T('reciter') + ': ' + recLabel(cur()));
     const hrec = el('details', {class: 'hrec'}, hsum, reciterList(r => { hsum.textContent = T('reciter') + ': ' + recLabel(r); }, ayahOnly));
+    // for children: surah, from, to and one row of buttons for "each ayah, times"; the rest is folded away
+    const quick = el('div', {class: 'seg', role: 'group'}, ...[1, 3, 5, 10, 20].map(k => el('button', {type: 'button', class: 'segb', 'data-k': String(k), on: {click: () => { ar.value = String(k); mark(); }}}, String(k))));
+    const mark = () => quick.querySelectorAll('.segb').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k === String(+ar.value)))); ar.addEventListener('input', mark); mark();
+    const more = el('details', {class: 'hrec'}, el('summary', {}, T('hMore')), row(T('hRangeRep'), rr, T('hRangeRepHint')), row(T('hGap'), gap), hrec);
     sheet(T('hifz'), [el('p', {class: 'note'}, T('hifzNote')), row(T('surahShort'), sel), row(T('hFrom'), from), row(T('hTo'), to),
-      row(T('hAyahRep'), ar, T('hAyahRepHint')), row(T('hRangeRep'), rr, T('hRangeRepHint')), row(T('hGap'), gap), hrec],
+      el('p', {class: 'grp'}, T('hAyahRep')), quick, more],
       [[T('close'), null], [T('start'), () => {
         const n = Q.meta.surahs[sel.value - 1][4], cl = (x, a, b) => Math.max(a, Math.min(b, Math.round(+x || a)));
         const f = cl(from.value, 1, n), t = cl(to.value, f, n);
@@ -3242,7 +3251,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const b = (ic, lbl, fn) => el('button', {class: 'ib', type: 'button', title: lbl, 'aria-label': lbl, on: {click: fn}}, icon(ic));
     if (R && R.kind === 's') x.append(b('search', T('qsSurah'), () => { location.hash = '#/q/ss/' + R.n; }));
     x.append(b(QS.mode === 'tr' ? 'read' : 'list', T('viewMode'), viewSheet),
-      b('translate', T('selectTr'), () => pickTr(true)), b('replay', T('hifz'), hifzSheet), b('play', T('recite'), () => playFrom(firstVisible())), b('tune', T('settings'), qSettings));
+      b('translate', T('selectTr'), () => pickTr(true)), b('replay', T('hifz'), hifzOpen), b('play', T('recite'), () => playFrom(firstVisible())), b('tune', T('settings'), qSettings));
   }
   function header(s) {
     const m = Q.meta.surahs[s - 1], h = el('div', {class: 'shead'});
@@ -4911,6 +4920,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029c', d: '29-10-2026', keys: [],
+      t: {ur: 'قرآن: تکرار (حفظ) آسان ہو گئی', en: 'Quran: repeat (hifz) made simpler', ar: 'القرآن: التكرار (الحفظ) أصبح أسهل'},
+      i: {ur: ['تکرار کا بٹن دبانے پر قرآن مصحف کی شکل میں آ جاتا ہے اور سیٹنگ ونڈو کھلتی ہے۔ ونڈو میں اب صرف سورت، آیات اور تکرار کے بٹن (1، 3، 5، 10، 20) ہیں، باقی ترتیبات «مزید ترتیبات» میں ہیں۔'],
+        en: ['Pressing repeat now turns the Quran into the mushaf view and opens the settings. The window only has the surah, the ayahs and the repeat buttons (1, 3, 5, 10, 20); the rest is under “More settings”.'],
+        ar: ['عند الضغط على التكرار يتحول القرآن إلى شكل المصحف وتُفتح الإعدادات؛ وفيها السورة والآيات وأزرار التكرار (1، 3، 5، 10، 20) والباقي ضمن «المزيد من الإعدادات».']}},
     {id: '20261029b', d: '29-10-2026', keys: ['siyar'],
       t: {ur: 'سلف صالحین: تاریخ دمشق اور تاریخ الاسلام سے مزید احوال', en: 'The Salaf: more details from Tarikh Dimashq and Tarikh al-Islam', ar: 'السلف الصالح: زيادة في الأحوال من تاريخ دمشق وتاريخ الإسلام'},
       i: {ur: ['تقریباً 180 شخصیات کے حالات میں «تاریخ دمشق» (ابن عساکر) اور «تاریخ الاسلام» (ذہبی) سے مزید واقعات، اقوال اور اہل علم کی تعریف شامل کی گئی ہے۔ ہر پیرے کے آخر میں مصدر جلد/صفحہ کے ساتھ لکھا ہے۔'],
