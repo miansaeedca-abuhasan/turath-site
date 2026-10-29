@@ -1462,7 +1462,7 @@ const THEMES=[['blue','#2f7fc0',{ur:'نیلا',ar:'أزرق',en:'Blue',bn:'ন�
   const s=document.createElement('style');s.textContent=css;document.head.append(s);})();
 const LOOK={color:'blue',mode:'auto',urdu:'jameel'};try{Object.assign(LOOK,JSON.parse(localStorage.look||'{}'))}catch(e){}
 // Jameel Noori Nastaleeq became the default Urdu font (the old default "gulzar" already began with it)
-if(!LOOK.uv){if(LOOK.urdu==='gulzar')LOOK.urdu='jameel';LOOK.uv=2;}
+if(!LOOK.uv){if(LOOK.urdu==='gulzar')LOOK.urdu='jameel';LOOK.uv=2;}if(LOOK.uv<3){LOOK.urdu='jameel';LOOK.uv=3;try{localStorage.look=JSON.stringify(LOOK)}catch(e){}}
 const darkQ=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
 // Urdu fonts to choose from (the first is the default); each falls back to the next if it cannot load
 const URDU_FONTS={jameel:'"Jameel Noori Nastaleeq","Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif',gulzar:'"Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif',
@@ -4125,8 +4125,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
-      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, el('a', sb && sb.ext ? {href: sb.ext + h, target: '_blank', rel: 'noopener'} : {href: h}, '(' + d.grade + ')'))); }
-    else if (d.grade) c.append(/[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, d.grade) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade));
+      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, (() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('a', sb && sb.ext ? {href: sb.ext + h, target: '_blank', rel: 'noopener'} : {href: h}, '(' + lk + ')')]; })())); }
+    else if (d.grade) c.append(/[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade));
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
@@ -6092,7 +6092,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       '<div class="clk">' + clockSvg() + '<div class="sl"><div id="sld"><span><b>' + dayS + '</b><i>' + dateS + '</i></span><span><b>' + hijS + '</b><i>' + dayS + '</i></span></div></div></div>' +
       '<div class="cd"><small>' + t.next + ': <span id="cn"></span></small><b id="cd">--:--:--</b></div>' +
       '<div class="pr">';
-    tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
+    tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i !== 1 && ((i === idx && (i === 5 || !tm[i === 0 ? 1 : i + 1] || now < tm[i === 0 ? 1 : i + 1])) || (idx === -1 && i === 5)) ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
     h += '</div><div class="mz" role="tablist"><button type="button" role="tab" data-m="0" aria-selected="' + (!hanafi) + '" class="' + (hanafi ? '' : 'on') + '">' + (MZ[u] || MZ.en)[0] + '</button><button type="button" role="tab" data-m="1" aria-selected="' + hanafi + '" class="' + (hanafi ? 'on' : '') + '">' + (MZ[u] || MZ.en)[1] + '</button></div>';
     if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); placeHk(); }
     placeHk();
