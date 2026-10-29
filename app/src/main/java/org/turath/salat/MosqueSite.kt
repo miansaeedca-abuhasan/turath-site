@@ -267,7 +267,7 @@ object MosqueSearch {
     fun viaWeb(name: String, city: String): Pair<String, MosqueSite.Times>? {
         val q = java.net.URLEncoder.encode("$name $city prayer times iqamah", "UTF-8")
         val html = httpGet("https://html.duckduckgo.com/html/?q=$q", 15_000) ?: return null
-        val words = MosqueSite.nameWords(name)
+        val words = nameWords(name)
         val urls = Regex("uddg=([^&\"']+)").findAll(html).map { runCatching { java.net.URLDecoder.decode(it.groupValues[1], "UTF-8") }.getOrDefault("") }
             .filter { it.startsWith("http") && !SKIP.containsMatchIn(runCatching { URI(it).host }.getOrNull() ?: "") }
             .distinctBy { runCatching { URI(it).host }.getOrNull() }.toList()
