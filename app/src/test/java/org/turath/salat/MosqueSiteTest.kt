@@ -89,4 +89,13 @@ class MosqueSiteTest {
         val t = MosqueSite.parse("<table><tr><th>Fajr</th><th>Sunrise</th><th>Dhuhr</th><th>Asr</th><th>Maghrib</th><th>Isha</th><th>Jumu'a</th></tr><tr><td>6:40</td><td>7:50</td><td>1:30</td><td>3:55</td><td>6:15</td><td>7:45</td><td>1:30</td></tr></table>")
         assertEquals(6 * 60 + 40, t.iq["FAJR"]); assertEquals(15 * 60 + 55, t.iq["ASR"]); assertEquals(19 * 60 + 45, t.iq["ISHA"]); assertEquals(listOf(13 * 60 + 30), t.jumuah)
     }
+
+    @Test fun sunriseIsNotFajrIqamah() {
+        fun row(n: String, a: String, b: String, c: String) = "<div class='row'><div>$n</div><div>$a</div><div>$b</div><div>$c</div></div>"
+        val html = row("Fajr", "6:27 AM", "6:40 AM", "6:50 AM") + "<div class='row'><div>Sunrise</div><div></div><div>7:47 AM</div></div>" +
+            row("Dhuhr", "1:06 PM", "1:35 PM", "1:45 PM") + row("Asr", "4:32 PM", "4:50 PM", "5:00 PM") + row("Maghrib", "6:15 PM", "6:16 PM", "6:17 PM") + row("Isha", "7:28 PM", "7:50 PM", "8:00 PM")
+        val t = MosqueSite.parse(html)
+        assertEquals(6 * 60 + 50, t.iq["FAJR"]); assertEquals(13 * 60 + 45, t.iq["DHUHR"]); assertEquals(20 * 60, t.iq["ISHA"])
+        assertEquals(6 * 60 + 50, MosqueSite.parse("<p>Fajr 6:27 AM 6:40 AM 6:50 AM Sunrise 7:47 AM</p><p>Dhuhr 1:06 PM 1:45 PM</p><p>Asr 4:32 PM 5:00 PM</p>").iq["FAJR"])
+    }
 }

@@ -135,7 +135,7 @@ private data class NavTab(val key: String, val icon: ImageVector)
 @Composable
 fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.Home), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
-        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosques", Icons.Outlined.LocationOn))
+        NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosques", Icons.Outlined.LocationOn), NavTab("tMyMasjid", Icons.Outlined.Mosque))
     if (s.page.isNotEmpty()) {
         BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
         Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
@@ -159,10 +159,10 @@ fun Main(s: AppState) {
             containerColor = Color.Transparent,
             bottomBar = {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                    // Home in the middle of the bar (the tab numbers stay as they are)
-                    listOf(1, 2, 0, 3, 4, 5).forEach { i -> val t = tabs[i]
+                    // Home in the middle: Times, Reminders, Calendar on one side; My masjid, Qibla, Masjids on the other
+                    listOf(1, 2, 3, 0, 6, 4, 5).forEach { i -> val t = tabs[i]
                         NavigationBarItem(selected = s.tab == i, onClick = { s.tab = i }, icon = { Icon(t.icon, Tr[t.key]) },
-                            label = { Text(Tr[t.key], fontSize = 10.sp, maxLines = 1, softWrap = false) })
+                            label = { Text(Tr[t.key], fontSize = 9.sp, maxLines = 1, softWrap = false) })
                     }
                 }
             }
@@ -174,6 +174,7 @@ fun Main(s: AppState) {
                     2 -> RemindersScreen(s)
                     3 -> CalendarScreen(s)
                     4 -> QiblaScreen(s)
+                    6 -> LocalMasjidPage(s) { s.tab = 0 }
                     else -> MosquesPage(s) { s.tab = 0 }
                 }
                 // an adhan is playing: a stop button on every screen
@@ -185,7 +186,7 @@ fun Main(s: AppState) {
                 if (s.tab == 0) IconButton(onClick = { s.page = "world"; s.sub = "" }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopEnd)) {
                     Icon(Icons.Outlined.Public, Tr["world"])
                 }
-                if (s.tab != 4 && s.tab != 5) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {
+                if (s.tab != 4 && s.tab != 5 && s.tab != 6) IconButton(onClick = { scope.launch { drawer.open() } }, Modifier.statusBarsPadding().padding(4.dp).align(Alignment.TopStart)) {
                     Icon(Icons.Outlined.Menu, Tr["menu"])
                 }
             }

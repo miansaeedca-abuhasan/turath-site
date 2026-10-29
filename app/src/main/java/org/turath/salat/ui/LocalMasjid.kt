@@ -35,6 +35,15 @@ object LocalMasjid {
     fun jumuah(pr: Prefs): List<Int> = (pr.sp.getString("lm_jum", "") ?: "").split(",").mapNotNull { it.toIntOrNull() }.take(3)
     fun setJumuah(pr: Prefs, l: List<Int>) = pr.sp.edit().putString("lm_jum", l.take(3).joinToString(",")).apply()
 
+    /** an iqamah must come after the prayer's start (a few minutes of difference between the masjid's table and the calculation are allowed) and before the next prayer begins;
+     *  a time that does not (the sunrise taken for Fajr, say) is not used */
+    fun plausible(day: DayTimes, k: String, m: Int): Boolean {
+        fun mm(p: P) = day[p].let { it.hour * 60 + it.minute }
+        val p = runCatching { P.valueOf(k) }.getOrNull() ?: return false
+        val next = when (p) { P.FAJR -> P.SUNRISE; P.DHUHR -> P.ASR; P.ASR -> P.MAGHRIB; P.MAGHRIB -> P.ISHA; else -> null }
+        return m >= mm(p) - 10 && m <= mm(p) + 150 && (next == null || m < mm(next))
+    }
+
     /** the vibration of a prayer starts when the masjid's iqamah is, counted from the start of the prayer */
     fun applyVibration(pr: Prefs, key: String, begin: ZonedDateTime, iqamahMin: Int) {
         val off = (iqamahMin - (begin.hour * 60 + begin.minute)).coerceIn(0, 120)
@@ -102,12 +111,13 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     val w = withContext(Dispatchers.IO) { runCatching { MosqueSearch.viaWeb(n, c) }.getOrNull() }
                     if (w != null) { url = w.first; t = w.second }
                 }
-                if (t == null || t.iq.size + (if (t.maghribAtSunset) 1 else 0) < 3) { status = "none"; return@launch }
-                site = url; pr.sp.edit().putString("lm_site", url).apply()
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
+                val iqOk = if (t == null) emptyMap() else t.iq.filter { (k, m) -> day == null || LocalMasjid.plausible(day, k, m) }
+                if (t == null || iqOk.size + (if (t.maghribAtSunset && "MAGHRIB" !in iqOk) 1 else 0) < 3) { status = "none"; return@launch }
+                site = url; pr.sp.edit().putString("lm_site", url).apply()
                 if (t.maghribAtSunset && day != null) LocalMasjid.setIqamah(pr, "MAGHRIB", day[P.MAGHRIB].let { it.hour * 60 + it.minute + t.maghribAfter })
-                for ((k, m) in t.iq) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
+                for ((k, m) in iqOk) { LocalMasjid.setIqamah(pr, k, m); day?.let { d -> LocalMasjid.applyVibration(pr, k, d[P.valueOf(k)], m) } }
                 if (t.jumuah.isNotEmpty()) { LocalMasjid.setJumuah(pr, t.jumuah); day?.let { d -> LocalMasjid.applyVibration(pr, "JUMUAH", d[P.DHUHR], t.jumuah.min()) } }
                 status = "ok"; ver++; s.changed()
             }

@@ -15,6 +15,7 @@ object MosqueSite {
         "ASR" to Regex("\\basr\\b|\\basar\\b|ikindi|العصر|عصر", RegexOption.IGNORE_CASE),
         "MAGHRIB" to Regex("maghrib|magrib|maghreb|akşam|المغرب|مغرب", RegexOption.IGNORE_CASE),
         "ISHA" to Regex("\\bisha\\b|\\besha\\b|ishaa|ish'aa|isha'a|yatsı|العشاء|عشاء|عشا", RegexOption.IGNORE_CASE),
+        "SUNRISE" to Regex("sunrise|shurooq|shuruq|shorook|ishraq|zawal|الشروق|شروق|طلوع|اشراق", RegexOption.IGNORE_CASE),
         "JUM" to Regex("jumu|jumm|jum'a|jumaa|jumah|cuma|friday|الجمعة|جمعة|جمعہ", RegexOption.IGNORE_CASE))
     private val TIME = Regex("(?<![\\d:.])(\\d{1,2})([:.])(\\d{2})(?!\\d)\\s*(a\\.?\\s?m\\.?|p\\.?\\s?m\\.?)?", RegexOption.IGNORE_CASE)
 
@@ -78,7 +79,7 @@ object MosqueSite {
         val all = text.joinToString(" ")
         // a page that shows only one column of times, headed «Iqamah» / «Jamaat», has the congregation times in it
         // a page that gives each prayer one time only (no table of begin + iqamah) gives the congregation time
-        val pairs = text.any { l -> KEYS.any { (k, re) -> k != "JUM" && re.containsMatchIn(l) } && TIME.findAll(l).count() >= 2 }
+        val pairs = text.any { l -> KEYS.any { (k, re) -> k != "JUM" && k != "SUNRISE" && re.containsMatchIn(l) } && TIME.findAll(l).count() >= 2 }
         val onlyIqamah = !pairs || (Regex("iqama|iqamah|jama'?at|jamaah|congregation", RegexOption.IGNORE_CASE).containsMatchIn(all) &&
             !Regex("begin|start|adhan|azan|athan", RegexOption.IGNORE_CASE).containsMatchIn(all))
         // one row per day with the date first («27/10/2026 …»): Sunrise, Fajr begins and jama'ah, Zuhr begins and jama'ah, Asr (two begin times) and jama'ah, Maghrib, Isha
@@ -97,7 +98,7 @@ object MosqueSite {
             if (i + 1 >= text.size || TIME.containsMatchIn(l)) continue
             val hc = l.split("|").map { it.trim() }
             val keys = hc.map { c -> if (c.length <= 20) KEYS.firstOrNull { (_, re) -> re.containsMatchIn(c) }?.first else null }
-            if (keys.filterNotNull().filter { it != "JUM" }.distinct().size < 4) continue
+            if (keys.filterNotNull().filter { it != "JUM" && it != "SUNRISE" }.distinct().size < 4) continue
             val vc = text[i + 1].split("|").map { it.trim() }
             if (vc.size != hc.size) continue
             val r = linkedMapOf<String, Int>(); var jm: Int? = null
@@ -105,7 +106,7 @@ object MosqueSite {
                 if (k == null) continue
                 val t = TIME.find(vc[j]) ?: continue
                 val mm = minutes(k, t.groupValues[1].toInt(), t.groupValues[2], t.groupValues[3].toInt(), t.groupValues[4].ifEmpty { null }) ?: continue
-                if (k == "JUM") jm = mm else r.putIfAbsent(k, mm)
+                if (k == "JUM") jm = mm else if (k != "SUNRISE") r.putIfAbsent(k, mm)
             }
             if (r.size >= 4) return Times(r, listOfNotNull(jm))
         }
@@ -129,7 +130,7 @@ object MosqueSite {
             // the places in the line where a prayer's name stands; the text up to the next name belongs to it
             val hits = KEYS.flatMap { (k, re) -> re.findAll(line).map { Triple(it.range.first, it.range.last + 1, k) }.toList() }.sortedBy { it.first }
             for ((i, h) in hits.withIndex()) {
-                if (otherDay && h.third != "JUM") continue
+                if (h.third == "SUNRISE" || (otherDay && h.third != "JUM")) continue
                 val end = hits.getOrNull(i + 1)?.first ?: line.length
                 val seg = line.substring(h.second, end)
                 val t = TIME.findAll(seg).toList()
@@ -156,6 +157,7 @@ object MosqueSite {
                 val ln = raw.trim(' ', '|', ':')
                 if (ln.length > 18 || TIME.containsMatchIn(ln)) continue
                 val key = KEYS.firstOrNull { (_, re) -> re.containsMatchIn(ln) }?.first ?: continue
+                if (key == "SUNRISE") continue
                 val ms = mutableListOf<Int>()
                 var j = i + 1
                 while (j < text.size && j <= i + 8) {

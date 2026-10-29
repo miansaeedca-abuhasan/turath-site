@@ -22,6 +22,7 @@ object Tr {
         "hanafiVibNote" to arrayOf("نمازوں کے دوران وائبریشن موڈ کو اپنی نمازوں کے مطابق سیٹ کرلیں", "اضبط وضع الاهتزاز أثناء الصلوات بحسب أوقات صلاتك", "Set the vibration mode during prayers to match your own prayer times"),
         "gmapsPrayer" to arrayOf("گوگل میپس میں قریبی مسلم مصلے", "اعرض مصليات المسلمين القريبة في خرائط Google", "See near by Muslim prayer room"),
         "mosqHidden" to arrayOf("گروہی چھانٹی سے ہٹائے گئے", "المستبعدة بالتصفية", "Left out by the group filter"),
+        "tMyMasjid" to arrayOf("میری مسجد", "مسجدي", "My masjid"),
         "tMosques" to arrayOf("مساجد", "المساجد", "Masjids"),
         "mosques" to arrayOf("قریبی مساجد", "المساجد القريبة", "Masjids nearby"),
         "radius" to arrayOf("دائرہ", "النطاق", "Radius"),
