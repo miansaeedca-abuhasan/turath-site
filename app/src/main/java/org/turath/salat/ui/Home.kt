@@ -54,7 +54,8 @@ fun HomeScreen(s: AppState) {
         androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null, Modifier.padding(top = 4.dp).size(44.dp).clip(RoundedCornerShape(11.dp)))
         // a moving line between the menu and the globe: nafl times, adhkar, Friday, today's special day, the user's events
         val line = remember(now.toLocalDate(), now.hour < 12, s.version, forb?.first) { Widget.ticker(s.prefs, place, now, today) }
-        Box(Modifier.fillMaxWidth().height(48.dp).padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
+        Box(Modifier.fillMaxWidth().height(48.dp)) {
+        Box(Modifier.fillMaxSize().padding(horizontal = 52.dp), contentAlignment = Alignment.Center) {
             if (forb != null && (forb.first == today[P.SUNRISE] || forb.first == today[P.ZAWAL])) {
                 // forbidden time: the moving line stops, a red message blinks
                 val blink by androidx.compose.animation.core.rememberInfiniteTransition(label = "blink").animateFloat(1f, .15f,
@@ -65,6 +66,12 @@ fun HomeScreen(s: AppState) {
             } else
             Text(line, Modifier.fillMaxWidth().basicMarquee(iterations = Int.MAX_VALUE, velocity = 40.dp), maxLines = 1,
                 fontSize = 13.sp, color = tickerInk(s.prefs))
+        }
+        // the masjid finder at the left end of the line and the qibla at the right end (the same on both sides of the screen in every language)
+        androidx.compose.runtime.CompositionLocalProvider(androidx.compose.ui.platform.LocalLayoutDirection provides androidx.compose.ui.unit.LayoutDirection.Ltr) {
+            IconButton(onClick = { s.tab = 5 }, Modifier.align(Alignment.CenterStart)) { Icon(Icons.Outlined.LocationOn, Tr["tMosques"], tint = MaterialTheme.colorScheme.primary) }
+            IconButton(onClick = { s.tab = 4 }, Modifier.align(Alignment.CenterEnd)) { Icon(Icons.Outlined.Explore, Tr["tQibla"], tint = MaterialTheme.colorScheme.primary) }
+        }
         }
         Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.clickable { s.page = "city"; s.sub = "city" }) {
             Icon(if (s.prefs.placeByGps) Icons.Outlined.MyLocation else Icons.Outlined.PushPin, null, tint = MaterialTheme.colorScheme.primary)

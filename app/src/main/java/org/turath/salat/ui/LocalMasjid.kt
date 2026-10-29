@@ -114,6 +114,9 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 val pl = pr.place
                 val day = if (pl != null) Schedule.day(pr, pl, java.time.LocalDate.now(Schedule.zone(pl))) else null
                 val iqOk = if (t == null) emptyMap() else t.iq.filter { (k, m) -> day == null || LocalMasjid.plausible(day, k, m) }
+                // times that are all one or two minutes after the start of the prayer are the calculated times of a time-table site, not the masjid's iqamah
+                val tooClose = day != null && iqOk.size >= 4 && iqOk.count { (k, m) -> m - day[P.valueOf(k)].let { it.hour * 60 + it.minute } in 0..3 } >= 4
+                if (tooClose) { status = "none"; return@launch }
                 if (t == null || iqOk.size + (if (t.maghribAtSunset && "MAGHRIB" !in iqOk) 1 else 0) < 3) { status = "none"; return@launch }
                 site = url; pr.sp.edit().putString("lm_site", url).apply()
                 if (t.maghribAtSunset && day != null) LocalMasjid.setIqamah(pr, "MAGHRIB", day[P.MAGHRIB].let { it.hour * 60 + it.minute + t.maghribAfter })

@@ -204,9 +204,11 @@ object MosqueSite {
     }
 
     /** the times from a masjid's page; if its first page has none, the pages it links to as «prayer times» / «iqamah» / «timetable» */
-    fun fetch(site: String): Times? {
+    fun fetch(site: String, mustMention: List<String> = emptyList()): Times? {
         val start = site.trim().let { if (it.startsWith("http")) it else "https://$it" }
         val html = runCatching { get(start) }.getOrNull() ?: return null
+        // a page found by a web search must be about this masjid: its name (or a distinctive word of it) is on the page
+        if (mustMention.isNotEmpty() && !mustMention.any { html.contains(it, ignoreCase = true) }) return null
         var best = parse(html)
         if (best.iq.size >= 3) return best
         val links = prayerLinks(html, start)
@@ -255,18 +257,25 @@ object MosqueSearch {
         return first.distinctBy { it.name + it.address }.sortedBy { it.km }.take(8)
     }
 
-    private val SKIP = Regex("facebook|instagram|twitter|x\\.com|youtube|yelp|google|wikipedia|tripadvisor|mapquest|bing|linkedin|pinterest|tiktok|salatomatic|islamicfinder|muslimpro|waze|foursquare|yellowpages|maps\\.apple", RegexOption.IGNORE_CASE)
+    /** the distinctive words of a masjid's name («Makki Masjid» → «makki»): not the common words such as masjid, islamic, centre */
+    fun nameWords(name: String): List<String> = name.lowercase().split(Regex("[^\\p{L}]+"))
+        .filter { it.length >= 4 && it !in setOf("masjid", "mosque", "masjed", "islamic", "islam", "center", "centre", "association", "society", "community", "jame", "jamia", "jamea", "trust", "foundation", "muslim", "muslims", "canada", "toronto", "ontario", "brampton", "mississauga", "centr") }
+
+    private val SKIP = Regex("masjidnow|prayersconnect|mosquefinder|salahtimes|prayertimes|timesprayer|praytimes|namaz|athan|azan|muslimpro|prayerhub|aladhan|timeanddate|facebook|instagram|twitter|x\\.com|youtube|yelp|google|wikipedia|tripadvisor|mapquest|bing|linkedin|pinterest|tiktok|salatomatic|islamicfinder|muslimpro|waze|foursquare|yellowpages|maps\\.apple", RegexOption.IGNORE_CASE)
 
     /** the masjid's own website and its times: the first results of a web search are tried one after another */
     fun viaWeb(name: String, city: String): Pair<String, MosqueSite.Times>? {
         val q = java.net.URLEncoder.encode("$name $city prayer times iqamah", "UTF-8")
         val html = httpGet("https://html.duckduckgo.com/html/?q=$q", 15_000) ?: return null
+        val words = MosqueSite.nameWords(name)
         val urls = Regex("uddg=([^&\"']+)").findAll(html).map { runCatching { java.net.URLDecoder.decode(it.groupValues[1], "UTF-8") }.getOrDefault("") }
             .filter { it.startsWith("http") && !SKIP.containsMatchIn(runCatching { URI(it).host }.getOrNull() ?: "") }
-            .distinctBy { runCatching { URI(it).host }.getOrNull() }.take(4).toList()
+            .distinctBy { runCatching { URI(it).host }.getOrNull() }.toList()
+            // a site whose address has a word of the masjid's name is tried first
+            .sortedBy { u -> if (words.any { (runCatching { URI(u).host }.getOrNull() ?: "").contains(it) }) 0 else 1 }.take(5)
         var best: Pair<String, MosqueSite.Times>? = null
         for (u in urls) {
-            val t = runCatching { MosqueSite.fetch(u) }.getOrNull() ?: continue
+            val t = runCatching { MosqueSite.fetch(u, words) }.getOrNull() ?: continue
             if (best == null || t.found > best.second.found) best = u to t
             if (t.iq.size >= 4) break
         }

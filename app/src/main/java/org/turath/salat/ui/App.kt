@@ -159,10 +159,10 @@ fun Main(s: AppState) {
             containerColor = Color.Transparent,
             bottomBar = {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                    // Home in the middle: Times, Reminders, Calendar on one side; My masjid, Qibla, Masjids on the other
-                    listOf(1, 2, 3, 0, 6, 4, 5).forEach { i -> val t = tabs[i]
+                    // Home in the middle: Times and Reminders on one side; Calendar and My masjid on the other (Qibla and the masjid finder are the icons at the top of Home)
+                    listOf(1, 2, 0, 3, 6).forEach { i -> val t = tabs[i]
                         NavigationBarItem(selected = s.tab == i, onClick = { s.tab = i }, icon = { Icon(t.icon, Tr[t.key]) },
-                            label = { Text(Tr[t.key], fontSize = 9.sp, maxLines = 1, softWrap = false) })
+                            label = { Text(Tr[t.key], fontSize = 10.sp, maxLines = 1, softWrap = false) })
                     }
                 }
             }
