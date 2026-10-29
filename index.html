@@ -4946,6 +4946,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029g', d: '29-10-2026', keys: [],
+      t: {ur: 'جمعہ کا درود اور روزانہ کی نصیحتوں کی ترتیب', en: 'Friday salawat, and a better order for the daily cards', ar: 'درود الجمعة وترتيب البطاقات اليومية'},
+      i: {ur: ['جمعرات کی مغرب سے جمعہ کی مغرب تک ہوم صفحے پر درود کی احادیث آتی ہیں، ہر گھنٹے بعد نئی حدیث، اور درود کی ترغیب وقفے وقفے سے یاد دلائی جاتی ہے۔ اطلاعات آن ہوں تو ان اوقات میں اطلاع بھی آئے گی۔', 'صبح و شام کے اذکار کی احادیث پہلے پانچ دن بعد دہرائی جاتی تھیں، اب 24 دن تک نہیں دہرائی جاتیں، اور صبح و شام کی حدیث ایک دن میں الگ الگ ہوتی ہے۔'],
+        en: ['From Thursday maghrib to Friday maghrib the home page shows salawat hadith, a new one every hour, with a gentle reminder from time to time. With notifications on, you also get notifications in these hours.', 'The adhkar hadith in the notifications used to repeat after five days; now they do not repeat for 24 days, and the morning and evening ones differ on the same day.'],
+        ar: ['من مغرب الخميس إلى مغرب الجمعة تظهر في الصفحة الرئيسية أحاديث الصلاة على النبي صلى الله عليه وسلم، حديث جديد كل ساعة مع تذكير بين حين وآخر، وكذلك في الإشعارات إن كانت مفعّلة.', 'كانت أحاديث الأذكار في الإشعارات تتكرر بعد خمسة أيام، والآن لا تتكرر قبل ٢٤ يومًا، ويختلف حديث الصباح عن المساء في اليوم نفسه.']}},
     {id: '20261029f', d: '29-10-2026', keys: [],
       t: {ur: 'حفظ: تکرار کا نیا صفحہ', en: 'Hifz: new repeat page', ar: 'الحفظ: صفحة التكرار الجديدة'},
       i: {ur: ['تکرار کا بٹن اب حفظ کے زمرے کا نیا صفحہ کھولتا ہے: صرف قرآن کی آیات، اور کسی لفظ پر دبانے سے وہ لفظ سنائی دیتا ہے۔ اوپر سورت، آیت سے، آیت تک، ہر آیت کتنی بار اور پورا حصہ کتنی بار؛ باقی سیٹنگ ایک تیر کے پیچھے ہے۔', 'سبق سنانے اور یاد سے پڑھنے کے صفحوں میں بھی اوپر آیات کے نمبر بدلنے کی جگہ ہے، اور سبق کے بعد وہی صفحہ دوبارہ کھلا رہتا ہے۔'],
@@ -5771,13 +5776,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     try { await need(); } catch (e) { box.replaceChildren(); return; }
     const out = [];
     // adhkar of this time of day
-    const ak = m ? 'morning' : 'evening', first = DLY.hadith[DLY[ak][(dn + (m ? 0 : 7)) % DLY[ak].length]];   // a different one each day
+    const ak = m ? 'morning' : 'evening', first = DLY.hadith[DLY[ak][(dn + (m ? 0 : 12)) % DLY[ak].length]];   // a different one each day
     out.push(card(m ? 'sun' : 'moon', T(m ? 'tMorning' : 'tEvening'), [ui === 'ar' ? trP(clip(first.ar, 160), 'ar', 'mar') : trP(clip(trOfH(first), 180), ui)], '#/t/adhkar/' + (m ? 'm' : 'e'),
       el('span', {class: 'cs'}, (an.t ? timesLine(an) + ' — ' : '') + NUM(DLY[ak].length) + ' — ' + T('adhkarNote'))));
     // advice
     const x = nasihaOf(dn), xt = x.kind === 'n' ? DLY.hadith[x.n] : x;
     out.push(card('quote', T('tNasiha'), [el('p', {class: 'cs'}, kindName(x.kind) + ' — ' + who(x)), ui === 'ar' ? trP(clip(xt.ar, 220), 'ar', 'mar') : trP(clip(trOfH(xt), 260), ui)], '#/t/nasiha/' + (order()[dn % DLY.nasaih.length])));
     box.replaceChildren(...out);
+    duroodCard().then(c => { if (c) box.prepend(c); });
     // ayah and hadith (they need the Quran text / the book)
     const slotA = el('div'), slotH = el('div'); box.prepend(slotA, slotH);
     QURAN.ayahOfDay(dn).then(a => { slotA.replaceChildren(card('read', T('tAyah'), [ui === 'ar' || !a.tr ? el('p', {class: 'qar mom', lang: 'ar'}, a.ar) : trP(a.tr, a.lang), el('p', {class: 'cs', style: 'text-align:center'}, a.ref)], a.href)); }).catch(() => {});
@@ -5837,22 +5843,79 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.replaceChildren(...items, shLink, list);
   }
 
+  /* ---------- Friday salawat: from Thursday maghrib to Friday maghrib ---------- */
+  const DS = {
+    ur: {title: 'جمعہ کی گھڑیاں — درود شریف', note: 'جمعرات کی مغرب سے جمعہ کی مغرب تک', all: 'درود کی تمام احادیث', src: 'صحیح سیرۃ المصطفیٰ صلی اللہ علیہ وسلم', open: 'اصل کتاب میں دیکھیں',
+      lines: ['جمعرات کی مغرب سے جمعہ کی مغرب تک کثرت سے درود پڑھیں۔', 'جمعہ کی رات اور جمعہ کے دن رسول اللہ صلی اللہ علیہ وسلم پر کثرت سے درود بھیجیں۔', 'زبان کو تر رکھیں: «اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ»', 'آج تھوڑا وقت نکال کر درود شریف پڑھیں، اللہ تعالیٰ آپ کو توفیق دے۔', 'اپنے گھر والوں کو بھی جمعہ کے درود کی یاد دہانی کرائیں۔', 'درود صرف زبان سے نہیں، دل کی محبت اور سنت کی پیروی کے ساتھ بھی ہو۔']},
+    ar: {title: 'ساعات الجمعة — الصلاة على النبي صلى الله عليه وسلم', note: 'من مغرب الخميس إلى مغرب الجمعة', all: 'كل أحاديث الصلاة على النبي صلى الله عليه وسلم', src: 'صحيح سيرة المصطفى صلى الله عليه وسلم', open: 'افتح في الكتاب',
+      lines: ['أكثِروا من الصلاة على النبي صلى الله عليه وسلم من مغرب الخميس إلى مغرب الجمعة.', 'في ليلة الجمعة ويومها أكثِر من الصلاة على رسول الله صلى الله عليه وسلم.', 'أبقِ لسانك رطبًا: «اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ»', 'خصِّص وقتًا اليوم للصلاة على النبي صلى الله عليه وسلم، وفّقك الله.', 'ذكِّر أهلك بالصلاة على النبي صلى الله عليه وسلم يوم الجمعة.', 'لتكن الصلاة عليه بمحبة القلب واتباع السنة، لا باللسان فقط.']},
+    en: {title: 'Friday hours — salawat on the Prophet (peace be upon him)', note: 'From Thursday maghrib to Friday maghrib', all: 'All hadith on salawat', src: 'Sahih Sirat al-Mustafa', open: 'Open in the book',
+      lines: ['Send salawat often from Thursday maghrib until Friday maghrib.', 'On the night and day of Friday, send many salawat upon the Messenger of Allah, peace be upon him.', 'Keep your tongue moist: «Allahumma salli wa sallim ala nabiyyina Muhammad»', 'Take a little time today for salawat; may Allah grant you the success.', 'Remind your family about the Friday salawat too.', 'Let it be with love in the heart and following the Sunnah, not only on the tongue.']}};
+  const DT = k => (DS[ui] || DS.en)[k];
+  let DUR = null;
+  const needD = () => window.DUROOD ? Promise.resolve() : (DUR = DUR || new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'durood.js'; s.onload = ok; s.onerror = no; document.head.append(s); }));
+  // the window: Thursday from maghrib, Friday until maghrib (the sun at the person's place; 18:00 when unknown)
+  function duroodNow(now = new Date()) {
+    const d = now.getDay(); if (d !== 4 && d !== 5) return false;
+    const p = place(), st = p.ll ? sunTimes(now, p.ll[0], p.ll[1]) : null, mg = st && isFinite(st.maghrib) ? st.maghrib : 18, h = now.getHours() + now.getMinutes() / 60;
+    return d === 4 ? h >= mg : h < mg;
+  }
+  const duroodLine = (i = Math.floor(Date.now() / 36e5)) => DT('lines')[i % DT('lines').length];
+  const duroodHadith = (i = Math.floor(Date.now() / 36e5)) => window.DUROOD[i % window.DUROOD.length];   // a new one every hour, none repeated for 25 hours
+  const duroodTr = h => ui === 'ur' ? h.ur : '';
+  async function duroodCard() {
+    if (!duroodNow()) return null;
+    try { await needD(); } catch (e) { return null; }
+    const h = duroodHadith(), tr = duroodTr(h);
+    return el('a', {class: 'card moment tcard durood', href: '#/t/durood', style: 'border-inline-start:6px solid #c9971c;background:color-mix(in srgb,#c9971c 9%,var(--card))'},
+      el('h3', {class: 'mh', style: 'color:#a97a0f'}, icon('gem'), DT('title')), el('p', {class: 'cs', style: 'font-weight:600'}, duroodLine()),
+      ui === 'ur' && tr ? trP(clip(tr, 300), 'ur') : trP(clip(h.ar, 260), 'ar', 'mar'),
+      el('span', {class: 'cs'}, DT('note')), el('span', {class: 'tmore'}, T('tMore'), ' ', icon(LTR() ? 'next' : 'prev')));
+  }
+  async function showDurood() {
+    bar(DT('title'), DT('note'), true);
+    const v = $('#qv'); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
+    try { await needD(); } catch (e) { v.replaceChildren(el('p', {class: 'note'}, '…')); return; }
+    v.replaceChildren(el('p', {class: 'note', style: 'font-weight:600'}, duroodLine()), el('p', {class: 'grp'}, DT('all') + ' (' + NUM(window.DUROOD.length) + ')'),
+      ...window.DUROOD.map(h => { const t = duroodTr(h), c = el('article', {class: 'card'});
+        c.append(el('div', {class: 'mt ar', lang: 'ar'}, el('p', {}, ...rich(h.ar, 'ar'))));
+        if (t) c.append(el('div', {class: 'tr'}, trP(t, ui, ui)));
+        c.append(el('p', {class: 'cs'}, DT('src')), el('div', {class: 'acts'}, el('a', {class: 'btn', href: '#/s/seerah/n/' + h.n}, DT('open')), el('span', {class: 'sp'}),
+          ...shareBtns(() => withLink(h.ar + (t ? '\n\n' + t : '') + '\n— ' + DT('src'), '#/s/seerah/n/' + h.n))));
+        return c; }));
+  }
+  // a quiet reminder while the app is open in these hours (at most once in 25 minutes)
+  function duroodRemind() {
+    if (!duroodNow()) return;
+    let last = 0; try { last = +localStorage.duroodLast || 0; } catch (e) {}
+    if (Date.now() - last < 25 * 60e3) return;
+    try { localStorage.duroodLast = String(Date.now()); } catch (e) {}
+    toast(duroodLine(Math.floor(Math.random() * 6)));
+  }
+  addEventListener('load', () => { setTimeout(duroodRemind, 20000); setInterval(duroodRemind, 5 * 60e3); });
+  // the card is refreshed every hour while the home page is open
+  setInterval(() => { const b = $('#today'); if (b && b.isConnected && duroodNow()) homeCards(b); }, 36e5);
+
   /* ---------- notifications ---------- */
   // the page writes what to show for the next days into a small cache; the service worker shows it (Periodic Background Sync)
   const QKEY = 'turath-daily';
   const dateKey = dt => dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
   async function buildQueue(days = 7) {
-    await need();
+    await need(); try { await needD(); } catch (e) {}
     const q = {lang: ui}, base = new Date();
     for (let d = 0; d < days; d++) {
       const dt = new Date(base.getFullYear(), base.getMonth(), base.getDate() + d), dn = dayNo(dt);
       const [a, h] = await Promise.all([QURAN.ayahOfDay(dn).catch(() => null), hadithOfDay(dn).catch(() => null)]);
       const x = nasihaOf(dn), xt = x.kind === 'n' ? DLY.hadith[x.n] : x, txt = o => ui === 'ar' ? o.ar : trOfH(o) || o.ar;
       const mk = (tag, title, body, url) => ({tag, title, body: clip(body || '', 230), url, dir: rtl(ui) ? 'rtl' : 'ltr', lang: ui});
-      const morning = [mk('adhkar', T('tMorning'), txt(DLY.hadith[DLY.morning[(dn % 5)]]), '#/t/adhkar/m')];
+      const morning = [mk('adhkar', T('tMorning'), txt(DLY.hadith[DLY.morning[dn % DLY.morning.length]]), '#/t/adhkar/m')];
       if (a) morning.push(mk('ayah', T('tAyah') + ' — ' + a.ref, ui === 'ar' || !a.tr ? a.ar : a.tr, a.href));
-      const evening = [mk('adhkar', T('tEvening'), txt(DLY.hadith[DLY.evening[(dn % 5)]]), '#/t/adhkar/e'), mk('nasiha', T('tNasiha') + ' — ' + who(x), txt(xt), '#/t/nasiha/' + order()[dn % DLY.nasaih.length])];
+      const evening = [mk('adhkar', T('tEvening'), txt(DLY.hadith[DLY.evening[(dn + 12) % DLY.evening.length]]), '#/t/adhkar/e'), mk('nasiha', T('tNasiha') + ' — ' + who(x), txt(xt), '#/t/nasiha/' + order()[dn % DLY.nasaih.length])];
       if (h) evening.push(mk('hadith', T('tHadith') + ' — ' + h.ref, ui === 'ar' || !h.tr ? h.ar : h.tr, h.href));
+      if ((dt.getDay() === 4 || dt.getDay() === 5) && window.DUROOD) {   // salawat: Thursday evening, Friday morning and Friday afternoon
+        const dh = window.DUROOD[(dn + dt.getDay()) % window.DUROOD.length], it = mk('durood', DT('title'), duroodLine(dn) + '\n' + (ui === 'ur' ? dh.ur : dh.ar), '#/t/durood');
+        if (dt.getDay() === 4) evening.push(it); else { morning.push(it); evening.push(it); }
+      }
       const p = place(), st = p.ll ? sunTimes(dt, p.ll[0], p.ll[1]) : null;
       q[dateKey(dt)] = {m: morning, e: evening, w: st ? {m: [st.fajr, st.dhuhr], e: [st.asr, Math.min(st.maghrib + 2.5, 23.5)]} : null};
     }
@@ -5891,6 +5954,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     homeCards, settingsRows, buildQueue,
     urOf: n => DLY && DLY.hadith[n] ? DLY.hadith[n].ur : (need().catch(() => {}), null),
     route(h) {
+      if (/^#\/t\/durood/.test(h)) return showDurood();
       const m = h.match(/^#\/t\/(adhkar|nasiha)(?:\/(\w+))?/);
       if (m && m[1] === 'adhkar') return showAdhkar(m[2]);
       return showNasiha(m && m[2] != null ? +m[2] : null);
