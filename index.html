@@ -616,7 +616,7 @@ body.vfpage .appbar{position:static}
 <body>
 <div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><div id="splsnd" hidden></div></div>
 <style>
-#splash{position:fixed;inset:0;z-index:99999;background:#03170f;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .5s ease}
+#splash{position:fixed;inset:0;z-index:99999;background:#03170f;display:flex;align-items:center;justify-content:center;opacity:1;transition:opacity .3s ease;contain:strict}
 #splsnd{position:absolute;left:50%;bottom:max(26px,env(safe-area-inset-bottom));transform:translateX(-50%);color:#e9d7a1;font:15px system-ui,sans-serif;background:rgba(0,0,0,.35);border-radius:20px;padding:5px 16px;animation:splp 1.4s ease-in-out infinite;pointer-events:none}#splsnd[hidden]{display:none}@keyframes splp{50%{opacity:.45}}
 #splash[hidden]{display:none}#splash.out{opacity:0;pointer-events:none}
 #splash,#splv{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}#splv{pointer-events:none;width:100%;height:100%;object-fit:cover;background:#03170f}
@@ -641,14 +641,23 @@ body.vfpage .appbar{position:static}
   ['pointerup','touchend','click','keydown'].forEach(function(n){d.addEventListener(n,unm,{passive:false})});
   ['contextmenu','dragstart','selectstart'].forEach(function(n){d.addEventListener(n,function(e){e.preventDefault()})});
   v.controls=false;v.disablePictureInPicture=true;v.setAttribute('controlsList','nodownload noplaybackrate nofullscreen noremoteplayback');v.setAttribute('disableRemotePlayback','');
-  var done=false,t0=setTimeout(end,9000);
-  function end(){if(done)return;done=true;clearTimeout(t0);d.classList.add('out');setTimeout(function(){try{v.pause();v.removeAttribute('src');v.load();}catch(e){}d.remove();},600);}
+  var done=false,t0=setTimeout(end,9000),t1=setTimeout(kill,20000);
+  // the video is kept completely apart from the page: it is taken out of the document at once (no fade, no layer left behind), also when the person moves on before it ends
+  function kill(){if(done&&!d.parentNode)return;done=true;clearTimeout(t0);clearTimeout(t1);try{v.pause();v.removeAttribute('src');v.load();}catch(e){}try{v.remove();}catch(e){}try{d.remove();}catch(e){}try{document.documentElement.style.overflow='';}catch(e){}}
+  function end(){if(done)return;done=true;clearTimeout(t0);d.classList.add('out');setTimeout(kill,350);}
+  ['hashchange','pagehide','visibilitychange'].forEach(function(n){addEventListener(n,function(){if(n==='visibilitychange'&&!document.hidden)return;kill();});});
   d.hidden=false;
     v.addEventListener('playing',function(){clearTimeout(t0);});
   v.addEventListener('ended',end);v.addEventListener('error',end);
   v.src=(innerWidth/innerHeight<0.85)?'splash4.mp4':'splash5h.mp4';
   var p=v.play();if(p&&p.catch)p.catch(function(){v.muted=true;var q=v.play();if(q&&q.catch)q.catch(end);try{h.hidden=false}catch(e){}});
 })();
+</script>
+<script>
+/* one sound at a time: when any recitation / audio book / lesson audio starts, the others stop (the start video is not part of this) */
+(function(){var live=[],op=HTMLMediaElement.prototype.play;
+HTMLMediaElement.prototype.play=function(){var me=this;if(me.id!=='splv'){live=live.filter(function(m){return m!==me&&m.isConnected!==false||m.src;});live.forEach(function(m){if(m!==me&&!m.paused){try{m.pause();}catch(e){}}});if(live.indexOf(me)<0)live.push(me);if(live.length>12)live.shift();}
+return op.apply(me,arguments);};})();
 </script>
 <header class="appbar"><button id="back" class="ib" type="button" aria-label="Back" hidden></button>
 <div class="ttl"><div id="t1"></div><div id="t2"></div></div>
@@ -1740,6 +1749,7 @@ window.mkDateBar=function(){
 };
 function route(){
   const h=location.hash,sec=navBar();if(lastRouted!==h){lastRouted=h;histMark();}else isRestore=false;
+  if(!h.startsWith('#/hifz')&&window.HIFZ&&HIFZ.leave)HIFZ.leave();
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
@@ -8039,12 +8049,16 @@ Object.assign(I.fr, {
       const status = E('p', {class: 'cs hzstat'}, L().tapStart), live = E('p', {class: 'cs hzlive', dir: 'rtl', lang: 'ar'});
       const fin = E('button', {type: 'button', class: 'hzgo', hidden: true}, L().finish);
       const text = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
-      const drawText = () => { text.replaceChildren(...words.map((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; const b = []; if (first && i) b.push(aya(words[i - 1].ay)); b.push(openBook ? E('span', {class: 'hzw'}, x.w + ' ') : E('span', {class: 'hzb mute'}, '•••')); return b; }).flat(), aya(t)); };
+      let live_A = null;   // the words read so far (from the live recognition): shown / coloured as they are recited
+      const drawText = () => { const A = live_A, lastI = A ? A.last : -1; text.replaceChildren(...words.map((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; const b = []; if (first && i) b.push(aya(words[i - 1].ay));
+        const done = A && i <= lastI, stt = done ? A.st[i] : '', cls = done ? (stt === 'ok' ? ' ok' : stt === 'wrong' ? ' wrong' : ' miss') : '';
+        b.push(openBook || done ? E('span', {class: 'hzw' + cls}, x.w + ' ') : E('span', {class: 'hzb mute'}, '•••')); return b; }).flat(), aya(t)); };
       const tog = E('div', {class: 'seg', role: 'group'}, ...[[true, L().open], [false, L().closed]].map(([v, l]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(openBook === v), on: {click: () => { openBook = v; put('open', v); [...tog.children].forEach((c, i) => c.setAttribute('aria-pressed', String((i === 0) === v))); drawText(); }}}, l)));
       const tick = () => { const sec = Math.floor((Date.now() - started) / 1000); status.textContent = L().listening + ' · ' + UD(pad(Math.floor(sec / 60)) + ':' + pad(sec % 60)); };
       const build = () => {
         const R = new (SRc())(); R.lang = 'ar-SA'; R.continuous = true; R.interimResults = true; R.maxAlternatives = 1;
-        R.onresult = e => { interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finals.push(r[0].transcript); else interim += r[0].transcript; } const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false; };
+        R.onresult = e => { interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finals.push(r[0].transcript); else interim += r[0].transcript; } const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false;
+          try { const hd = all.map(NORM).filter(Boolean); if (hd.length) { live_A = align(words, hd); drawText(); const cur = text.querySelectorAll('.hzw.ok,.hzw.wrong,.hzw.miss'); if (cur.length) cur[cur.length - 1].scrollIntoView({block: 'nearest'}); } } catch (er) {} };
         R.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopping = true; on = false; cleanup(); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') micHelp(); else status.textContent = L().errNet; };
         R.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (on && !stopping) { try { R.start(); } catch (e) {} } };
         return R;
@@ -8155,7 +8169,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 @media (min-width:640px){.hzgrid{grid-template-columns:1fr 1fr;gap:0 .8rem}}
 `);
   document.head.append(css);
-  window.HIFZ = {route, title: () => L().title};
+  window.HIFZ = {route, title: () => L().title, leave: () => { stopAudio(); if (window.__hzStop) { try { window.__hzStop(); } catch (e) {} window.__hzStop = null; } }};
 })();
 
 </script>
