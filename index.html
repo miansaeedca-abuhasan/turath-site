@@ -895,7 +895,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=3802905053", "data/d2.js?h=6a810a70dc", "data/d3.js?h=c396c3dd14", "data/d4.js?h=e1ed2b2a04", "data/d5.js?h=82eaa65d2e", "data/d6.js?h=e9e7353568", "data/d7.js?h=802d6cf11a", "data/d8.js?h=3cf708a61b", "data/d9.js?h=34b76f13f6", "data/d10.js?h=19efdb5c4e"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=56abe3152d", "data/d2.js?h=588ee29a92", "data/d3.js?h=1bc074762e", "data/d4.js?h=40d520bb5e", "data/d5.js?h=40ea8c5e6d", "data/d6.js?h=4b5da7ca3d", "data/d7.js?h=8515a9c49c", "data/d8.js?h=ca6ca9e275", "data/d9.js?h=023a45224b", "data/d10.js?h=0733b0c371"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1558,14 +1558,15 @@ function refBlock(d){const out=[];d.refs=d.refs||[];
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
     let openBtn=null;
-    d.refs.forEach(r=>{const inColl=COLL.has(r.key);const sn=(SHORT_BOOK[ui]||{})[r.key];
-      const nm=sn||(inColl?(ui!=='ur'&&ui!=='ar'&&EN_BOOK[r.key]?EN_BOOK[r.key]:COLL.name(r.key)):r.label);
-      const lz=lafzRefs(d.takhrij).has(r.key+'|'+r.number);
+    d.refs.forEach(r=>{const isRb=/^rb\d+$/.test(r.key)&&window.RB&&RB.on;const inColl=COLL.has(r.key)||isRb;const sn=(SHORT_BOOK[ui]||{})[r.key];
+      const nm=sn||(isRb?r.label:inColl?(ui!=='ur'&&ui!=='ar'&&EN_BOOK[r.key]?EN_BOOK[r.key]:COLL.name(r.key)):r.label);
+      const lz=!!r.lafz||lafzRefs(d.takhrij).has(r.key+'|'+r.number);
       const btn=el('button',{class:'chip'+(r.available||inColl?' on':'')+(lz?' lafz':''),title:lz?LAFZ_NOTE():null,type:'button','aria-expanded':'false',on:{click:async()=>{
       if(openBtn===btn){rb.hidden=true;rb.replaceChildren();btn.setAttribute('aria-expanded','false');openBtn=null;return;}   // the same reference again: closes
       if(openBtn)openBtn.setAttribute('aria-expanded','false');openBtn=btn;btn.setAttribute('aria-expanded','true');
       rb.hidden=false;rb.replaceChildren(el('b',{},nm+' ('+r.number+')'));
-      if(inColl&&await COLL.refBox(r.key,r.number,rb,r.n))return;
+      if(isRb){try{const bid=+r.key.slice(2),n=parseInt(r.number,10),h=n?await RB.hit(bid,n):null;if(h){rb.append(RB.hitCard(bid,n,h));if(window.SAWIFY)SAWIFY(rb);return;}}catch(e){}rb.append(el('p',{class:'note'},T('nobook')));return;}
+       if(inColl&&await COLL.refBox(r.key,r.number,rb,r.n))return;
       if(r.available){const x=await api('ref?book='+encodeURIComponent(r.key)+'&num='+r.number);rb.append(el('p',{class:'ar'},x.matn||''),el('a',{href:'#/x/'+encodeURIComponent(r.key)+'/'+r.number},T('open')));}
       else rb.append(el('p',{class:'note'},T('nobook')));}}},nm+' '+r.number);chips.append(btn);});
     out.push(chips,rb);}
@@ -1714,7 +1715,7 @@ async function showExt(key,num){
 }
 let lastRouted=null;
 /* ---------- home page date: Hijri (Umm al-Qura, Haramayn time) shown prominently, Gregorian in the visitor's own time zone ---------- */
-const HJM={ur:['محرم الحرام','صفر المظفر','ربیع الاول','ربیع الثانی','جمادی الاولیٰ','جمادی الآخرہ','رجب المرجب','شعبان المعظم','رمضان المبارک','شوال المکرم','ذوالقعدہ','ذوالحجہ'],
+const HJM={ur:['محرم الحرام','صفر المظفر','ربیع الاول','ربیع الثانی','جمادی الاولی','جمادی الآخرہ','رجب المرجب','شعبان المعظم','رمضان المبارک','شوال المکرم','ذوالقعدہ','ذوالحجہ'],
 ar:['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'],
 en:['Muharram','Safar','Rabi‘ al-Awwal','Rabi‘ al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha‘ban','Ramadan','Shawwal','Dhu al-Qa‘dah','Dhu al-Hijjah'],
 hi:['मुहर्रम','सफ़र','रबीउल अव्वल','रबीउस्सानी','जुमादल ऊला','जुमादल आख़िरा','रजब','शाबान','रमज़ान','शव्वाल','ज़ुलक़ादा','ज़ुलहिज्जा'],
@@ -1728,8 +1729,10 @@ window.mkDateBar=function(){
     const now=new Date(),pt={};
     new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn',{timeZone:'Asia/Riyadh',day:'numeric',month:'numeric',year:'numeric'}).formatToParts(now).forEach(x=>{pt[x.type]=parseInt(x.value,10);});
     const loc={ur:'ur',ar:'ar',en:'en-GB',hi:'hi',bn:'bn',gu:'gu',fr:'fr'}[ui]||'en-GB';
-    const gr=new Intl.DateTimeFormat(loc+'-u-ca-gregory'+((ui==='ur'||ui==='ar')?'-nu-arab':''),{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(now);
-    const hj=NUM(pt.day)+' '+(HJM[ui]||HJM.en)[pt.month-1]+' '+NUM(pt.year)+' '+(HJS[ui]||'AH');
+    const gp={};new Intl.DateTimeFormat(loc+'-u-ca-gregory-nu-latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).formatToParts(now).forEach(x=>{gp[x.type]=x.value;});
+    const DG=n=>ui==='bn'?String(n).replace(/\d/g,d=>'০১২৩৪৫৬৭৮৯'[d]):String(n);
+    const gr=[gp.weekday,DG(gp.day)+' '+gp.month,DG(gp.year)].join(' - ');
+    const hj=DG(pt.day)+' '+(HJM[ui]||HJM.en)[pt.month-1]+' - '+DG(pt.year)+' '+(HJS[ui]||'AH');
     const d1=document.createElement('div');d1.className='dhj';d1.textContent=hj;const d2=document.createElement('div');d2.className='dgr';d2.textContent=gr;b.append(d1,d2);
   }catch(e){b.hidden=true;}
   return b;
@@ -4353,17 +4356,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (n && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
     } catch (e) {}
     upd();
+    let hits = new Map(); try { if (arUI || words.some(w => /[\u0600-\u06FF]/.test(w))) hits = await siteHits(words); } catch (e) {}
+    if (!cur()) return;
+    const order = (IX.books || []);
     if (arUI) {
-      let hits = new Map(); try { hits = await siteHits(words); } catch (e) {}
-      if (!cur()) return;
-      const order = (IX.books || []);
       [...hits.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach(k => {
         if (SKIP.has(k)) return; const ns = hits.get(k); if (!ns || !ns.length) return;
-        if (isRbKey(k) ? (sel && !sel.has('rb*')) : (sel && !sel.has(k))) return;
+        if (sel && !sel.has(k)) return;
         jobs.push({key: k, ns});
       });
     } else {
       (C.idx || []).forEach(b => { if (SKIP.has(b.key) || b.ext || !b.langs.includes(ui) || (sel && !sel.has(b.key))) return; jobs.push({key: b.key, ns: null, b}); });
+      [...hits.keys()].filter(isRbKey).sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach(k => { const ns = hits.get(k); if (ns && ns.length && (!sel || sel.has(k))) jobs.push({key: k, ns}); });
     }
     let next = 0;
     const worker = async () => {
@@ -4396,15 +4400,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const box = $('#list'); box.replaceChildren();
     let pre0 = null; try { pre0 = sessionStorage.gspre; } catch (e) {}
     if (!pre0 && keepShow(box, 's')) return;
-    const RBL = {ur: 'موسوعۃ الحدیث (1,328 کتب)', ar: 'موسوعة الحديث (١٬٣٢٨ كتابًا)', en: 'Hadith Encyclopedia (1,328 books)', bn: 'হাদীস বিশ্বকোষ (১,৩২৮টি বই)', hi: 'हदीस विश्वकोश (1,328 किताबें)', gu: 'હદીસ વિશ્વકોશ (1,328 કિતાબો)', fr: 'Bibliothèque du hadith (1 328 livres)'};
     const books = [{key: 'jami', name: T('jamiName'), count: 16552}]
       .concat(C.idx.filter(b => !SKIP.has(b.key) && !b.ext && (ui === 'ar' || b.langs.includes(ui))).map(b => ({key: b.key, name: bname(b), count: b.count})));
-    if (ui === 'ar') books.push({key: 'rb*', name: RBL.ar, count: 0});
+    try { const K = window.RB && RB.on ? await RB.catalog() : null; if (K) K.b.slice().sort((x, y) => (K.a[x[3]] ? K.a[x[3]][1] || 9999 : 9999) - (K.a[y[3]] ? K.a[y[3]][1] || 9999 : 9999)).forEach(r => books.push({key: 'rb' + r[0], name: r[1] + (K.a[r[3]] ? ' — ' + K.a[r[3]][0] : ''), count: r[4]})); } catch (e) {}
     const allKeys = books.map(x => x.key);
-    let sel; try { sel = JSON.parse(localStorage.gsel2 || 'null'); } catch (e) {} sel = Array.isArray(sel) ? sel.filter(k => allKeys.includes(k)) : allKeys.slice();
+    let sel; try { sel = JSON.parse(localStorage.gsel3 || 'null'); } catch (e) {} sel = Array.isArray(sel) ? sel.filter(k => allKeys.includes(k)) : allKeys.slice();
     const q = el('input', {type: 'search', class: 'filter', placeholder: T('gsPlace'), 'aria-label': T('gsPlace'), id: 'gsq'});
     const go = el('button', {class: 'btn lbtn', type: 'button'}, icon('search'), T('gsGo'));
-    const save = () => { try { localStorage.gsel2 = JSON.stringify(sel.length === allKeys.length ? null : sel); } catch (e) {} };
+    const save = () => { try { localStorage.gsel3 = JSON.stringify(sel.length === allKeys.length ? null : sel); } catch (e) {} };
     const list = el('div', {class: 'gslist'}), cnt = el('span', {class: 'cs'});
     const paint = () => {
       cnt.textContent = T('gsChosen')(fmtN(sel.length));
@@ -5893,6 +5896,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     ['sydney','Sydney','سڈنی','سيدني','AU',-33.8688,151.2093,'Australia/Sydney'],['melbourne','Melbourne','میلبورن','ملبورن','AU',-37.8136,144.9631,'Australia/Melbourne'],
     ['auckland','Auckland','آکلینڈ','أوكلاند','NZ',-36.8509,174.7645,'Pacific/Auckland']
   ];
+  const MZ = { ur: ['شافعی/مالکی/حنبلی/سلفی', 'حنفی'], ar: ['شافعي/مالكي/حنبلي/سلفي', 'حنفي'], en: ['Shafi‘i/Maliki/Hanbali/Salafi', 'Hanafi'], bn: ['শাফেয়ি/মালেকি/হাম্বলি/সালাফি', 'হানাফি'], hi: ['शाफ़ई/मालिकी/हंबली/सलफ़ी', 'हनफ़ी'], gu: ['શાફેઈ/માલિકી/હંબલી/સલફી', 'હનફી'], fr: ['Chafi‘ite/Malikite/Hanbalite/Salafi', 'Hanafite'] };
   const L = {
     ur: { t: 'نماز کے اوقات', n: ['فجر', 'طلوعِ آفتاب', 'ظہر', 'عصر', 'مغرب', 'عشاء'], city: 'شہر', geo: 'میرا مقام', sal: 'نماز', beg: 'آغاز', hanafi: 'عصر: حنفی', rem: 'نماز کی یاد دہانی', next: 'اگلی نماز', msg: 'ابھی نماز کی تیاری کریں، اسے نماز کے بعد میں دیکھیے گا', ap: ['صبح', 'شام'], more: 'ہمارا ایپ', pl: 'پلے سٹور سے حاصل کریں', turath: 'تراث خیرالقرون', salat: 'صلاۃ خیرالقرون' },
     ar: { t: 'أوقات الصلاة', n: ['الفجر', 'الشروق', 'الظهر', 'العصر', 'المغرب', 'العشاء'], city: 'المدينة', geo: 'موقعي', sal: 'الصلاة', beg: 'تبدأ', hanafi: 'العصر: حنفي', rem: 'تذكير الصلاة', next: 'الصلاة القادمة', msg: 'استعدّ للصلاة الآن، وتصفّح هذا بعد الصلاة', ap: ['ص', 'م'], more: 'تطبيقاتنا', pl: 'حمّله من متجر Play', turath: 'تراث خير القرون', salat: 'صلاة خير القرون' },
@@ -5959,11 +5963,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const c = byKey(st.city === 'geo' ? guess() : st.city) || byKey('makkah');
     return c;
   };
-  const useHanafi = c => st.hanafi === null ? !!HANAFI[c.cc] : st.hanafi === '1';
+  const useHanafi = c => st.hanafi === '1';
 
   // ---- page ----
   const css = document.createElement('style');
   css.textContent = `
+.slt .mz{display:flex;gap:.35rem;margin:.25rem .7rem .7rem}.slt .mz button{flex:1 1 auto;min-width:0;padding:.38rem .35rem;border:2px solid var(--line,#d9d2c3);border-radius:12px;background:var(--paper,#fff);color:var(--ink,#222);font:inherit;font-size:.78rem;line-height:1.3;cursor:pointer;white-space:nowrap}.slt .mz button:first-child{flex:2.4 1 auto}.slt .mz button.on{border-color:#127a6b;background:rgba(18,122,107,.09);color:#0d4f48;font-weight:700}
 .slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
 .slt{position:fixed;top:6.1rem;z-index:5;width:17.6rem;max-height:calc(100vh - 7rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:none}
 .slt::-webkit-scrollbar{display:none}
@@ -6047,14 +6052,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     side.className = 'slt ' + (rtl() ? 'R' : 'Lf'); side.dir = rtl() ? 'rtl' : 'ltr';
     const k = u === 'ur' ? 2 : u === 'ar' ? 3 : 1;
     const opts = C.slice().sort((a, b) => a[k].localeCompare(b[k], u)).map(x => '<option value="' + x[k] + '"></option>').join('');
-    const lc = u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en', dateS = new Intl.DateTimeFormat(lc, { timeZone: tz, day: 'numeric', month: 'long', year: 'numeric' }).format(now), dayS = new Intl.DateTimeFormat(lc, { timeZone: tz, weekday: 'long' }).format(now);
-    let hijS = ''; try { const hd = new Date(now.getTime() + (tm[4] && now >= tm[4] ? 864e5 : 0)); hijS = new Intl.DateTimeFormat((u === 'ur' ? 'ar' : lc) + '-u-ca-islamic-umalqura', { timeZone: tz, day: 'numeric', month: 'long', year: 'numeric' }).format(hd).replace(/\s?هـ|\s?AH/, '') + ' ' + (u === 'en' ? 'AH' : 'ھ'); } catch (e) {}
+    const lc = u === 'ur' ? 'ur' : u === 'ar' ? 'ar' : 'en', gpt = {}; new Intl.DateTimeFormat(lc + '-u-nu-latn', { timeZone: tz, weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).formatToParts(now).forEach(x => { gpt[x.type] = x.value; });
+    const dateS = gpt.day + ' ' + gpt.month + ' - ' + gpt.year, dayS = gpt.weekday;
+    let hijS = ''; try { const hd = new Date(now.getTime() + (tm[4] && now >= tm[4] ? 864e5 : 0)), hp = {}; new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', { timeZone: tz, day: 'numeric', month: 'numeric', year: 'numeric' }).formatToParts(hd).forEach(x => { hp[x.type] = parseInt(x.value, 10); }); const mn = (typeof HJM !== 'undefined' && (HJM[u] || HJM.en)) || []; hijS = hp.day + ' ' + (mn[hp.month - 1] || hp.month) + ' - ' + hp.year + ' ' + (u === 'en' ? 'AH' : 'ھ'); } catch (e) {}
     let h = '<div class="hd"><h3>' + t.t + '</h3><input id="spc" list="spl" value="' + nameOf(c, u) + '" placeholder="' + t.city + '" aria-label="' + t.city + '" autocomplete="off"><datalist id="spl">' + opts + '</datalist></div>' +
       '<div class="clk">' + clockSvg() + '<div class="sl"><div id="sld"><span><b>' + dayS + '</b><i>' + dateS + '</i></span><span><b>' + hijS + '</b><i>' + dayS + '</i></span></div></div></div>' +
       '<div class="cd"><small>' + t.next + ': <span id="cn"></span></small><b id="cd">--:--:--</b></div>' +
       '<div class="pr">';
     tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
-    h += '</div><div class="op"><label><input type="checkbox" id="sph"' + (hanafi ? ' checked' : '') + '> ' + t.hanafi + '</label></div>';
+    h += '</div><div class="mz" role="tablist"><button type="button" role="tab" data-m="0" aria-selected="' + (!hanafi) + '" class="' + (hanafi ? '' : 'on') + '">' + (MZ[u] || MZ.en)[0] + '</button><button type="button" role="tab" data-m="1" aria-selected="' + hanafi + '" class="' + (hanafi ? 'on' : '') + '">' + (MZ[u] || MZ.en)[1] + '</button></div>';
     if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); }
     tick();
     const any = STORE.turath || STORE.salat;
@@ -6083,7 +6089,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const s = side.querySelector('#spc');
     s.onchange = () => choose(s.value); s.onkeydown = e => { if (e.key === 'Enter') choose(s.value); };
     s.onfocus = () => { s.select(); };
-    side.querySelector('#sph').onchange = e => { st.hanafi = e.target.checked ? '1' : '0'; put('salatHanafi', st.hanafi); render(); };
+    side.querySelectorAll('.mz button').forEach(b => { b.onclick = () => { st.hanafi = b.dataset.m === '1' ? '1' : '0'; put('salatHanafi', st.hanafi); side.dataset.h = ''; render(); }; });
   }
   // from the adhan until 25 minutes later: a transparent message every 3 minutes
   let lastShown = 0;
@@ -8324,20 +8330,20 @@ Object.assign(I.fr, {
 
 </script>
 <script>
-/* موسوعة الحديث — 1,328 more hadith books (text: islam-db / Fekra Computers), kept on Cloudflare R2 and read page by page.
+/* More books — 1,328 more hadith books (text: islam-db / Fekra Computers), kept on Cloudflare R2 and read page by page.
    Routes: #/rb (categories) · #/rb/c/<cat> (books) · #/rb/b/<bid>[/<page>] (reader). */
 (function () {
   'use strict';
   const ON = true;
   const BASE = () => window.R2BASE || 'https://books.turathkhairalquroon.com/b/';
   const LB = {
-    ur: {title: 'موسوعۃ الحدیث', sub: 'مزید کتبِ حدیث', books: n => n + ' کتب', ph: 'کتاب یا مؤلف کا نام لکھیں…', hn: n => 'حدیث ' + n, prev: 'پچھلی', next: 'اگلی', go: 'نمبر پر جائیں', of: (a, b) => a + ' / ' + b, loading: 'کھل رہا ہے…', err: 'یہ حصہ ابھی نہیں کھل سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', none: 'کوئی کتاب نہیں ملی', ah: n => 'احادیث: ' + n, copy: 'نقل', copied: 'نقل ہو گیا', note: 'متن: islam-db — راوی کے نام پر کلک کرنے سے اس کے حالات کھلتے ہیں۔', total: n => n + ' کتابیں', died: n => ' (ت ' + n + 'ھ)', nw: 'نئی'},
-    ar: {title: 'موسوعة الحديث', sub: 'المزيد من كتب الحديث', books: n => n + ' كتاب', ph: 'اكتب اسم الكتاب أو المؤلف…', hn: n => 'حديث ' + n, prev: 'السابقة', next: 'التالية', go: 'اذهب للرقم', of: (a, b) => a + ' / ' + b, loading: 'جارٍ التحميل…', err: 'تعذّر فتح هذا الجزء الآن. تحقّق من الاتصال وأعد المحاولة.', none: 'لا توجد كتب', ah: n => 'الأحاديث: ' + n, copy: 'نسخ', copied: 'تم النسخ', note: 'النص: islam-db — اضغط على اسم الراوي لعرض ترجمته.', total: n => n + ' كتاب', died: n => ' (ت ' + n + 'هـ)', nw: 'جديد'},
-    en: {title: 'Hadith Library', sub: 'More hadith books', books: n => n + ' books', ph: 'Type a book or author name…', hn: n => 'Hadith ' + n, prev: 'Previous', next: 'Next', go: 'Go to number', of: (a, b) => a + ' / ' + b, loading: 'Loading…', err: 'Could not open this part. Check your connection and try again.', none: 'No books found', ah: n => 'Ahadith: ' + n, copy: 'Copy', copied: 'Copied', note: 'Text: islam-db — tap a narrator’s name to see his biography.', total: n => n + ' books', died: n => ' (d. ' + n + ' AH)', nw: 'New'},
-    bn: {title: 'হাদীস বিশ্বকোষ', sub: 'আরও হাদীসের কিতাব', books: n => n + 'টি কিতাব', ph: 'কিতাব বা লেখকের নাম লিখুন…', hn: n => 'হাদীস ' + n, prev: 'আগের', next: 'পরের', go: 'নম্বরে যান', of: (a, b) => a + ' / ' + b, loading: 'খুলছে…', err: 'এই অংশটি এখন খোলা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।', none: 'কোনো কিতাব পাওয়া যায়নি', ah: n => 'হাদীস: ' + n, copy: 'কপি', copied: 'কপি হয়েছে', note: 'পাঠ: islam-db — রাবীর নামে চাপ দিলে তাঁর জীবনী খুলবে।', total: n => n + 'টি কিতাব', died: n => ' (মৃ. ' + n + ' হি.)', nw: 'নতুন'},
-    hi: {title: 'हदीस विश्वकोश', sub: 'हदीस की और किताबें', books: n => n + ' किताबें', ph: 'किताब या लेखक का नाम लिखें…', hn: n => 'हदीस ' + n, prev: 'पिछली', next: 'अगली', go: 'नंबर पर जाएँ', of: (a, b) => a + ' / ' + b, loading: 'खुल रहा है…', err: 'यह हिस्सा अभी नहीं खुल सका। इंटरनेट जाँचकर दोबारा कोशिश करें।', none: 'कोई किताब नहीं मिली', ah: n => 'हदीसें: ' + n, copy: 'कॉपी', copied: 'कॉपी हो गया', note: 'पाठ: islam-db — रावी के नाम पर टैप करने से उनकी जीवनी खुलती है।', total: n => n + ' किताबें', died: n => ' (वफ़ात ' + n + ' हि.)', nw: 'नई'},
-    gu: {title: 'હદીસ વિશ્વકોશ', sub: 'હદીસના વધુ કિતાબો', books: n => n + ' કિતાબો', ph: 'કિતાબ અથવા લેખકનું નામ લખો…', hn: n => 'હદીસ ' + n, prev: 'પાછલી', next: 'આગલી', go: 'નંબર પર જાઓ', of: (a, b) => a + ' / ' + b, loading: 'ખુલી રહ્યું છે…', err: 'આ ભાગ હમણાં ખૂલી શક્યો નથી. ઇન્ટરનેટ તપાસીને ફરી પ્રયાસ કરો.', none: 'કોઈ કિતાબ મળી નથી', ah: n => 'હદીસો: ' + n, copy: 'કૉપિ', copied: 'કૉપિ થઈ ગયું', note: 'લખાણ: islam-db — રાવીના નામ પર ટૅપ કરવાથી તેમનું જીવનચરિત્ર ખુલે છે.', total: n => n + ' કિતાબો', died: n => ' (વફાત ' + n + ' હિ.)', nw: 'નવી'},
-    fr: {title: 'Bibliothèque du hadith', sub: 'Plus de livres de hadith', books: n => n + ' livres', ph: 'Saisissez le nom d’un livre ou d’un auteur…', hn: n => 'Hadith ' + n, prev: 'Précédente', next: 'Suivante', go: 'Aller au numéro', of: (a, b) => a + ' / ' + b, loading: 'Ouverture…', err: 'Impossible d’ouvrir cette partie pour le moment. Vérifiez votre connexion et réessayez.', none: 'Aucun livre trouvé', ah: n => 'Hadiths : ' + n, copy: 'Copier', copied: 'Copié', note: 'Texte : islam-db — touchez le nom d’un transmetteur pour voir sa biographie.', total: n => n + ' livres', died: n => ' (m. ' + n + ' H)', nw: 'Nouveau'}
+    ur: {title: 'مزید کتب', sub: 'مزید کتبِ حدیث', books: n => n + ' کتب', ph: 'کتاب یا مؤلف کا نام لکھیں…', hn: n => 'حدیث ' + n, prev: 'پچھلی', next: 'اگلی', go: 'نمبر پر جائیں', of: (a, b) => a + ' / ' + b, loading: 'کھل رہا ہے…', err: 'یہ حصہ ابھی نہیں کھل سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', none: 'کوئی کتاب نہیں ملی', ah: n => 'احادیث: ' + n, copy: 'نقل', copied: 'نقل ہو گیا', note: 'متن: islam-db — راوی کے نام پر کلک کرنے سے اس کے حالات کھلتے ہیں۔', total: n => n + ' کتابیں', died: n => ' (ت ' + n + 'ھ)', nw: 'نئی'},
+    ar: {title: 'المزيد من الكتب', sub: 'المزيد من كتب الحديث', books: n => n + ' كتاب', ph: 'اكتب اسم الكتاب أو المؤلف…', hn: n => 'حديث ' + n, prev: 'السابقة', next: 'التالية', go: 'اذهب للرقم', of: (a, b) => a + ' / ' + b, loading: 'جارٍ التحميل…', err: 'تعذّر فتح هذا الجزء الآن. تحقّق من الاتصال وأعد المحاولة.', none: 'لا توجد كتب', ah: n => 'الأحاديث: ' + n, copy: 'نسخ', copied: 'تم النسخ', note: 'النص: islam-db — اضغط على اسم الراوي لعرض ترجمته.', total: n => n + ' كتاب', died: n => ' (ت ' + n + 'هـ)', nw: 'جديد'},
+    en: {title: 'More Books', sub: 'More hadith books', books: n => n + ' books', ph: 'Type a book or author name…', hn: n => 'Hadith ' + n, prev: 'Previous', next: 'Next', go: 'Go to number', of: (a, b) => a + ' / ' + b, loading: 'Loading…', err: 'Could not open this part. Check your connection and try again.', none: 'No books found', ah: n => 'Ahadith: ' + n, copy: 'Copy', copied: 'Copied', note: 'Text: islam-db — tap a narrator’s name to see his biography.', total: n => n + ' books', died: n => ' (d. ' + n + ' AH)', nw: 'New'},
+    bn: {title: 'আরও কিতাব', sub: 'আরও হাদীসের কিতাব', books: n => n + 'টি কিতাব', ph: 'কিতাব বা লেখকের নাম লিখুন…', hn: n => 'হাদীস ' + n, prev: 'আগের', next: 'পরের', go: 'নম্বরে যান', of: (a, b) => a + ' / ' + b, loading: 'খুলছে…', err: 'এই অংশটি এখন খোলা যায়নি। ইন্টারনেট সংযোগ দেখে আবার চেষ্টা করুন।', none: 'কোনো কিতাব পাওয়া যায়নি', ah: n => 'হাদীস: ' + n, copy: 'কপি', copied: 'কপি হয়েছে', note: 'পাঠ: islam-db — রাবীর নামে চাপ দিলে তাঁর জীবনী খুলবে।', total: n => n + 'টি কিতাব', died: n => ' (মৃ. ' + n + ' হি.)', nw: 'নতুন'},
+    hi: {title: 'और किताबें', sub: 'हदीस की और किताबें', books: n => n + ' किताबें', ph: 'किताब या लेखक का नाम लिखें…', hn: n => 'हदीस ' + n, prev: 'पिछली', next: 'अगली', go: 'नंबर पर जाएँ', of: (a, b) => a + ' / ' + b, loading: 'खुल रहा है…', err: 'यह हिस्सा अभी नहीं खुल सका। इंटरनेट जाँचकर दोबारा कोशिश करें।', none: 'कोई किताब नहीं मिली', ah: n => 'हदीसें: ' + n, copy: 'कॉपी', copied: 'कॉपी हो गया', note: 'पाठ: islam-db — रावी के नाम पर टैप करने से उनकी जीवनी खुलती है।', total: n => n + ' किताबें', died: n => ' (वफ़ात ' + n + ' हि.)', nw: 'नई'},
+    gu: {title: 'વધુ પુસ્તકો', sub: 'હદીસના વધુ કિતાબો', books: n => n + ' કિતાબો', ph: 'કિતાબ અથવા લેખકનું નામ લખો…', hn: n => 'હદીસ ' + n, prev: 'પાછલી', next: 'આગલી', go: 'નંબર પર જાઓ', of: (a, b) => a + ' / ' + b, loading: 'ખુલી રહ્યું છે…', err: 'આ ભાગ હમણાં ખૂલી શક્યો નથી. ઇન્ટરનેટ તપાસીને ફરી પ્રયાસ કરો.', none: 'કોઈ કિતાબ મળી નથી', ah: n => 'હદીસો: ' + n, copy: 'કૉપિ', copied: 'કૉપિ થઈ ગયું', note: 'લખાણ: islam-db — રાવીના નામ પર ટૅપ કરવાથી તેમનું જીવનચરિત્ર ખુલે છે.', total: n => n + ' કિતાબો', died: n => ' (વફાત ' + n + ' હિ.)', nw: 'નવી'},
+    fr: {title: 'Plus de livres', sub: 'Plus de livres de hadith', books: n => n + ' livres', ph: 'Saisissez le nom d’un livre ou d’un auteur…', hn: n => 'Hadith ' + n, prev: 'Précédente', next: 'Suivante', go: 'Aller au numéro', of: (a, b) => a + ' / ' + b, loading: 'Ouverture…', err: 'Impossible d’ouvrir cette partie pour le moment. Vérifiez votre connexion et réessayez.', none: 'Aucun livre trouvé', ah: n => 'Hadiths : ' + n, copy: 'Copier', copied: 'Copié', note: 'Texte : islam-db — touchez le nom d’un transmetteur pour voir sa biographie.', total: n => n + ' livres', died: n => ' (m. ' + n + ' H)', nw: 'Nouveau'}
   };
   const L = () => LB[ui] || LB.en, qv = () => $('#qv');
   const CATX = {
