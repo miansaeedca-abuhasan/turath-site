@@ -5844,7 +5844,19 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 (function () {
   'use strict';
   const MQ = '(hover:hover) and (pointer:fine)';
-  if (!window.matchMedia || !matchMedia(MQ).matches) return;
+  if (!window.matchMedia) return;
+  if (!matchMedia(MQ).matches) {      // phones and tablets: only the home bar slides to the side after a few seconds (a tap brings it back)
+    const st = document.createElement('style');
+    st.textContent = '.bnav{transition:transform .6s ease}.bnav.slideout{transform:translateX(105%)}.bnav.mini{left:auto;right:.7rem;bottom:calc(.7rem + env(safe-area-inset-bottom,0px));width:auto;border:1px solid var(--line,#ddd);border-radius:999px;padding:0;box-shadow:0 3px 14px rgba(0,0,0,.25);animation:sltin .6s ease}.bnav.mini a:not(.navhome),.bnav.mini .navgap{display:none}.bnav.mini a.navhome{padding:.3rem .4rem}.bnav.mini a.navhome span:last-child{display:none}.bnav.mini a.navhome .nico{margin-top:0}@keyframes sltin{from{transform:translateX(130%)}to{transform:none}}';
+    document.head.appendChild(st);
+    const bn = document.getElementById('bnav'); if (!bn) return; let bt = 0;
+    const collapse = () => { if (bn.classList.contains('mini')) return; bn.classList.add('slideout'); setTimeout(() => { bn.classList.remove('slideout'); bn.classList.add('mini'); }, 650); };
+    const arm = () => { clearTimeout(bt); bt = setTimeout(collapse, 7000); };
+    arm();
+    bn.addEventListener('touchstart', arm, { passive: true });
+    bn.addEventListener('click', e => { if (bn.classList.contains('mini')) { e.preventDefault(); e.stopPropagation(); bn.classList.remove('mini', 'slideout'); arm(); } }, true);
+    return;
+  }
   const STORE = { turath: '', salat: '' };          // Play Store links: the posters on the left appear when these are filled in
   const METHODS = { mwl: [18, 17, 0], isna: [15, 15, 0], karachi: [18, 18, 0], makkah: [18.5, 0, 90], egypt: [19.5, 17.5, 0], gulf: [19.5, 0, 90], kuwait: [18, 17.5, 0], qatar: [18, 0, 90], singapore: [20, 18, 0], turkey: [18, 17, 0] };
   const DEF = { SA: 'makkah', YE: 'makkah', AE: 'gulf', OM: 'gulf', BH: 'gulf', KW: 'kuwait', QA: 'qatar', EG: 'egypt', SD: 'egypt', LY: 'egypt', SY: 'egypt', LB: 'egypt', JO: 'egypt', PS: 'egypt', IQ: 'egypt', PK: 'karachi', IN: 'karachi', BD: 'karachi', AF: 'karachi', NP: 'karachi', LK: 'karachi', US: 'isna', CA: 'isna', MX: 'isna', MY: 'singapore', SG: 'singapore', ID: 'singapore', BN: 'singapore', TR: 'turkey' };
@@ -5969,7 +5981,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const css = document.createElement('style');
   css.textContent = `
 .slt .mz{display:flex;gap:.35rem;margin:.25rem .7rem .7rem}.slt .mz button{flex:1 1 auto;min-width:0;padding:.38rem .35rem;border:2px solid var(--line,#d9d2c3);border-radius:12px;background:var(--paper,#fff);color:var(--ink,#222);font:inherit;font-size:.78rem;line-height:1.3;cursor:pointer;white-space:nowrap}.slt .mz button:first-child{flex:2.4 1 auto}.slt .mz button.on{border-color:#127a6b;background:rgba(18,122,107,.09);color:#0d4f48;font-weight:700}
-.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
+.slt.hasHk .hd{margin-bottom:2.4rem}.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
 .slt{position:fixed;top:6.1rem;z-index:5;width:17.6rem;max-height:calc(100vh - 7rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:none}
 .slt::-webkit-scrollbar{display:none}
 .slt.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.slt.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}
@@ -5994,20 +6006,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 #sltmsg{position:fixed;left:50%;bottom:16%;transform:translateX(-50%);z-index:99990;max-width:38rem;padding:1rem 1.6rem;border-radius:16px;background:rgba(10,30,24,.55);color:#fff;font-size:1.35rem;line-height:1.8;text-align:center;pointer-events:none;opacity:0;transition:opacity .6s}
 #sltmsg.on{opacity:1}`;
   css.textContent += `
-@media (min-width:1320px){html.sltR .harakat-btn{inset-inline-start:auto!important;right:calc(max(1rem,50vw - 42rem) + 18.5rem)!important;left:auto!important;bottom:auto!important;top:8.3rem!important}html.sltL .harakat-btn{inset-inline-start:auto!important;left:calc(max(1rem,50vw - 42rem) + 18.5rem)!important;right:auto!important;bottom:auto!important;top:8.3rem!important}}
-@media (min-width:1000px){.bnav{transition:transform .6s ease}.bnav.slideout{transform:translateX(105%)}
+@media all{.bnav{transition:transform .6s ease}.bnav.slideout{transform:translateX(105%)}
 .bnav.mini{left:auto;right:.8rem;bottom:.7rem;width:auto;border:1px solid var(--line,#ddd);border-radius:999px;padding:0;box-shadow:0 3px 14px rgba(0,0,0,.2);animation:sltin .6s ease}
 .bnav.mini a:not(.navhome),.bnav.mini .navgap{display:none}.bnav.mini a.navhome{padding:.3rem .4rem}.bnav.mini a.navhome span:last-child{display:none}.bnav.mini a.navhome .nico{margin-top:0}}
 @keyframes sltin{from{transform:translateX(130%)}to{transform:none}}`;
   document.head.appendChild(css);
   document.documentElement.classList.add(rtl() ? 'sltR' : 'sltL');
   const bn = document.getElementById('bnav'); let bt = 0, over = false;
-  function collapse() { if (!bn || over || bn.classList.contains('mini') || innerWidth < 1000) return; bn.classList.add('slideout'); setTimeout(() => { bn.classList.remove('slideout'); bn.classList.add('mini'); }, 650); }
+  function collapse() { if (!bn || over || bn.classList.contains('mini')) return; bn.classList.add('slideout'); setTimeout(() => { bn.classList.remove('slideout'); bn.classList.add('mini'); }, 650); }
   function expand() { if (!bn) return; bn.classList.remove('mini', 'slideout'); clearTimeout(bt); bt = setTimeout(collapse, 9000); }
   if (bn) {
     bt = setTimeout(collapse, 9000);
     bn.addEventListener('mouseenter', () => { over = true; clearTimeout(bt); });
     bn.addEventListener('mouseleave', () => { over = false; clearTimeout(bt); bt = setTimeout(collapse, 9000); });
+    bn.addEventListener('touchstart', () => { clearTimeout(bt); bt = setTimeout(collapse, 9000); }, { passive: true });
     bn.addEventListener('click', e => { if (bn.classList.contains('mini')) expand(); });
     document.addEventListener('mousemove', e => { if (bn.classList.contains('mini') && e.clientY > innerHeight - 24 && e.clientX > innerWidth - 120) expand(); }, { passive: true });
   }
@@ -6045,6 +6057,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (s === 0) render();
     }
   }
+  // the Tashkeel button sits inside the side panel, just under its title bar, on the panel's left (desktop widths); it is a child of the panel
+  function placeHk() {
+    const hb = document.querySelector('.harakat-btn'); if (!hb) return;
+    const hd = side.querySelector('.hd');
+    if (innerWidth < 1320 || !hd) { if (hb.parentNode === side) document.body.appendChild(hb); side.classList.remove('hasHk'); ['top', 'left', 'right', 'bottom', 'inset-inline-start', 'position'].forEach(k => hb.style.removeProperty(k)); return; }
+    if (hb.parentNode !== side) side.appendChild(hb);
+    side.classList.toggle('hasHk', hb.style.display !== 'none');
+    hb.style.setProperty('position', 'absolute', 'important'); hb.style.setProperty('inset-inline-start', 'auto', 'important'); hb.style.setProperty('right', 'auto', 'important'); hb.style.setProperty('bottom', 'auto', 'important');
+    hb.style.setProperty('top', (hd.offsetTop + hd.offsetHeight + 8) + 'px', 'important'); hb.style.setProperty('left', '10px', 'important');
+  }
+  addEventListener('resize', placeHk); setInterval(placeHk, 1500);
   function render() {
     const u = lang(), t = L[u], c = cur(), tz = c.tz, hanafi = useHanafi(c);
     CUR = c; const now = new Date(), tm = todayTimes(c, hanafi, now); TM = tm;
@@ -6061,7 +6084,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       '<div class="pr">';
     tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
     h += '</div><div class="mz" role="tablist"><button type="button" role="tab" data-m="0" aria-selected="' + (!hanafi) + '" class="' + (hanafi ? '' : 'on') + '">' + (MZ[u] || MZ.en)[0] + '</button><button type="button" role="tab" data-m="1" aria-selected="' + hanafi + '" class="' + (hanafi ? 'on' : '') + '">' + (MZ[u] || MZ.en)[1] + '</button></div>';
-    if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); }
+    if (side.dataset.h !== h) { side.dataset.h = h; const hk0 = side.querySelector('.harakat-btn'); if (hk0) document.body.appendChild(hk0); side.innerHTML = h; bind(); placeHk(); }
+    placeHk();
     tick();
     const any = STORE.turath || STORE.salat;
     apps.className = 'slt ' + (rtl() ? 'Lf' : 'R'); apps.dir = rtl() ? 'rtl' : 'ltr'; apps.hidden = !any;
