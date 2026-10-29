@@ -5981,7 +5981,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const css = document.createElement('style');
   css.textContent = `
 .slt .mz{display:flex;gap:.35rem;margin:.25rem .7rem .7rem}.slt .mz button{flex:1 1 auto;min-width:0;padding:.38rem .35rem;border:2px solid var(--line,#d9d2c3);border-radius:12px;background:var(--paper,#fff);color:var(--ink,#222);font:inherit;font-size:.78rem;line-height:1.3;cursor:pointer;white-space:nowrap}.slt .mz button:first-child{flex:2.4 1 auto}.slt .mz button.on{border-color:#127a6b;background:rgba(18,122,107,.09);color:#0d4f48;font-weight:700}
-.slt.hasHk .hd{margin-bottom:2.4rem}.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
+.slt.hasHk .hd{margin-bottom:2.4rem}.harakat-btn.inpanel{border:1.5px solid #0e7490!important;z-index:40}.slt .harakat-btn.inpanel{border:0!important;border-radius:0 14px 14px 0!important;background:#127a6b!important;color:#fff!important;padding:.15rem .8rem .15rem .5rem!important;box-shadow:0 2px 6px rgba(0,0,0,.2)!important;font-size:.95rem!important;opacity:1!important}.slt .harakat-btn.inpanel .hm{color:#ffd27a!important}.slt .harakat-btn.inpanel.on{background:#0d4f48!important}.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
 .slt{position:fixed;top:6.1rem;z-index:5;width:17.6rem;max-height:calc(100vh - 7rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:none}
 .slt::-webkit-scrollbar{display:none}
 .slt.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.slt.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}
@@ -6057,15 +6057,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (s === 0) render();
     }
   }
-  // the Tashkeel button sits inside the side panel, just under its title bar, on the panel's left (desktop widths); it is a child of the panel
+  // the Tashkeel button sits just under the panel's title bar (desktop widths): in right-to-left languages it overlaps the panel's left edge, otherwise it sits inside on the left
   function placeHk() {
     const hb = document.querySelector('.harakat-btn'); if (!hb) return;
-    const hd = side.querySelector('.hd');
-    if (innerWidth < 1320 || !hd) { if (hb.parentNode === side) document.body.appendChild(hb); side.classList.remove('hasHk'); ['top', 'left', 'right', 'bottom', 'inset-inline-start', 'position'].forEach(k => hb.style.removeProperty(k)); return; }
-    if (hb.parentNode !== side) side.appendChild(hb);
-    side.classList.toggle('hasHk', hb.style.display !== 'none');
-    hb.style.setProperty('position', 'absolute', 'important'); hb.style.setProperty('inset-inline-start', 'auto', 'important'); hb.style.setProperty('right', 'auto', 'important'); hb.style.setProperty('bottom', 'auto', 'important');
-    hb.style.setProperty('top', (hd.offsetTop + hd.offsetHeight + 8) + 'px', 'important'); hb.style.setProperty('left', '10px', 'important');
+    const hd = side.querySelector('.hd'), r = side.getBoundingClientRect();
+    if (innerWidth < 1320 || !hd || !r.width) { side.classList.remove('hasHk'); hb.classList.remove('inpanel'); ['top', 'left', 'right', 'bottom', 'inset-inline-start'].forEach(k => hb.style.removeProperty(k)); return; }
+    const shown = hb.style.display !== 'none'; side.classList.toggle('hasHk', shown); hb.classList.add('inpanel');
+    hb.style.setProperty('inset-inline-start', 'auto', 'important'); hb.style.setProperty('right', 'auto', 'important'); hb.style.setProperty('bottom', 'auto', 'important');
+    hb.style.setProperty('top', (r.top + hd.offsetTop + hd.offsetHeight + 10) + 'px', 'important');
+    hb.style.setProperty('left', (rtl() ? r.left - 37 : r.left + 10) + 'px', 'important');
   }
   addEventListener('resize', placeHk); setInterval(placeHk, 1500);
   function render() {
@@ -6084,7 +6084,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       '<div class="pr">';
     tm.forEach((x, i) => { h += '<div class="' + (i === 1 ? 'sr ' : '') + (i === idx && i !== 1 && now - x < 36e5 * 3 ? 'now' : '') + '"><small>' + t.n[i] + '</small><b>' + fmt(x, tz, t.ap).replace(/\s.*$/, '') + '</b></div>'; });
     h += '</div><div class="mz" role="tablist"><button type="button" role="tab" data-m="0" aria-selected="' + (!hanafi) + '" class="' + (hanafi ? '' : 'on') + '">' + (MZ[u] || MZ.en)[0] + '</button><button type="button" role="tab" data-m="1" aria-selected="' + hanafi + '" class="' + (hanafi ? 'on' : '') + '">' + (MZ[u] || MZ.en)[1] + '</button></div>';
-    if (side.dataset.h !== h) { side.dataset.h = h; const hk0 = side.querySelector('.harakat-btn'); if (hk0) document.body.appendChild(hk0); side.innerHTML = h; bind(); placeHk(); }
+    if (side.dataset.h !== h) { side.dataset.h = h; side.innerHTML = h; bind(); placeHk(); }
     placeHk();
     tick();
     const any = STORE.turath || STORE.salat;
