@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
     private var askedNotif = false
     override fun onResume() {
         super.onResume()
-        Thread { runCatching { Alarms.schedule(this) } }.start()
+        Thread { runCatching { Vibrate.ensure(this); Alarms.schedule(this) } }.start()
         volumeControlStream = Audio.stream(Prefs(this))
         // without the permission no adhan notification can be shown: ask when the app opens (the box appears only while it is still allowed to)
         if (!askedNotif && needNotifications()) { askedNotif = true; askNotifications() }

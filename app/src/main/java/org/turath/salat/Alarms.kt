@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.IBinder
 import java.time.*
+import org.turath.salat.ui.LocalMasjid
 
 /** one thing to do at a time: an adhan, a reminder, the phone on / off vibrate … */
 data class Ev(val at: ZonedDateTime, val kind: String, val p: P? = null, val snd: Snd = Snd.SILENT, val text: String = "", val extra: Long = 0)
@@ -25,6 +26,7 @@ object Events {
         val zone = Schedule.zone(place)
         val start = from.withZoneSameInstant(zone).toLocalDate().minusDays(1)
         val out = mutableListOf<Ev>()
+        val wins = mutableListOf<Pair<ZonedDateTime, ZonedDateTime>>()
         for (i in 0..days) {
             val d = start.plusDays(i.toLong())
             val t = Schedule.day(pr, place, d)
@@ -38,8 +40,11 @@ object Events {
                 // the phone on vibrate for this prayer (on Fridays Dhuhr's own setting is replaced by the Jumu'ah one)
                 val vk = if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY) "JUMUAH" else p.name
                 if (pr.vibOn(vk) && pr.vibLen(vk) > 0) {
-                    val start = t[p].plusMinutes((if (pr.vibAfter(vk)) pr.vibFrom(vk) else -pr.vibFrom(vk)).toLong())
-                    out += Ev(start, "vibon", p); out += Ev(start.plusMinutes(pr.vibLen(vk).toLong()), "viboff", p)
+                    // with the masjid's iqamah known, the vibration starts some minutes before it (that day's own clock time); otherwise it is counted from the prayer's start
+                    val iq = if (vk == "JUMUAH") LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, vk)
+                    val start = if (iq >= 0 && pr.vibByIq(vk)) d.atTime(iq / 60, iq % 60).atZone(zone).minusMinutes(pr.vibLead(vk).toLong())
+                        else t[p].plusMinutes((if (pr.vibAfter(vk)) pr.vibFrom(vk) else -pr.vibFrom(vk)).toLong())
+                    wins += start to start.plusMinutes(pr.vibLen(vk).toLong())
                 }
             }
             for (p in listOf(P.ISHRAQ, P.CHASHT, P.TAHAJJUD)) {
@@ -115,6 +120,13 @@ object Events {
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")
         }
+        // vibration windows that touch or overlap are one: the phone must not ring again in the middle of the next window
+        val merged = mutableListOf<Pair<ZonedDateTime, ZonedDateTime>>()
+        for (w in wins.sortedBy { it.first }) {
+            val l = merged.lastOrNull()
+            if (l != null && !w.first.isAfter(l.second)) merged[merged.size - 1] = l.first to (if (w.second.isAfter(l.second)) w.second else l.second) else merged += w
+        }
+        for ((a, b) in merged) { out += Ev(a, "vibon", null, extra = b.toInstant().toEpochMilli()); out += Ev(b, "viboff") }
         return out.sortedBy { it.at }
     }
 }
@@ -161,6 +173,7 @@ object Alarms {
     /** do everything that has become due (since the last run, at most 10 minutes back), then set the next alarm */
     fun fire(ctx: Context) {
         val pr = Prefs(ctx)
+        Vibrate.ensure(ctx)
         val now = ZonedDateTime.now()
         val last = pr.sp.getLong("lastDone", 0)
         val lo = maxOf(last, now.minusMinutes(10).toInstant().toEpochMilli())
@@ -240,7 +253,7 @@ object Alarms {
                 else nm.notify(4004, Notification.Builder(ctx, CH_REM).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(ctx))
                     .setContentTitle(title).setContentText(body.substringBefore("\n")).setStyle(Notification.BigTextStyle().bigText(body)).setContentIntent(open).setAutoCancel(true).setTimeoutAfter(30 * 60_000L).build())
             }
-            "vibon" -> Vibrate.on(ctx, pr)
+            "vibon" -> Vibrate.on(ctx, pr, e.extra)
             "viboff" -> Vibrate.off(ctx, pr)
             "widget" -> Widget.update(ctx)
         }
@@ -299,16 +312,27 @@ object Preview {
 
 /** the phone on vibrate at prayer time, back to ringing afterwards (only if the app put it on vibrate) */
 object Vibrate {
-    fun on(ctx: Context, pr: Prefs) {
+    /** only a phone that is ringing is put on vibrate (a phone already on vibrate or silent is never touched); the end of the window is remembered */
+    fun on(ctx: Context, pr: Prefs, untilMs: Long) {
+        if (System.currentTimeMillis() >= untilMs) return          // the window is already over (a late alarm)
         val am = ctx.getSystemService(AudioManager::class.java)
-        if (am.ringerMode != AudioManager.RINGER_MODE_NORMAL) return
-        try { am.ringerMode = AudioManager.RINGER_MODE_VIBRATE; pr.sp.edit().putBoolean("vibByApp", true).apply() } catch (e: SecurityException) {}
+        if (am.ringerMode != AudioManager.RINGER_MODE_NORMAL) {
+            if (pr.sp.getBoolean("vibByApp", false)) pr.sp.edit().putLong("vibUntil", untilMs).apply()
+            return
+        }
+        try { am.ringerMode = AudioManager.RINGER_MODE_VIBRATE; pr.sp.edit().putBoolean("vibByApp", true).putLong("vibUntil", untilMs).apply() } catch (e: SecurityException) {}
     }
+    /** back to ringing, only if the app itself put the phone on vibrate and it is still on vibrate (a change made by hand is left alone) */
     fun off(ctx: Context, pr: Prefs) {
         if (!pr.sp.getBoolean("vibByApp", false)) return
         val am = ctx.getSystemService(AudioManager::class.java)
         try { if (am.ringerMode == AudioManager.RINGER_MODE_VIBRATE) am.ringerMode = AudioManager.RINGER_MODE_NORMAL } catch (e: SecurityException) {}
         pr.sp.edit().putBoolean("vibByApp", false).apply()
+    }
+    /** called whenever the app wakes (alarm, opening, restart): a window that has ended must not leave the phone on vibrate */
+    fun ensure(ctx: Context) {
+        val pr = Prefs(ctx)
+        if (pr.sp.getBoolean("vibByApp", false) && System.currentTimeMillis() >= pr.sp.getLong("vibUntil", 0L)) off(ctx, pr)
     }
     fun allowed(ctx: Context) = ctx.getSystemService(NotificationManager::class.java).isNotificationPolicyAccessGranted
 }
@@ -324,7 +348,7 @@ class AlarmReceiver : BroadcastReceiver() {
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(ctx: Context, i: Intent) {
         Prefs(ctx).sp.edit().putLong("lastDone", System.currentTimeMillis()).apply()
-        Alarms.channels(ctx); Alarms.schedule(ctx); Durood.start(ctx)
+        Vibrate.ensure(ctx); Alarms.channels(ctx); Alarms.schedule(ctx); Durood.start(ctx)
     }
 }
 

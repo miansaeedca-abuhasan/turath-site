@@ -32,7 +32,19 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
             val on = pr.vibOn(k)
             Card0 {
                 SwitchRow(if (k == "JUMUAH") Tr["JUMUAH"] else Tr[k], on) { x -> pr.setVibOn(k, x); ver++; s.changed(); if (x && act.needDnd()) act.askDnd() }
-                if (on) {
+                val iq = if (k == "JUMUAH") LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, k)
+                val byIq = iq >= 0 && pr.vibByIq(k)
+                if (on && iq >= 0) {
+                    SwitchRow(Tr["vibFollowIq"], pr.vibByIq(k), Tr["vibIqAt"] + " " + Tr.num(iq / 60) + ":" + Tr.num(iq % 60).padStart(2, '0')) { x -> pr.setVibByIq(k, x); ver++; s.changed() }
+                }
+                if (on && byIq) {
+                    var lead by remember(k) { mutableFloatStateOf(pr.vibLead(k).toFloat()) }
+                    Text(Tr.num(lead.toInt()) + " " + Tr["min"] + " " + Tr["vibBeforeIq"], fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Slider(lead, { lead = it }, valueRange = 0f..60f, steps = 59, onValueChangeFinished = { pr.setVibLead(k, lead.toInt()); s.changed() })
+                    var len by remember(k) { mutableFloatStateOf(pr.vibLen(k).toFloat()) }
+                    Text(Tr["vibLasts"] + ": " + Tr.num(len.toInt()) + " " + Tr["min"], fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Slider(len, { len = it }, valueRange = 0f..120f, steps = 119, onValueChangeFinished = { pr.setVibLen(k, len.toInt()); s.changed() })
+                } else if (on) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(Tr["vibFromAdhan"], Modifier.weight(1f), fontSize = 14.sp)
                         ChoiceChip(!pr.vibAfter(k), { pr.setVibAfter(k, false); ver++; s.changed() }, { Text(Tr["before"]) }, Modifier.padding(end = 6.dp))

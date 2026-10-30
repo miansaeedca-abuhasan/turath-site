@@ -204,6 +204,12 @@ class Prefs(ctx: Context) {
     // the phone on vibrate for each prayer on its own (key = FAJR, DHUHR, ASR, MAGHRIB, ISHA or JUMUAH, which is used instead of DHUHR on Fridays):
     // on / off, starting before or after the adhan, how many minutes from the adhan (0–120), and how many minutes it lasts (0–120); then the phone rings again
     fun defVibLen(k: String) = when (k) { "FAJR", "ASR" -> 25; "DHUHR", "MAGHRIB" -> 30; else -> 45 }
+    /** the masjid's iqamah known: the vibration starts this many minutes before it (default per prayer) */
+    fun defVibLead(k: String) = when (k) { "MAGHRIB" -> 5; "JUMUAH" -> 15; else -> 10 }
+    fun vibByIq(k: String) = sp.getBoolean("vibI_$k", true)
+    fun setVibByIq(k: String, v: Boolean) = sp.edit().putBoolean("vibI_$k", v).apply()
+    fun vibLead(k: String) = sp.getInt("vibB_$k", defVibLead(k)).coerceIn(0, 60)
+    fun setVibLead(k: String, v: Int) = sp.edit().putInt("vibB_$k", v.coerceIn(0, 60)).apply()
     fun vibOn(k: String) = sp.getBoolean("vibE_$k", true)
     fun setVibOn(k: String, v: Boolean) = sp.edit().putBoolean("vibE_$k", v).apply()
     fun vibAfter(k: String) = sp.getBoolean("vibA_$k", true)

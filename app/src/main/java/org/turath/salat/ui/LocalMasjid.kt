@@ -44,11 +44,9 @@ object LocalMasjid {
         return m >= mm(p) - 10 && m <= mm(p) + 150 && (next == null || m < mm(next))
     }
 
-    /** the vibration of a prayer starts when the masjid's iqamah is, counted from the start of the prayer */
-    fun applyVibration(pr: Prefs, key: String, begin: ZonedDateTime, iqamahMin: Int) {
-        val off = (iqamahMin - (begin.hour * 60 + begin.minute)).coerceIn(0, 120)
-        pr.setVibAfter(key, true); pr.setVibFrom(key, off)
-    }
+    /** the vibration of a prayer starts some minutes before the masjid's iqamah (see Events.list and the vibration page) */
+    @Suppress("UNUSED_PARAMETER")
+    fun applyVibration(pr: Prefs, key: String, begin: ZonedDateTime, iqamahMin: Int) { /* the vibration follows the iqamah by itself now (Events.list) */ }
 }
 
 @Composable
