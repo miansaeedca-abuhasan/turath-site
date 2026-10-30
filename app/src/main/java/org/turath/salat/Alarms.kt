@@ -325,27 +325,41 @@ object Preview {
 
 /** the phone on vibrate at prayer time, back to ringing afterwards (only if the app put it on vibrate) */
 object Vibrate {
+    /** the last things the app did to the phone's sound mode, newest last (shown on the vibration page, so a wrong result can be traced) */
+    fun log(pr: Prefs, what: String) {
+        val t = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd HH:mm:ss"))
+        val old = (pr.sp.getString("vibLog", "") ?: "").split("\n").filter { it.isNotBlank() }.takeLast(39)
+        pr.sp.edit().putString("vibLog", (old + "$t  $what").joinToString("\n")).apply()
+    }
+    private fun mode(am: AudioManager) = when (am.ringerMode) { AudioManager.RINGER_MODE_NORMAL -> "ring"; AudioManager.RINGER_MODE_VIBRATE -> "vibrate"; else -> "silent" }
+    private fun hm(ms: Long) = java.time.Instant.ofEpochMilli(ms).atZone(ZoneId.systemDefault()).format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+
     /** only a phone that is ringing is put on vibrate (a phone already on vibrate or silent is never touched); the end of the window is remembered */
     fun on(ctx: Context, pr: Prefs, untilMs: Long) {
-        if (System.currentTimeMillis() >= untilMs) return          // the window is already over (a late alarm)
         val am = ctx.getSystemService(AudioManager::class.java)
+        if (System.currentTimeMillis() >= untilMs) { log(pr, "ON skipped: window already over (until ${hm(untilMs)}), phone ${mode(am)}"); return }
         if (am.ringerMode != AudioManager.RINGER_MODE_NORMAL) {
             if (pr.sp.getBoolean("vibByApp", false)) pr.sp.edit().putLong("vibUntil", untilMs).apply()
+            log(pr, "ON skipped: phone already ${mode(am)} (by app: ${pr.sp.getBoolean("vibByApp", false)}), until ${hm(untilMs)}")
             return
         }
-        try { am.ringerMode = AudioManager.RINGER_MODE_VIBRATE; pr.sp.edit().putBoolean("vibByApp", true).putLong("vibUntil", untilMs).apply() } catch (e: SecurityException) {}
+        try { am.ringerMode = AudioManager.RINGER_MODE_VIBRATE; pr.sp.edit().putBoolean("vibByApp", true).putLong("vibUntil", untilMs).apply(); log(pr, "ON: vibrate until ${hm(untilMs)}, now ${mode(am)}") }
+        catch (e: SecurityException) { log(pr, "ON failed: no Do Not Disturb permission") }
     }
     /** back to ringing, only if the app itself put the phone on vibrate and it is still on vibrate (a change made by hand is left alone) */
     fun off(ctx: Context, pr: Prefs) {
-        if (!pr.sp.getBoolean("vibByApp", false)) return
         val am = ctx.getSystemService(AudioManager::class.java)
-        try { if (am.ringerMode == AudioManager.RINGER_MODE_VIBRATE) am.ringerMode = AudioManager.RINGER_MODE_NORMAL } catch (e: SecurityException) {}
+        if (!pr.sp.getBoolean("vibByApp", false)) { log(pr, "OFF ignored: the app did not put the phone on vibrate, phone ${mode(am)}"); return }
+        try {
+            if (am.ringerMode == AudioManager.RINGER_MODE_VIBRATE) am.ringerMode = AudioManager.RINGER_MODE_NORMAL
+            log(pr, "OFF: phone now ${mode(am)}")
+        } catch (e: SecurityException) { log(pr, "OFF failed: no Do Not Disturb permission") }
         pr.sp.edit().putBoolean("vibByApp", false).apply()
     }
     /** called whenever the app wakes (alarm, opening, restart): a window that has ended must not leave the phone on vibrate */
     fun ensure(ctx: Context) {
         val pr = Prefs(ctx)
-        if (pr.sp.getBoolean("vibByApp", false) && System.currentTimeMillis() >= pr.sp.getLong("vibUntil", 0L)) off(ctx, pr)
+        if (pr.sp.getBoolean("vibByApp", false) && System.currentTimeMillis() >= pr.sp.getLong("vibUntil", 0L)) { log(pr, "late check: window over, restoring"); off(ctx, pr) }
     }
     fun allowed(ctx: Context) = ctx.getSystemService(NotificationManager::class.java).isNotificationPolicyAccessGranted
 }

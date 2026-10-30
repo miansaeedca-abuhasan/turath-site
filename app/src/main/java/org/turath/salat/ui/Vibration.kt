@@ -59,6 +59,8 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
                 }
             }
         }
+        Text("Log", Modifier.padding(horizontal = 16.dp, vertical = 4.dp), fontWeight = FontWeight.Bold, fontSize = 13.sp)
+        Text(pr.sp.getString("vibLog", "")?.ifBlank { "—" } ?: "—", Modifier.padding(horizontal = 16.dp), fontSize = 11.sp, fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace)
         Spacer(Modifier.height(30.dp))
     }
 }
