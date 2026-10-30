@@ -1373,7 +1373,7 @@ async function showChapter(no,idx,page){
   xt.append(tb(HM.mode==='read'?'list':'read',HM.mode==='read'?T('cardMode'):T('readMode'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();showChapter(no,idx);}),tb('tune',T('settings'),()=>hSettings(()=>showChapter(no,idx))));
   box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},EN()?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(ad(c.no)+' — '+c.ar)),
     EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
-  if(!c.nums.length){box.append(el('p',{class:'note',lang:ui},({ur:'اس باب میں احادیث درج نہیں ہیں۔',ar:'لا توجد أحاديث في هذا الباب.',bn:'এই অধ্যায়ে কোনো হাদীস নেই।',hi:'इस अध्याय में कोई हदीस नहीं है।',gu:'આ પ્રકરણમાં કોઈ હદીસ નથી.',fr:'Ce chapitre ne contient aucun hadith.'})[ui]||'This chapter has no hadith.'));return;}
+  if(!c.nums.length)return;
   box.append(el('p',{},el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
     const items=[...box.querySelectorAll('article.card,section.hr-item')];
@@ -1721,6 +1721,7 @@ async function showHadith(num){
     };draw();
     const lp=el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts(T('kind')[kind],d.content[kind][lang],lang,panel)}},icon('listen'),T('listenPart'));
     v.append(langs,tabs,lp,panel);}
+  if(scope==='jami'&&book!=='jamik')v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>{book='jamik';try{localStorage.book='jamik'}catch(e){}const sel=$('#book');if(sel)sel.value='jamik';const h='#/h/'+d.num;if(location.hash===h)route();else location.hash=h;}}},({ur:'الجامع الکامل میں دیکھیں',ar:'اعرض في الجامع الكامل',bn:'আল-জামি আল-কামিলে দেখুন',hi:'अल-जामिउल कामिल में देखें',gu:'અલ-જામિઉલ કામિલમાં જુઓ',fr:'Voir dans Al-Jami al-Kamil'})[ui]||'View in Al-Jame Al-Kamil')));
   if(d.has_tuhfa&&scope==='jami')v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>switchBook('tuhfa')}},T('toTuhfa'))));
   if(scope==='tuhfa'&&d.has_jami)v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>switchBook('jami')}},T('toJami'))));
   const nav=el('div',{class:'nav'});
