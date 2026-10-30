@@ -353,7 +353,7 @@ object Vibrate {
         try {
             if (am.ringerMode == AudioManager.RINGER_MODE_VIBRATE) am.ringerMode = AudioManager.RINGER_MODE_NORMAL
             log(pr, "OFF: phone now ${mode(am)}")
-        } catch (e: SecurityException) { log(pr, "OFF failed: no Do Not Disturb permission") }
+        } catch (e: SecurityException) { log(pr, "OFF failed: no Do Not Disturb permission (will try again when the app wakes)"); return }
         pr.sp.edit().putBoolean("vibByApp", false).apply()
     }
     /** called whenever the app wakes (alarm, opening, restart): a window that has ended must not leave the phone on vibrate */
