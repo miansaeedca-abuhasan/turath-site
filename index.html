@@ -1582,7 +1582,8 @@ $('#hsbtn').addEventListener('click',async()=>{const m=location.hash.match(/^#\/
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
 // the takhrij of a hadith of Talkhis al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
-function refBlock(d){const out=[];d.refs=d.refs||[];
+function refBlock(d){if(!COLL.loaded()){const ph=el('div');COLL.ready().then(()=>{const x=refBlock(d);ph.replaceWith(...x)});return [ph];}
+const out=[];d.refs=d.refs||[];
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
     let openBtn=null;
@@ -5275,6 +5276,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       return null;
     },
     sanad: txt => { const sn = sanadNames(txt); return sn.map((x, i) => ({a: x.a, b: x.b, href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))})); },
+    loaded: () => !!C.idx,
+    ready: async () => { await index(); },
     has: k => ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik', 'hakim'].includes(k) || !!bookOf(k),
     name: b => { if (typeof b === 'string') { b = bookOf(b); if (!b) return ''; } return bname(b); },
     // reference chip in a Jami hadith (e.g. «مسلم 1907»): show that hadith from the book, by its printed number
