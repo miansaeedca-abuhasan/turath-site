@@ -826,7 +826,7 @@ function ENGINE(){
     const b = D.books.find(b => norm(b.name) === n || b.key === name.trim()); return b ? b.key : null;
   }
   // each translation language opens as its own book (jami_bn …) over the same Arabic text
-  const LANGN = {bn: ['الجامع الکامل — বাংলা', 'Al-Jame Al-Kamil — বাংলা'], hi: ['الجامع الکامل — हिन्दी', 'Al-Jame Al-Kamil — हिन्दी'], ur: ['الجامع الکامل — اردو', 'Al-Jame Al-Kamil — Urdu'], gu: ['الجامع الکامل — ગુજરાતી', 'Al-Jame Al-Kamil — ગુજરાતી'], fr: ['الجامع الکامل — Français', 'Al-Jame Al-Kamil — Français']};
+  const LANGN = {bn: ['تلخیص الجامع الکامل — বাংলা', 'Talkhis Al-Jame Al-Kamil — বাংলা'], hi: ['تلخیص الجامع الکامل — हिन्दी', 'Talkhis Al-Jame Al-Kamil — हिन्दी'], ur: ['تلخیص الجامع الکامل — اردو', 'Talkhis Al-Jame Al-Kamil — Urdu'], gu: ['تلخیص الجامع الکامل — ગુજરાતી', 'Talkhis Al-Jame Al-Kamil — ગુજરાતી'], fr: ['تلخیص الجامع الکامل — Français', 'Talkhis Al-Jame Al-Kamil — Français']};
   const VIRT = (D.langs || []).map(l => ({key: 'jami_' + l, name: (LANGN[l] || [l])[0], name_en: (LANGN[l] || [l, l])[1], kind: 'lang', lang: l}));
   const inLang = (h, tl) => !tl ? h : Object.assign({}, h, {part_en: h['part_' + tl] || h.part_en, group_en: h['group_' + tl] || h.group_en,
     chapter_en: h['chapter_' + tl] || h.chapter_en, takhrij_en: h['takhrij_' + tl] || '', tl});
@@ -904,15 +904,15 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=56abe3152d", "data/d2.js?h=588ee29a92", "data/d3.js?h=1bc074762e", "data/d4.js?h=40d520bb5e", "data/d5.js?h=2b90bc6612", "data/d6.js?h=8fae95c921", "data/d7.js?h=8515a9c49c", "data/d8.js?h=ca6ca9e275", "data/d9.js?h=023a45224b", "data/d10.js?h=0733b0c371"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44e3ee947f", "data/d2.js?h=588ee29a92", "data/d3.js?h=1bc074762e", "data/d4.js?h=40d520bb5e", "data/d5.js?h=2b90bc6612", "data/d6.js?h=8fae95c921", "data/d7.js?h=8515a9c49c", "data/d8.js?h=ca6ca9e275", "data/d9.js?h=023a45224b", "data/d10.js?h=0733b0c371"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
-ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفی) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',poster:'پوسٹر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+ur:{kSearch:'اس کتاب میں: حدیث نمبر یا باب کا نام',notInKitab:'یہ حدیث اس کتاب میں نہیں، دوسری کتاب میں ہے — کھولنے کے لیے دبائیں',mAll:'تمام الفاظ',mExact:'مکمل جملہ',mSimilar:'ملتا جلتا',results:'نتائج کی تعداد',shownFirst:n=>'(پہلے '+n+' دکھائے گئے — الفاظ بڑھا کر تلاش محدود کریں)',readMode:'ریڈنگ موڈ (مصحف کی طرح)',cardMode:'کارڈ موڈ',showSanad:'سند دکھائیں',showTr:'ترجمہ دکھائیں',brand:'تراث خيرالقرون',navFazail:'فضائل صحابہ',death:y=>'(م '+y+'ھ)',arOnly:'صرف عربی',totAll:n=>'کل احادیث: '+n,totParts:(j,o,b)=>'تلخیص الجامع الکامل '+j+' + دیگر '+b+' کتب '+o,totNote:'تلخیص الجامع الکامل اور اس سے ماخوذ کتب (بنگلہ، تحفۃ المتقین، فضائل صحابہ، صحیح سیرت مصطفی) ایک ہی بار گنی گئی ہیں۔ رجال کی کتب شامل نہیں۔',ph:'الفاظ لکھیں، مثلاً: رحمت & عذاب & بھلائی — یا حدیث نمبر',phIn:b=>'اسی کتاب ('+b+') میں: الفاظ یا حدیث نمبر',count:n=>n+' احادیث',none:'کوئی نتیجہ نہیں ملا۔ کم الفاظ یا دوسرے الفاظ آزما کر دیکھیں۔',nf:'یہ حدیث نہیں ملی۔',hadith:n=>'حدیث نمبر '+n,range:(a,b)=>'حدیث نمبر: '+(a===b?a:a+'–'+b),hide:'سند چھپائیں',show:'سند دکھائیں',more:'مزید احادیث',open:'پوری حدیث کھولیں',nobook:'یہ کتاب ابھی ایپ میں شامل نہیں ہوئی۔',toTuhfa:'شرح تحفۃ المتقین میں دیکھیں',toJami:'تلخیص الجامع الکامل میں دیکھیں',next:'اگلی حدیث ‹',prev:'› پچھلی حدیث',cited:'اس حوالے والی احادیث:',sample:'نمونہ',bm:'محفوظ احادیث',nobm:'ابھی کوئی حدیث محفوظ نہیں۔ حدیث کے نیچے بک مارک کا نشان دبائیں۔',copied:'کاپی ہو گئی',copyfail:'کاپی نہیں ہو سکی',saved:'بک مارک میں محفوظ',removed:'بک مارک سے ہٹا دی',shared:'شیئر کے لیے کاپی ہو گئی',read:'پڑھیں',copy:'کاپی',share:'شیئر',poster:'پوسٹر',bookmark:'بک مارک',langs:{ur:'اردو',ar:'عربی',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'متفق علیہ',s:'صحیح',h:'حسن',d:'ضعیف'},
  kind:{translation:'ترجمہ',intro_kitab:'کتاب کا تعارف',intro_majmu:'مجموعے کا تعارف',intro:'باب کا تعارف',sharh:'شرح',alfaz:'شرح الفاظِ حدیث',buhuth:'بحث الحدیث',duroos:'فوائد و دروس',extra:'اضافی معلومات'},
  field:{matn:'متن',sanad:'سند',chapter:'باب',takhrij:'تخریج',translation:'ترجمہ',sharh:'شرح',alfaz:'الفاظ',buhuth:'بحث',duroos:'دروس',extra:'اضافی',number:'نمبر',semantic:'مفہوم',ref:'حوالہ',intro:'تعارف',intro_kitab:'تعارف',intro_majmu:'تعارف'}},
-en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',poster:'Poster',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
+en:{kSearch:'In this book: hadith number or chapter name',notInKitab:'This hadith is in another book — tap to open',mAll:'All words',mExact:'Exact phrase',mSimilar:'Similar',results:'Results',shownFirst:n=>'(first '+n+' shown — add words to narrow the search)',readMode:'Reading mode (like the mushaf)',cardMode:'Card mode',showSanad:'Show isnad',showTr:'Show translation',brand:'Turath Khair Al-Quroon',navFazail:'Sahaba',death:y=>'(d. '+y+' AH)',arOnly:'Arabic only',totAll:n=>'Total hadith: '+n,totParts:(j,o,b)=>'Talkhis Al-Jami al-Kamil '+j+' + '+o+' in '+b+' other books',totNote:'Talkhis Al-Jami al-Kamil and the books taken from it (Bangla, Tuhfa, Fazail-e-Sahaba, Sahih Seerah) are counted once. Books of narrators are not counted.',ph:'Type words, e.g. mercy & punishment & good — or a hadith number',phIn:b=>'In this book ('+b+'): words or hadith number',count:n=>n+' hadith',none:'No results. Try fewer or different words.',nf:'Hadith not found.',hadith:n=>'Hadith-'+n,range:(a,b)=>'Hadith No: '+(a===b?a:a+'–'+b),hide:'Hide isnad',show:'Show isnad',more:'Show more',open:'Open full hadith',nobook:'This book has not been added to the app yet.',toTuhfa:'View in Sharh Tuhfat al-Muttaqin',toJami:'View in Talkhis Al-Jame Al-Kamil',next:'Next hadith ›',prev:'‹ Previous hadith',cited:'Hadith citing this reference:',sample:'Sample',bm:'Bookmarks',nobm:'No bookmarks yet. Tap the bookmark icon under a hadith.',copied:'Copied',copyfail:'Could not copy',saved:'Bookmarked',removed:'Bookmark removed',shared:'Copied, ready to share',read:'Read',copy:'Copy',share:'Share',poster:'Poster',bookmark:'Bookmark',langs:{ur:'Urdu',ar:'Arabic',en:'English',bn:'বাংলা',hi:'हिन्दी'},
  grade:{agreed:'Agreed upon',s:'Sahih',h:'Hasan',d:"Da'if"},
  kind:{translation:'Translation',intro_kitab:'Book Introduction',intro_majmu:'Collection Introduction',intro:'Chapter Introduction',sharh:'Commentary',alfaz:'Word Commentary',buhuth:'Discussion of the Hadith',duroos:'Lessons',extra:'Additional Notes'},
  field:{matn:'Text',sanad:'Isnad',chapter:'Chapter',takhrij:'Takhrij',translation:'Translation',sharh:'Commentary',alfaz:'Words',buhuth:'Discussion',duroos:'Lessons',extra:'Notes',number:'Number',semantic:'Meaning',ref:'Reference',intro:'Intro',intro_kitab:'Intro',intro_majmu:'Intro'}}};
@@ -1025,7 +1025,7 @@ async function copyText(s){
 // the translation in the interface language only (Arabic interface: Arabic only); Urdu of a few hadith comes from daily.js until the book's Urdu is added
 function trOf(d){const c=(d.content||{}).translation||{};if(TL()&&c[TL()])return{lang:TL(),paras:c[TL()]};if(ui==='ar')return null;if(c[ui])return{lang:ui,paras:c[ui]};const u=ui==='ur'&&window.TODAY&&TODAY.urOf(d.num);return u?{lang:'ur',paras:[u]}:null;}
 // copy / share text of a hadith, all in the interface language: title, chapter, Arabic, translation, takhrij, and the
-// al-Jami al-Kamil number. The Arabic is the vocalized one: al-Jami's own when it has harakat, otherwise the same hadith from
+// Talkhis al-Jami al-Kamil number. The Arabic is the vocalized one: al-Jami's own when it has harakat, otherwise the same hadith from
 // the first book of its takhrij that is in the app with harakat (Bukhari, Muslim ...), otherwise al-Jami's plain text.
 const UR_BOOK={bukhari:'صحیح بخاری',muslim:'صحیح مسلم',abudawud:'سنن ابو داود',tirmidhi:'جامع ترمذی',nasai:'سنن نسائی',ibnmajah:'سنن ابن ماجہ',malik:'موطا امام مالک',ahmad:'مسند احمد',hakim:'مستدرک حاکم',darimi:'سنن دارمی',ibnhibban:'صحیح ابن حبان'};
 const UR_GRADE={'متفق عليه':'متفق علیہ','صحيح':'صحیح','حسن':'حسن','صحيح لغيره':'صحیح لغیرہ','حسن لغيره':'حسن لغیرہ'};
@@ -1050,7 +1050,7 @@ function hadithText(d,scope,arabic){
   let tk;
   if(L==='ur'){const g=d.grade?(UR_GRADE[d.grade.trim()]||d.grade):'',rs=(d.refs||[]).map(r=>(UR_BOOK[r.key]||r.label)+': '+r.number).join('، ');tk=(g||rs)?'تخریج: '+[g,rs].filter(Boolean).join(' — '):'';}
   else tk=L==='ar'?(d.takhrij||''):L==='bn'?(d.takhrij_bn||d.takhrij_en||''):(d.takhrij_en||'');
-  const ref=({ur:'الجامع الکامل: ',ar:'الجامع الكامل: ',bn:'আল-জামি আল-কামিল: ',hi:'अल-जामिउल कामिल: ',gu:'અલ-જામિઉલ કામિલ: ',fr:'Al-Jami al-Kamil : '}[L]||'Al-Jami al-Kamil: ')+num;
+  const ref=({ur:'تلخیص الجامع الکامل: ',ar:'تلخيص الجامع الكامل: ',bn:'তালখীস আল-জামি আল-কামিল: ',hi:'तल्ख़ीस अल-जामिउल कामिल: ',gu:'તલ્ખીસ અલ-જામિઉલ કામિલ: ',fr:'Talkhis Al-Jami al-Kamil : '}[L]||'Talkhis Al-Jami al-Kamil: ')+num;
   const voc=(arabic.match(/[\u064B-\u0652]/g)||[]).length>arabic.length/12;
   arabic=arabic.replace(/ﷺ/g,voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم');tk=(tk||'').replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');if(L==='ar')tk=tk.replace(/ﷺ/g,'صلى الله عليه وسلم');
   return [curBookName()+' — '+T('hadith')(num),path,'',arabic,'',tr?tr.paras.join('\n'):'','',tk,'('+ref+')'].filter((x,i,a)=>!(x===''&&(i===0||a[i-1]===''))).join('\n').trim();
@@ -1069,7 +1069,7 @@ async function hadithPoster(d){
   const strip=s=>(s||'').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/<[^>]*>/g,'');
   Object.keys(tr).forEach(l=>tr[l]=strip(tr[l]));
   const ar=strip((d.matn||[]).join('\n')).replace(/ﷺ/g,'صلى الله عليه وسلم');
-  POSTER.open({kind:'hadith',ar,tr,lang:ui,grade:(d.grade||'').trim(),ref:'الجامع الكامل ('+d.num+')',name:'hadith-'+d.num});
+  POSTER.open({kind:'hadith',ar,tr,lang:ui,grade:(d.grade||'').trim(),ref:'تلخيص الجامع الكامل ('+d.num+')',name:'hadith-'+d.num});
 }
 function actions(d,scope,withRead){
   const a=el('div',{class:'acts'});
@@ -1123,12 +1123,12 @@ async function fullHadith(d,box){
 }
 
 /* ---------- tabs «متن الحديث» | «الحديث بكامل السند»: the Jami's text, or the source book's whole hadith with its isnad (narrators open in a window) ---------- */
-const FT={ur:['متنِ حدیث','حدیث مکمل سند کے ساتھ','اس حدیث کا مکمل سند والا متن ہماری کتب میں نہیں ملا۔','الجامع الکامل کا متن عام خط میں ہے، باقی حدیث اور سند ہلکے رنگ میں'],
- ar:['متن الحديث','الحديث بكامل السند','لم نجد لهذا الحديث نصًّا كاملًا بسنده في كتبنا.','نصّ الجامع الكامل بالخطّ العادي، وبقيّة الحديث وسنده بخطٍّ خافت'],
+const FT={ur:['متنِ حدیث','حدیث مکمل سند کے ساتھ','اس حدیث کا مکمل سند والا متن ہماری کتب میں نہیں ملا۔','تلخیص الجامع الکامل کا متن عام خط میں ہے، باقی حدیث اور سند ہلکے رنگ میں'],
+ ar:['متن الحديث','الحديث بكامل السند','لم نجد لهذا الحديث نصًّا كاملًا بسنده في كتبنا.','نصّ تلخيص الجامع الكامل بالخطّ العادي، وبقيّة الحديث وسنده بخطٍّ خافت'],
  en:['Hadith text','Hadith with full isnad','No full text with isnad of this hadith was found in our books.','The Jami’s wording is in normal text; the rest of the hadith and its isnad are lighter'],
- bn:['হাদীসের মতন','পূর্ণ সনদসহ হাদীস','এই হাদীসের পূর্ণ সনদসহ পাঠ আমাদের গ্রন্থসমূহে পাওয়া যায়নি।','আল-জামিউল কামিলের পাঠ স্বাভাবিক অক্ষরে; হাদীসের বাকি অংশ ও সনদ হালকা রঙে'],
- hi:['हदीस का मतन','पूरी सनद के साथ हदीस','इस हदीस का पूरी सनद वाला पाठ हमारी किताबों में नहीं मिला।','अल-जामिउल कामिल का पाठ सामान्य अक्षरों में है; हदीस का बाक़ी हिस्सा और सनद हल्के रंग में'],
- gu:['હદીસનું મતન','પૂરી સનદ સાથે હદીસ','આ હદીસનું પૂરી સનદવાળું લખાણ અમારા પુસ્તકોમાં મળ્યું નથી.','અલ-જામિઉલ કામિલનું લખાણ સામાન્ય અક્ષરોમાં છે; હદીસનો બાકીનો ભાગ અને સનદ આછા રંગમાં'],
+ bn:['হাদীসের মতন','পূর্ণ সনদসহ হাদীস','এই হাদীসের পূর্ণ সনদসহ পাঠ আমাদের গ্রন্থসমূহে পাওয়া যায়নি।','তালখীস আল-জামিউল কামিলের পাঠ স্বাভাবিক অক্ষরে; হাদীসের বাকি অংশ ও সনদ হালকা রঙে'],
+ hi:['हदीस का मतन','पूरी सनद के साथ हदीस','इस हदीस का पूरी सनद वाला पाठ हमारी किताबों में नहीं मिला।','तल्ख़ीस अल-जामिउल कामिल का पाठ सामान्य अक्षरों में है; हदीस का बाक़ी हिस्सा और सनद हल्के रंग में'],
+ gu:['હદીસનું મતન','પૂરી સનદ સાથે હદીસ','આ હદીસનું પૂરી સનદવાળું લખાણ અમારા પુસ્તકોમાં મળ્યું નથી.','તલ્ખીસ અલ-જામિઉલ કામિલનું લખાણ સામાન્ય અક્ષરોમાં છે; હદીસનો બાકીનો ભાગ અને સનદ આછા રંગમાં'],
  fr:['Texte du hadith','Hadith avec la chaîne complète','Le texte complet de ce hadith avec sa chaîne n’a pas été trouvé dans nos livres.','Le texte d’al-Jâmi‘ est en caractères normaux ; le reste du hadith et sa chaîne sont en gris clair']};
 const FTX=i=>(FT[ui]||FT.en)[i];
 function fullTabs(d,mt,fb){
@@ -1233,13 +1233,13 @@ async function showKitabs(){
   };
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'আল-জামি আল-কামিলের ভূমিকা',hi:'अल-जामिउल कामिल की भूमिका',gu:'અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to al-Jami al-Kamil'))):'',list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
 Object.assign(I.ur,{hbTabBooks:'کتب',hbNBooks:n=>n+' کتب',hbCats:'موضوعات',hbRbMore:'مزید ١٣٢٨ کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
 Object.assign(I.en,{hbTabBooks:'Books',hbNBooks:n=>n+' books',hbCats:'Topics',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
-const HB_AR=window.HB_AR_={jami:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
+const HB_AR=window.HB_AR_={jami:'تلخيص الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbF=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/[()\s]/g,'');const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
 async function hbCounts(){if(HBC)return HBC;HBC={};
   for(const b of BOOKS){if(b.kind==='external'||b.kind==='lang')continue;try{HBC[b.key]=(await api('list?limit=1&book='+encodeURIComponent(b.key))).total;}catch(e){}}
@@ -1260,16 +1260,16 @@ async function showBookList(cat,aut,authors,topics){
   const cnt=await hbCounts(),colls=await COLL.list().catch(()=>[]);
   const rows=[];
   const LN={bn:['بنگلہ',{bn:'বাংলা',hi:'बांग्ला',gu:'બંગાળી',fr:'bengali'}[ui]||'Bangla']};
-  // books taken from al-Jami al-Kamil (تحفۃ المتقین، فضائل صحابہ، سیرت ...) have their own buttons: not in this list
-  const SUBJ=new Set(['tuhfa','fazail','seerah']);
-  BOOKS.filter(b=>b.kind!=='external'&&b.kind!=='lang').forEach(b=>{const L=b.kind==='lang'&&LN[b.lang];rows.push({key:b.key,au:['jami','الجامع الكامل في الحديث الصحيح الشامل','الجامع الکامل اور اس سے ماخوذ کتب','Al-Jami al-Kamil',0],en:L?'Al-Jame Al-Kamil ('+L[1]+')':(b.name_en||b.name),ur:L?'الجامع الکامل ('+L[0]+')':b.name,ar:HB_AR[b.kind==='lang'?'jami':b.key]||b.name,n:cnt[b.key],
+  // books taken from Talkhis al-Jami al-Kamil (تحفۃ المتقین، فضائل صحابہ، سیرت ...) have their own buttons: not in this list
+  const SUBJ=new Set(['tuhfa','fazail','seerah','fitan']);
+  BOOKS.filter(b=>b.kind!=='external'&&b.kind!=='lang').forEach(b=>{const L=b.kind==='lang'&&LN[b.lang];rows.push({key:b.key,au:['jami','تلخيص الجامع الكامل في الحديث الصحيح الشامل','تلخیص الجامع الکامل اور اس سے ماخوذ کتب','Talkhis Al-Jami al-Kamil',0],en:L?'Talkhis Al-Jame Al-Kamil ('+L[1]+')':(b.name_en||b.name),ur:L?'تلخیص الجامع الکامل ('+L[0]+')':b.name,ar:HB_AR[b.kind==='lang'?'jami':b.key]||b.name,n:cnt[b.key],
     open:()=>hbOpen(b.key),resume:()=>hbOpen(b.key,hbLast(b.key)||(b.key==='tuhfa'?'#/b':'#/c/1/0'))});});
   const subjRows=[];const takeSubj=()=>{for(let i=rows.length-1;i>=0;i--)if(SUBJ.has(rows[i].key)){subjRows.unshift(rows[i]);rows.splice(i,1);}};takeSubj();
   const nJ=rows.length;
   colls.forEach(c=>rows.push({key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
   takeSubj();
-  {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Al-Jami al-Kamil kitab list
-  {const OR=["hifzhadith","bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh12397", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
+  {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Talkhis Al-Jami al-Kamil kitab list
+  {const OR=["hifzhadith","bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh12397", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='تلخيص الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
    const head=rows.slice(0,nJ),rest=rows.slice(nJ).map((r,i)=>[r,i]).sort((a,b)=>o(a[0].key)-o(b[0].key)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...head,...rest);}
   rows.forEach(r=>{r.cat=HB_CAT[r.key]||15;});
   const TAILR={11:1,4:2,18:3,5:4,12:5},rk=c=>TAILR[c]||0;   // hadith books first; then hadith sciences, biographies, fabricated reports, tafsir, Quranic sciences
@@ -1311,7 +1311,7 @@ async function showBookList(cat,aut,authors,topics){
   const g=el('div',{class:'tiles t4'});
   g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),
     hTile('bm0',T('bm'),null,'#/bm'),hTile('compare',T('cmp'),null,'#/cmp'));
-  // total hadith in the app: al-Jami al-Kamil once (its Bengali text, Tuhfa and Fazail-e-Sahaba are taken from it),
+  // total hadith in the app: Talkhis al-Jami al-Kamil once (its Bengali text, Tuhfa and Fazail-e-Sahaba are taken from it),
   // the other books added; books of narrators' biographies and Hisn al-Muslim (du'as) are not counted
   const NOTH=new Set(['tahdhibkamal','sh149213','sh132965','sh26112','sh9863','shadharat','siyar','tarikhbukhari','thiqat','khaythama','sh10906','sh23764','hisn','atraf']);
   const rbT=window.RB&&RB.on?await RB.total():{b:0,h:0};
@@ -1496,7 +1496,7 @@ function appSettings(){
     ...(window.OFFLINE?[OFFLINE.row()]:[]),
     el('p',{class:'grp'},T('urduFont')),el('div',{class:'seg',role:'group'},...urduNames().map(([k,l])=>el('button',{type:'button',class:'segb',lang:ui==='ur'?'ur':ui==='ar'?'ar':'en',style:ui==='ur'?'font-family:'+URDU_FONTS[k]:null,'aria-pressed':String(k===LOOK.urdu),on:{click:()=>{LOOK.urdu=k;save();}}},l)))]);
 }
-// al-Jami al-Kamil in the interface language: the Bangla interface reads the Bangla layer
+// Talkhis al-Jami al-Kamil in the interface language: the Bangla interface reads the Bangla layer
 function uiBook(){const nb=ui==='bn'&&book==='jami'?'jami_bn':ui!=='bn'&&book==='jami_bn'?'jami':book;if(nb!==book){book=nb;try{localStorage.book=nb}catch(e){}}}
 uiBook();
 async function loadBooks(){BOOKS=(await api('books')).books;applyUi();}
@@ -1544,7 +1544,7 @@ function goBack(){
   const sh=document.querySelector('.sheetbg');if(sh){sh.remove();return;}
   if(location.hash==='#/b'&&$('#q').value.trim()){$('#q').value='';showHome();return;}
   {const m=location.hash.match(/^#\/s\/([a-z0-9]+)(\/\d+|\?idx)$/);   // a chapter -> the book's contents; the contents -> home (subject books) or the hadith library
-   if(m&&m[1]!=='rijal'){location.hash=m[2]==='?idx'?(['seerah','fazail','tuhfa','shadharat','siyar'].includes(m[1])?'#/':'#/hb'):'#/s/'+m[1]+'?idx';return;}}
+   if(m&&m[1]!=='rijal'){location.hash=m[2]==='?idx'?(['seerah','fazail','fitan','tuhfa','shadharat','siyar'].includes(m[1])?'#/':'#/hb'):'#/s/'+m[1]+'?idx';return;}}
   const st=history.state;if(st&&st.i>1&&history.length>1){history.back();return;}
   const to=parentOf(location.hash);
   if(to!==location.hash)location.hash=to;
@@ -1554,7 +1554,7 @@ $('#back').addEventListener('click',goBack);
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
 function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':h.startsWith('#/q')?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
-  // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of al-Jami al-Kamil), Shadharat adh-Dhahab
+  // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of Talkhis al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
   const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
@@ -1563,7 +1563,7 @@ function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWit
 $('#hsbtn').addEventListener('click',async()=>{const m=location.hash.match(/^#\/s\/([^/?]+)/);if(m&&window.COLL&&COLL.bookSearch){try{if(await COLL.bookSearch(m[1]))return;}catch(e){}}location.hash='#/hs';});
 $('#bmbtn').addEventListener('click',()=>{location.hash=location.hash.startsWith('#/q')?'#/q/bm':'#/bm';});
 function switchBook(k){book=k;try{localStorage.book=k}catch(e){}$('#book').value=k;route();}
-// the takhrij of a hadith of al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
+// the takhrij of a hadith of Talkhis al-Jami al-Kamil: «compare with its sources» and a button for each source book (also used by the books taken from al-Jami)
 function refBlock(d){const out=[];d.refs=d.refs||[];
 if(d.refs.some(r=>COLL.has(r.key)))out.push(el('a',{class:'btn lbtn cmpgo',href:'#/cmp/j/'+d.num},icon('compare'),T('cmpRefs')));
 if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refbox',hidden:true});
@@ -1638,7 +1638,7 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
   const mo=new MutationObserver(ms=>{for(const m of ms){if(m.type==='characterData')fix(m.target);else m.addedNodes.forEach(walk);}});
   const go=()=>{walk(document.body);mo.observe(document.body,{childList:true,subtree:true,characterData:true});};
   if(document.body)go();else addEventListener('DOMContentLoaded',go);})();
-/* ---------- مفصل دراسة الحديث: the full scholarly study of al-Jami al-Kamil after the takhrij (loaded when opened) ---------- */
+/* ---------- مفصل دراسة الحديث: the full scholarly study of Talkhis al-Jami al-Kamil after the takhrij (loaded when opened) ---------- */
 const DRL={};window.TURATH_DR=o=>Object.assign(window.DRDATA=window.DRDATA||{},o);
 function drLoad(num){const f=(window.TURATH_DATA&&TURATH_DATA.drfiles||[]).find(x=>num>=x[0]&&num<=x[1]);if(!f)return Promise.resolve();
   return DRL[f[2]]||(DRL[f[2]]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=f[2];s.onload=ok;s.onerror=()=>{delete DRL[f[2]];no();};document.head.append(s);}));}
@@ -1781,7 +1781,7 @@ function route(){
   if(!/^#\/q\/[sjr]\/\d+\/\d+/.test(h)){if(isRestore&&SCR[h]>0)restoreScroll(SCR[h]);else scrollTo(0,0);}
 }
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
-  // pages that do not need al-Jami al-Kamil's data open at once; the book list comes when the data is in
+  // pages that do not need Talkhis al-Jami al-Kamil's data open at once; the book list comes when the data is in
   const h=location.hash;
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/hifz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
@@ -1808,7 +1808,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 </script>
 <script>
 /* Poster maker: a hadith or an ayah as a picture for WhatsApp / Facebook / Instagram.
-   POSTER.open({kind:'hadith'|'ayah', ar:'…', tr:{ur:'…', en:'…'}, grade:'صحیح', ref:'الجامع الکامل (11340)', name:'file-name', fontAr:'quran'})
+   POSTER.open({kind:'hadith'|'ayah', ar:'…', tr:{ur:'…', en:'…'}, grade:'صحیح', ref:'تلخیص الجامع الکامل (11340)', name:'file-name', fontAr:'quran'})
    All pictures are drawn here with the canvas (no downloaded images, no people): mosques, the Ka'bah, Madinah, snow, rain, nature, patterns. */
 (function () {
   'use strict';
@@ -2602,7 +2602,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     surahOnly: 'پوری سورت (آیت کی نشاندہی کے بغیر)', go: 'کھولیں', ayahNo: 'آیت نمبر', loading: 'لوڈ ہو رہا ہے…', noRes: 'کچھ نہیں ملا۔',
     qnobm: 'ابھی کوئی آیت محفوظ نہیں۔ آیت کے ساتھ بک مارک کا نشان دبائیں۔', ayahOf: 'آیتِ قرآنی', hadithOf: 'حدیثِ نبوی', openIt: 'کھولیں',
     qsearchPh: 'آیت کا لفظ لکھیں، مثلاً: نحن نقص', searchIn: 'منتخب تراجم اور عربی متن میں', netAudio: 'تلاوت کے لیے انٹرنیٹ چاہیے۔',
-    audioErr: 'یہ آڈیو نہیں چل سکی۔ انٹرنیٹ یا دوسرا قاری آزمائیں۔', recite: 'تلاوت سنیں', jami: 'الجامع الکامل', tuhfa: 'شرح تحفۃ المتقین',
+    audioErr: 'یہ آڈیو نہیں چل سکی۔ انٹرنیٹ یا دوسرا قاری آزمائیں۔', recite: 'تلاوت سنیں', jami: 'تلخیص الجامع الکامل', tuhfa: 'شرح تحفۃ المتقین',
     thisChapter: 'یہ باب', bmHadith: 'محفوظ احادیث', bmQuran: 'محفوظ آیات', searchHadith: 'حدیث تلاش', start: 'شروع', tafsir: 'تفسیر', tafsirOf: r => 'آیت ' + r + ' کی تفسیر', noTafsir: 'اس آیت کی تفسیر اس کتاب میں الگ سے نہیں دی گئی۔', tafsirMissing: 'یہ تفاسیر ابھی کسی اوپن سورس ماخذ میں نہیں ملیں:', surahShort: 'سورت', paraShort: 'پارہ', chapShort: 'باب', onlyAya: 'صرف آیت', ayaTr: 'آیت مع ترجمہ', results: 'نتائج کی تعداد', copyAll: 'سب کاپی کریں', moreRes: n => 'مزید ' + n + ' نتائج — الفاظ بڑھا کر تلاش محدود کریں'});
   Object.assign(I.en, {quran: 'The Holy Quran', home: 'Home', hadithTab: 'Hadith', surahs: 'Surahs', para: 'Parah', ruku: 'Ruku', findAyah: 'Find Ayah',
     qsearch: 'Search', qbm: 'Bookmarks', audio: 'Audio', trans: 'Translations', settings: 'Settings', resume: 'Resume Quran Reading',
@@ -2613,7 +2613,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     surahOnly: 'whole surah (no ayah highlight)', go: 'Open', ayahNo: 'Ayah number', loading: 'Loading…', noRes: 'Nothing found.',
     qnobm: 'No ayah bookmarked yet. Tap the bookmark icon next to an ayah.', ayahOf: 'Ayah of the moment', hadithOf: 'Hadith of the moment', openIt: 'Open',
     qsearchPh: 'Type words of an ayah, e.g. نحن نقص', searchIn: 'in the selected translations and the Arabic text', netAudio: 'Recitation needs internet.',
-    audioErr: 'This audio could not play. Check internet or try another reciter.', recite: 'Listen to recitation', jami: 'Al-Jame Al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin',
+    audioErr: 'This audio could not play. Check internet or try another reciter.', recite: 'Listen to recitation', jami: 'Talkhis Al-Jame Al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin',
     thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
 
   Object.assign(I.ur, {qsearchS: 'اس سورت میں: آیت نمبر یا الفاظ', qsSurah: 'اس سورت میں تلاش', qsNoAyah: n => 'اس سورت میں آیت نمبر ' + n + ' نہیں ہے۔', qsGoAyah: 'آیت کھولیں'});
@@ -2908,6 +2908,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('bms', T('bmHadith'), '#/bm'), tile('bm0', T('bmQuran'), '#/q/bm'),
       tile('hadith', T('hbBooks'), '#/hb'),
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
+      tile('hadith', ({ur: 'فتنے اور قرب قیامت', ar: 'الفتن وأشراط الساعة', en: 'Trials and Signs of the Hour', bn: 'ফিতনা ও কিয়ামতের আলামত', hi: 'फ़ितने और क़ियामत की निशानियाँ', gu: 'ફિતનાઓ અને કયામતની નિશાનીઓ', fr: 'Épreuves et signes de l’Heure'})[ui] || 'Trials and Signs of the Hour', '#/s/fitan'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
       tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('replay', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
@@ -2933,9 +2934,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', T('free'), vis, ));
     // legal line: copyright and founder
     const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید عفی اللہ عنہ'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
-      en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu-Hasan Mian-Saeed'],
-      hi: ['© 2026 / 1448 हिजरी Turath Khair Al-Quroon। सर्वाधिकार सुरक्षित।', 'संस्थापक: Abu-Hasan Mian-Saeed'], gu: ['© 2026 / 1448 હિજરી Turath Khair Al-Quroon. સર્વાધિકાર સુરક્ષિત.', 'સ્થાપક: Abu-Hasan Mian-Saeed'],
-      fr: ['© 2026 / 1448 H Turath Khair Al-Quroon. Tous droits réservés.', 'Fondateur : Abu-Hasan Mian-Saeed']}[ui] || ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu-Hasan Mian-Saeed'];
+      en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu Hasan Mian Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu Hasan Mian Saeed'],
+      hi: ['© 2026 / 1448 हिजरी Turath Khair Al-Quroon। सर्वाधिकार सुरक्षित।', 'संस्थापक: Abu Hasan Mian Saeed'], gu: ['© 2026 / 1448 હિજરી Turath Khair Al-Quroon. સર્વાધિકાર સુરક્ષિત.', 'સ્થાપક: Abu Hasan Mian Saeed'],
+      fr: ['© 2026 / 1448 H Turath Khair Al-Quroon. Tous droits réservés.', 'Fondateur : Abu Hasan Mian Saeed']}[ui] || ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu Hasan Mian Saeed'];
     v.append(el('p', {class: 'note foot legal', style: 'margin:.2rem 0'}, LG[0]), el('p', {class: 'note foot legal', style: 'margin:.1rem 0 .6rem'}, ...(() => {
       // the colon after «Founder» / «بانی» is the quiet way in to the founder panel
       const t = LG[1], i = t.search(/[:：]/); if (i < 0) return [t];
@@ -3983,10 +3984,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 (function () {
   Object.assign(I.ur, {cBooks: 'دیگر کتبِ حدیث', cSecSearch: 'اس کتاب میں: حدیث نمبر یا الفاظ (سب الفاظ والی احادیث)', cOnlyAr: 'صرف عربی',
     cGrade: 'درجہ', cOpen: 'کتاب میں کھولیں', cNotHere: 'یہ نمبر اس کتاب میں نہیں ملا۔', cLangMissing: 'اس کتاب کا یہ ترجمہ دستیاب نہیں۔',
-    cSource: 'ماخذ: hadith-api (fawazahmed0) / Open Hadith Data — اوپن سورس', cJami: n => 'الجامع الکامل ' + n, gsTitle: 'تلاش — کتب چن کر', gsPlace: 'الفاظ لکھیں (سب الفاظ والی احادیث آئیں گی)', gsGo: 'تلاش کریں', gsPick: 'کن کتب میں تلاش کریں؟', gsChosen: n => '(' + n + ' کتب چنی ہیں)', gsAll: 'سب کتب', gsNone: 'کوئی نہیں', gsMain: 'الجامع الکامل اور صحاح ستہ', gsHint: 'جو کتاب کھلی ہو اس کے اندر تلاش کیلئے کتاب کھول کر اوپر کا خانہ استعمال کریں۔ زیادہ یا بڑی کتب چننے پر تلاش میں کچھ دیر لگ سکتی ہے۔', gsTotal: (n, b) => 'کل نتائج: ' + n + ' — ' + b + ' کتب میں', cBabs: 'ابواب', cSourceJami: 'یہ کتاب «الجامع الکامل في الحديث الصحيح الشامل» سے ماخوذ ہے، اردو ترجمہ کے ساتھ۔', cExt: 'یہ عربی کتاب سائز کی وجہ سے ایپ کے دوسرے لنک میں رکھی گئی ہے۔ ہوسٹ کی ہوئی سائٹ میں یہ یہیں کھلے گی۔', cOpenExt: 'کتاب کھولیں ↗', cSourceAr: 'ماخذ: turath.io (مکتبہ شاملہ) — آپ کی بھیجی ہوئی EPUB فائلیں', cPrinted: n => 'مطبوعہ نمبر ' + n, cSection: 'کتاب'});
+    cSource: 'ماخذ: hadith-api (fawazahmed0) / Open Hadith Data — اوپن سورس', cJami: n => 'تلخیص الجامع الکامل ' + n, gsTitle: 'تلاش — کتب چن کر', gsPlace: 'الفاظ لکھیں (سب الفاظ والی احادیث آئیں گی)', gsGo: 'تلاش کریں', gsPick: 'کن کتب میں تلاش کریں؟', gsChosen: n => '(' + n + ' کتب چنی ہیں)', gsAll: 'سب کتب', gsNone: 'کوئی نہیں', gsMain: 'تلخیص الجامع الکامل اور صحاح ستہ', gsHint: 'جو کتاب کھلی ہو اس کے اندر تلاش کیلئے کتاب کھول کر اوپر کا خانہ استعمال کریں۔ زیادہ یا بڑی کتب چننے پر تلاش میں کچھ دیر لگ سکتی ہے۔', gsTotal: (n, b) => 'کل نتائج: ' + n + ' — ' + b + ' کتب میں', cBabs: 'ابواب', cSourceJami: 'یہ کتاب «تلخیص الجامع الکامل في الحديث الصحيح الشامل» سے ماخوذ ہے، اردو ترجمہ کے ساتھ۔', cExt: 'یہ عربی کتاب سائز کی وجہ سے ایپ کے دوسرے لنک میں رکھی گئی ہے۔ ہوسٹ کی ہوئی سائٹ میں یہ یہیں کھلے گی۔', cOpenExt: 'کتاب کھولیں ↗', cSourceAr: 'ماخذ: turath.io (مکتبہ شاملہ) — آپ کی بھیجی ہوئی EPUB فائلیں', cPrinted: n => 'مطبوعہ نمبر ' + n, cSection: 'کتاب'});
   Object.assign(I.en, {cBooks: 'Other hadith books', cSecSearch: 'In this book: hadith number or words (hadith with all the words)', cOnlyAr: 'Arabic only',
     cGrade: 'Grade', cOpen: 'Open in the book', cNotHere: 'This number was not found in this book.', cLangMissing: 'This translation is not available for this book.',
-    cSource: 'Source: hadith-api (fawazahmed0) / Open Hadith Data — open source', cJami: n => 'al-Jami al-Kamil ' + n, gsTitle: 'Search — choose books', gsPlace: 'Type words (hadith with all the words)', gsGo: 'Search', gsPick: 'Which books to search?', gsChosen: n => '(' + n + ' books chosen)', gsAll: 'All books', gsNone: 'None', gsMain: 'Al-Jami al-Kamil and the six books', gsHint: 'To search inside one book, open the book and use the box at its top. Choosing many or large books makes the search take longer.', gsTotal: (n, b) => 'Total: ' + n + ' — in ' + b + ' books', cBabs: 'chapters', cSourceJami: 'Taken from al-Jami al-Kamil fi al-Hadith as-Sahih ash-Shamil, with Urdu translation.', cExt: 'Because of its size, this Arabic book is kept in a second link of the app. On the hosted site it opens here.', cOpenExt: 'Open the book ↗', cSourceAr: 'Source: turath.io (al-Maktaba ash-Shamila) EPUB files', cPrinted: n => 'printed no. ' + n, cSection: 'Book'});
+    cSource: 'Source: hadith-api (fawazahmed0) / Open Hadith Data — open source', cJami: n => 'Talkhis al-Jami al-Kamil ' + n, gsTitle: 'Search — choose books', gsPlace: 'Type words (hadith with all the words)', gsGo: 'Search', gsPick: 'Which books to search?', gsChosen: n => '(' + n + ' books chosen)', gsAll: 'All books', gsNone: 'None', gsMain: 'Talkhis Al-Jami al-Kamil and the six books', gsHint: 'To search inside one book, open the book and use the box at its top. Choosing many or large books makes the search take longer.', gsTotal: (n, b) => 'Total: ' + n + ' — in ' + b + ' books', cBabs: 'chapters', cSourceJami: 'Taken from Talkhis al-Jami al-Kamil fi al-Hadith as-Sahih ash-Shamil, with Urdu translation.', cExt: 'Because of its size, this Arabic book is kept in a second link of the app. On the hosted site it opens here.', cOpenExt: 'Open the book ↗', cSourceAr: 'Source: turath.io (al-Maktaba ash-Shamila) EPUB files', cPrinted: n => 'printed no. ' + n, cSection: 'Book'});
   Object.assign(I.ur, {hsTile: 'حدیث تلاش (حکم)', hsTitle: 'حدیث تلاش — حکم کے ساتھ', hsPlace: 'حدیث کے الفاظ لکھیں، مثلاً: لا تغضب', hsHint: 'پہلے اس ویبسائٹ کی سب کتب میں تلاش ہوگی، پھر الموسوعة الحديثية (الدرر السنية) میں محدثین کے حکم کے ساتھ۔ عربی الفاظ سے تلاش کریں۔',
     hsSite: 'تراث خیرالقرون کی کتب میں', hsDorar: 'الموسوعة الحديثية (الدرر السنية) — حکم کے ساتھ', hsGrade: 'خلاصۂ حکم', hsRawi: 'راوی', hsMuh: 'محدث', hsSrc: 'ماخذ', hsNo: 'صفحہ یا نمبر',
     hsOpenDorar: 'الدرر السنية پر کھولیں', hsDorarErr: 'الدرر السنية سے نتائج نہیں آ سکے (انٹرنیٹ یا ان کی سائٹ)۔ نیچے سے براہ راست کھول لیں۔', hsDorarSrc: 'یہ نتائج الموسوعة الحديثية — الدرر السنية (dorar.net) کی خدمت سے ہیں۔'});
@@ -4028,7 +4029,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // each interface language keeps its own choice; by default the translation in that language, none for Arabic
   // Memorizing Hadith: the wording when a hadith has no translation yet, and the other al-Jami numbers with exactly the same words
   const HFM = {ur: 'اس حدیث کا یہ ترجمہ ابھی دستیاب نہیں۔', ar: 'ترجمة هذا الحديث غير متاحة بعد.', en: 'The translation of this hadith is not available yet.', bn: 'এই হাদীসের অনুবাদ এখনও পাওয়া যায়নি।', hi: 'इस हदीस का अनुवाद अभी उपलब्ध नहीं है।', gu: 'આ હદીસનો અનુવાદ હજી ઉપલબ્ધ નથી.', fr: 'La traduction de ce hadith n’est pas encore disponible.'};
-  const HFD = {ur: 'یہی فرمان الجامع الکامل کی ان احادیث میں بھی ہے', ar: 'وردت هذه الألفاظ نفسها في الجامع الكامل برقم', en: 'The same words also occur in al-Jami al-Kamil, hadith', bn: 'একই বাক্য আল-জামি আল-কামিলের এই হাদীসগুলোতেও আছে', hi: 'यही शब्द अल-जामिउल कामिल की इन हदीसों में भी हैं', gu: 'આ જ શબ્દો અલ-જામિઅ અલ-કામિલની આ હદીસોમાં પણ છે', fr: 'Les mêmes paroles figurent aussi dans al-Jami al-Kamil, hadiths'};
+  const HFD = {ur: 'یہی فرمان تلخیص الجامع الکامل کی ان احادیث میں بھی ہے', ar: 'وردت هذه الألفاظ نفسها في تلخيص الجامع الكامل برقم', en: 'The same words also occur in Talkhis al-Jami al-Kamil, hadith', bn: 'একই বাক্য তালখীস আল-জামি আল-কামিলের এই হাদীসগুলোতেও আছে', hi: 'यही शब्द तल्ख़ीस अल-जामिउल कामिल की इन हदीसों में भी हैं', gu: 'આ જ શબ્દો તલ્ખીસ અલ-જામિઅ અલ-કામિલની આ હદીસોમાં પણ છે', fr: 'Les mêmes paroles figurent aussi dans Talkhis al-Jami al-Kamil, hadiths'};
   const getLang = b => { let l = null; try { l = localStorage['clang_' + ui]; } catch (e) {} if (l === 'none') return null; if (!l) { if (ui === 'ar' || !b.langs.includes(ui)) return null; l = ui; } return b.langs.includes(l) ? l : (b.langs.find(x => x !== 'ar') || null); };
   const setLang = l => { try { localStorage['clang_' + ui] = l || 'none'; } catch (e) {} };
   const LNAME = {ur: 'اردو', en: 'English', bn: 'বাংলা', hi: 'हिन्दी', gu: 'ગુજરાતી', fr: 'Français'};
@@ -4065,7 +4066,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (ui === 'ar' && /[A-Za-z]/.test(x)) { const d = C.ch[b.key]; if (d && d.s && d.s[s[0]] != null) return d.t[d.s[s[0]]]; }   // no English in the Arabic interface: the book's own Arabic kitab name
     return x; };
   const RNG = b => b.key === 'shadharat' || b.key === 'siyar' ? (x, y) => T(b.key === 'siyar' ? 'cParaNo' : 'cNasNo')(x === y ? fmtN(x) : fmtN(x) + '–' + fmtN(y))
-    // books from al-Jami al-Kamil: the book's own printed numbers (the notes between them have none)
+    // books from Talkhis al-Jami al-Kamil: the book's own printed numbers (the notes between them have none)
     : b.jami ? (x, y) => { const p = []; for (let k = x; k <= y; k++) if (!(b.nn && b.nn[k])) p.push(+(b.an[k] || k)); return p.length ? T('range')(Math.min(...p), Math.max(...p)) : ''; }
     : T('range');
   const CNT = b => T(b.key === 'shadharat' ? 'cNas' : b.key === 'siyar' ? 'cPara' : 'count');
@@ -4128,7 +4129,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return box;
   }
   window.COLL_SH = {
-    // for the refs of an al-Jami al-Kamil hadith: [{key, number, n}] -> box
+    // for the refs of an Talkhis al-Jami al-Kamil hadith: [{key, number, n}] -> box
     forRefs: async refs => { try { await index(); const pairs = [];
         for (const r of (refs || [])) { if (!SHT.has(r.key)) continue; const n = r.n || ((C.rev || {})[r.key] || {})[r.number] || +r.number; if (n) pairs.push([r.key, +n, (bookOf(r.key) ? bookOf(r.key).ar : r.key) + ' (' + fmtN(r.number) + ')']); }
         return await shBox(pairs); } catch (e) { return null; } }
@@ -4138,7 +4139,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     shBox([[b.key, n, '']]).then(box => { if (box) c.insertBefore(box, acts); }).catch(() => {});
   }
   function card(b, n, lang, q) {
-    if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of al-Jami al-Kamil
+    if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of Talkhis al-Jami al-Kamil
       const r = row(b, 'ar', n) || [], nums = String(r[2] || '').split(',').filter(Boolean), c = el('article', {class: 'card atraf'});
       c.append(el('a', {class: 'mt ar atx', lang: 'ar', dir: 'rtl', href: '#/h/' + nums[0], style: 'display:block;text-decoration:none;color:inherit'}, ...rich(r[1] || '', 'ar')),
         el('div', {class: 'atn'}, ...nums.map(x => el('a', {class: 'btn', href: '#/h/' + x}, fmtN(+x)))));
@@ -4195,7 +4196,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const foot = footOf(b, n);
     if (sref) c.append(sref);
     if (foot) c.append(footEl(foot));
-    // books taken from al-Jami al-Kamil (Seerah, Fazail-e-Sahaba ...): the takhrij of al-Jami, as on its own page —
+    // books taken from Talkhis al-Jami al-Kamil (Seerah, Fazail-e-Sahaba ...): the takhrij of al-Jami, as on its own page —
     // a button for each source book and «compare with its sources»
     if (b.jami && b.jami[n] && window.refBlock) { const tb = el('div', {class: 'jtk'}); c.append(tb);
       api('hadith/' + b.jami[n] + '?book=jami').then(j => { if (j && !j.error) tb.append(...refBlock(j)); }).catch(() => {}); }
@@ -4215,7 +4216,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const strip = x => (x || '').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g, '').replace(/<[^>]*>/g, '').replace(/^§\s*/gm, '').trim();
         const tr = {}; ['ur', 'en', 'bn', 'hi', 'gu', 'fr', 'pa'].forEach(l => { const r = row(b, l, n); if (r && r[1] && !(l === 'ar')) tr[l] = strip(r[1]); });
         const jn = b.jami && b.jami[n], g0 = (d.grade || '').trim(), gm = g0.match(/^([^:：]{2,30})[:：]/), gs = gm ? gm[1].trim() : (g0.length <= 30 ? g0 : '');
-        const jname = ui === 'ar' ? 'الجامع الكامل' : LTR() ? 'al-Jami al-Kamil' : 'الجامع الکامل';
+        const jname = ui === 'ar' ? 'تلخيص الجامع الكامل' : LTR() ? 'Talkhis al-Jami al-Kamil' : 'تلخیص الجامع الکامل';
         POSTER.open({kind: 'hadith', ar: strip(d.matn[0]).replace(/ﷺ/g, 'صلى الله عليه وسلم'), tr, lang: lang || ui, grade: gs, ref: jn ? jname + '(' + jn + ') ' + bname(b) : bname(b) + (note ? '' : ' (' + n + ')'), name: b.key + '-' + n}); }}}, icon('poster')),
       el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(text(), '#/s/' + b.key + '/n/' + n)) ? 'copied' : 'copyfail'))}}, icon('copy')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: async () => { const t = withLink(text(), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share')),
@@ -4321,7 +4322,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   /* ---------- the search of the two search pages (the books of this site): the word index narrows down the books, the text is read only
      where needed, the first hits of each book appear at once and nothing blocks the page ---------- */
-  const SKIP = new Set(['seerah', 'fazail', 'shadharat', 'siyar', 'tuhfa', 'hifzhadith']);   // not part of this search
+  const SKIP = new Set(['seerah', 'fazail', 'fitan', 'shadharat', 'siyar', 'tuhfa', 'hifzhadith']);   // not part of this search
   const tick = () => new Promise(r => setTimeout(r, 0));
   async function rbBook(key) {
     const bid = +key.slice(2); let K = null; try { K = await window.RB.catalog(); } catch (e) {}
@@ -4392,7 +4393,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const put = (idx, sec) => { const nx = placed.filter(x => x.idx > idx).sort((a, b) => a.idx - b.idx)[0]; site.insertBefore(sec, nx ? nx.sec : null); placed.push({idx, sec});
       if (placed.length === 1) sec.open = true; else if (placed.length === 2) placed[0].sec.open = false; };
     const arUI = ui === 'ar', v = words.join(' ');
-    // al-Jami al-Kamil first (its own search, in the interface language's translation too)
+    // Talkhis al-Jami al-Kamil first (its own search, in the interface language's translation too)
     try {
       const jb = ['ar', 'ur', 'en'].includes(ui) ? 'jami' : 'jami_' + ui;
       let d; try { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=' + jb + '&mode=' + md); } catch (e) { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=jami&mode=' + md); }
@@ -4956,6 +4957,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029i', d: '29-10-2026', keys: ['fitan'],
+      t: {ur: 'نئی کتاب: فتنوں اور قرب قیامت کے حالات و واقعات', en: 'New book: Trials and the Signs of the Hour', ar: 'كتاب جديد: الفتن وأشراط الساعة'},
+      i: {ur: ['صحیح احادیث کی روشنی میں فتنوں اور قیامت کی نشانیوں کی 424 احادیث، اردو ترجمہ، شرح اور فوائد کے ساتھ۔ عربی متن اور تخریج تلخیص الجامع الکامل سے ہے، اس لیے ہر حدیث کا لنک بھی وہیں کھلتا ہے۔', 'سیرت اور فضائلِ صحابہ کی کتابوں میں عربی آیات اب اردو یا انگریزی عبارت سے الگ سطر میں آتی ہیں۔ تلخیص الجامع الکامل کا نام تمام زبانوں میں درست کر دیا گیا ہے۔'],
+        en: ['424 hadith on trials and the signs of the Hour, from authentic narrations, with Urdu translation, explanation and benefits. The Arabic text and takhrij come from Talkhis al-Jami al-Kamil, so each hadith links to it.', 'In the Seerah and Fada\'il books, Arabic verses now stand on their own line, apart from the Urdu or English text. The name Talkhis al-Jami al-Kamil is now used in every language.'],
+        ar: ['٤٢٤ حديثًا في الفتن وأشراط الساعة من الأحاديث الصحيحة، مع الترجمة الأردية والشرح والفوائد. النص العربي والتخريج من تلخيص الجامع الكامل، ولكل حديث رابط إليه.']}},
     {id: '20261029h', d: '29-10-2026', keys: ['sh26517', 'sh26514', 'sh5800', 'sh13124', 'sh9449', 'sh9434', 'sh22418', 'sh8542', 'sh13184', 'sh11083', 'sh5818', 'sh8209', 'sh8226'],
       t: {ur: 'امام ابن شاہین کی 13 کتابیں', en: '13 books of Imam Ibn Shahin', ar: '١٣ كتابًا للإمام ابن شاهين'},
       i: {ur: ['امام ابن شاہین رحمہ اللہ کی 13 کتابیں شامل کی گئیں، سب ایک ہی مصنف کے نام کے تحت ہیں: ناسخ الحدیث ومنسوخہ، الترغیب فی فضائل الاعمال، شرح مذاہب اہل السنہ، تاریخ اسماء الثقات، تاریخ اسماء الضعفاء والکذابین، المختلف فیہم، فضائل فاطمہ، فضائل رمضان، الخامس من الافراد، فوائد ابن شاہین اور تین احادیث کے اجزاء۔', 'اردو میں «تعالیٰ» جیسے الفاظ کے آخر کی کھڑی زبر ہٹا دی گئی، کیونکہ وہ کچھ فونوں پر الگ نشان کی صورت میں دکھائی دیتی تھی۔'],
@@ -5003,13 +5009,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         ar: ['كتاب العلل لابن أبي حاتم وتفسير ابن أبي حاتم، كلاهما مشكولان.', 'في حفظ الحديث أُضيف الترجمة الأردية من الكتب الستة والموطأ تحت كل حديث مع ذكر المصدر.']}},
     {id: '20261028', d: '28-10-2026', keys: ['hifzhadith'],
       t: {ur: 'حفظ الحدیث: دو سے دس کلمات والی احادیث', en: 'Memorizing Hadith: hadith of two to ten words', ar: 'حفظ الحديث: أحاديث من كلمتين إلى عشر كلمات', bn: 'হিফজুল হাদীস: দুই থেকে দশ শব্দের হাদীস', hi: 'हिफ़्ज़ुल हदीस: दो से दस शब्दों वाली हदीसें', gu: 'હિફ્ઝુલ હદીસ: બે થી દસ શબ્દોની હદીસો', fr: 'Mémoriser le hadith : hadiths de deux à dix mots'},
-      i: {ur: ['الجامع الکامل سے وہ احادیث جن میں نبی صلی اللہ علیہ وسلم کے فرمان کے الفاظ دو سے دس تک ہیں، یاد کرنے کے لیے الفاظ کی تعداد کے مطابق۔'],
-        en: ['Hadith from al-Jami al-Kamil in which the words of the Prophet ﷺ number two to ten, arranged by word count for memorization.'],
-        ar: ['أحاديث من الجامع الكامل تكون ألفاظ النبي صلى الله عليه وسلم فيها من كلمتين إلى عشر كلمات، مرتبة بحسب عدد الكلمات للحفظ.'],
-        bn: ['আল-জামি আল-কামিল থেকে সেই হাদীসগুলো, যেগুলোতে নবী ﷺ-এর বাণী দুই থেকে দশ শব্দের, মুখস্থের জন্য শব্দসংখ্যা অনুযায়ী সাজানো।'],
-        hi: ['अल-जामि अल-कामिल की वे हदीसें जिनमें नबी ﷺ के कथन के शब्द दो से दस हैं, याद करने के लिए शब्दों की संख्या के अनुसार।'],
-        gu: ['અલ-જામિઅ અલ-કામિલની તે હદીસો જેમાં નબી ﷺના કથનના શબ્દો બે થી દસ છે, યાદ કરવા માટે શબ્દોની સંખ્યા મુજબ.'],
-        fr: ['Des hadiths d’al-Jami al-Kamil où les paroles du Prophète ﷺ comptent de deux à dix mots, classés par nombre de mots pour la mémorisation.']}},
+      i: {ur: ['تلخیص الجامع الکامل سے وہ احادیث جن میں نبی صلی اللہ علیہ وسلم کے فرمان کے الفاظ دو سے دس تک ہیں، یاد کرنے کے لیے الفاظ کی تعداد کے مطابق۔'],
+        en: ['Hadith from Talkhis al-Jami al-Kamil in which the words of the Prophet ﷺ number two to ten, arranged by word count for memorization.'],
+        ar: ['أحاديث من تلخيص الجامع الكامل تكون ألفاظ النبي صلى الله عليه وسلم فيها من كلمتين إلى عشر كلمات، مرتبة بحسب عدد الكلمات للحفظ.'],
+        bn: ['তালখীস আল-জামি আল-কামিল থেকে সেই হাদীসগুলো, যেগুলোতে নবী ﷺ-এর বাণী দুই থেকে দশ শব্দের, মুখস্থের জন্য শব্দসংখ্যা অনুযায়ী সাজানো।'],
+        hi: ['तल्ख़ीस अल-जामि अल-कामिल की वे हदीसें जिनमें नबी ﷺ के कथन के शब्द दो से दस हैं, याद करने के लिए शब्दों की संख्या के अनुसार।'],
+        gu: ['તલ્ખીસ અલ-જામિઅ અલ-કામિલની તે હદીસો જેમાં નબી ﷺના કથનના શબ્દો બે થી દસ છે, યાદ કરવા માટે શબ્દોની સંખ્યા મુજબ.'],
+        fr: ['Des hadiths d’Talkhis al-Jami al-Kamil où les paroles du Prophète ﷺ comptent de deux à dix mots, classés par nombre de mots pour la mémorisation.']}},
     {id: '20261027', d: '27-10-2026', keys: ["sh17791", "sh131521", "sh13605", "sh8544", "sh122257", "sh7488", "sh123510", "sh123665", "sh1261", "sh10486", "sh18609", "sh1442", "sh16946", "sh9568", "sh20866", "sh6484"],
       t: {ur: '16 نئی شروحات اور متعلقہ کتب', en: '16 new commentaries and related books', ar: '١٦ شرحاً وكتاباً جديداً', bn: '১৬টি নতুন ব্যাখ্যাগ্রন্থ', hi: '16 नई शरहें और संबंधित किताबें', gu: '16 નવી શરહો અને સંબંધિત કિતાબો', fr: '16 nouveaux commentaires et livres associés'},
       i: {ur: ['بخاری کی شروحات: الکواکب الدراری، ابن بطال، التیمی، اعلام الحدیث۔', 'ابو داود: ابن رسلان، معالم السنن۔ ابن ماجہ: مغلطائی۔ ترمذی: النفح الشذی۔ موطا: المسالک۔ مسند شافعی: الرافعی۔ مشکاۃ: الطیبی۔ مصابیح: ابن الملک۔', 'شرح الرسالۃ، متن العقیدۃ الطحاویہ، الجامع لعلوم الامام احمد، شرح السنۃ للمزنی۔'],
@@ -5066,13 +5072,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         fr: ['10 commentaires de Sahih Muslim, la Sira d’Ibn Hisham et d’autres livres.']}},
     {id: '20261022c', d: '22-10-2026', keys: ["sh1352","sh21108","sh1714","sh21618","sh21765","sh13154","sh5922","sh21494","sh13178","sh29852","sh30361","sh8274"],
       t: {ur: 'نئی 12 کتب اور معرب احادیث', en: '12 new books and vocalized hadith', ar: '١٢ كتابًا جديدًا وأحاديث معربة', bn: '১২টি নতুন বই ও হারাকাতযুক্ত হাদীস', hi: '12 नई किताबें और हरकत वाली हदीसें', gu: '12 નવી કિતાબો અને હરકતવાળી હદીસો', fr: '12 nouveaux livres et hadiths vocalisés'},
-      i: {ur: ['مجمع البحرین، شرح معانی الآثار، مستخرج ابی عوانہ، اتحاف الخیرۃ، البدر المنیر، تاریخ اصبہان، معجم ابن قانع، معجم ابن الاعرابی، مسند ابن ابی اوفیٰ، مجلسان من امالی ابن صاعد، الخامس من الفوائد المنتقاة (دارقطنی)، المنتقى من الطبقات (ابو عروبہ)۔', 'الجامع الکامل کی 67 احادیث پر درست کیا ہوا اعراب۔'],
-        en: ['Majma al-Bahrayn, Sharh Maani al-Athar, Mustakhraj Abi Awana, Ithaf al-Khiyara, al-Badr al-Munir, Tarikh Asbahan, Mujam Ibn Qani, Mujam Ibn al-Arabi, Musnad Ibn Abi Awfa.', 'Corrected i\u2019rab on 67 hadith of al-Jami al-Kamil.'],
-        ar: ['مجمع البحرين وشرح معاني الآثار ومستخرج أبي عوانة وإتحاف الخيرة والبدر المنير وتاريخ أصبهان ومعجم ابن قانع ومعجم ابن الأعرابي ومسند ابن أبي أوفى.', 'إعراب مصحَّح لـ٦٧ حديثًا من الجامع الكامل.'],
-        bn: ['১২টি নতুন বই এবং আল-জামিউল কামিলের ৬৭টি হাদীসে সংশোধিত হারাকাত।'],
-        hi: ['12 नई किताबें और अल-जामिउल कामिल की 67 हदीसों पर सही की हुई हरकतें।'],
-        gu: ['12 નવી કિતાબો અને અલ-જામિઉલ કામિલની 67 હદીસો પર સુધારેલી હરકતો.'],
-        fr: ['12 nouveaux livres et voyellation corrigée de 67 hadiths d’al-Jami al-Kamil.']}},
+      i: {ur: ['مجمع البحرین، شرح معانی الآثار، مستخرج ابی عوانہ، اتحاف الخیرۃ، البدر المنیر، تاریخ اصبہان، معجم ابن قانع، معجم ابن الاعرابی، مسند ابن ابی اوفیٰ، مجلسان من امالی ابن صاعد، الخامس من الفوائد المنتقاة (دارقطنی)، المنتقى من الطبقات (ابو عروبہ)۔', 'تلخیص الجامع الکامل کی 67 احادیث پر درست کیا ہوا اعراب۔'],
+        en: ['Majma al-Bahrayn, Sharh Maani al-Athar, Mustakhraj Abi Awana, Ithaf al-Khiyara, al-Badr al-Munir, Tarikh Asbahan, Mujam Ibn Qani, Mujam Ibn al-Arabi, Musnad Ibn Abi Awfa.', 'Corrected i\u2019rab on 67 hadith of Talkhis al-Jami al-Kamil.'],
+        ar: ['مجمع البحرين وشرح معاني الآثار ومستخرج أبي عوانة وإتحاف الخيرة والبدر المنير وتاريخ أصبهان ومعجم ابن قانع ومعجم ابن الأعرابي ومسند ابن أبي أوفى.', 'إعراب مصحَّح لـ٦٧ حديثًا من تلخيص الجامع الكامل.'],
+        bn: ['১২টি নতুন বই এবং তালখীস আল-জামিউল কামিলের ৬৭টি হাদীসে সংশোধিত হারাকাত।'],
+        hi: ['12 नई किताबें और तल्ख़ीस अल-जामिउल कामिल की 67 हदीसों पर सही की हुई हरकतें।'],
+        gu: ['12 નવી કિતાબો અને તલ્ખીસ અલ-જામિઉલ કામિલની 67 હદીસો પર સુધારેલી હરકતો.'],
+        fr: ['12 nouveaux livres et voyellation corrigée de 67 hadiths d’Talkhis al-Jami al-Kamil.']}},
     {id: '20261022b', d: '22-10-2026', keys: ['ab_te'],
       t: {ur: 'آڈیو کتب: تفسیر ابن کثیر (انگریزی)', en: 'Audio books: Tafsir Ibn Kathir (English)', ar: 'الكتب الصوتية: تفسير ابن كثير (بالإنجليزية)', bn: 'অডিও বই: তাফসীর ইবনে কাসীর (ইংরেজি)', hi: 'ऑडियो किताबें: तफ़सीर इब्ने कसीर (अंग्रेज़ी)', gu: 'ઑડિયો પુસ્તકો: તફસીર ઇબ્ને કસીર (અંગ્રેજી)', fr: 'Livres audio : Tafsir Ibn Kathir (anglais)'},
       i: {ur: ['انگریزی آڈیو: مقدمہ، الفاتحہ، البقرہ کا حصہ اور سورۃ الضحیٰ تا الناس۔'],
@@ -5084,13 +5090,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         fr: ['Audio en anglais : introduction, Al-Fatiha, une partie d’Al-Baqara et de Ad-Duha à An-Nas.']}},
     {id: '20261022', d: '22-10-2026', keys: ["sh10628", "sh10799", "sh11030", "sh12704", "sh12737", "sh12739", "sh12751", "sh12936", "sh12990", "sh12994", "sh12996", "sh13003", "sh13009", "sh13014", "sh13024", "sh13036", "sh13039", "sh13044", "sh13057", "sh13058", "sh13064", "sh13070", "sh13075", "sh13076", "sh13077", "sh13078", "sh13113", "sh13117", "sh13128", "sh13149", "sh13152", "sh13180", "sh13183", "sh13187", "sh21546", "sh22347", "sh26356", "sh26874", "sh28237", "sh3732", "sh6022", "sh6225", "sh6899", "sh8061", "sh8071", "sh8207", "sh8216", "sh8220", "sh8228", "sh8230", "sh8234", "sh8241", "sh8242", "sh8253", "sh8254", "sh8256", "sh8259", "sh8266", "sh8273", "sh9306", "sh9307"],
       t: {ur: 'ابن ابی الدنیا کی 61 کتب', en: '61 books of Ibn Abi ad-Dunya', ar: '٦١ كتابًا لابن أبي الدنيا', bn: 'ইবনু আবিদ-দুনইয়ার ৬১টি বই', hi: 'इब्नु अबिद-दुन्या की 61 किताबें', gu: 'ઇબ્ને અબિદ-દુન્યાની 61 કિતાબો', fr: '61 livres d’Ibn Abi ad-Dunya'},
-      i: {ur: ['ایک ہی مصنف کے تحت، مکمل اعراب کے ساتھ: 13,115 روایات۔', 'الجامع الکامل کی 170 احادیث ان کتب سے جڑی ہیں؛ حدیث کے صفحے پر اصل کتاب کھل جاتی ہے۔'],
-        en: ['Together under one author, fully vocalized: 13,115 reports.', '170 hadith of al-Jami al-Kamil are linked to these books; the hadith page opens the book itself.'],
-        ar: ['تحت مؤلف واحد، مشكولة بالكامل: ١٣٬١١٥ رواية.', 'ارتبط بها ١٧٠ حديثًا من الجامع الكامل، وتفتح صفحة الحديث الكتاب نفسه.'],
-        bn: ['এক লেখকের অধীনে, পূর্ণ হারাকাতসহ: ১৩,১১৫টি বর্ণনা।', 'আল-জামিউল কামিলের ১৭০টি হাদীস এই বইগুলোর সাথে যুক্ত; হাদীসের পাতা থেকে মূল বই খোলে।'],
-        hi: ['एक ही लेखक के अंतर्गत, पूरे हरकात के साथ: 13,115 रिवायतें।', 'अल-जामिउल-कामिल की 170 हदीसें इन किताबों से जुड़ी हैं; हदीस के पन्ने से मूल किताब खुलती है।'],
-        gu: ['એક જ લેખક હેઠળ, પૂર્ણ હરકત સાથે: 13,115 રિવાયતો.', 'અલ-જામિઉલ-કામિલની 170 હદીસો આ કિતાબો સાથે જોડાયેલી છે; હદીસના પાનાથી મૂળ કિતાબ ખુલે છે.'],
-        fr: ['Réunis sous un seul auteur, entièrement vocalisés : 13 115 rapports.', '170 hadiths d’al-Jami al-Kamil sont reliés à ces livres ; la page du hadith ouvre le livre lui-même.']}},
+      i: {ur: ['ایک ہی مصنف کے تحت، مکمل اعراب کے ساتھ: 13,115 روایات۔', 'تلخیص الجامع الکامل کی 170 احادیث ان کتب سے جڑی ہیں؛ حدیث کے صفحے پر اصل کتاب کھل جاتی ہے۔'],
+        en: ['Together under one author, fully vocalized: 13,115 reports.', '170 hadith of Talkhis al-Jami al-Kamil are linked to these books; the hadith page opens the book itself.'],
+        ar: ['تحت مؤلف واحد، مشكولة بالكامل: ١٣٬١١٥ رواية.', 'ارتبط بها ١٧٠ حديثًا من تلخيص الجامع الكامل، وتفتح صفحة الحديث الكتاب نفسه.'],
+        bn: ['এক লেখকের অধীনে, পূর্ণ হারাকাতসহ: ১৩,১১৫টি বর্ণনা।', 'তালখীস আল-জামিউল কামিলের ১৭০টি হাদীস এই বইগুলোর সাথে যুক্ত; হাদীসের পাতা থেকে মূল বই খোলে।'],
+        hi: ['एक ही लेखक के अंतर्गत, पूरे हरकात के साथ: 13,115 रिवायतें।', 'तल्ख़ीस अल-जामिउल-कामिल की 170 हदीसें इन किताबों से जुड़ी हैं; हदीस के पन्ने से मूल किताब खुलती है।'],
+        gu: ['એક જ લેખક હેઠળ, પૂર્ણ હરકત સાથે: 13,115 રિવાયતો.', 'તલ્ખીસ અલ-જામિઉલ-કામિલની 170 હદીસો આ કિતાબો સાથે જોડાયેલી છે; હદીસના પાનાથી મૂળ કિતાબ ખુલે છે.'],
+        fr: ['Réunis sous un seul auteur, entièrement vocalisés : 13 115 rapports.', '170 hadiths d’Talkhis al-Jami al-Kamil sont reliés à ces livres ; la page du hadith ouvre le livre lui-même.']}},
     {id: '20261021', d: '19-10-2026', keys: ['sh10802', 'sh816', 'sh8238', 'sh3525'],
       t: {ur: 'چار نئی کتب', en: 'Four new books', ar: 'أربعة كتب جديدة', bn: 'চারটি নতুন বই', hi: 'चार नई किताबें', gu: 'ચાર નવી કિતાબો', fr: 'Quatre nouveaux livres'},
       i: {ur: ['رواة الحدیث میں: الضعفاء والمتروکون (دارقطنی) اور اسامی الضعفاء (ابو زرعہ رازی)۔', 'کتبِ حدیث میں: فضائل الصحابہ (دارقطنی) اور الزہد (ابو حاتم رازی)۔'],
@@ -5272,51 +5278,51 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
 </script>
 <script>
-// موازنہ (compare): a hadith of al-Jami al-Kamil with the hadith its takhrij points to, or any hadith the reader collected.
+// موازنہ (compare): a hadith of Talkhis al-Jami al-Kamil with the hadith its takhrij points to, or any hadith the reader collected.
 // Routes:  #/cmp/j/<num>  the Jami hadith and its references       #/cmp  the reader's own list (any books)
 // Each hadith is compared word by word with the main one: words it adds are green, words it lacks are struck through in red,
 // and the part before/after the shared wording (the isnad, the author's remarks) is shown faded.
 (function () {
   Object.assign(I.ur, {cmp: 'موازنہ', cmpTitle: 'احادیث کا موازنہ', cmpRefs: 'تخریج سے موازنہ', cmpAdd: 'موازنہ میں شامل کریں', cmpAdded: 'موازنہ کی فہرست میں شامل ہو گئی',
     cmpRemoved: 'موازنہ کی فہرست سے نکال دی', cmpMain: 'مرکزی حدیث', cmpMakeMain: 'مرکزی بنائیں', cmpRemove: 'نکالیں', cmpClear: 'فہرست خالی کریں',
-    cmpEmpty: 'موازنہ کی فہرست خالی ہے۔ کسی بھی حدیث پر ⇄ کا بٹن دبا کر اسے یہاں شامل کریں، یا الجامع الکامل کی حدیث پر «تخریج سے موازنہ» دبائیں۔',
+    cmpEmpty: 'موازنہ کی فہرست خالی ہے۔ کسی بھی حدیث پر ⇄ کا بٹن دبا کر اسے یہاں شامل کریں، یا تلخیص الجامع الکامل کی حدیث پر «تخریج سے موازنہ» دبائیں۔',
     cmpSame: p => 'مشابہت ' + p + '٪', cmpLegend: 'سبز: مرکزی حدیث سے زائد الفاظ — سرخ کٹے ہوئے: جو الفاظ اس روایت میں نہیں — ہلکا: سند یا مصنف کا کلام',
     cmpNone: 'اس حدیث کی تخریج میں ایسی کوئی کتاب نہیں جو ایپ میں موجود ہو۔', cmpExt: 'یہ کتاب ایپ کے دوسرے لنک میں ہے', cmpMy: 'میری موازنہ فہرست',
     cmpOpen: 'کھولیں', cmpCount: n => n + ' احادیث'});
   Object.assign(I.en, {cmp: 'Compare', cmpTitle: 'Compare hadith', cmpRefs: 'Compare with its sources', cmpAdd: 'Add to compare', cmpAdded: 'Added to the compare list',
     cmpRemoved: 'Removed from the compare list', cmpMain: 'Main hadith', cmpMakeMain: 'Make main', cmpRemove: 'Remove', cmpClear: 'Clear list',
-    cmpEmpty: 'The compare list is empty. Tap ⇄ on any hadith to add it here, or “Compare with its sources” on a hadith of al-Jami al-Kamil.',
+    cmpEmpty: 'The compare list is empty. Tap ⇄ on any hadith to add it here, or “Compare with its sources” on a hadith of Talkhis al-Jami al-Kamil.',
     cmpSame: p => p + '% similar', cmpLegend: 'Green: words added to the main hadith — red, struck: words missing here — faded: isnad or the author’s remarks',
     cmpNone: 'None of the books in this hadith’s takhrij is in the app.', cmpExt: 'This book is in the other link of the app', cmpMy: 'My compare list',
     cmpOpen: 'Open', cmpCount: n => n + ' hadith'});
   const CMPX = {
     ar: {cmp: 'مقارنة', cmpTitle: 'مقارنة الأحاديث', cmpRefs: 'قارن مع مصادره', cmpAdd: 'أضف إلى المقارنة', cmpAdded: 'أُضيف إلى قائمة المقارنة',
       cmpRemoved: 'أُزيل من قائمة المقارنة', cmpMain: 'الحديث الأساسي', cmpMakeMain: 'اجعله أساسيًا', cmpRemove: 'إزالة', cmpClear: 'تفريغ القائمة',
-      cmpEmpty: 'قائمة المقارنة فارغة. اضغط على ⇄ في أي حديث لإضافته هنا، أو اضغط «قارن مع مصادره» في حديث من الجامع الكامل.',
+      cmpEmpty: 'قائمة المقارنة فارغة. اضغط على ⇄ في أي حديث لإضافته هنا، أو اضغط «قارن مع مصادره» في حديث من تلخيص الجامع الكامل.',
       cmpSame: p => 'التشابه ' + p + '٪', cmpLegend: 'الأخضر: كلمات زائدة على الحديث الأساسي — الأحمر المشطوب: كلمات غير موجودة في هذه الرواية — الباهت: الإسناد أو كلام المؤلف',
       cmpNone: 'لا يوجد في تخريج هذا الحديث أي كتاب موجود في التطبيق.', cmpExt: 'هذا الكتاب في الرابط الآخر للتطبيق', cmpMy: 'قائمة المقارنة الخاصة بي',
       cmpOpen: 'فتح', cmpCount: n => n + ' أحاديث'},
     bn: {cmp: 'তুলনা', cmpTitle: 'হাদীসের তুলনা', cmpRefs: 'উৎসগুলোর সাথে তুলনা', cmpAdd: 'তুলনায় যোগ করুন', cmpAdded: 'তুলনার তালিকায় যোগ হয়েছে',
       cmpRemoved: 'তুলনার তালিকা থেকে সরানো হয়েছে', cmpMain: 'মূল হাদীস', cmpMakeMain: 'মূল করুন', cmpRemove: 'সরান', cmpClear: 'তালিকা খালি করুন',
-      cmpEmpty: 'তুলনার তালিকা খালি। যেকোনো হাদীসে ⇄ বোতাম চেপে এখানে যোগ করুন, অথবা আল-জামি আল-কামিলের কোনো হাদীসে «উৎসগুলোর সাথে তুলনা» চাপুন।',
+      cmpEmpty: 'তুলনার তালিকা খালি। যেকোনো হাদীসে ⇄ বোতাম চেপে এখানে যোগ করুন, অথবা তালখীস আল-জামি আল-কামিলের কোনো হাদীসে «উৎসগুলোর সাথে তুলনা» চাপুন।',
       cmpSame: p => 'মিল ' + p + '%', cmpLegend: 'সবুজ: মূল হাদীসের চেয়ে বাড়তি শব্দ — লাল কাটা: এই বর্ণনায় নেই এমন শব্দ — ফ্যাকাশে: সনদ বা লেখকের মন্তব্য',
       cmpNone: 'এই হাদীসের তাখরীজে উল্লিখিত কোনো বই অ্যাপে নেই।', cmpExt: 'এই বইটি অ্যাপের অন্য লিংকে আছে', cmpMy: 'আমার তুলনার তালিকা',
       cmpOpen: 'খুলুন', cmpCount: n => n + 'টি হাদীস'},
     hi: {cmp: 'तुलना', cmpTitle: 'हदीसों की तुलना', cmpRefs: 'स्रोतों से तुलना', cmpAdd: 'तुलना में जोड़ें', cmpAdded: 'तुलना सूची में जोड़ दी गई',
       cmpRemoved: 'तुलना सूची से हटा दी गई', cmpMain: 'मुख्य हदीस', cmpMakeMain: 'मुख्य बनाएँ', cmpRemove: 'हटाएँ', cmpClear: 'सूची खाली करें',
-      cmpEmpty: 'तुलना सूची खाली है। किसी भी हदीस पर ⇄ बटन दबाकर उसे यहाँ जोड़ें, या अल-जामिउल कामिल की किसी हदीस पर «स्रोतों से तुलना» दबाएँ।',
+      cmpEmpty: 'तुलना सूची खाली है। किसी भी हदीस पर ⇄ बटन दबाकर उसे यहाँ जोड़ें, या तल्ख़ीस अल-जामिउल कामिल की किसी हदीस पर «स्रोतों से तुलना» दबाएँ।',
       cmpSame: p => 'समानता ' + p + '%', cmpLegend: 'हरा: मुख्य हदीस से अधिक शब्द — लाल कटे हुए: इस रिवायत में न मिलने वाले शब्द — फीका: सनद या लेखक की टिप्पणी',
       cmpNone: 'इस हदीस के तख़रीज में ऐसी कोई किताब नहीं जो ऐप में मौजूद हो।', cmpExt: 'यह किताब ऐप के दूसरे लिंक में है', cmpMy: 'मेरी तुलना सूची',
       cmpOpen: 'खोलें', cmpCount: n => n + ' हदीसें'},
     gu: {cmp: 'સરખામણી', cmpTitle: 'હદીસોની સરખામણી', cmpRefs: 'સ્રોતો સાથે સરખામણી', cmpAdd: 'સરખામણીમાં ઉમેરો', cmpAdded: 'સરખામણીની યાદીમાં ઉમેરાઈ ગઈ',
       cmpRemoved: 'સરખામણીની યાદીમાંથી કાઢી નાખી', cmpMain: 'મુખ્ય હદીસ', cmpMakeMain: 'મુખ્ય બનાવો', cmpRemove: 'કાઢી નાખો', cmpClear: 'યાદી ખાલી કરો',
-      cmpEmpty: 'સરખામણીની યાદી ખાલી છે. કોઈ પણ હદીસ પર ⇄ બટન દબાવીને તેને અહીં ઉમેરો, અથવા અલ-જામિઉલ કામિલની કોઈ હદીસ પર «સ્રોતો સાથે સરખામણી» દબાવો.',
+      cmpEmpty: 'સરખામણીની યાદી ખાલી છે. કોઈ પણ હદીસ પર ⇄ બટન દબાવીને તેને અહીં ઉમેરો, અથવા તલ્ખીસ અલ-જામિઉલ કામિલની કોઈ હદીસ પર «સ્રોતો સાથે સરખામણી» દબાવો.',
       cmpSame: p => 'સમાનતા ' + p + '%', cmpLegend: 'લીલું: મુખ્ય હદીસ કરતાં વધારાના શબ્દો — લાલ છેકેલા: આ રિવાયતમાં ન હોય તેવા શબ્દો — ઝાંખું: સનદ અથવા લેખકની ટિપ્પણી',
       cmpNone: 'આ હદીસના તખરીજમાં એવું કોઈ પુસ્તક નથી જે એપમાં હોય.', cmpExt: 'આ પુસ્તક એપની બીજી લિંકમાં છે', cmpMy: 'મારી સરખામણીની યાદી',
       cmpOpen: 'ખોલો', cmpCount: n => n + ' હદીસો'},
     fr: {cmp: 'Comparer', cmpTitle: 'Comparer des hadiths', cmpRefs: 'Comparer avec ses sources', cmpAdd: 'Ajouter à la comparaison', cmpAdded: 'Ajouté à la liste de comparaison',
       cmpRemoved: 'Retiré de la liste de comparaison', cmpMain: 'Hadith principal', cmpMakeMain: 'Définir comme principal', cmpRemove: 'Retirer', cmpClear: 'Vider la liste',
-      cmpEmpty: 'La liste de comparaison est vide. Touchez ⇄ sur un hadith pour l’ajouter ici, ou « Comparer avec ses sources » sur un hadith d’Al-Jami al-Kamil.',
+      cmpEmpty: 'La liste de comparaison est vide. Touchez ⇄ sur un hadith pour l’ajouter ici, ou « Comparer avec ses sources » sur un hadith d’Talkhis Al-Jami al-Kamil.',
       cmpSame: p => p + ' % de similitude', cmpLegend: 'Vert : mots ajoutés par rapport au hadith principal — rouge barré : mots absents de cette version — estompé : chaîne de transmission ou remarques de l’auteur',
       cmpNone: 'Aucun des livres cités dans les références de ce hadith n’est dans l’application.', cmpExt: 'Ce livre se trouve dans l’autre lien de l’application', cmpMy: 'Ma liste de comparaison',
       cmpOpen: 'Ouvrir', cmpCount: n => n + (n > 1 ? ' hadiths' : ' hadith')}};
@@ -5461,12 +5467,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     kSearch: 'في هذا الكتاب: رقم الحديث أو اسم الباب', notInKitab: 'هذا الحديث في كتاب آخر — اضغط لفتحه', mAll: 'جميع الكلمات', mExact: 'العبارة كاملة', mSimilar: 'مشابه',
     results: 'عدد النتائج', shownFirst: n => '(عُرض أول ' + n + ' — زد الكلمات لتضييق البحث)', readMode: 'وضع القراءة (كالمصحف)', cardMode: 'وضع البطاقات',
     showSanad: 'إظهار الإسناد', showTr: 'إظهار الترجمة', brand: 'تراث خير القرون', navFazail: 'فضائل الصحابة', death: y => '(ت ' + y + 'هـ)', arOnly: 'عربي فقط',
-    totAll: n => 'مجموع الأحاديث: ' + n, totParts: (j, o, b) => 'الجامع الكامل ' + j + ' + ' + o + ' في ' + b + ' كتابًا آخر',
-    totNote: 'الجامع الكامل والكتب المأخوذة منه (البنغالية، التحفة، فضائل الصحابة، صحيح السيرة) تُحسب مرة واحدة، ولا تُحسب كتب الرجال.',
+    totAll: n => 'مجموع الأحاديث: ' + n, totParts: (j, o, b) => 'تلخيص الجامع الكامل ' + j + ' + ' + o + ' في ' + b + ' كتابًا آخر',
+    totNote: 'تلخيص الجامع الكامل والكتب المأخوذة منه (البنغالية، التحفة، فضائل الصحابة، صحيح السيرة) تُحسب مرة واحدة، ولا تُحسب كتب الرجال.',
     ph: 'اكتب كلمات، مثل: رحمة & عذاب — أو رقم الحديث', phIn: b => 'في هذا الكتاب (' + b + '): كلمات أو رقم الحديث', count: n => n + ' حديثًا',
     none: 'لا نتائج. جرّب كلمات أقل أو مختلفة.', nf: 'لم يُعثر على الحديث.', hadith: n => 'حديث رقم ' + n, range: (a, b) => 'رقم الحديث: ' + (a === b ? a : a + '–' + b),
     hide: 'إخفاء الإسناد', show: 'إظهار الإسناد', more: 'المزيد', open: 'افتح الحديث كاملًا', nobook: 'لم يُضف هذا الكتاب إلى التطبيق بعد.',
-    toTuhfa: 'اعرض في شرح تحفة المتقين', toJami: 'اعرض في الجامع الكامل', next: 'الحديث التالي ›', prev: '‹ الحديث السابق', cited: 'الأحاديث التي تذكر هذا المرجع:',
+    toTuhfa: 'اعرض في شرح تحفة المتقين', toJami: 'اعرض في تلخيص الجامع الكامل', next: 'الحديث التالي ›', prev: '‹ الحديث السابق', cited: 'الأحاديث التي تذكر هذا المرجع:',
     sample: 'نموذج', bm: 'المحفوظات', nobm: 'لا محفوظات بعد. اضغط علامة الحفظ تحت الحديث.', copied: 'نُسخ', copyfail: 'تعذّر النسخ', saved: 'حُفظ', removed: 'أُزيل من المحفوظات',
     shared: 'نُسخ وجاهز للمشاركة', read: 'اقرأ', copy: 'نسخ', share: 'مشاركة', bookmark: 'حفظ',
     langs: {ur: 'الأردية', ar: 'العربية', en: 'الإنجليزية', bn: 'البنغالية', hi: 'الهندية'},
@@ -5491,7 +5497,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     makkah: 'أئمة المسجد الحرام', madinah: 'أئمة المسجد النبوي', others: 'قراء آخرون', surahOnly: 'السورة كاملة (دون تمييز الآيات)', go: 'افتح', ayahNo: 'رقم الآية',
     loading: 'جارٍ التحميل…', noRes: 'لم يُعثر على شيء.', qnobm: 'لا آيات محفوظة بعد. اضغط علامة الحفظ بجانب الآية.', ayahOf: 'آية', hadithOf: 'حديث', openIt: 'افتح',
     qsearchPh: 'اكتب كلمات الآية، مثل: نحن نقص', searchIn: 'في التراجم المختارة والنص العربي', netAudio: 'التلاوة تحتاج إلى الإنترنت.',
-    audioErr: 'تعذّر تشغيل هذا الصوت. تحقق من الإنترنت أو جرّب قارئًا آخر.', recite: 'استمع إلى التلاوة', jami: 'الجامع الكامل', tuhfa: 'شرح تحفة المتقين',
+    audioErr: 'تعذّر تشغيل هذا الصوت. تحقق من الإنترنت أو جرّب قارئًا آخر.', recite: 'استمع إلى التلاوة', jami: 'تلخيص الجامع الكامل', tuhfa: 'شرح تحفة المتقين',
     thisChapter: 'هذا الباب', bmHadith: 'الأحاديث المحفوظة', bmQuran: 'الآيات المحفوظة', searchHadith: 'البحث في الحديث', start: 'ابدأ', tafsir: 'التفسير',
     tafsirOf: r => 'تفسير الآية ' + r, noTafsir: 'لا يوجد لهذه الآية تعليق مستقل في هذا التفسير.', tafsirMissing: 'لم توجد بعد في مصدر مفتوح:',
     surahShort: 'سورة', paraShort: 'جزء', chapShort: 'باب', onlyAya: 'الآية فقط', ayaTr: 'الآية مع الترجمة', copyAll: 'انسخ الكل', moreRes: n => n + ' نتيجة أخرى — زد الكلمات لتضييق البحث',
@@ -5504,30 +5510,30 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     previewAudio: 'رابط Claude هذا لا يسمح بتشغيل الصوت من مواقع أخرى. التلاوة تعمل في موقعك وفي التطبيق.', hifzNoSurah: 'للتكرار اختر قارئًا تلاوته آية آية.', hifzDone: 'انتهى التكرار',
     cBooks: 'كتب الحديث الأخرى', cSecSearch: 'في هذا الكتاب: رقم الحديث أو كلمات (الحديث الذي فيه كل الكلمات)', cOnlyAr: 'عربي فقط', cGrade: 'الحكم', cOpen: 'افتح في الكتاب',
     cNotHere: 'لم يوجد هذا الرقم في هذا الكتاب.', cLangMissing: 'هذه الترجمة غير متاحة لهذا الكتاب.', cSource: 'المصدر: hadith-api (fawazahmed0) / Open Hadith Data — مصدر مفتوح',
-    cJami: n => 'الجامع الكامل ' + n, gsTitle: 'البحث — اختر الكتب', gsPlace: 'اكتب كلمات (الحديث الذي فيه كل الكلمات)', gsGo: 'ابحث', gsPick: 'في أي الكتب تبحث؟',
-    gsChosen: n => '(' + n + ' كتب مختارة)', gsAll: 'كل الكتب', gsNone: 'لا شيء', gsMain: 'الجامع الكامل والكتب الستة',
+    cJami: n => 'تلخيص الجامع الكامل ' + n, gsTitle: 'البحث — اختر الكتب', gsPlace: 'اكتب كلمات (الحديث الذي فيه كل الكلمات)', gsGo: 'ابحث', gsPick: 'في أي الكتب تبحث؟',
+    gsChosen: n => '(' + n + ' كتب مختارة)', gsAll: 'كل الكتب', gsNone: 'لا شيء', gsMain: 'تلخيص الجامع الكامل والكتب الستة',
     gsHint: 'للبحث داخل كتاب واحد افتح الكتاب واستعمل المربع في أعلاه. اختيار كتب كثيرة أو كبيرة يجعل البحث أبطأ.', gsTotal: (n, b) => 'المجموع: ' + n + ' — في ' + b + ' كتب',
-    cBabs: 'أبواب', cSourceJami: 'مأخوذ من الجامع الكامل في الحديث الصحيح الشامل، مع الترجمة الأردية.', cExt: 'لكبر حجمه حُفظ هذا الكتاب العربي في رابط ثانٍ للتطبيق، وفي الموقع المستضاف يُفتح هنا.',
+    cBabs: 'أبواب', cSourceJami: 'مأخوذ من تلخيص الجامع الكامل في الحديث الصحيح الشامل، مع الترجمة الأردية.', cExt: 'لكبر حجمه حُفظ هذا الكتاب العربي في رابط ثانٍ للتطبيق، وفي الموقع المستضاف يُفتح هنا.',
     cOpenExt: 'افتح الكتاب ↗', cSourceAr: 'المصدر: ملفات EPUB من turath.io (المكتبة الشاملة)', cPrinted: n => 'الرقم المطبوع ' + n, cSection: 'كتاب',
     cmp: 'مقارنة', cmpTitle: 'مقارنة الأحاديث', cmpRefs: 'قارن بمصادره', cmpAdd: 'أضف إلى المقارنة', cmpAdded: 'أُضيف إلى قائمة المقارنة', cmpRemoved: 'أُزيل من قائمة المقارنة',
     cmpMain: 'الحديث الأصل', cmpMakeMain: 'اجعله الأصل', cmpRemove: 'إزالة', cmpClear: 'امسح القائمة',
-    cmpEmpty: 'قائمة المقارنة فارغة. اضغط ⇄ على أي حديث لإضافته، أو «قارن بمصادره» على حديث من الجامع الكامل.', cmpSame: p => 'التشابه ' + p + '٪',
+    cmpEmpty: 'قائمة المقارنة فارغة. اضغط ⇄ على أي حديث لإضافته، أو «قارن بمصادره» على حديث من تلخيص الجامع الكامل.', cmpSame: p => 'التشابه ' + p + '٪',
     cmpLegend: 'الأخضر: كلمات زائدة على الحديث الأصل — الأحمر المشطوب: كلمات ناقصة هنا — الباهت: الإسناد أو كلام المصنف', cmpNone: 'لا يوجد في التطبيق أي كتاب من كتب تخريج هذا الحديث.',
     cmpExt: 'هذا الكتاب في الرابط الآخر للتطبيق', cmpMy: 'قائمة مقارنتي', cmpOpen: 'افتح', cmpCount: n => n + ' حديثًا',
     // app settings
     navQuran: 'القرآن', urduFont: 'خط الأردية', appSet: 'إعدادات التطبيق', uiLang: 'لغة التطبيق', themeColor: 'لون التطبيق', dayNight: 'النهار والليل', modeLight: 'نهاري', modeDark: 'ليلي', modeAuto: 'تلقائي (حسب الهاتف)',
-    privacy: 'سياسة الخصوصية', free: 'مجاني — في سبيل الله', hours: 'ساعة', mins: 'دقيقة', jamiName: 'الجامع الكامل في الحديث الصحيح الشامل', tuhfaName: 'شرح تحفة المتقين'
+    privacy: 'سياسة الخصوصية', free: 'مجاني — في سبيل الله', hours: 'ساعة', mins: 'دقيقة', jamiName: 'تلخيص الجامع الكامل في الحديث الصحيح الشامل', tuhfaName: 'شرح تحفة المتقين'
   };
   I.bn = {
     kSearch: 'এই বইয়ে: হাদীস নম্বর বা অধ্যায়ের নাম', notInKitab: 'এই হাদীস অন্য বইয়ে আছে — খুলতে চাপুন', mAll: 'সব শব্দ', mExact: 'হুবহু বাক্য', mSimilar: 'কাছাকাছি',
     results: 'ফলাফল', shownFirst: n => '(প্রথম ' + n + 'টি দেখানো হলো — শব্দ বাড়িয়ে খোঁজ সীমিত করুন)', readMode: 'পড়ার মোড (মুসহাফের মতো)', cardMode: 'কার্ড মোড',
     showSanad: 'সনদ দেখান', showTr: 'অনুবাদ দেখান', brand: 'তুরাস খাইরুল কুরূন', navFazail: 'সাহাবা', death: y => '(মৃ. ' + y + ' হি.)', arOnly: 'শুধু আরবি',
-    totAll: n => 'মোট হাদীস: ' + n, totParts: (j, o, b) => 'আল-জামি আল-কামিল ' + j + ' + অন্য ' + b + 'টি বইয়ে ' + o,
-    totNote: 'আল-জামি আল-কামিল ও তা থেকে নেওয়া বইগুলো (বাংলা, তুহফা, ফাযায়েলে সাহাবা, সহীহ সীরাত) একবারই গণনা করা হয়েছে। রিজালের বই গণনায় নেই।',
+    totAll: n => 'মোট হাদীস: ' + n, totParts: (j, o, b) => 'তালখীস আল-জামি আল-কামিল ' + j + ' + অন্য ' + b + 'টি বইয়ে ' + o,
+    totNote: 'তালখীস আল-জামি আল-কামিল ও তা থেকে নেওয়া বইগুলো (বাংলা, তুহফা, ফাযায়েলে সাহাবা, সহীহ সীরাত) একবারই গণনা করা হয়েছে। রিজালের বই গণনায় নেই।',
     ph: 'শব্দ লিখুন, যেমন: রহমত & আযাব — অথবা হাদীস নম্বর', phIn: b => 'এই বইয়ে (' + b + '): শব্দ বা হাদীস নম্বর', count: n => n + 'টি হাদীস',
     none: 'কিছু পাওয়া যায়নি। কম বা ভিন্ন শব্দ দিয়ে চেষ্টা করুন।', nf: 'হাদীস পাওয়া যায়নি।', hadith: n => 'হাদীস নং ' + n, range: (a, b) => 'হাদীস নং: ' + (a === b ? a : a + '–' + b),
     hide: 'সনদ লুকান', show: 'সনদ দেখান', more: 'আরও দেখুন', open: 'পূর্ণ হাদীস খুলুন', nobook: 'এই বই এখনো অ্যাপে যোগ করা হয়নি।',
-    toTuhfa: 'শরহে তুহফাতুল মুত্তাকীনে দেখুন', toJami: 'আল-জামি আল-কামিলে দেখুন', next: 'পরের হাদীস ›', prev: '‹ আগের হাদীস', cited: 'যে হাদীসে এই সূত্র আছে:',
+    toTuhfa: 'শরহে তুহফাতুল মুত্তাকীনে দেখুন', toJami: 'তালখীস আল-জামি আল-কামিলে দেখুন', next: 'পরের হাদীস ›', prev: '‹ আগের হাদীস', cited: 'যে হাদীসে এই সূত্র আছে:',
     sample: 'নমুনা', bm: 'বুকমার্ক', nobm: 'এখনো কোনো বুকমার্ক নেই। হাদীসের নিচে বুকমার্ক চিহ্ন চাপুন।', copied: 'কপি হয়েছে', copyfail: 'কপি করা যায়নি', saved: 'বুকমার্ক হয়েছে',
     removed: 'বুকমার্ক সরানো হয়েছে', shared: 'কপি হয়েছে, শেয়ার করার জন্য প্রস্তুত', read: 'পড়ুন', copy: 'কপি', share: 'শেয়ার', bookmark: 'বুকমার্ক',
     langs: {ur: 'উর্দু', ar: 'আরবি', en: 'ইংরেজি', bn: 'বাংলা', hi: 'হিন্দি'},
@@ -5552,7 +5558,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     makkah: 'মসজিদুল হারামের ইমামগণ', madinah: 'মসজিদে নববীর ইমামগণ', others: 'অন্যান্য ক্বারী', surahOnly: 'পুরো সূরা (আয়াত চিহ্নিত ছাড়া)', go: 'খুলুন', ayahNo: 'আয়াত নম্বর',
     loading: 'লোড হচ্ছে…', noRes: 'কিছু পাওয়া যায়নি।', qnobm: 'এখনো কোনো আয়াত সংরক্ষিত নেই। আয়াতের পাশে বুকমার্ক চিহ্ন চাপুন।', ayahOf: 'একটি আয়াত', hadithOf: 'একটি হাদীস', openIt: 'খুলুন',
     qsearchPh: 'আয়াতের শব্দ লিখুন, যেমন: نحن نقص', searchIn: 'বাছাইকৃত অনুবাদ ও আরবি পাঠে', netAudio: 'তিলাওয়াতের জন্য ইন্টারনেট লাগবে।',
-    audioErr: 'এই অডিও চালানো যায়নি। ইন্টারনেট দেখুন বা অন্য ক্বারী চেষ্টা করুন।', recite: 'তিলাওয়াত শুনুন', jami: 'আল-জামি আল-কামিল', tuhfa: 'শরহে তুহফাতুল মুত্তাকীন',
+    audioErr: 'এই অডিও চালানো যায়নি। ইন্টারনেট দেখুন বা অন্য ক্বারী চেষ্টা করুন।', recite: 'তিলাওয়াত শুনুন', jami: 'তালখীস আল-জামি আল-কামিল', tuhfa: 'শরহে তুহফাতুল মুত্তাকীন',
     thisChapter: 'এই অধ্যায়', bmHadith: 'সংরক্ষিত হাদীস', bmQuran: 'সংরক্ষিত আয়াত', searchHadith: 'হাদীস খুঁজুন', start: 'শুরু', tafsir: 'তাফসীর',
     tafsirOf: r => 'আয়াত ' + r + '-এর তাফসীর', noTafsir: 'এই তাফসীরে এই আয়াতের আলাদা ব্যাখ্যা নেই।', tafsirMissing: 'এগুলো এখনো উন্মুক্ত উৎসে পাওয়া যায়নি:',
     surahShort: 'সূরা', paraShort: 'পারা', chapShort: 'অধ্যায়', onlyAya: 'শুধু আয়াত', ayaTr: 'আয়াত ও অনুবাদ', copyAll: 'সব কপি করুন', moreRes: n => 'আরও ' + n + 'টি ফলাফল — শব্দ বাড়িয়ে খোঁজ সীমিত করুন',
@@ -5565,24 +5571,24 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     previewAudio: 'Claude-এর এই লিংকে অন্য ওয়েবসাইট থেকে শব্দ চালানো যায় না। আপনার ওয়েবসাইট ও অ্যাপে তিলাওয়াত চলবে।', hifzNoSurah: 'হিফযের পুনরাবৃত্তির জন্য আয়াত-ভিত্তিক তিলাওয়াতের ক্বারী বেছে নিন।', hifzDone: 'পুনরাবৃত্তি শেষ হয়েছে',
     cBooks: 'অন্যান্য হাদীসের বই', cSecSearch: 'এই বইয়ে: হাদীস নম্বর বা শব্দ (যে হাদীসে সব শব্দ আছে)', cOnlyAr: 'শুধু আরবি', cGrade: 'মান', cOpen: 'বইয়ে খুলুন',
     cNotHere: 'এই নম্বর এই বইয়ে পাওয়া যায়নি।', cLangMissing: 'এই বইয়ের জন্য এই অনুবাদ নেই।', cSource: 'উৎস: hadith-api (fawazahmed0) / Open Hadith Data — উন্মুক্ত উৎস',
-    cJami: n => 'আল-জামি আল-কামিল ' + n, gsTitle: 'অনুসন্ধান — বই বেছে নিন', gsPlace: 'শব্দ লিখুন (যে হাদীসে সব শব্দ আছে)', gsGo: 'খুঁজুন', gsPick: 'কোন কোন বইয়ে খুঁজবেন?',
-    gsChosen: n => '(' + n + 'টি বই বাছাই)', gsAll: 'সব বই', gsNone: 'কোনোটি না', gsMain: 'আল-জামি আল-কামিল ও সিহাহ সিত্তাহ',
+    cJami: n => 'তালখীস আল-জামি আল-কামিল ' + n, gsTitle: 'অনুসন্ধান — বই বেছে নিন', gsPlace: 'শব্দ লিখুন (যে হাদীসে সব শব্দ আছে)', gsGo: 'খুঁজুন', gsPick: 'কোন কোন বইয়ে খুঁজবেন?',
+    gsChosen: n => '(' + n + 'টি বই বাছাই)', gsAll: 'সব বই', gsNone: 'কোনোটি না', gsMain: 'তালখীস আল-জামি আল-কামিল ও সিহাহ সিত্তাহ',
     gsHint: 'একটি বইয়ের ভেতরে খুঁজতে বইটি খুলে উপরের বাক্সটি ব্যবহার করুন। অনেক বা বড় বই বাছলে খুঁজতে বেশি সময় লাগে।', gsTotal: (n, b) => 'মোট: ' + n + ' — ' + b + 'টি বইয়ে',
-    cBabs: 'অধ্যায়', cSourceJami: 'আল-জামি আল-কামিল ফিল হাদীসিস সহীহিশ শামিল থেকে নেওয়া, উর্দু অনুবাদসহ।', cExt: 'আকারের কারণে এই আরবি বইটি অ্যাপের দ্বিতীয় লিংকে রাখা হয়েছে; হোস্ট করা সাইটে এটি এখানেই খোলে।',
+    cBabs: 'অধ্যায়', cSourceJami: 'তালখীস আল-জামি আল-কামিল ফিল হাদীসিস সহীহিশ শামিল থেকে নেওয়া, উর্দু অনুবাদসহ।', cExt: 'আকারের কারণে এই আরবি বইটি অ্যাপের দ্বিতীয় লিংকে রাখা হয়েছে; হোস্ট করা সাইটে এটি এখানেই খোলে।',
     cOpenExt: 'বইটি খুলুন ↗', cSourceAr: 'উৎস: turath.io (আল-মাকতাবা আশ-শামিলা)-এর EPUB ফাইল', cPrinted: n => 'মুদ্রিত নং ' + n, cSection: 'কিতাব',
     cmp: 'তুলনা', cmpTitle: 'হাদীসের তুলনা', cmpRefs: 'উৎসগুলোর সাথে তুলনা', cmpAdd: 'তুলনায় যোগ করুন', cmpAdded: 'তুলনার তালিকায় যোগ হয়েছে', cmpRemoved: 'তুলনার তালিকা থেকে সরানো হয়েছে',
     cmpMain: 'মূল হাদীস', cmpMakeMain: 'মূল করুন', cmpRemove: 'সরান', cmpClear: 'তালিকা খালি করুন',
-    cmpEmpty: 'তুলনার তালিকা খালি। যেকোনো হাদীসে ⇄ চেপে এখানে যোগ করুন, অথবা আল-জামি আল-কামিলের হাদীসে «উৎসগুলোর সাথে তুলনা» চাপুন।', cmpSame: p => p + '% মিল',
+    cmpEmpty: 'তুলনার তালিকা খালি। যেকোনো হাদীসে ⇄ চেপে এখানে যোগ করুন, অথবা তালখীস আল-জামি আল-কামিলের হাদীসে «উৎসগুলোর সাথে তুলনা» চাপুন।', cmpSame: p => p + '% মিল',
     cmpLegend: 'সবুজ: মূল হাদীসের চেয়ে বাড়তি শব্দ — লাল কাটা: এখানে অনুপস্থিত শব্দ — ফিকে: সনদ বা লেখকের মন্তব্য', cmpNone: 'এই হাদীসের তাখরীজের কোনো বই অ্যাপে নেই।',
     cmpExt: 'এই বইটি অ্যাপের অন্য লিংকে আছে', cmpMy: 'আমার তুলনার তালিকা', cmpOpen: 'খুলুন', cmpCount: n => n + 'টি হাদীস',
     navQuran: 'কুরআন', urduFont: 'উর্দু ফন্ট', appSet: 'অ্যাপের সেটিংস', uiLang: 'অ্যাপের ভাষা', themeColor: 'অ্যাপের রং', dayNight: 'দিন ও রাত', modeLight: 'দিনের মোড', modeDark: 'রাতের মোড', modeAuto: 'স্বয়ংক্রিয় (ফোন অনুযায়ী)',
-    privacy: 'গোপনীয়তা নীতি', free: 'বিনামূল্যে — ফী সাবীলিল্লাহ', hours: 'ঘণ্টা', mins: 'মিনিট', jamiName: 'আল-জামি আল-কামিল', tuhfaName: 'শরহে তুহফাতুল মুত্তাকীন'
+    privacy: 'গোপনীয়তা নীতি', free: 'বিনামূল্যে — ফী সাবীলিল্লাহ', hours: 'ঘণ্টা', mins: 'মিনিট', jamiName: 'তালখীস আল-জামি আল-কামিল', tuhfaName: 'শরহে তুহফাতুল মুত্তাকীন'
   };
   // the same new keys for Urdu and English
   Object.assign(I.ur, {navQuran: 'قرآن مجید', urduFont: 'اردو فونٹ', appSet: 'ایپ کی ترتیبات', uiLang: 'ایپ کی زبان', themeColor: 'ایپ کا رنگ', dayNight: 'دن اور رات', modeLight: 'دن (روشن)', modeDark: 'رات (تاریک)', modeAuto: 'خودکار (فون کے مطابق)',
-    privacy: 'پرائیویسی پالیسی', free: 'مفت — فی سبیل اللہ', hours: 'گھنٹے', mins: 'منٹ', jamiName: 'الجامع الکامل', tuhfaName: 'شرح تحفۃ المتقین'});
+    privacy: 'پرائیویسی پالیسی', free: 'مفت — فی سبیل اللہ', hours: 'گھنٹے', mins: 'منٹ', jamiName: 'تلخیص الجامع الکامل', tuhfaName: 'شرح تحفۃ المتقین'});
   Object.assign(I.en, {navQuran: 'Quran', urduFont: 'Urdu font', appSet: 'App settings', uiLang: 'App language', themeColor: 'App colour', dayNight: 'Day and night', modeLight: 'Day (light)', modeDark: 'Night (dark)', modeAuto: 'Automatic (as the phone)',
-    privacy: 'Privacy policy', free: 'Free — fi sabilillah', hours: 'h', mins: 'min', jamiName: 'Al-Jame Al-Kamil', tuhfaName: 'Sharh Tuhfat al-Muttaqin'});
+    privacy: 'Privacy policy', free: 'Free — fi sabilillah', hours: 'h', mins: 'min', jamiName: 'Talkhis Al-Jame Al-Kamil', tuhfaName: 'Sharh Tuhfat al-Muttaqin'});
   window.bnDigits = bd;
 })();
 
@@ -5590,54 +5596,54 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 <script>
 // Today: today's ayah, today's hadith, morning / evening adhkar and today's advice — on the Home screen and as daily notifications.
 // Cards show the translation in the interface language (Arabic for the Arabic interface); a tap opens the Arabic with the translation.
-// Content: daily.js (adhkar and the Prophet's advice from al-Jami al-Kamil, sayings of the Sahaba and Salaf from Siyar A'lam an-Nubala).
+// Content: daily.js (adhkar and the Prophet's advice from Talkhis al-Jami al-Kamil, sayings of the Sahaba and Salaf from Siyar A'lam an-Nubala).
 (function () {
   const S = {
     ur: {tAyah: 'آج کی آیت', tHadith: 'آج کی حدیث', tMorning: 'صبح کے اذکار', tEvening: 'شام کے اذکار', tNasiha: 'آج کی نصیحت', tMore: 'عربی متن اور ترجمہ',
       nNabi: 'رسول اللہ صلی اللہ علیہ وسلم کی نصیحت', nSahabi: 'صحابہ کرام کی نصیحت', nSalaf: 'سلف صالحین کی نصیحت', nAll: 'سب نصیحتیں', prophet: 'رسول اللہ صلی اللہ علیہ وسلم',
-      srcSiyar: 'سیر اعلام النبلاء (امام ذہبی)', srcJami: 'الجامع الکامل', openSrc: 'اصل کتاب میں دیکھیں', shOpen: 'شذرات الذهب میں دیکھیں', navSh: 'شذرات', navSalaf: 'سلف صالحین', navShFull: 'شذرات الذهب', cPara: n => 'پیراگراف: ' + n, cParaNo: n => 'پیراگراف ' + n, cPeople: 'شخصیات', cSourceSiyar: 'ماخذ: سیر اعلام النبلاء (امام ذہبی رحمہ اللہ) — اردو ترجمہ: تراث خیرالقرون؛ خلفائے راشدین، عشرہ مبشرہ اور دیگر مشہور صحابہ و صحابیات: صحیح فضائل صحابہ', readStart: 'ترتیب سے پڑھیں', nextSec: 'اگلا ←', prevSec: 'پچھلا', cNas: n => 'نصیحتیں: ' + n, cNasNo: n => 'نصیحت نمبر ' + n, cSourceSh: 'ماخذ: سیر اعلام النبلاء (امام ذہبی) — ترجمہ: تراث خیرالقرون', shAll: n => 'شذرات الذهب — نصیحتیں میرے اسلاف کی (' + n + ')', adhkarNote: 'الجامع الکامل: باب الأدعية والأذكار في الصباح والمساء',
+      srcSiyar: 'سیر اعلام النبلاء (امام ذہبی)', srcJami: 'تلخیص الجامع الکامل', openSrc: 'اصل کتاب میں دیکھیں', shOpen: 'شذرات الذهب میں دیکھیں', navSh: 'شذرات', navSalaf: 'سلف صالحین', navShFull: 'شذرات الذهب', cPara: n => 'پیراگراف: ' + n, cParaNo: n => 'پیراگراف ' + n, cPeople: 'شخصیات', cSourceSiyar: 'ماخذ: سیر اعلام النبلاء (امام ذہبی رحمہ اللہ) — اردو ترجمہ: تراث خیرالقرون؛ خلفائے راشدین، عشرہ مبشرہ اور دیگر مشہور صحابہ و صحابیات: صحیح فضائل صحابہ', readStart: 'ترتیب سے پڑھیں', nextSec: 'اگلا ←', prevSec: 'پچھلا', cNas: n => 'نصیحتیں: ' + n, cNasNo: n => 'نصیحت نمبر ' + n, cSourceSh: 'ماخذ: سیر اعلام النبلاء (امام ذہبی) — ترجمہ: تراث خیرالقرون', shAll: n => 'شذرات الذهب — نصیحتیں میرے اسلاف کی (' + n + ')', adhkarNote: 'تلخیص الجامع الکامل: باب الأدعية والأذكار في الصباح والمساء',
       notif: 'روزانہ اطلاعات', notifDesc: 'آج کی آیت، آج کی حدیث، صبح و شام کے اذکار اور آج کی نصیحت', notifOn: 'اطلاعات چالو ہیں', notifOff: 'اطلاعات بند ہیں',
       notifTest: 'ابھی ایک اطلاع دکھائیں', notifDenied: 'فون نے اطلاعات کی اجازت نہیں دی۔ فون کی ترتیبات میں اس ایپ کے لیے اطلاعات چالو کریں۔',
       notifNo: 'یہ براؤزر اطلاعات نہیں دکھا سکتا۔', notifLimit: 'نوٹ: فون یہ اطلاعات دن میں ایک دو بار خود مناسب وقت پر دکھاتا ہے؛ مقررہ وقت والی اطلاعات کے لیے ایپ کو ویب سائٹ سے انسٹال کرنا ضروری ہے۔',
       readAdhkar: 'اذکار پڑھیں', otherAdhkar: x => x === 'm' ? 'شام کے اذکار' : 'صبح کے اذکار'},
     en: {tAyah: "Today's ayah", tHadith: "Today's hadith", tMorning: 'Morning adhkar', tEvening: 'Evening adhkar', tNasiha: "Today's advice", tMore: 'Arabic text and translation',
       nNabi: 'Advice of the Messenger ﷺ', nSahabi: 'Advice of the Sahaba', nSalaf: 'Advice of the righteous predecessors', nAll: 'All advice', prophet: 'The Messenger of Allah ﷺ',
-      srcSiyar: "Siyar A'lam an-Nubala (adh-Dhahabi)", srcJami: 'Al-Jami al-Kamil', openSrc: 'See it in the book', shOpen: 'Open in Shadharat adh-Dhahab', navSh: 'Shadharat', navSalaf: 'The Salaf', navShFull: 'Shadharat adh-Dhahab', cPara: n => 'Paragraphs: ' + n, cParaNo: n => 'Paragraph ' + n, cPeople: 'people', cSourceSiyar: "Source: Siyar A'lam an-Nubala (adh-Dhahabi) — Urdu translation: Turath Khair al-Quroon", readStart: 'Read in order', nextSec: 'Next →', prevSec: 'Previous', cNas: n => 'Advice: ' + n, cNasNo: n => 'Advice no. ' + n, cSourceSh: "Source: Siyar A'lam an-Nubala (adh-Dhahabi) — translation: Turath Khair al-Quroon", shAll: n => 'Shadharat adh-Dhahab — all the advice of the Salaf (' + n + ')', adhkarNote: 'Al-Jami al-Kamil: chapter of morning and evening supplications',
+      srcSiyar: "Siyar A'lam an-Nubala (adh-Dhahabi)", srcJami: 'Talkhis Al-Jami al-Kamil', openSrc: 'See it in the book', shOpen: 'Open in Shadharat adh-Dhahab', navSh: 'Shadharat', navSalaf: 'The Salaf', navShFull: 'Shadharat adh-Dhahab', cPara: n => 'Paragraphs: ' + n, cParaNo: n => 'Paragraph ' + n, cPeople: 'people', cSourceSiyar: "Source: Siyar A'lam an-Nubala (adh-Dhahabi) — Urdu translation: Turath Khair al-Quroon", readStart: 'Read in order', nextSec: 'Next →', prevSec: 'Previous', cNas: n => 'Advice: ' + n, cNasNo: n => 'Advice no. ' + n, cSourceSh: "Source: Siyar A'lam an-Nubala (adh-Dhahabi) — translation: Turath Khair al-Quroon", shAll: n => 'Shadharat adh-Dhahab — all the advice of the Salaf (' + n + ')', adhkarNote: 'Talkhis Al-Jami al-Kamil: chapter of morning and evening supplications',
       notif: 'Daily notifications', notifDesc: "Today's ayah, today's hadith, morning and evening adhkar, and today's advice", notifOn: 'Notifications are on', notifOff: 'Notifications are off',
       notifTest: 'Show a notification now', notifDenied: 'The phone did not allow notifications. Turn them on for this app in the phone settings.',
       notifNo: 'This browser cannot show notifications.', notifLimit: 'Note: the phone shows these once or twice a day at a time it chooses; notifications at fixed times need the app installed from the website.',
       readAdhkar: 'Read the adhkar', otherAdhkar: x => x === 'm' ? 'Evening adhkar' : 'Morning adhkar'},
     ar: {tAyah: 'آية اليوم', tHadith: 'حديث اليوم', tMorning: 'أذكار الصباح', tEvening: 'أذكار المساء', tNasiha: 'نصيحة اليوم', tMore: 'النص العربي',
       nNabi: 'وصية رسول الله ﷺ', nSahabi: 'من وصايا الصحابة', nSalaf: 'من وصايا السلف الصالح', nAll: 'كل الوصايا', prophet: 'رسول الله ﷺ',
-      srcSiyar: 'سير أعلام النبلاء (الذهبي)', srcJami: 'الجامع الكامل', openSrc: 'انظره في الكتاب', shOpen: 'افتح في شذرات الذهب', readStart: 'اقرأ بالترتيب', nextSec: 'التالي ←', prevSec: 'السابق', cPara: n => 'الفقرات: ' + n, cParaNo: n => 'الفقرة ' + n, cPeople: 'تراجم', cSourceSiyar: 'المصدر: سير أعلام النبلاء للذهبي', navSalaf: 'السلف الصالح', navShFull: 'شذرات الذهب', navSh: 'شذرات', cNas: n => 'الوصايا: ' + n, cNasNo: n => 'الوصية ' + n, cSourceSh: 'المصدر: سير أعلام النبلاء للذهبي', shAll: n => 'شذرات الذهب — وصايا السلف (' + n + ')', adhkarNote: 'الجامع الكامل: باب الأدعية والأذكار في الصباح والمساء',
+      srcSiyar: 'سير أعلام النبلاء (الذهبي)', srcJami: 'تلخيص الجامع الكامل', openSrc: 'انظره في الكتاب', shOpen: 'افتح في شذرات الذهب', readStart: 'اقرأ بالترتيب', nextSec: 'التالي ←', prevSec: 'السابق', cPara: n => 'الفقرات: ' + n, cParaNo: n => 'الفقرة ' + n, cPeople: 'تراجم', cSourceSiyar: 'المصدر: سير أعلام النبلاء للذهبي', navSalaf: 'السلف الصالح', navShFull: 'شذرات الذهب', navSh: 'شذرات', cNas: n => 'الوصايا: ' + n, cNasNo: n => 'الوصية ' + n, cSourceSh: 'المصدر: سير أعلام النبلاء للذهبي', shAll: n => 'شذرات الذهب — وصايا السلف (' + n + ')', adhkarNote: 'تلخيص الجامع الكامل: باب الأدعية والأذكار في الصباح والمساء',
       notif: 'تنبيهات يومية', notifDesc: 'آية اليوم، حديث اليوم، أذكار الصباح والمساء، ونصيحة اليوم', notifOn: 'التنبيهات مفعّلة', notifOff: 'التنبيهات متوقفة',
       notifTest: 'اعرض تنبيهًا الآن', notifDenied: 'لم يسمح الهاتف بالتنبيهات. فعّلها لهذا التطبيق من إعدادات الهاتف.',
       notifNo: 'هذا المتصفح لا يعرض التنبيهات.', notifLimit: 'ملاحظة: يعرض الهاتف هذه التنبيهات مرة أو مرتين في اليوم في الوقت الذي يختاره؛ والتنبيهات في أوقات محددة تحتاج إلى تثبيت التطبيق من الموقع.',
       readAdhkar: 'اقرأ الأذكار', otherAdhkar: x => x === 'm' ? 'أذكار المساء' : 'أذكار الصباح'},
     bn: {tAyah: 'আজকের আয়াত', tHadith: 'আজকের হাদীস', tMorning: 'সকালের যিকির', tEvening: 'সন্ধ্যার যিকির', tNasiha: 'আজকের উপদেশ', tMore: 'আরবি পাঠ ও অনুবাদ',
       nNabi: 'রাসূলুল্লাহ ﷺ-এর উপদেশ', nSahabi: 'সাহাবীদের উপদেশ', nSalaf: 'সালাফে সালেহীনের উপদেশ', nAll: 'সব উপদেশ', prophet: 'রাসূলুল্লাহ ﷺ',
-      srcSiyar: 'সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী)', srcJami: 'আল-জামি আল-কামিল', openSrc: 'মূল বইয়ে দেখুন', shOpen: 'শাযারাতুয যাহাবে দেখুন', navSh: 'শাযারাত', navSalaf: 'সালাফে সালেহীন', navShFull: 'শাযারাতুয যাহাব', cPara: n => 'অনুচ্ছেদ: ' + n, cParaNo: n => 'অনুচ্ছেদ ' + n, cPeople: 'জন', cSourceSiyar: 'উৎস: সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী)', readStart: 'ক্রমানুসারে পড়ুন', nextSec: 'পরবর্তী →', prevSec: 'পূর্ববর্তী', cNas: n => 'উপদেশ: ' + n, cNasNo: n => 'উপদেশ নং ' + n, cSourceSh: 'উৎস: সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী) — অনুবাদ: তুরাস খাইরুল কুরূন', shAll: n => 'শাযারাতুয যাহাব — সালাফের সব উপদেশ (' + n + ')', adhkarNote: 'আল-জামি আল-কামিল: সকাল-সন্ধ্যার দোয়া ও যিকিরের অধ্যায়',
+      srcSiyar: 'সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী)', srcJami: 'তালখীস আল-জামি আল-কামিল', openSrc: 'মূল বইয়ে দেখুন', shOpen: 'শাযারাতুয যাহাবে দেখুন', navSh: 'শাযারাত', navSalaf: 'সালাফে সালেহীন', navShFull: 'শাযারাতুয যাহাব', cPara: n => 'অনুচ্ছেদ: ' + n, cParaNo: n => 'অনুচ্ছেদ ' + n, cPeople: 'জন', cSourceSiyar: 'উৎস: সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী)', readStart: 'ক্রমানুসারে পড়ুন', nextSec: 'পরবর্তী →', prevSec: 'পূর্ববর্তী', cNas: n => 'উপদেশ: ' + n, cNasNo: n => 'উপদেশ নং ' + n, cSourceSh: 'উৎস: সিয়ারু আ‘লামিন নুবালা (ইমাম যাহাবী) — অনুবাদ: তুরাস খাইরুল কুরূন', shAll: n => 'শাযারাতুয যাহাব — সালাফের সব উপদেশ (' + n + ')', adhkarNote: 'তালখীস আল-জামি আল-কামিল: সকাল-সন্ধ্যার দোয়া ও যিকিরের অধ্যায়',
       notif: 'দৈনিক নোটিফিকেশন', notifDesc: 'আজকের আয়াত, আজকের হাদীস, সকাল-সন্ধ্যার যিকির ও আজকের উপদেশ', notifOn: 'নোটিফিকেশন চালু', notifOff: 'নোটিফিকেশন বন্ধ',
       notifTest: 'এখনই একটি নোটিফিকেশন দেখান', notifDenied: 'ফোন নোটিফিকেশনের অনুমতি দেয়নি। ফোনের সেটিংসে এই অ্যাপের নোটিফিকেশন চালু করুন।',
       notifNo: 'এই ব্রাউজার নোটিফিকেশন দেখাতে পারে না।', notifLimit: 'দ্রষ্টব্য: ফোন নিজের বেছে নেওয়া সময়ে দিনে এক-দুবার এগুলো দেখায়; নির্দিষ্ট সময়ে নোটিফিকেশনের জন্য ওয়েবসাইট থেকে অ্যাপ ইনস্টল করা দরকার।',
       readAdhkar: 'যিকির পড়ুন', otherAdhkar: x => x === 'm' ? 'সন্ধ্যার যিকির' : 'সকালের যিকির'},
     hi: {tAyah: 'आज की आयत', tHadith: 'आज की हदीस', tMorning: 'सुबह के अज़कार', tEvening: 'शाम के अज़कार', tNasiha: 'आज की नसीहत', tMore: 'अरबी पाठ और अनुवाद',
       nNabi: 'रसूलुल्लाह ﷺ की नसीहत', nSahabi: 'सहाबा की नसीहत', nSalaf: 'सलफ़-ए-सालिहीन की नसीहत', nAll: 'सभी नसीहतें', prophet: 'रसूलुल्लाह ﷺ',
-      srcSiyar: 'सियर अ‘लामिन नुबला (इमाम ज़हबी)', srcJami: 'अल-जामिअ अल-कामिल', openSrc: 'मूल किताब में देखें', shOpen: 'शज़रातुज़ ज़हब में देखें', navSh: 'शज़रात', navSalaf: 'सलफ़-ए-सालिहीन', navShFull: 'शज़रातुज़ ज़हब', cPara: n => 'अनुच्छेद: ' + n, cParaNo: n => 'अनुच्छेद ' + n, cPeople: 'हस्तियाँ', cSourceSiyar: 'स्रोत: सियर अ‘लामिन नुबला (इमाम ज़हबी)', readStart: 'क्रम से पढ़ें', nextSec: 'अगला →', prevSec: 'पिछला', cNas: n => 'नसीहतें: ' + n, cNasNo: n => 'नसीहत नं. ' + n, cSourceSh: 'स्रोत: सियर अ‘लामिन नुबला (इमाम ज़हबी)', shAll: n => 'शज़रातुज़ ज़हब — सलफ़ की सभी नसीहतें (' + n + ')', adhkarNote: 'अल-जामिअ अल-कामिल: सुबह-शाम की दुआओं और अज़कार का अध्याय',
+      srcSiyar: 'सियर अ‘लामिन नुबला (इमाम ज़हबी)', srcJami: 'तल्ख़ीस अल-जामिअ अल-कामिल', openSrc: 'मूल किताब में देखें', shOpen: 'शज़रातुज़ ज़हब में देखें', navSh: 'शज़रात', navSalaf: 'सलफ़-ए-सालिहीन', navShFull: 'शज़रातुज़ ज़हब', cPara: n => 'अनुच्छेद: ' + n, cParaNo: n => 'अनुच्छेद ' + n, cPeople: 'हस्तियाँ', cSourceSiyar: 'स्रोत: सियर अ‘लामिन नुबला (इमाम ज़हबी)', readStart: 'क्रम से पढ़ें', nextSec: 'अगला →', prevSec: 'पिछला', cNas: n => 'नसीहतें: ' + n, cNasNo: n => 'नसीहत नं. ' + n, cSourceSh: 'स्रोत: सियर अ‘लामिन नुबला (इमाम ज़हबी)', shAll: n => 'शज़रातुज़ ज़हब — सलफ़ की सभी नसीहतें (' + n + ')', adhkarNote: 'तल्ख़ीस अल-जामिअ अल-कामिल: सुबह-शाम की दुआओं और अज़कार का अध्याय',
       notif: 'दैनिक सूचनाएँ', notifDesc: 'आज की आयत, आज की हदीस, सुबह-शाम के अज़कार और आज की नसीहत', notifOn: 'सूचनाएँ चालू हैं', notifOff: 'सूचनाएँ बंद हैं',
       notifTest: 'अभी एक सूचना दिखाएँ', notifDenied: 'फ़ोन ने सूचनाओं की अनुमति नहीं दी। फ़ोन की सेटिंग में इस ऐप के लिए सूचनाएँ चालू करें।',
       notifNo: 'यह ब्राउज़र सूचनाएँ नहीं दिखा सकता।', notifLimit: 'नोट: फ़ोन अपने चुने हुए समय पर दिन में एक-दो बार ये सूचनाएँ दिखाता है; तय समय पर सूचनाओं के लिए ऐप को वेबसाइट से इंस्टॉल करना ज़रूरी है।',
       readAdhkar: 'अज़कार पढ़ें', otherAdhkar: x => x === 'm' ? 'शाम के अज़कार' : 'सुबह के अज़कार'},
     gu: {tAyah: 'આજની આયત', tHadith: 'આજની હદીસ', tMorning: 'સવારના અઝકાર', tEvening: 'સાંજના અઝકાર', tNasiha: 'આજની નસીહત', tMore: 'અરબી લખાણ અને અનુવાદ',
       nNabi: 'રસૂલુલ્લાહ ﷺની નસીહત', nSahabi: 'સહાબાની નસીહત', nSalaf: 'સલફે સાલિહીનની નસીહત', nAll: 'બધી નસીહતો', prophet: 'રસૂલુલ્લાહ ﷺ',
-      srcSiyar: 'સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', srcJami: 'અલ-જામિઅ અલ-કામિલ', openSrc: 'મૂળ પુસ્તકમાં જુઓ', shOpen: 'શઝરાતુઝ ઝહબમાં જુઓ', navSh: 'શઝરાત', navSalaf: 'સલફે સાલિહીન', navShFull: 'શઝરાતુઝ ઝહબ', cPara: n => 'ફકરા: ' + n, cParaNo: n => 'ફકરો ' + n, cPeople: 'વ્યક્તિઓ', cSourceSiyar: 'સ્રોત: સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', readStart: 'ક્રમ મુજબ વાંચો', nextSec: 'આગળ →', prevSec: 'પાછળ', cNas: n => 'નસીહતો: ' + n, cNasNo: n => 'નસીહત નં. ' + n, cSourceSh: 'સ્રોત: સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', shAll: n => 'શઝરાતુઝ ઝહબ — સલફની બધી નસીહતો (' + n + ')', adhkarNote: 'અલ-જામિઅ અલ-કામિલ: સવાર-સાંજની દુઆઓ અને અઝકારનો અધ્યાય',
+      srcSiyar: 'સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', srcJami: 'તલ્ખીસ અલ-જામિઅ અલ-કામિલ', openSrc: 'મૂળ પુસ્તકમાં જુઓ', shOpen: 'શઝરાતુઝ ઝહબમાં જુઓ', navSh: 'શઝરાત', navSalaf: 'સલફે સાલિહીન', navShFull: 'શઝરાતુઝ ઝહબ', cPara: n => 'ફકરા: ' + n, cParaNo: n => 'ફકરો ' + n, cPeople: 'વ્યક્તિઓ', cSourceSiyar: 'સ્રોત: સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', readStart: 'ક્રમ મુજબ વાંચો', nextSec: 'આગળ →', prevSec: 'પાછળ', cNas: n => 'નસીહતો: ' + n, cNasNo: n => 'નસીહત નં. ' + n, cSourceSh: 'સ્રોત: સિયર અ‘લામિન નુબલા (ઇમામ ઝહબી)', shAll: n => 'શઝરાતુઝ ઝહબ — સલફની બધી નસીહતો (' + n + ')', adhkarNote: 'તલ્ખીસ અલ-જામિઅ અલ-કામિલ: સવાર-સાંજની દુઆઓ અને અઝકારનો અધ્યાય',
       notif: 'દૈનિક સૂચનાઓ', notifDesc: 'આજની આયત, આજની હદીસ, સવાર-સાંજના અઝકાર અને આજની નસીહત', notifOn: 'સૂચનાઓ ચાલુ છે', notifOff: 'સૂચનાઓ બંધ છે',
       notifTest: 'હમણાં એક સૂચના બતાવો', notifDenied: 'ફોને સૂચનાઓની પરવાનગી આપી નથી. ફોનના સેટિંગમાં આ એપ માટે સૂચનાઓ ચાલુ કરો.',
       notifNo: 'આ બ્રાઉઝર સૂચનાઓ બતાવી શકતું નથી.', notifLimit: 'નોંધ: ફોન પોતાના પસંદ કરેલા સમયે દિવસમાં એક-બે વાર આ સૂચનાઓ બતાવે છે; નક્કી કરેલા સમયે સૂચનાઓ માટે એપને વેબસાઇટ પરથી ઇન્સ્ટૉલ કરવી જરૂરી છે.',
       readAdhkar: 'અઝકાર વાંચો', otherAdhkar: x => x === 'm' ? 'સાંજના અઝકાર' : 'સવારના અઝકાર'},
     fr: {tAyah: "Le verset du jour", tHadith: 'Le hadith du jour', tMorning: 'Invocations du matin', tEvening: 'Invocations du soir', tNasiha: 'Le conseil du jour', tMore: 'Texte arabe et traduction',
       nNabi: 'Conseil du Messager d’Allah ﷺ', nSahabi: 'Conseil des Compagnons', nSalaf: 'Conseil des pieux prédécesseurs', nAll: 'Tous les conseils', prophet: 'Le Messager d’Allah ﷺ',
-      srcSiyar: 'Siyar A‘lam an-Nubala (adh-Dhahabi)', srcJami: 'Al-Jami al-Kamil', openSrc: 'Voir dans le livre', shOpen: 'Ouvrir dans Shadharat adh-Dhahab', navSh: 'Shadharat', navSalaf: 'Les Salaf', navShFull: 'Shadharat adh-Dhahab', cPara: n => 'Paragraphes : ' + n, cParaNo: n => 'Paragraphe ' + n, cPeople: 'personnalités', cSourceSiyar: 'Source : Siyar A‘lam an-Nubala (adh-Dhahabi)', readStart: "Lire dans l’ordre", nextSec: 'Suivant →', prevSec: 'Précédent', cNas: n => 'Conseils : ' + n, cNasNo: n => 'Conseil n° ' + n, cSourceSh: 'Source : Siyar A‘lam an-Nubala (adh-Dhahabi)', shAll: n => 'Shadharat adh-Dhahab — tous les conseils des Salaf (' + n + ')', adhkarNote: 'Al-Jami al-Kamil : chapitre des invocations et rappels du matin et du soir',
+      srcSiyar: 'Siyar A‘lam an-Nubala (adh-Dhahabi)', srcJami: 'Talkhis Al-Jami al-Kamil', openSrc: 'Voir dans le livre', shOpen: 'Ouvrir dans Shadharat adh-Dhahab', navSh: 'Shadharat', navSalaf: 'Les Salaf', navShFull: 'Shadharat adh-Dhahab', cPara: n => 'Paragraphes : ' + n, cParaNo: n => 'Paragraphe ' + n, cPeople: 'personnalités', cSourceSiyar: 'Source : Siyar A‘lam an-Nubala (adh-Dhahabi)', readStart: "Lire dans l’ordre", nextSec: 'Suivant →', prevSec: 'Précédent', cNas: n => 'Conseils : ' + n, cNasNo: n => 'Conseil n° ' + n, cSourceSh: 'Source : Siyar A‘lam an-Nubala (adh-Dhahabi)', shAll: n => 'Shadharat adh-Dhahab — tous les conseils des Salaf (' + n + ')', adhkarNote: 'Talkhis Al-Jami al-Kamil : chapitre des invocations et rappels du matin et du soir',
       notif: 'Notifications quotidiennes', notifDesc: 'Le verset du jour, le hadith du jour, les invocations du matin et du soir, et le conseil du jour', notifOn: 'Notifications activées', notifOff: 'Notifications désactivées',
       notifTest: 'Afficher une notification maintenant', notifDenied: "Le téléphone n’a pas autorisé les notifications. Activez-les pour cette application dans les réglages du téléphone.",
       notifNo: 'Ce navigateur ne peut pas afficher de notifications.', notifLimit: "Remarque : le téléphone affiche ces notifications une ou deux fois par jour, à l’heure qu’il choisit ; pour des notifications à heure fixe, il faut installer l’application depuis le site.",
@@ -5664,7 +5670,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   const kindName = k => T(k === 'n' ? 'nNabi' : k === 's' ? 'nSahabi' : 'nSalaf');
 
-  // today's hadith: Urdu interface — «صحیح فضائل صحابہ» (it has the Urdu translation); others — al-Jami al-Kamil with that translation
+  // today's hadith: Urdu interface — «صحیح فضائل صحابہ» (it has the Urdu translation); others — Talkhis al-Jami al-Kamil with that translation
   async function hadithOfDay(dn) {
     if (ui === 'ur') {
       const n = (((dn * 40503) >>> 0) % (await COLL.count('fazail') || 743)) + 1;
@@ -6465,7 +6471,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const L = {
     hi: {
       brand: 'तुरास ख़ैरुल क़ुरून', home: 'होम', quran: 'पवित्र क़ुरआन', navQuran: 'क़ुरआन', hadithTab: 'हदीस', navFazail: 'सहाबा', navSh: 'शज़रात',
-      navSalaf: 'सलफ़-ए-सालिहीन', navShFull: 'शज़रातुज़-ज़हब', jami: 'अल-जामिउल कामिल', jamiName: 'अल-जामिउल कामिल', tuhfa: 'शर्ह तुहफ़तुल मुत्तक़ीन', tuhfaName: 'शर्ह तुहफ़तुल मुत्तक़ीन',
+      navSalaf: 'सलफ़-ए-सालिहीन', navShFull: 'शज़रातुज़-ज़हब', jami: 'तल्ख़ीस अल-जामिउल कामिल', jamiName: 'तल्ख़ीस अल-जामिउल कामिल', tuhfa: 'शर्ह तुहफ़तुल मुत्तक़ीन', tuhfaName: 'शर्ह तुहफ़तुल मुत्तक़ीन',
       audio: 'तिलावत', bmHadith: 'सहेजी हदीसें', bmQuran: 'सहेजी आयतें', hbBooks: 'हदीस की किताबें', ttsSet: 'सुनने की सेटिंग',
       appSet: 'ऐप सेटिंग', uiLang: 'ऐप की भाषा', themeColor: 'ऐप का रंग', dayNight: 'दिन और रात', modeLight: 'दिन (हल्का)', modeDark: 'रात (गहरा)', modeAuto: 'स्वचालित (फ़ोन के अनुसार)',
       urduFont: 'उर्दू फ़ॉन्ट', privacy: 'गोपनीयता नीति', free: 'निःशुल्क — फ़ी सबीलिल्लाह',
@@ -6489,7 +6495,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     },
     gu: {
       brand: 'તુરાસ ખૈરુલ કુરૂન', home: 'હોમ', quran: 'પવિત્ર કુરઆન', navQuran: 'કુરઆન', hadithTab: 'હદીસ', navFazail: 'સહાબા', navSh: 'શઝરાત',
-      navSalaf: 'સલફે સાલિહીન', navShFull: 'શઝરાતુઝ ઝહબ', jami: 'અલ-જામિઉલ કામિલ', jamiName: 'અલ-જામિઉલ કામિલ', tuhfa: 'શર્હ તુહફતુલ મુત્તકીન', tuhfaName: 'શર્હ તુહફતુલ મુત્તકીન',
+      navSalaf: 'સલફે સાલિહીન', navShFull: 'શઝરાતુઝ ઝહબ', jami: 'તલ્ખીસ અલ-જામિઉલ કામિલ', jamiName: 'તલ્ખીસ અલ-જામિઉલ કામિલ', tuhfa: 'શર્હ તુહફતુલ મુત્તકીન', tuhfaName: 'શર્હ તુહફતુલ મુત્તકીન',
       audio: 'તિલાવત', bmHadith: 'સાચવેલી હદીસો', bmQuran: 'સાચવેલી આયતો', hbBooks: 'હદીસની કિતાબો', ttsSet: 'સાંભળવાની સેટિંગ',
       appSet: 'ઍપ સેટિંગ', uiLang: 'ઍપની ભાષા', themeColor: 'ઍપનો રંગ', dayNight: 'દિવસ અને રાત', modeLight: 'દિવસ (હળવો)', modeDark: 'રાત (ઘેરો)', modeAuto: 'આપમેળે (ફોન પ્રમાણે)',
       urduFont: 'ઉર્દૂ ફૉન્ટ', privacy: 'ગોપનીયતા નીતિ', free: 'મફત — ફી સબીલિલ્લાહ',
@@ -6513,7 +6519,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     },
     fr: {
       brand: 'Turath Khair Al-Quroon', home: 'Accueil', quran: 'Le Saint Coran', navQuran: 'Coran', hadithTab: 'Hadith', navFazail: 'Compagnons', navSh: 'Shadharat',
-      navSalaf: 'Les Salaf', navShFull: 'Shadharat adh-Dhahab', jami: 'Al-Jami al-Kamil', jamiName: 'Al-Jami al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin', tuhfaName: 'Sharh Tuhfat al-Muttaqin',
+      navSalaf: 'Les Salaf', navShFull: 'Shadharat adh-Dhahab', jami: 'Talkhis Al-Jami al-Kamil', jamiName: 'Talkhis Al-Jami al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin', tuhfaName: 'Sharh Tuhfat al-Muttaqin',
       audio: 'Récitation', bmHadith: 'Hadiths enregistrés', bmQuran: 'Versets enregistrés', hbBooks: 'Livres de hadith', ttsSet: "Réglages d'écoute",
       appSet: "Réglages de l'application", uiLang: "Langue de l'application", themeColor: 'Couleur', dayNight: 'Jour et nuit', modeLight: 'Jour (clair)', modeDark: 'Nuit (sombre)', modeAuto: 'Automatique (comme le téléphone)',
       urduFont: 'Police ourdoue', privacy: 'Politique de confidentialité', free: 'Gratuit — fi sabilillah',
@@ -6614,15 +6620,15 @@ Object.assign(I.hi, {
   showTr: 'अनुवाद दिखाएँ',
   death: y => '(म. ' + y + ' हि.)',
   totAll: n => 'कुल हदीसें: ' + n,
-  totParts: (j, o, b) => 'अल-जामिउल कामिल ' + j + ' + अन्य ' + b + ' किताबों में ' + o,
-  totNote: 'अल-जामिउल कामिल और उससे ली गई किताबें (बंगला, तुहफ़तुल मुत्तक़ीन, फ़ज़ाइल-ए-सहाबा, सहीह सीरत-ए-मुस्तफ़ा) एक ही बार गिनी गई हैं। रिजाल की किताबें शामिल नहीं हैं।',
+  totParts: (j, o, b) => 'तल्ख़ीस अल-जामिउल कामिल ' + j + ' + अन्य ' + b + ' किताबों में ' + o,
+  totNote: 'तल्ख़ीस अल-जामिउल कामिल और उससे ली गई किताबें (बंगला, तुहफ़तुल मुत्तक़ीन, फ़ज़ाइल-ए-सहाबा, सहीह सीरत-ए-मुस्तफ़ा) एक ही बार गिनी गई हैं। रिजाल की किताबें शामिल नहीं हैं।',
   ph: 'शब्द लिखें, जैसे: रहमत & अज़ाब & भलाई — या हदीस नंबर',
   phIn: b => 'इसी किताब (' + b + ') में: शब्द या हदीस नंबर',
   hide: 'सनद छिपाएँ',
   show: 'सनद दिखाएँ',
   nobook: 'यह किताब अभी ऐप में शामिल नहीं हुई है।',
   toTuhfa: 'शर्ह तुहफ़तुल मुत्तक़ीन में देखें',
-  toJami: 'अल-जामिउल कामिल में देखें',
+  toJami: 'तल्ख़ीस अल-जामिउल कामिल में देखें',
   cited: 'इस हवाले वाली हदीसें:',
   sample: 'नमूना',
   read: 'पढ़ें',
@@ -6721,7 +6727,7 @@ Object.assign(I.hi, {
   cSecSearch: 'इस किताब में: हदीस नंबर या शब्द (सभी शब्दों वाली हदीसें)',
   cNotHere: 'यह नंबर इस किताब में नहीं मिला।',
   cSource: 'स्रोत: hadith-api (fawazahmed0) / Open Hadith Data — ओपन सोर्स',
-  cJami: n => 'अल-जामिउल कामिल ' + n,
+  cJami: n => 'तल्ख़ीस अल-जामिउल कामिल ' + n,
   gsTitle: 'खोज — किताबें चुनकर',
   gsPlace: 'शब्द लिखें (सभी शब्दों वाली हदीसें आएँगी)',
   gsGo: 'खोजें',
@@ -6729,10 +6735,10 @@ Object.assign(I.hi, {
   gsChosen: n => '(' + n + ' किताबें चुनी हैं)',
   gsAll: 'सभी किताबें',
   gsNone: 'कोई नहीं',
-  gsMain: 'अल-जामिउल कामिल और सिहाह सित्ता',
+  gsMain: 'तल्ख़ीस अल-जामिउल कामिल और सिहाह सित्ता',
   gsHint: 'किसी एक किताब के अंदर खोजने के लिए किताब खोलकर उसके ऊपर का ख़ाना इस्तेमाल करें। ज़्यादा या बड़ी किताबें चुनने पर खोज में कुछ देर लग सकती है।',
   gsTotal: (n, b) => 'कुल परिणाम: ' + n + ' — ' + b + ' किताबों में',
-  cSourceJami: 'यह किताब «الجامع الکامل في الحديث الصحيح الشامل» से ली गई है, उर्दू अनुवाद के साथ।',
+  cSourceJami: 'यह किताब «تلخیص الجامع الکامل في الحديث الصحيح الشامل» से ली गई है, उर्दू अनुवाद के साथ।',
   cExt: 'यह अरबी किताब साइज़ के कारण ऐप के दूसरे लिंक में रखी गई है। होस्ट की हुई साइट में यह यहीं खुलेगी।',
   cOpenExt: 'किताब खोलें ↗',
   cSourceAr: 'स्रोत: turath.io (अल-मकतबा अश-शामिला) — आपकी भेजी हुई EPUB फ़ाइलें',
@@ -6759,7 +6765,7 @@ Object.assign(I.hi, {
   cmpMakeMain: 'मुख्य बनाएँ',
   cmpRemove: 'हटाएँ',
   cmpClear: 'सूची ख़ाली करें',
-  cmpEmpty: 'तुलना की सूची ख़ाली है। किसी भी हदीस पर ⇄ का बटन दबाकर उसे यहाँ जोड़ें, या अल-जामिउल कामिल की हदीस पर «तख़रीज से तुलना» दबाएँ।',
+  cmpEmpty: 'तुलना की सूची ख़ाली है। किसी भी हदीस पर ⇄ का बटन दबाकर उसे यहाँ जोड़ें, या तल्ख़ीस अल-जामिउल कामिल की हदीस पर «तख़रीज से तुलना» दबाएँ।',
   cmpSame: p => 'समानता ' + p + '%',
   cmpLegend: 'हरा: मुख्य हदीस से अधिक शब्द — लाल, कटे हुए: जो शब्द इस रिवायत में नहीं — हल्का: सनद या लेखक का कथन',
   cmpNone: 'इस हदीस की तख़रीज में ऐसी कोई किताब नहीं जो ऐप में मौजूद हो।',
@@ -6768,7 +6774,7 @@ Object.assign(I.hi, {
   cmpOpen: 'खोलें',
   cmpCount: n => n + ' हदीसें',
   srcSiyar: 'सियर आलामिन नुबला (इमाम ज़हबी)',
-  srcJami: 'अल-जामिउल कामिल',
+  srcJami: 'तल्ख़ीस अल-जामिउल कामिल',
   openSrc: 'असल किताब में देखें',
   shOpen: 'शज़रातुज़-ज़हब में देखें',
   cPara: n => 'अनुच्छेद: ' + n,
@@ -6779,7 +6785,7 @@ Object.assign(I.hi, {
   cNasNo: n => 'नसीहत नंबर ' + n,
   cSourceSh: 'स्रोत: सियर आलामिन नुबला (इमाम ज़हबी) — अनुवाद: तुरास ख़ैरुल क़ुरून',
   shAll: n => 'शज़रातुज़-ज़हब — हमारे सलफ़ की सारी नसीहतें (' + n + ')',
-  adhkarNote: 'अल-जामिउल कामिल: सुबह और शाम की दुआओं और अज़कार का अध्याय',
+  adhkarNote: 'तल्ख़ीस अल-जामिउल कामिल: सुबह और शाम की दुआओं और अज़कार का अध्याय',
   notif: 'रोज़ाना सूचनाएँ',
   notifDesc: 'आज की आयत, आज की हदीस, सुबह-शाम के अज़कार और आज की नसीहत',
   notifOn: 'सूचनाएँ चालू हैं',
@@ -6803,15 +6809,15 @@ showSanad: 'સનદ બતાવો',
 showTr: 'અનુવાદ બતાવો',
 death: y => '(વફાત ' + y + ' હિજરી)',
 totAll: n => 'કુલ હદીસો: ' + n,
-totParts: (j,o,b) => 'અલ-જામિઉલ કામિલ ' + j + ' + અન્ય ' + b + ' કિતાબોમાં ' + o,
-totNote: 'અલ-જામિઉલ કામિલ અને તેમાંથી લીધેલી કિતાબો (બાંગ્લા, તુહફા, ફઝાઇલે સહાબા, સહીહ સીરત) એક જ વાર ગણાય છે. રાવીઓની કિતાબો ગણાતી નથી.',
+totParts: (j,o,b) => 'તલ્ખીસ અલ-જામિઉલ કામિલ ' + j + ' + અન્ય ' + b + ' કિતાબોમાં ' + o,
+totNote: 'તલ્ખીસ અલ-જામિઉલ કામિલ અને તેમાંથી લીધેલી કિતાબો (બાંગ્લા, તુહફા, ફઝાઇલે સહાબા, સહીહ સીરત) એક જ વાર ગણાય છે. રાવીઓની કિતાબો ગણાતી નથી.',
 ph: 'શબ્દો લખો, જેમ કે રહમત & અઝાબ & ભલાઈ — અથવા હદીસ નંબર',
 phIn: b => 'આ કિતાબમાં (' + b + '): શબ્દો અથવા હદીસ નંબર',
 hide: 'સનદ છુપાવો',
 show: 'સનદ બતાવો',
 nobook: 'આ કિતાબ હજુ ઍપમાં ઉમેરાઈ નથી.',
 toTuhfa: 'શર્હ તુહફતુલ મુત્તકીનમાં જુઓ',
-toJami: 'અલ-જામિઉલ કામિલમાં જુઓ',
+toJami: 'તલ્ખીસ અલ-જામિઉલ કામિલમાં જુઓ',
 cited: 'આ સંદર્ભ ટાંકતી હદીસો:',
 sample: 'નમૂનો',
 read: 'વાંચો',
@@ -6910,7 +6916,7 @@ hifzDone: 'પુનરાવર્તન પૂર્ણ',
 cSecSearch: 'આ કિતાબમાં: હદીસ નંબર અથવા શબ્દો (બધા શબ્દો ધરાવતી હદીસો)',
 cNotHere: 'આ નંબર આ કિતાબમાં મળ્યો નથી.',
 cSource: 'સ્રોત: hadith-api (fawazahmed0) / Open Hadith Data — ઓપન સોર્સ',
-cJami: n => 'અલ-જામિઉલ કામિલ ' + n,
+cJami: n => 'તલ્ખીસ અલ-જામિઉલ કામિલ ' + n,
 gsTitle: 'શોધ — કિતાબો પસંદ કરો',
 gsPlace: 'શબ્દો લખો (બધા શબ્દો ધરાવતી હદીસો)',
 gsGo: 'શોધો',
@@ -6918,10 +6924,10 @@ gsPick: 'કઈ કિતાબોમાં શોધવું?',
 gsChosen: n => '(' + n + ' કિતાબો પસંદ કરી)',
 gsAll: 'બધી કિતાબો',
 gsNone: 'કોઈ નહીં',
-gsMain: 'અલ-જામિઉલ કામિલ અને છ કિતાબો',
+gsMain: 'તલ્ખીસ અલ-જામિઉલ કામિલ અને છ કિતાબો',
 gsHint: 'એક કિતાબમાં શોધવા માટે કિતાબ ખોલો અને તેના ઉપરના બોક્સનો ઉપયોગ કરો. ઘણી અથવા મોટી કિતાબો પસંદ કરવાથી શોધમાં વધુ સમય લાગે છે.',
 gsTotal: (n, b) => 'કુલ: ' + n + ' — ' + b + ' કિતાબોમાં',
-cSourceJami: 'અલ-જામિઉલ કામિલ ફિલ હદીસિસ સહીહિશ શામિલ માંથી, ઉર્દૂ અનુવાદ સાથે.',
+cSourceJami: 'તલ્ખીસ અલ-જામિઉલ કામિલ ફિલ હદીસિસ સહીહિશ શામિલ માંથી, ઉર્દૂ અનુવાદ સાથે.',
 cExt: 'કદ મોટું હોવાને કારણે આ અરબી કિતાબ ઍપની બીજી લિંકમાં રાખી છે. હોસ્ટ કરેલી સાઇટ પર તે અહીં જ ખુલે છે.',
 cOpenExt: 'કિતાબ ખોલો ↗',
 cSourceAr: 'સ્રોત: turath.io (અલ-મકતબતુશ શામિલા) EPUB ફાઇલો',
@@ -6948,7 +6954,7 @@ cmpMain: 'મુખ્ય હદીસ',
 cmpMakeMain: 'મુખ્ય બનાવો',
 cmpRemove: 'હટાવો',
 cmpClear: 'યાદી ખાલી કરો',
-cmpEmpty: 'સરખામણીની યાદી ખાલી છે. અહીં ઉમેરવા કોઈ પણ હદીસ પર ⇄ ટૅપ કરો, અથવા અલ-જામિઉલ કામિલની હદીસ પર “તેના સ્રોતો સાથે સરખાવો” ટૅપ કરો.',
+cmpEmpty: 'સરખામણીની યાદી ખાલી છે. અહીં ઉમેરવા કોઈ પણ હદીસ પર ⇄ ટૅપ કરો, અથવા તલ્ખીસ અલ-જામિઉલ કામિલની હદીસ પર “તેના સ્રોતો સાથે સરખાવો” ટૅપ કરો.',
 cmpSame: p => p + '% મળતું',
 cmpLegend: 'લીલું: મુખ્ય હદીસમાં ઉમેરાયેલા શબ્દો — લાલ, કપાયેલું: અહીં ન હોય તેવા શબ્દો — ઝાંખું: સનદ અથવા લેખકની ટિપ્પણી',
 cmpNone: 'આ હદીસના તખરીજની કોઈ કિતાબ ઍપમાં નથી.',
@@ -6957,7 +6963,7 @@ cmpMy: 'મારી સરખામણીની યાદી',
 cmpOpen: 'ખોલો',
 cmpCount: n => n + ' હદીસો',
 srcSiyar: 'સિયરુ અઅલામિન નુબલા (ઇમામ ઝહબી)',
-srcJami: 'અલ-જામિઉલ કામિલ',
+srcJami: 'તલ્ખીસ અલ-જામિઉલ કામિલ',
 openSrc: 'કિતાબમાં જુઓ',
 shOpen: 'શઝરાતુઝ ઝહબમાં ખોલો',
 cPara: n => 'પરિચ્છેદો: ' + n,
@@ -6968,7 +6974,7 @@ cNas: n => 'નસીહતો: ' + n,
 cNasNo: n => 'નસીહત નં. ' + n,
 cSourceSh: 'સ્રોત: સિયરુ અઅલામિન નુબલા (ઇમામ ઝહબી) — અનુવાદ: તુરાસ ખૈરુલ કુરૂન',
 shAll: n => 'શઝરાતુઝ ઝહબ — સલફની બધી નસીહતો (' + n + ')',
-adhkarNote: 'અલ-જામિઉલ કામિલ: સવાર-સાંજની દુઆઓનો બાબ',
+adhkarNote: 'તલ્ખીસ અલ-જામિઉલ કામિલ: સવાર-સાંજની દુઆઓનો બાબ',
 notif: 'રોજની સૂચનાઓ',
 notifDesc: 'આજની આયત, આજની હદીસ, સવાર-સાંજના અઝકાર અને આજની નસીહત',
 notifOn: 'સૂચનાઓ ચાલુ છે',
@@ -6992,15 +6998,15 @@ Object.assign(I.fr, {
   showTr: 'Afficher la traduction',
   death: y => '(m. ' + y + ' H)',
   totAll: n => 'Total des hadiths : ' + n,
-  totParts: (j, o, b) => 'Al-Jami al-Kamil ' + j + ' + ' + o + ' dans ' + b + ' autres livres',
-  totNote: "Al-Jami al-Kamil et les livres qui en sont tirés (bengali, Tuhfa, Fazail-e-Sahaba, Sahih Sîra) ne sont comptés qu'une fois. Les livres sur les narrateurs ne sont pas comptés.",
+  totParts: (j, o, b) => 'Talkhis Al-Jami al-Kamil ' + j + ' + ' + o + ' dans ' + b + ' autres livres',
+  totNote: "Talkhis Al-Jami al-Kamil et les livres qui en sont tirés (bengali, Tuhfa, Fazail-e-Sahaba, Sahih Sîra) ne sont comptés qu'une fois. Les livres sur les narrateurs ne sont pas comptés.",
   ph: 'Tapez des mots, par ex. : miséricorde & châtiment & bien — ou un numéro de hadith',
   phIn: b => 'Dans ce livre (' + b + ') : mots ou numéro du hadith',
   hide: "Masquer l'isnad",
   show: "Afficher l'isnad",
   nobook: "Ce livre n'a pas encore été ajouté à l'application.",
   toTuhfa: 'Voir dans Sharh Tuhfat al-Muttaqin',
-  toJami: 'Voir dans Al-Jami al-Kamil',
+  toJami: 'Voir dans Talkhis Al-Jami al-Kamil',
   cited: 'Hadiths citant cette référence :',
   sample: 'Aperçu',
   read: 'Lire',
@@ -7099,7 +7105,7 @@ Object.assign(I.fr, {
   cSecSearch: 'Dans ce livre : numéro du hadith ou mots (hadiths contenant tous les mots)',
   cNotHere: "Ce numéro n'a pas été trouvé dans ce livre.",
   cSource: 'Source : hadith-api (fawazahmed0) / Open Hadith Data — open source',
-  cJami: n => 'al-Jami al-Kamil ' + n,
+  cJami: n => 'Talkhis al-Jami al-Kamil ' + n,
   gsTitle: 'Recherche — choisir les livres',
   gsPlace: 'Tapez des mots (hadiths contenant tous les mots)',
   gsGo: 'Rechercher',
@@ -7107,10 +7113,10 @@ Object.assign(I.fr, {
   gsChosen: n => '(' + n + ' livres choisis)',
   gsAll: 'Tous les livres',
   gsNone: 'Aucun',
-  gsMain: 'Al-Jami al-Kamil et les six livres',
+  gsMain: 'Talkhis Al-Jami al-Kamil et les six livres',
   gsHint: "Pour chercher dans un seul livre, ouvrez-le et utilisez la case en haut. Choisir beaucoup de livres ou de gros livres rend la recherche plus longue.",
   gsTotal: (n, b) => 'Total : ' + n + ' — dans ' + b + ' livres',
-  cSourceJami: "Tiré de al-Jami al-Kamil fi al-Hadith as-Sahih ash-Shamil, avec traduction ourdoue.",
+  cSourceJami: "Tiré de Talkhis al-Jami al-Kamil fi al-Hadith as-Sahih ash-Shamil, avec traduction ourdoue.",
   cExt: "En raison de sa taille, ce livre arabe est placé dans un second lien de l'application. Sur le site hébergé, il s'ouvre ici.",
   cOpenExt: 'Ouvrir le livre ↗',
   cSourceAr: 'Source : fichiers EPUB de turath.io (al-Maktaba ash-Shamila)',
@@ -7137,7 +7143,7 @@ Object.assign(I.fr, {
   cmpMakeMain: 'Définir comme principal',
   cmpRemove: 'Retirer',
   cmpClear: 'Vider la liste',
-  cmpEmpty: "La liste de comparaison est vide. Touchez ⇄ sur un hadith pour l'ajouter ici, ou « Comparer avec ses sources » sur un hadith de al-Jami al-Kamil.",
+  cmpEmpty: "La liste de comparaison est vide. Touchez ⇄ sur un hadith pour l'ajouter ici, ou « Comparer avec ses sources » sur un hadith de Talkhis al-Jami al-Kamil.",
   cmpSame: p => p + ' % de similarité',
   cmpLegend: "Vert : mots ajoutés au hadith principal — rouge, barré : mots absents ici — pâle : isnad ou remarques de l'auteur",
   cmpNone: "Aucun des livres du takhrij de ce hadith n'est dans l'application.",
@@ -7146,7 +7152,7 @@ Object.assign(I.fr, {
   cmpOpen: 'Ouvrir',
   cmpCount: n => n + ' hadiths',
   srcSiyar: "Siyar A'lam an-Nubala (adh-Dhahabi)",
-  srcJami: 'Al-Jami al-Kamil',
+  srcJami: 'Talkhis Al-Jami al-Kamil',
   openSrc: 'Voir dans le livre',
   shOpen: 'Ouvrir dans Shadharat adh-Dhahab',
   cPara: n => 'Paragraphes : ' + n,
@@ -7157,7 +7163,7 @@ Object.assign(I.fr, {
   cNasNo: n => 'Conseil n° ' + n,
   cSourceSh: "Source : Siyar A'lam an-Nubala (adh-Dhahabi) — traduction : Turath Khair al-Quroon",
   shAll: n => 'Shadharat adh-Dhahab — tous les conseils des Salaf (' + n + ')',
-  adhkarNote: 'Al-Jami al-Kamil : chapitre des invocations et dhikr du matin et du soir',
+  adhkarNote: 'Talkhis Al-Jami al-Kamil : chapitre des invocations et dhikr du matin et du soir',
   notif: 'Notifications quotidiennes',
   notifDesc: "Le verset du jour, le hadith du jour, les invocations du matin et du soir, et le conseil du jour",
   notifOn: 'Les notifications sont activées',
@@ -7173,7 +7179,7 @@ Object.assign(I.fr, {
 <script>
 // کوئز: one button on Home -> adults / children -> a category (سیرت، فضائل صحابہ، اذکار و دعائیں) -> 15 levels of 10 questions.
 // A choice is kept (no answer shown during the level); at the end the answers are shown, the wrong ones marked, each with its source
-// (صحیح سیرت مصطفی / صحیح فضائل صحابہ / الجامع الکامل / the Quran). Children get praise and du'a by their score, a graph of their
+// (صحیح سیرت مصطفی / صحیح فضائل صحابہ / تلخیص الجامع الکامل / the Quran). Children get praise and du'a by their score, a graph of their
 // levels and a certificate with their name. The questions are in the interface language when translated (quiz/data_<lang>.js),
 // otherwise in Urdu (quiz/data_ur.js): QUIZDATA(lang, {a: {seerah: [[question, right, wrong, wrong, wrong, ref], ...]}, k: {...}})
 (function () {
@@ -7203,7 +7209,7 @@ Object.assign(I.fr, {
       cDua: 'اللہ تعالی آپ کے علمِ نافع میں برکتیں عطا فرمائے اور آپ کے والدین کو جزائے خیر عطا فرمائے، آمین یا رب', cDate: 'تاریخ: ', cBrand: 'تراث خیرالقرون',
       kn: ['ننھا طالبِ علم', 'شوقین طالبِ علم', 'محنتی طالبِ علم', 'روشن ستارہ', 'چمکتا ستارہ', 'علم کا متلاشی', 'ذہین طالبِ علم', 'سنہری قلم', 'علم کا موتی', 'چمکتا ہیرا', 'علم کا چراغ', 'روشن چراغ', 'علم کا شاہین', 'علم کا سفیر', 'علم کا تاج'],
       an: ['ابتدا', 'تعارف', 'بنیاد', 'پیش قدمی', 'استقامت', 'گہرائی', 'وسعت', 'مہارت', 'بصیرت', 'تحقیق', 'رسوخ', 'فہم', 'کمال', 'امتیاز', 'تکمیل'],
-      refs: {seerah: 'صحیح سیرت مصطفی، باب ', fazail: 'صحیح فضائل صحابہ، باب ', jami: 'الجامع الکامل، حدیث ', q: 'قرآن مجید '}},
+      refs: {seerah: 'صحیح سیرت مصطفی، باب ', fazail: 'صحیح فضائل صحابہ، باب ', jami: 'تلخیص الجامع الکامل، حدیث ', q: 'قرآن مجید '}},
     en: {title: 'Quiz', sub: 'Test your knowledge', hero: 'Quiz — test your knowledge',
       intro: (L, P) => 'Each category has ' + L + ' levels of ' + P + ' questions. Pick the right answer of four; at the end of a level all the answers and their sources are shown.',
       who: {a: ['For adults', 'Questions on the Seerah, the Companions and the adhkar'], k: ['For children', 'Easy questions, stars and a beautiful certificate']},
@@ -7228,7 +7234,7 @@ Object.assign(I.fr, {
       cDua: 'May Allah bless your beneficial knowledge and reward your parents with good. Ameen!', cDate: 'Date: ', cBrand: 'Turath Khair Al-Quroon',
       kn: ['Little Learner', 'Keen Learner', 'Hard Worker', 'Bright Star', 'Shining Star', 'Seeker of Knowledge', 'Clever Student', 'Golden Pen', 'Pearl of Knowledge', 'Sparkling Diamond', 'Lamp of Knowledge', 'Bright Lamp', 'Falcon of Knowledge', 'Ambassador of Knowledge', 'Crown of Knowledge'],
       an: ['Beginning', 'Introduction', 'Foundation', 'Progress', 'Steadfastness', 'Depth', 'Breadth', 'Skill', 'Insight', 'Research', 'Firmness', 'Understanding', 'Excellence', 'Distinction', 'Completion'],
-      refs: {seerah: 'Sahih Seerah, chapter ', fazail: 'Sahih Fada’il as-Sahabah, chapter ', jami: 'Al-Jami al-Kamil, hadith ', q: 'The Qur’an '}},
+      refs: {seerah: 'Sahih Seerah, chapter ', fazail: 'Sahih Fada’il as-Sahabah, chapter ', jami: 'Talkhis Al-Jami al-Kamil, hadith ', q: 'The Qur’an '}},
     ar: {title: 'المسابقة', sub: 'اختبر معلوماتك', hero: 'المسابقة — اختبر معلوماتك',
       intro: (L, P) => 'في كل قسم ' + L + ' مرحلة، في كل مرحلة ' + P + ' أسئلة. اختر الجواب الصحيح من أربعة؛ وفي آخر المرحلة تُعرض الأجوبة كلها مع مصادرها.',
       who: {a: ['للكبار', 'أسئلة في السيرة والصحابة والأذكار'], k: ['للصغار', 'أسئلة سهلة ونجوم وشهادة جميلة']},
@@ -7253,7 +7259,7 @@ Object.assign(I.fr, {
       cDua: 'بارك الله في علمك النافع، وجزى والديك خيرًا، آمين يا رب', cDate: 'التاريخ: ', cBrand: 'تراث خير القرون',
       kn: ['الطالب الصغير', 'الطالب المشتاق', 'الطالب المجتهد', 'النجم المضيء', 'النجم اللامع', 'طالب العلم', 'الطالب الذكي', 'القلم الذهبي', 'لؤلؤة العلم', 'الماسة اللامعة', 'سراج العلم', 'السراج المنير', 'صقر العلم', 'سفير العلم', 'تاج العلم'],
       an: ['البداية', 'التعريف', 'الأساس', 'التقدم', 'الثبات', 'العمق', 'السعة', 'المهارة', 'البصيرة', 'التحقيق', 'الرسوخ', 'الفهم', 'الكمال', 'التميز', 'الختام'],
-      refs: {seerah: 'صحيح السيرة النبوية، باب ', fazail: 'صحيح فضائل الصحابة، باب ', jami: 'الجامع الكامل، حديث ', q: 'القرآن الكريم '}},
+      refs: {seerah: 'صحيح السيرة النبوية، باب ', fazail: 'صحيح فضائل الصحابة، باب ', jami: 'تلخيص الجامع الكامل، حديث ', q: 'القرآن الكريم '}},
     bn: {title: 'কুইজ', sub: 'নিজের জ্ঞান যাচাই করুন', hero: 'কুইজ — নিজের জ্ঞান যাচাই করুন',
       intro: (L, P) => 'প্রতিটি বিভাগে ' + L + 'টি ধাপ, প্রতিটি ধাপে ' + P + 'টি প্রশ্ন। চারটি উত্তরের মধ্যে সঠিকটি বেছে নিন; ধাপের শেষে সব উত্তর ও তার সূত্র দেখানো হবে।',
       who: {a: ['বড়দের জন্য', 'সীরাত, সাহাবা ও যিকির বিষয়ে প্রশ্ন'], k: ['ছোটদের জন্য', 'সহজ প্রশ্ন, তারা আর সুন্দর সনদ']},
@@ -7278,7 +7284,7 @@ Object.assign(I.fr, {
       cDua: 'আল্লাহ তোমার উপকারী জ্ঞানে বরকত দিন এবং তোমার বাবা-মাকে উত্তম প্রতিদান দিন। আমীন', cDate: 'তারিখ: ', cBrand: 'তুরাস খাইরুল কুরূন',
       kn: ['ছোট্ট শিক্ষার্থী', 'আগ্রহী শিক্ষার্থী', 'পরিশ্রমী শিক্ষার্থী', 'উজ্জ্বল তারা', 'ঝলমলে তারা', 'জ্ঞানের সন্ধানী', 'মেধাবী শিক্ষার্থী', 'সোনালি কলম', 'জ্ঞানের মুক্তা', 'ঝকঝকে হীরা', 'জ্ঞানের প্রদীপ', 'উজ্জ্বল প্রদীপ', 'জ্ঞানের ঈগল', 'জ্ঞানের দূত', 'জ্ঞানের মুকুট'],
       an: ['সূচনা', 'পরিচিতি', 'ভিত্তি', 'অগ্রগতি', 'দৃঢ়তা', 'গভীরতা', 'বিস্তৃতি', 'দক্ষতা', 'অন্তর্দৃষ্টি', 'গবেষণা', 'পরিপক্বতা', 'উপলব্ধি', 'পূর্ণতা', 'শ্রেষ্ঠত্ব', 'সমাপ্তি'],
-      refs: {seerah: 'সহীহ সীরাত, অধ্যায় ', fazail: 'সহীহ ফাযায়েলে সাহাবা, অধ্যায় ', jami: 'আল-জামি আল-কামিল, হাদীস ', q: 'আল-কুরআন '}},
+      refs: {seerah: 'সহীহ সীরাত, অধ্যায় ', fazail: 'সহীহ ফাযায়েলে সাহাবা, অধ্যায় ', jami: 'তালখীস আল-জামি আল-কামিল, হাদীস ', q: 'আল-কুরআন '}},
     hi: {title: 'क्विज़', sub: 'अपना ज्ञान परखें', hero: 'क्विज़ — अपना ज्ञान परखें',
       intro: (L, P) => 'हर श्रेणी में ' + L + ' स्तर हैं, हर स्तर में ' + P + ' प्रश्न। चार उत्तरों में से सही उत्तर चुनें; स्तर के अंत में सभी उत्तर और उनके स्रोत दिखाए जाएँगे।',
       who: {a: ['बड़ों के लिए', 'सीरत, सहाबा और अज़कार पर प्रश्न'], k: ['बच्चों के लिए', 'आसान प्रश्न, सितारे और सुंदर प्रमाणपत्र']},
@@ -7303,7 +7309,7 @@ Object.assign(I.fr, {
       cDua: 'अल्लाह तुम्हारे लाभदायक ज्ञान में बरकत दे और तुम्हारे माता-पिता को अच्छा बदला दे। आमीन', cDate: 'तारीख़: ', cBrand: 'तुरास ख़ैरुल क़ुरून',
       kn: ['नन्हा विद्यार्थी', 'उत्साही विद्यार्थी', 'मेहनती विद्यार्थी', 'चमकता तारा', 'जगमगाता तारा', 'ज्ञान का खोजी', 'होशियार विद्यार्थी', 'सुनहरी क़लम', 'ज्ञान का मोती', 'चमकता हीरा', 'ज्ञान का दीपक', 'रोशन दीपक', 'ज्ञान का बाज़', 'ज्ञान का दूत', 'ज्ञान का ताज'],
       an: ['आरंभ', 'परिचय', 'नींव', 'प्रगति', 'दृढ़ता', 'गहराई', 'विस्तार', 'कुशलता', 'अंतर्दृष्टि', 'शोध', 'मज़बूती', 'समझ', 'पूर्णता', 'विशिष्टता', 'समापन'],
-      refs: {seerah: 'सहीह सीरत, अध्याय ', fazail: 'सहीह फ़ज़ाइल-ए-सहाबा, अध्याय ', jami: 'अल-जामि अल-कामिल, हदीस ', q: 'क़ुरआन '}},
+      refs: {seerah: 'सहीह सीरत, अध्याय ', fazail: 'सहीह फ़ज़ाइल-ए-सहाबा, अध्याय ', jami: 'तल्ख़ीस अल-जामि अल-कामिल, हदीस ', q: 'क़ुरआन '}},
     gu: {title: 'ક્વિઝ', sub: 'તમારું જ્ઞાન ચકાસો', hero: 'ક્વિઝ — તમારું જ્ઞાન ચકાસો',
       intro: (L, P) => 'દરેક વિભાગમાં ' + L + ' તબક્કા છે, દરેકમાં ' + P + ' પ્રશ્નો. ચાર જવાબોમાંથી સાચો જવાબ પસંદ કરો; તબક્કાના અંતે બધા જવાબો અને તેમના સ્રોત બતાવવામાં આવશે.',
       who: {a: ['મોટાઓ માટે', 'સીરત, સહાબા અને અઝકાર પર પ્રશ્નો'], k: ['બાળકો માટે', 'સરળ પ્રશ્નો, તારા અને સુંદર પ્રમાણપત્ર']},
@@ -7328,7 +7334,7 @@ Object.assign(I.fr, {
       cDua: 'અલ્લાહ તમારા ફાયદાકારક જ્ઞાનમાં બરકત આપે અને તમારા માતા-પિતાને સારો બદલો આપે. આમીન', cDate: 'તારીખ: ', cBrand: 'તુરાસ ખૈરુલ કુરૂન',
       kn: ['નાનો વિદ્યાર્થી', 'ઉત્સાહી વિદ્યાર્થી', 'મહેનતુ વિદ્યાર્થી', 'ચમકતો તારો', 'ઝળહળતો તારો', 'જ્ઞાનનો શોધક', 'હોશિયાર વિદ્યાર્થી', 'સોનેરી કલમ', 'જ્ઞાનનું મોતી', 'ચમકતો હીરો', 'જ્ઞાનનો દીવો', 'ઝળહળતો દીવો', 'જ્ઞાનનું બાજ', 'જ્ઞાનનો દૂત', 'જ્ઞાનનો તાજ'],
       an: ['શરૂઆત', 'પરિચય', 'પાયો', 'પ્રગતિ', 'દ્રઢતા', 'ઊંડાણ', 'વિસ્તાર', 'કુશળતા', 'સૂઝ', 'સંશોધન', 'મજબૂતી', 'સમજ', 'પૂર્ણતા', 'વિશેષતા', 'સમાપ્તિ'],
-      refs: {seerah: 'સહીહ સીરત, પ્રકરણ ', fazail: 'સહીહ ફઝાઇલે સહાબા, પ્રકરણ ', jami: 'અલ-જામિ અલ-કામિલ, હદીસ ', q: 'કુરઆન '}},
+      refs: {seerah: 'સહીહ સીરત, પ્રકરણ ', fazail: 'સહીહ ફઝાઇલે સહાબા, પ્રકરણ ', jami: 'તલ્ખીસ અલ-જામિ અલ-કામિલ, હદીસ ', q: 'કુરઆન '}},
     fr: {title: 'Quiz', sub: 'Testez vos connaissances', hero: 'Quiz — testez vos connaissances',
       intro: (L, P) => 'Chaque catégorie compte ' + L + ' niveaux de ' + P + ' questions. Choisissez la bonne réponse parmi quatre ; à la fin du niveau, toutes les réponses et leurs sources sont affichées.',
       who: {a: ['Pour les adultes', 'Questions sur la Sîra, les Compagnons et les invocations'], k: ['Pour les enfants', 'Questions faciles, étoiles et un beau certificat']},
@@ -7353,7 +7359,7 @@ Object.assign(I.fr, {
       cDua: 'Qu’Allah bénisse ta science utile et récompense tes parents. Âmîn !', cDate: 'Date : ', cBrand: 'Turath Khair Al-Quroon',
       kn: ['Petit élève', 'Élève curieux', 'Élève travailleur', 'Étoile brillante', 'Étoile scintillante', 'Chercheur de savoir', 'Élève brillant', 'Plume d’or', 'Perle du savoir', 'Diamant étincelant', 'Lampe du savoir', 'Lampe lumineuse', 'Faucon du savoir', 'Ambassadeur du savoir', 'Couronne du savoir'],
       an: ['Début', 'Découverte', 'Fondation', 'Progrès', 'Constance', 'Profondeur', 'Ampleur', 'Maîtrise', 'Clairvoyance', 'Recherche', 'Solidité', 'Compréhension', 'Perfection', 'Distinction', 'Achèvement'],
-      refs: {seerah: 'Sîra authentique, chapitre ', fazail: 'Mérites des Compagnons, chapitre ', jami: 'Al-Jami al-Kamil, hadith ', q: 'Coran '}},
+      refs: {seerah: 'Sîra authentique, chapitre ', fazail: 'Mérites des Compagnons, chapitre ', jami: 'Talkhis Al-Jami al-Kamil, hadith ', q: 'Coran '}},
   };
   const L = () => S[ui] || S.en;
   const RTL = () => ui === 'ur' || ui === 'ar';
@@ -8183,45 +8189,45 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 // It never decides "fabricated": not found in our books only means "not found here". Rulings shown are the ones in our own books.
 (function () {
   const S = {
-    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے… (رش ہو تو آدھا منٹ لگ سکتا ہے)', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'اس وقت رش بہت زیادہ ہے۔ چند منٹ بعد دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔', ocrNote: 'تصاویر Google Gemini سے پڑھی جاتی ہیں؛ نیچے کا متن درست کر کے پھر تصدیق کریں۔',  ocrUser: 'آج کے لیے تصاویر کی حد (5) پوری ہو گئی۔ کل دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrLeft: n => 'آج کی باقی تصاویر: ' + n, vTitle: "نتیجہ", vFull: "✓ پوری عبارت اس حدیث سے مطابقت رکھتی ہے۔", vMost: "عبارت زیادہ تر اس حدیث سے ملتی ہے، مگر کچھ الفاظ مختلف ہیں۔", vPart: "اس حدیث کا کچھ حصہ ملتا ہے؛ پوری عبارت کی مطابقت نہیں ملی۔", vNone: "اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔", vPct: "مطابقت", vYour: "آپ کا متن (سرخ: وہ الفاظ جو نہیں ملے)", vSrc: "ماخذ کی عبارت", vGrade: "حکم", vOpen: "حدیث کھولیں", vOthers: "دیگر ملتے جلتے نتائج", vJami: n=>"الجامع الکامل، حدیث "+n, vRawi: "راوی", vMuh: "محدث", vBook: "کتاب", vDiff: "مختلف الفاظ: ", qOkL: "✓ الفاظ قرآن کے مطابق درست ہیں", qDiffL: "الفاظ میں فرق ہے",
+    ur: {title: 'تحقیق و تصدیق', sub: 'آیت یا حدیث کی فوری جانچ', try: "آزمائیں:", ex: [["آیت میں غلطی", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["صحیح حدیث", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشہور مگر ضعیف", "اطلبوا العلم ولو في الصين"], ["بے اصل بات", "من عرف نفسه فقد عرف ربه"]], img: 'تصویر', cam: 'کیمرا', reading: 'تصویر پڑھی جا رہی ہے… (رش ہو تو آدھا منٹ لگ سکتا ہے)', ocrFail: 'تصویر سے متن نہیں پڑھا جا سکا۔ دوبارہ کوشش کریں یا متن خود ڈالیں۔', ocrBusy: 'اس وقت رش بہت زیادہ ہے۔ چند منٹ بعد دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrNo: 'تصویر میں کوئی متن نہیں ملا۔', ocrNote: 'تصاویر Google Gemini سے پڑھی جاتی ہیں؛ نیچے کا متن درست کر کے پھر تصدیق کریں۔',  ocrUser: 'آج کے لیے تصاویر کی حد (5) پوری ہو گئی۔ کل دوبارہ کوشش کریں یا متن خود ڈال دیں۔', ocrLeft: n => 'آج کی باقی تصاویر: ' + n, vTitle: "نتیجہ", vFull: "✓ پوری عبارت اس حدیث سے مطابقت رکھتی ہے۔", vMost: "عبارت زیادہ تر اس حدیث سے ملتی ہے، مگر کچھ الفاظ مختلف ہیں۔", vPart: "اس حدیث کا کچھ حصہ ملتا ہے؛ پوری عبارت کی مطابقت نہیں ملی۔", vNone: "اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔", vPct: "مطابقت", vYour: "آپ کا متن (سرخ: وہ الفاظ جو نہیں ملے)", vSrc: "ماخذ کی عبارت", vGrade: "حکم", vOpen: "حدیث کھولیں", vOthers: "دیگر ملتے جلتے نتائج", vJami: n=>"تلخیص الجامع الکامل، حدیث "+n, vRawi: "راوی", vMuh: "محدث", vBook: "کتاب", vDiff: "مختلف الفاظ: ", qOkL: "✓ الفاظ قرآن کے مطابق درست ہیں", qDiffL: "الفاظ میں فرق ہے",
       intro: 'واٹس ایپ یا فیس بک سے آیا ہوا متن یہاں ڈالیں۔ قرآنی آیت ہو تو الفاظ قرآن سے ملا کر دیکھے جائیں گے، اور حدیث ہو تو ہماری کتابوں میں تلاش کی جائے گی۔',
       ph: 'یہاں متن ڈالیں…', go: 'تحقیق', clear: 'حذف', paste: 'پیسٹ',
       short: 'متن بہت مختصر ہے۔ کم از کم تین عربی الفاظ ڈالیں۔',
       qHead: 'قرآنی آیت', qFound: (r) => 'یہ قرآن کی عبارت لگتی ہے: ' + r, qOk: '✓ الفاظ قرآن کے مطابق درست ہیں۔',
       qExtra: 'آپ کے متن کے یہ الفاظ قرآن میں اس جگہ نہیں ملے: ', qMiss: 'قرآن کے یہ الفاظ آپ کے متن میں نہیں ہیں: ', qOpen: 'آیت کھولیں',
       qNone: 'قرآن میں یہ عبارت نہیں ملی۔',
-      hHead: 'حدیث', hFound: n => 'ہماری کتابوں میں ملتی جلتی احادیث: ' + n, hNone: 'ہمارے الجامع الکامل میں یہ متن نہیں ملا۔',
+      hHead: 'حدیث', hFound: n => 'ہماری کتابوں میں ملتی جلتی احادیث: ' + n, hNone: 'ہمارے تلخیص الجامع الکامل میں یہ متن نہیں ملا۔',
       hNote: 'نہ ملنے کا مطلب یہ نہیں کہ حدیث من گھڑت ہے؛ صرف یہ کہ یہاں نہیں ملی۔ حکم وہی دیکھیں جو کتاب میں کسی محدث کا درج ہے۔',
       hMore: 'تمام کتابوں میں تلاش کریں', how: 'ایپ سے براہِ راست بھیجنے کا طریقہ',
       howT: 'واٹس ایپ یا فیس بک میں پیغام کھولیں ← «شیئر» دبائیں ← فہرست سے «تراث خیرالقرون» چنیں۔ متن خود یہاں آ جائے گا۔ (یہ سہولت اس وقت چلتی ہے جب ایپ فون میں انسٹال ہو۔)'},
-    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.', ocrUser: 'انتهى الحد اليومي للصور (5). حاول غدًا أو أدخل النص يدويًا.', ocrLeft: n => 'الصور المتبقية اليوم: ' + n, vTitle: "النتيجة", vFull: "✓ النص كاملًا موافق لهذا الحديث.", vMost: "النص موافق في أكثره، مع اختلاف في بعض الألفاظ.", vPart: "يوافق جزءًا من هذا الحديث؛ ولم نجد مطابقة للنص كاملًا.", vNone: "لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية.", vPct: "نسبة المطابقة", vYour: "نصك (بالأحمر: الألفاظ غير الموجودة)", vSrc: "نص المصدر", vGrade: "الحكم", vOpen: "افتح الحديث", vOthers: "نتائج مشابهة أخرى", vJami: n=>"الجامع الكامل، حديث "+n, vRawi: "الراوي", vMuh: "المحدث", vBook: "المصدر", vDiff: "ألفاظ مختلفة: ", qOkL: "✓ الألفاظ موافقة للمصحف", qDiffL: "في الألفاظ اختلاف",
+    ar: {title: 'تحقيق وتصديق', sub: 'فحص سريع للآية أو الحديث', try: "جرّب:", ex: [["آية فيها خطأ", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["حديث صحيح", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["مشهور وضعيف", "اطلبوا العلم ولو في الصين"], ["لا أصل له", "من عرف نفسه فقد عرف ربه"]], img: 'صورة', cam: 'الكاميرا', reading: 'جارٍ قراءة الصورة…', ocrFail: 'تعذّرت قراءة النص من الصورة. حاول مرة أخرى أو اكتب النص.', ocrBusy: 'انتهى الحد اليومي أو الخدمة مشغولة. أدخل النص يدويًا.', ocrNo: 'لم يُعثر على نص في الصورة.', ocrNote: 'تُقرأ الصور بواسطة Google Gemini؛ صحّح النص المقروء ثم تحقّق.', ocrUser: 'انتهى الحد اليومي للصور (5). حاول غدًا أو أدخل النص يدويًا.', ocrLeft: n => 'الصور المتبقية اليوم: ' + n, vTitle: "النتيجة", vFull: "✓ النص كاملًا موافق لهذا الحديث.", vMost: "النص موافق في أكثره، مع اختلاف في بعض الألفاظ.", vPart: "يوافق جزءًا من هذا الحديث؛ ولم نجد مطابقة للنص كاملًا.", vNone: "لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية.", vPct: "نسبة المطابقة", vYour: "نصك (بالأحمر: الألفاظ غير الموجودة)", vSrc: "نص المصدر", vGrade: "الحكم", vOpen: "افتح الحديث", vOthers: "نتائج مشابهة أخرى", vJami: n=>"تلخيص الجامع الكامل، حديث "+n, vRawi: "الراوي", vMuh: "المحدث", vBook: "المصدر", vDiff: "ألفاظ مختلفة: ", qOkL: "✓ الألفاظ موافقة للمصحف", qDiffL: "في الألفاظ اختلاف",
       intro: 'الصق هنا النص الذي وصلك من واتساب أو فيسبوك. إن كان آية قارنّا ألفاظها بالمصحف، وإن كان حديثًا بحثنا عنه في كتبنا.',
       ph: 'الصق النص هنا…', go: 'تحقّق', clear: 'مسح', paste: 'لصق من الحافظة',
       short: 'النص قصير جدًا. أدخل ثلاث كلمات عربية على الأقل.',
       qHead: 'آية قرآنية', qFound: r => 'يبدو أنه من القرآن: ' + r, qOk: '✓ الألفاظ موافقة للمصحف.',
       qExtra: 'ألفاظ في نصك لم نجدها في هذا الموضع من القرآن: ', qMiss: 'ألفاظ من الآية غير موجودة في نصك: ', qOpen: 'افتح الآية',
       qNone: 'لم نجد هذا النص في القرآن.',
-      hHead: 'حديث', hFound: n => 'أحاديث مشابهة في كتبنا: ' + n, hNone: 'لم نجد هذا النص في الجامع الكامل.',
+      hHead: 'حديث', hFound: n => 'أحاديث مشابهة في كتبنا: ' + n, hNone: 'لم نجد هذا النص في تلخيص الجامع الكامل.',
       hNote: 'عدم الوجود هنا لا يعني أن الحديث موضوع، وإنما أنه لم يوجد في كتبنا. والحكم هو ما نقله العلماء في الكتاب.',
       hMore: 'ابحث في جميع الكتب', how: 'كيف ترسل إلى التطبيق مباشرة',
       howT: 'افتح الرسالة في واتساب أو فيسبوك ← اضغط «مشاركة» ← اختر «تراث خير القرون» من القائمة. (يعمل إذا كان التطبيق مثبتًا على الهاتف.)'},
-    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.', ocrUser: 'You have used today’s limit of 5 pictures. Try tomorrow or paste the text.', ocrLeft: n => 'Pictures left today: ' + n, vTitle: "Result", vFull: "✓ The whole text matches this hadith.", vMost: "The text mostly matches this hadith, with some different words.", vPart: "Only part of this hadith matches; the whole text was not matched.", vNone: "No match for this text in our books or in Dorar.", vPct: "Match", vYour: "Your text (red: words not found)", vSrc: "Text of the source", vGrade: "Grade", vOpen: "Open the hadith", vOthers: "Other similar results", vJami: n=>"Al-Jami al-Kamil, hadith "+n, vRawi: "Narrator", vMuh: "Muhaddith", vBook: "Source", vDiff: "Different words: ", qOkL: "✓ The wording matches the Quran", qDiffL: "The wording differs from the Quran",
+    en: {title: 'Verify', sub: 'Quick check of a verse or hadith', try: "Try an example:", ex: [["A verse with a mistake", "يا أيها الذين آمنوا كتب عليكم الصيام كما كتب على الذين من قبلكم لعلكم تشكرون"], ["An authentic hadith", "إنما الأعمال بالنيات وإنما لكل امرئ ما نوى"], ["Famous but weak", "اطلبوا العلم ولو في الصين"], ["Without basis", "من عرف نفسه فقد عرف ربه"]], img: 'Image', cam: 'Camera', reading: 'Reading the image…', ocrFail: 'Could not read text from the image. Try again or type the text.', ocrBusy: 'Daily limit reached or the service is busy. Please paste the text.', ocrNo: 'No text found in the image.', ocrNote: 'Images are read with Google Gemini; correct the text below, then verify.', ocrUser: 'You have used today’s limit of 5 pictures. Try tomorrow or paste the text.', ocrLeft: n => 'Pictures left today: ' + n, vTitle: "Result", vFull: "✓ The whole text matches this hadith.", vMost: "The text mostly matches this hadith, with some different words.", vPart: "Only part of this hadith matches; the whole text was not matched.", vNone: "No match for this text in our books or in Dorar.", vPct: "Match", vYour: "Your text (red: words not found)", vSrc: "Text of the source", vGrade: "Grade", vOpen: "Open the hadith", vOthers: "Other similar results", vJami: n=>"Talkhis Al-Jami al-Kamil, hadith "+n, vRawi: "Narrator", vMuh: "Muhaddith", vBook: "Source", vDiff: "Different words: ", qOkL: "✓ The wording matches the Quran", qDiffL: "The wording differs from the Quran",
       intro: 'Paste text you received on WhatsApp or Facebook. A Quran verse is compared word by word with the Quran; a hadith is searched in our books.',
       ph: 'Paste the text here…', go: 'Verify', clear: 'Clear', paste: 'Paste from clipboard',
       short: 'The text is too short. Enter at least three Arabic words.',
       qHead: 'Quran', qFound: r => 'This looks like a Quran text: ' + r, qOk: '✓ The wording matches the Quran.',
       qExtra: 'Words in your text not found at this place in the Quran: ', qMiss: 'Words of the verse missing from your text: ', qOpen: 'Open the verse',
       qNone: 'This text was not found in the Quran.',
-      hHead: 'Hadith', hFound: n => 'Similar hadith in our books: ' + n, hNone: 'This text was not found in al-Jami al-Kamil.',
+      hHead: 'Hadith', hFound: n => 'Similar hadith in our books: ' + n, hNone: 'This text was not found in Talkhis al-Jami al-Kamil.',
       hNote: 'Not finding it here does not mean it is fabricated; only that it is not in our books. Read the ruling the scholars give in the book.',
       hMore: 'Search all books', how: 'How to send directly to the app',
       howT: 'Open the message in WhatsApp or Facebook → tap “Share” → choose “Turath Khair Al-Quroon” in the list. (Works when the app is installed on the phone.)'}
   };
   const EXA = S.en.ex.map(x => x[1]), mkEx = l => l.map((t, i) => [t, EXA[i]]);
-  S.bn = Object.assign({title: "যাচাই", sub: "আয়াত বা হাদীসের দ্রুত যাচাই", try: "উদাহরণ দেখুন:", img: "ছবি", cam: "ক্যামেরা", reading: "ছবি পড়া হচ্ছে…", ocrFail: "ছবি থেকে লেখা পড়া যায়নি। আবার চেষ্টা করুন বা লেখাটি নিজে দিন।", ocrBusy: "দৈনিক সীমা শেষ বা সেবা ব্যস্ত। অনুগ্রহ করে লেখাটি পেস্ট করুন।", ocrNo: "ছবিতে কোনো লেখা পাওয়া যায়নি।", ocrNote: "ছবি Google Gemini দিয়ে পড়া হয়; নিচের লেখা ঠিক করে নিয়ে যাচাই করুন।", ocrUser: "আজকের ৫টি ছবির সীমা শেষ হয়েছে। কাল আবার চেষ্টা করুন বা লেখাটি পেস্ট করুন।", ocrLeft: n => "আজ বাকি ছবি: " + n, vTitle: "ফলাফল", vFull: "✓ পুরো লেখাটি এই হাদীসের সাথে মিলেছে।", vMost: "লেখাটি বেশির ভাগ এই হাদীসের সাথে মেলে, তবে কিছু শব্দ আলাদা।", vPart: "এই হাদীসের কিছু অংশ মিলেছে; পুরো লেখাটি মেলেনি।", vNone: "আমাদের কিতাব ও আদ-দুরারুস সানিয়্যায় এই লেখার কোনো মিল পাওয়া যায়নি।", vPct: "মিল", vYour: "আপনার লেখা (লাল: যে শব্দগুলো মেলেনি)", vSrc: "উৎসের পাঠ", vGrade: "হুকুম", vOpen: "হাদীসটি খুলুন", vOthers: "অন্যান্য কাছাকাছি ফলাফল", vJami: n => "আল-জামি আল-কামিল, হাদীস " + n, vRawi: "বর্ণনাকারী", vMuh: "মুহাদ্দিস", vBook: "উৎস", vDiff: "ভিন্ন শব্দ: ", qOkL: "✓ শব্দগুলো কুরআনের সাথে মিলেছে", qDiffL: "শব্দে পার্থক্য আছে", intro: "হোয়াটসঅ্যাপ বা ফেসবুকে পাওয়া লেখাটি এখানে পেস্ট করুন। আয়াত হলে শব্দগুলো কুরআনের সাথে মিলিয়ে দেখা হবে, আর হাদীস হলে আমাদের কিতাবে খোঁজা হবে।", ph: "এখানে লেখা পেস্ট করুন…", go: "যাচাই", clear: "মুছুন", paste: "ক্লিপবোর্ড থেকে পেস্ট", short: "লেখাটি খুব ছোট। অন্তত তিনটি আরবি শব্দ দিন।", qHead: "কুরআন", qFound: n => "এটি কুরআনের লেখা বলে মনে হচ্ছে: " + n, qOk: "✓ শব্দগুলো কুরআনের সাথে মিলেছে।", qExtra: "আপনার লেখার এই শব্দগুলো কুরআনের এই জায়গায় পাওয়া যায়নি: ", qMiss: "আয়াতের এই শব্দগুলো আপনার লেখায় নেই: ", qOpen: "আয়াতটি খুলুন", qNone: "কুরআনে এই লেখাটি পাওয়া যায়নি।", hHead: "হাদীস", hFound: n => "আমাদের কিতাবে কাছাকাছি হাদীস: " + n, hNone: "আল-জামি আল-কামিলে এই লেখাটি পাওয়া যায়নি।", hNote: "এখানে না পাওয়ার অর্থ এই নয় যে হাদীসটি বানোয়াট; শুধু আমাদের কিতাবে নেই। কিতাবে আলেমগণ যে হুকুম দিয়েছেন সেটিই দেখুন।", hMore: "সব কিতাবে খুঁজুন", how: "সরাসরি অ্যাপে পাঠানোর নিয়ম", howT: "হোয়াটসঅ্যাপ বা ফেসবুকে বার্তাটি খুলুন → «শেয়ার» চাপুন → তালিকা থেকে «তুরাস খাইরুল কুরূন» বেছে নিন। (ফোনে অ্যাপ ইনস্টল থাকলে এটি কাজ করে।)"}, {ex: mkEx(["ভুলসহ একটি আয়াত","একটি সহীহ হাদীস","প্রসিদ্ধ কিন্তু দুর্বল","ভিত্তিহীন কথা"])});
-  S.hi = Object.assign({title: "जाँच", sub: "आयत या हदीस की त्वरित जाँच", try: "उदाहरण देखें:", img: "तस्वीर", cam: "कैमरा", reading: "तस्वीर पढ़ी जा रही है…", ocrFail: "तस्वीर से पाठ नहीं पढ़ा जा सका। दोबारा कोशिश करें या पाठ ख़ुद लिखें।", ocrBusy: "दैनिक सीमा पूरी हो गई या सेवा व्यस्त है। कृपया पाठ पेस्ट करें।", ocrNo: "तस्वीर में कोई पाठ नहीं मिला।", ocrNote: "तस्वीरें Google Gemini से पढ़ी जाती हैं; नीचे का पाठ सुधारकर जाँच करें।", ocrUser: "आज की 5 तस्वीरों की सीमा पूरी हो गई। कल फिर कोशिश करें या पाठ पेस्ट करें।", ocrLeft: n => "आज की बची तस्वीरें: " + n, vTitle: "नतीजा", vFull: "✓ पूरा पाठ इस हदीस से मेल खाता है।", vMost: "पाठ ज़्यादातर इस हदीस से मिलता है, पर कुछ शब्द अलग हैं।", vPart: "इस हदीस का कुछ हिस्सा मिलता है; पूरा पाठ नहीं मिला।", vNone: "हमारी किताबों और अद-दुरर अस-सनिय्या में इस पाठ का मेल नहीं मिला।", vPct: "मेल", vYour: "आपका पाठ (लाल: जो शब्द नहीं मिले)", vSrc: "स्रोत का पाठ", vGrade: "हुक्म", vOpen: "हदीस खोलें", vOthers: "अन्य मिलते-जुलते नतीजे", vJami: n => "अल-जामिउल कामिल, हदीस " + n, vRawi: "रावी", vMuh: "मुहद्दिस", vBook: "स्रोत", vDiff: "अलग शब्द: ", qOkL: "✓ शब्द क़ुरआन से मेल खाते हैं", qDiffL: "शब्दों में फ़र्क़ है", intro: "व्हाट्सऐप या फ़ेसबुक से मिला पाठ यहाँ पेस्ट करें। क़ुरआन की आयत हो तो शब्द क़ुरआन से मिलाए जाएँगे, और हदीस हो तो हमारी किताबों में खोजी जाएगी।", ph: "पाठ यहाँ पेस्ट करें…", go: "जाँच", clear: "मिटाएँ", paste: "क्लिपबोर्ड से पेस्ट", short: "पाठ बहुत छोटा है। कम से कम तीन अरबी शब्द डालें।", qHead: "क़ुरआन", qFound: n => "यह क़ुरआन का पाठ लगता है: " + n, qOk: "✓ शब्द क़ुरआन से मेल खाते हैं।", qExtra: "आपके पाठ के ये शब्द क़ुरआन में इस जगह नहीं मिले: ", qMiss: "आयत के ये शब्द आपके पाठ में नहीं हैं: ", qOpen: "आयत खोलें", qNone: "क़ुरआन में यह पाठ नहीं मिला।", hHead: "हदीस", hFound: n => "हमारी किताबों में मिलती-जुलती हदीसें: " + n, hNone: "अल-जामिउल कामिल में यह पाठ नहीं मिला।", hNote: "यहाँ न मिलने का मतलब यह नहीं कि हदीस गढ़ी हुई है; सिर्फ़ यह कि हमारी किताबों में नहीं मिली। हुक्म वही देखें जो उलमा ने किताब में लिखा है।", hMore: "सभी किताबों में खोजें", how: "सीधे ऐप में भेजने का तरीक़ा", howT: "व्हाट्सऐप या फ़ेसबुक में संदेश खोलें → «शेयर» दबाएँ → सूची से «तुरास ख़ैरुल क़ुरून» चुनें। (यह तब चलता है जब ऐप फ़ोन में इंस्टॉल हो।)"}, {ex: mkEx(["ग़लती वाली आयत","एक सहीह हदीस","मशहूर मगर ज़ईफ़","बे-बुनियाद बात"])});
-  S.gu = Object.assign({title: "ચકાસણી", sub: "આયત કે હદીસની ઝડપી ચકાસણી", try: "ઉદાહરણ જુઓ:", img: "ફોટો", cam: "કૅમેરા", reading: "ફોટો વંચાઈ રહ્યો છે…", ocrFail: "ફોટામાંથી લખાણ વાંચી શકાયું નથી. ફરી પ્રયત્ન કરો અથવા લખાણ જાતે લખો.", ocrBusy: "દૈનિક મર્યાદા પૂરી થઈ ગઈ છે અથવા સેવા વ્યસ્ત છે. કૃપા કરી લખાણ પેસ્ટ કરો.", ocrNo: "ફોટામાં કોઈ લખાણ મળ્યું નથી.", ocrNote: "ફોટા Google Gemini વડે વંચાય છે; નીચેનું લખાણ સુધારીને ચકાસો.", ocrUser: "આજની 5 ફોટાની મર્યાદા પૂરી થઈ ગઈ છે. કાલે ફરી પ્રયત્ન કરો અથવા લખાણ પેસ્ટ કરો.", ocrLeft: n => "આજના બાકી ફોટા: " + n, vTitle: "પરિણામ", vFull: "✓ આખું લખાણ આ હદીસ સાથે મેળ ખાય છે.", vMost: "લખાણ મોટે ભાગે આ હદીસ સાથે મળે છે, પણ કેટલાક શબ્દો જુદા છે.", vPart: "આ હદીસનો થોડો ભાગ મળે છે; આખું લખાણ મળ્યું નથી.", vNone: "અમારા પુસ્તકો અને અદ-દુરર અસ-સનિય્યહમાં આ લખાણનો મેળ મળ્યો નથી.", vPct: "મેળ", vYour: "તમારું લખાણ (લાલ: જે શબ્દો ન મળ્યા)", vSrc: "સ્રોતનું લખાણ", vGrade: "હુકમ", vOpen: "હદીસ ખોલો", vOthers: "અન્ય મળતાં પરિણામો", vJami: n => "અલ-જામિઉલ કામિલ, હદીસ " + n, vRawi: "રાવી", vMuh: "મુહદ્દિસ", vBook: "સ્રોત", vDiff: "જુદા શબ્દો: ", qOkL: "✓ શબ્દો કુરઆન સાથે મળે છે", qDiffL: "શબ્દોમાં તફાવત છે", intro: "વોટ્સએપ કે ફેસબુક પરથી મળેલું લખાણ અહીં પેસ્ટ કરો. કુરઆનની આયત હોય તો શબ્દો કુરઆન સાથે મેળવવામાં આવશે, અને હદીસ હોય તો અમારા પુસ્તકોમાં શોધવામાં આવશે.", ph: "લખાણ અહીં પેસ્ટ કરો…", go: "ચકાસો", clear: "ભૂંસો", paste: "ક્લિપબોર્ડમાંથી પેસ્ટ", short: "લખાણ ખૂબ ટૂંકું છે. ઓછામાં ઓછા ત્રણ અરબી શબ્દો લખો.", qHead: "કુરઆન", qFound: n => "આ કુરઆનનું લખાણ લાગે છે: " + n, qOk: "✓ શબ્દો કુરઆન સાથે મળે છે.", qExtra: "તમારા લખાણના આ શબ્દો કુરઆનમાં આ જગ્યાએ મળ્યા નથી: ", qMiss: "આયતના આ શબ્દો તમારા લખાણમાં નથી: ", qOpen: "આયત ખોલો", qNone: "કુરઆનમાં આ લખાણ મળ્યું નથી.", hHead: "હદીસ", hFound: n => "અમારા પુસ્તકોમાં મળતી હદીસો: " + n, hNone: "અલ-જામિઉલ કામિલમાં આ લખાણ મળ્યું નથી.", hNote: "અહીં ન મળવાનો અર્થ એ નથી કે હદીસ ઘડી કાઢેલી છે; ફક્ત એટલું કે અમારા પુસ્તકોમાં મળી નથી. હુકમ તે જ જુઓ જે વિદ્વાનોએ પુસ્તકમાં લખ્યો છે.", hMore: "બધા પુસ્તકોમાં શોધો", how: "સીધું એપમાં મોકલવાની રીત", howT: "વોટ્સએપ કે ફેસબુકમાં સંદેશ ખોલો → «શેર» દબાવો → યાદીમાંથી «તુરાસ ખૈરુલ કુરૂન» પસંદ કરો. (એપ ફોનમાં ઇન્સ્ટૉલ હોય ત્યારે આ ચાલે છે.)"}, {ex: mkEx(["ભૂલવાળી આયત","એક સહીહ હદીસ","જાણીતી પણ ઝઈફ","પાયા વગરની વાત"])});
-  S.fr = Object.assign({title: "Vérifier", sub: "Vérification rapide d’un verset ou d’un hadith", try: "Essayez un exemple :", img: "Image", cam: "Appareil photo", reading: "Lecture de l’image…", ocrFail: "Impossible de lire le texte de l’image. Réessayez ou saisissez le texte.", ocrBusy: "Limite quotidienne atteinte ou service occupé. Veuillez coller le texte.", ocrNo: "Aucun texte trouvé dans l’image.", ocrNote: "Les images sont lues avec Google Gemini ; corrigez le texte ci-dessous, puis vérifiez.", ocrUser: "Vous avez atteint la limite de 5 images aujourd’hui. Réessayez demain ou collez le texte.", ocrLeft: n => "Images restantes aujourd’hui : " + n, vTitle: "Résultat", vFull: "✓ Le texte entier correspond à ce hadith.", vMost: "Le texte correspond en grande partie à ce hadith, avec quelques mots différents.", vPart: "Seule une partie de ce hadith correspond ; le texte entier ne correspond pas.", vNone: "Aucune correspondance pour ce texte dans nos livres ni dans Dorar.", vPct: "Correspondance", vYour: "Votre texte (en rouge : mots introuvables)", vSrc: "Texte de la source", vGrade: "Statut", vOpen: "Ouvrir le hadith", vOthers: "Autres résultats proches", vJami: n => "Al-Jami al-Kamil, hadith " + n, vRawi: "Narrateur", vMuh: "Muhaddith", vBook: "Source", vDiff: "Mots différents : ", qOkL: "✓ La formulation correspond au Coran", qDiffL: "La formulation diffère du Coran", intro: "Collez ici le texte reçu sur WhatsApp ou Facebook. Un verset est comparé mot à mot avec le Coran ; un hadith est recherché dans nos livres.", ph: "Collez le texte ici…", go: "Vérifier", clear: "Effacer", paste: "Coller depuis le presse-papiers", short: "Le texte est trop court. Saisissez au moins trois mots arabes.", qHead: "Coran", qFound: n => "Ceci semble être un texte du Coran : " + n, qOk: "✓ La formulation correspond au Coran.", qExtra: "Mots de votre texte introuvables à cet endroit du Coran : ", qMiss: "Mots du verset absents de votre texte : ", qOpen: "Ouvrir le verset", qNone: "Ce texte n’a pas été trouvé dans le Coran.", hHead: "Hadith", hFound: n => "Hadiths similaires dans nos livres : " + n, hNone: "Ce texte n’a pas été trouvé dans al-Jami al-Kamil.", hNote: "Ne pas le trouver ici ne signifie pas qu’il est inventé, seulement qu’il n’est pas dans nos livres. Lisez le statut donné par les savants dans le livre.", hMore: "Rechercher dans tous les livres", how: "Comment envoyer directement à l’application", howT: "Ouvrez le message dans WhatsApp ou Facebook → touchez « Partager » → choisissez « Turath Khair Al-Quroon » dans la liste. (Fonctionne si l’application est installée sur le téléphone.)"}, {ex: mkEx(["Un verset avec une erreur","Un hadith authentique","Célèbre mais faible","Sans fondement"])});
+  S.bn = Object.assign({title: "যাচাই", sub: "আয়াত বা হাদীসের দ্রুত যাচাই", try: "উদাহরণ দেখুন:", img: "ছবি", cam: "ক্যামেরা", reading: "ছবি পড়া হচ্ছে…", ocrFail: "ছবি থেকে লেখা পড়া যায়নি। আবার চেষ্টা করুন বা লেখাটি নিজে দিন।", ocrBusy: "দৈনিক সীমা শেষ বা সেবা ব্যস্ত। অনুগ্রহ করে লেখাটি পেস্ট করুন।", ocrNo: "ছবিতে কোনো লেখা পাওয়া যায়নি।", ocrNote: "ছবি Google Gemini দিয়ে পড়া হয়; নিচের লেখা ঠিক করে নিয়ে যাচাই করুন।", ocrUser: "আজকের ৫টি ছবির সীমা শেষ হয়েছে। কাল আবার চেষ্টা করুন বা লেখাটি পেস্ট করুন।", ocrLeft: n => "আজ বাকি ছবি: " + n, vTitle: "ফলাফল", vFull: "✓ পুরো লেখাটি এই হাদীসের সাথে মিলেছে।", vMost: "লেখাটি বেশির ভাগ এই হাদীসের সাথে মেলে, তবে কিছু শব্দ আলাদা।", vPart: "এই হাদীসের কিছু অংশ মিলেছে; পুরো লেখাটি মেলেনি।", vNone: "আমাদের কিতাব ও আদ-দুরারুস সানিয়্যায় এই লেখার কোনো মিল পাওয়া যায়নি।", vPct: "মিল", vYour: "আপনার লেখা (লাল: যে শব্দগুলো মেলেনি)", vSrc: "উৎসের পাঠ", vGrade: "হুকুম", vOpen: "হাদীসটি খুলুন", vOthers: "অন্যান্য কাছাকাছি ফলাফল", vJami: n => "তালখীস আল-জামি আল-কামিল, হাদীস " + n, vRawi: "বর্ণনাকারী", vMuh: "মুহাদ্দিস", vBook: "উৎস", vDiff: "ভিন্ন শব্দ: ", qOkL: "✓ শব্দগুলো কুরআনের সাথে মিলেছে", qDiffL: "শব্দে পার্থক্য আছে", intro: "হোয়াটসঅ্যাপ বা ফেসবুকে পাওয়া লেখাটি এখানে পেস্ট করুন। আয়াত হলে শব্দগুলো কুরআনের সাথে মিলিয়ে দেখা হবে, আর হাদীস হলে আমাদের কিতাবে খোঁজা হবে।", ph: "এখানে লেখা পেস্ট করুন…", go: "যাচাই", clear: "মুছুন", paste: "ক্লিপবোর্ড থেকে পেস্ট", short: "লেখাটি খুব ছোট। অন্তত তিনটি আরবি শব্দ দিন।", qHead: "কুরআন", qFound: n => "এটি কুরআনের লেখা বলে মনে হচ্ছে: " + n, qOk: "✓ শব্দগুলো কুরআনের সাথে মিলেছে।", qExtra: "আপনার লেখার এই শব্দগুলো কুরআনের এই জায়গায় পাওয়া যায়নি: ", qMiss: "আয়াতের এই শব্দগুলো আপনার লেখায় নেই: ", qOpen: "আয়াতটি খুলুন", qNone: "কুরআনে এই লেখাটি পাওয়া যায়নি।", hHead: "হাদীস", hFound: n => "আমাদের কিতাবে কাছাকাছি হাদীস: " + n, hNone: "তালখীস আল-জামি আল-কামিলে এই লেখাটি পাওয়া যায়নি।", hNote: "এখানে না পাওয়ার অর্থ এই নয় যে হাদীসটি বানোয়াট; শুধু আমাদের কিতাবে নেই। কিতাবে আলেমগণ যে হুকুম দিয়েছেন সেটিই দেখুন।", hMore: "সব কিতাবে খুঁজুন", how: "সরাসরি অ্যাপে পাঠানোর নিয়ম", howT: "হোয়াটসঅ্যাপ বা ফেসবুকে বার্তাটি খুলুন → «শেয়ার» চাপুন → তালিকা থেকে «তুরাস খাইরুল কুরূন» বেছে নিন। (ফোনে অ্যাপ ইনস্টল থাকলে এটি কাজ করে।)"}, {ex: mkEx(["ভুলসহ একটি আয়াত","একটি সহীহ হাদীস","প্রসিদ্ধ কিন্তু দুর্বল","ভিত্তিহীন কথা"])});
+  S.hi = Object.assign({title: "जाँच", sub: "आयत या हदीस की त्वरित जाँच", try: "उदाहरण देखें:", img: "तस्वीर", cam: "कैमरा", reading: "तस्वीर पढ़ी जा रही है…", ocrFail: "तस्वीर से पाठ नहीं पढ़ा जा सका। दोबारा कोशिश करें या पाठ ख़ुद लिखें।", ocrBusy: "दैनिक सीमा पूरी हो गई या सेवा व्यस्त है। कृपया पाठ पेस्ट करें।", ocrNo: "तस्वीर में कोई पाठ नहीं मिला।", ocrNote: "तस्वीरें Google Gemini से पढ़ी जाती हैं; नीचे का पाठ सुधारकर जाँच करें।", ocrUser: "आज की 5 तस्वीरों की सीमा पूरी हो गई। कल फिर कोशिश करें या पाठ पेस्ट करें।", ocrLeft: n => "आज की बची तस्वीरें: " + n, vTitle: "नतीजा", vFull: "✓ पूरा पाठ इस हदीस से मेल खाता है।", vMost: "पाठ ज़्यादातर इस हदीस से मिलता है, पर कुछ शब्द अलग हैं।", vPart: "इस हदीस का कुछ हिस्सा मिलता है; पूरा पाठ नहीं मिला।", vNone: "हमारी किताबों और अद-दुरर अस-सनिय्या में इस पाठ का मेल नहीं मिला।", vPct: "मेल", vYour: "आपका पाठ (लाल: जो शब्द नहीं मिले)", vSrc: "स्रोत का पाठ", vGrade: "हुक्म", vOpen: "हदीस खोलें", vOthers: "अन्य मिलते-जुलते नतीजे", vJami: n => "तल्ख़ीस अल-जामिउल कामिल, हदीस " + n, vRawi: "रावी", vMuh: "मुहद्दिस", vBook: "स्रोत", vDiff: "अलग शब्द: ", qOkL: "✓ शब्द क़ुरआन से मेल खाते हैं", qDiffL: "शब्दों में फ़र्क़ है", intro: "व्हाट्सऐप या फ़ेसबुक से मिला पाठ यहाँ पेस्ट करें। क़ुरआन की आयत हो तो शब्द क़ुरआन से मिलाए जाएँगे, और हदीस हो तो हमारी किताबों में खोजी जाएगी।", ph: "पाठ यहाँ पेस्ट करें…", go: "जाँच", clear: "मिटाएँ", paste: "क्लिपबोर्ड से पेस्ट", short: "पाठ बहुत छोटा है। कम से कम तीन अरबी शब्द डालें।", qHead: "क़ुरआन", qFound: n => "यह क़ुरआन का पाठ लगता है: " + n, qOk: "✓ शब्द क़ुरआन से मेल खाते हैं।", qExtra: "आपके पाठ के ये शब्द क़ुरआन में इस जगह नहीं मिले: ", qMiss: "आयत के ये शब्द आपके पाठ में नहीं हैं: ", qOpen: "आयत खोलें", qNone: "क़ुरआन में यह पाठ नहीं मिला।", hHead: "हदीस", hFound: n => "हमारी किताबों में मिलती-जुलती हदीसें: " + n, hNone: "तल्ख़ीस अल-जामिउल कामिल में यह पाठ नहीं मिला।", hNote: "यहाँ न मिलने का मतलब यह नहीं कि हदीस गढ़ी हुई है; सिर्फ़ यह कि हमारी किताबों में नहीं मिली। हुक्म वही देखें जो उलमा ने किताब में लिखा है।", hMore: "सभी किताबों में खोजें", how: "सीधे ऐप में भेजने का तरीक़ा", howT: "व्हाट्सऐप या फ़ेसबुक में संदेश खोलें → «शेयर» दबाएँ → सूची से «तुरास ख़ैरुल क़ुरून» चुनें। (यह तब चलता है जब ऐप फ़ोन में इंस्टॉल हो।)"}, {ex: mkEx(["ग़लती वाली आयत","एक सहीह हदीस","मशहूर मगर ज़ईफ़","बे-बुनियाद बात"])});
+  S.gu = Object.assign({title: "ચકાસણી", sub: "આયત કે હદીસની ઝડપી ચકાસણી", try: "ઉદાહરણ જુઓ:", img: "ફોટો", cam: "કૅમેરા", reading: "ફોટો વંચાઈ રહ્યો છે…", ocrFail: "ફોટામાંથી લખાણ વાંચી શકાયું નથી. ફરી પ્રયત્ન કરો અથવા લખાણ જાતે લખો.", ocrBusy: "દૈનિક મર્યાદા પૂરી થઈ ગઈ છે અથવા સેવા વ્યસ્ત છે. કૃપા કરી લખાણ પેસ્ટ કરો.", ocrNo: "ફોટામાં કોઈ લખાણ મળ્યું નથી.", ocrNote: "ફોટા Google Gemini વડે વંચાય છે; નીચેનું લખાણ સુધારીને ચકાસો.", ocrUser: "આજની 5 ફોટાની મર્યાદા પૂરી થઈ ગઈ છે. કાલે ફરી પ્રયત્ન કરો અથવા લખાણ પેસ્ટ કરો.", ocrLeft: n => "આજના બાકી ફોટા: " + n, vTitle: "પરિણામ", vFull: "✓ આખું લખાણ આ હદીસ સાથે મેળ ખાય છે.", vMost: "લખાણ મોટે ભાગે આ હદીસ સાથે મળે છે, પણ કેટલાક શબ્દો જુદા છે.", vPart: "આ હદીસનો થોડો ભાગ મળે છે; આખું લખાણ મળ્યું નથી.", vNone: "અમારા પુસ્તકો અને અદ-દુરર અસ-સનિય્યહમાં આ લખાણનો મેળ મળ્યો નથી.", vPct: "મેળ", vYour: "તમારું લખાણ (લાલ: જે શબ્દો ન મળ્યા)", vSrc: "સ્રોતનું લખાણ", vGrade: "હુકમ", vOpen: "હદીસ ખોલો", vOthers: "અન્ય મળતાં પરિણામો", vJami: n => "તલ્ખીસ અલ-જામિઉલ કામિલ, હદીસ " + n, vRawi: "રાવી", vMuh: "મુહદ્દિસ", vBook: "સ્રોત", vDiff: "જુદા શબ્દો: ", qOkL: "✓ શબ્દો કુરઆન સાથે મળે છે", qDiffL: "શબ્દોમાં તફાવત છે", intro: "વોટ્સએપ કે ફેસબુક પરથી મળેલું લખાણ અહીં પેસ્ટ કરો. કુરઆનની આયત હોય તો શબ્દો કુરઆન સાથે મેળવવામાં આવશે, અને હદીસ હોય તો અમારા પુસ્તકોમાં શોધવામાં આવશે.", ph: "લખાણ અહીં પેસ્ટ કરો…", go: "ચકાસો", clear: "ભૂંસો", paste: "ક્લિપબોર્ડમાંથી પેસ્ટ", short: "લખાણ ખૂબ ટૂંકું છે. ઓછામાં ઓછા ત્રણ અરબી શબ્દો લખો.", qHead: "કુરઆન", qFound: n => "આ કુરઆનનું લખાણ લાગે છે: " + n, qOk: "✓ શબ્દો કુરઆન સાથે મળે છે.", qExtra: "તમારા લખાણના આ શબ્દો કુરઆનમાં આ જગ્યાએ મળ્યા નથી: ", qMiss: "આયતના આ શબ્દો તમારા લખાણમાં નથી: ", qOpen: "આયત ખોલો", qNone: "કુરઆનમાં આ લખાણ મળ્યું નથી.", hHead: "હદીસ", hFound: n => "અમારા પુસ્તકોમાં મળતી હદીસો: " + n, hNone: "તલ્ખીસ અલ-જામિઉલ કામિલમાં આ લખાણ મળ્યું નથી.", hNote: "અહીં ન મળવાનો અર્થ એ નથી કે હદીસ ઘડી કાઢેલી છે; ફક્ત એટલું કે અમારા પુસ્તકોમાં મળી નથી. હુકમ તે જ જુઓ જે વિદ્વાનોએ પુસ્તકમાં લખ્યો છે.", hMore: "બધા પુસ્તકોમાં શોધો", how: "સીધું એપમાં મોકલવાની રીત", howT: "વોટ્સએપ કે ફેસબુકમાં સંદેશ ખોલો → «શેર» દબાવો → યાદીમાંથી «તુરાસ ખૈરુલ કુરૂન» પસંદ કરો. (એપ ફોનમાં ઇન્સ્ટૉલ હોય ત્યારે આ ચાલે છે.)"}, {ex: mkEx(["ભૂલવાળી આયત","એક સહીહ હદીસ","જાણીતી પણ ઝઈફ","પાયા વગરની વાત"])});
+  S.fr = Object.assign({title: "Vérifier", sub: "Vérification rapide d’un verset ou d’un hadith", try: "Essayez un exemple :", img: "Image", cam: "Appareil photo", reading: "Lecture de l’image…", ocrFail: "Impossible de lire le texte de l’image. Réessayez ou saisissez le texte.", ocrBusy: "Limite quotidienne atteinte ou service occupé. Veuillez coller le texte.", ocrNo: "Aucun texte trouvé dans l’image.", ocrNote: "Les images sont lues avec Google Gemini ; corrigez le texte ci-dessous, puis vérifiez.", ocrUser: "Vous avez atteint la limite de 5 images aujourd’hui. Réessayez demain ou collez le texte.", ocrLeft: n => "Images restantes aujourd’hui : " + n, vTitle: "Résultat", vFull: "✓ Le texte entier correspond à ce hadith.", vMost: "Le texte correspond en grande partie à ce hadith, avec quelques mots différents.", vPart: "Seule une partie de ce hadith correspond ; le texte entier ne correspond pas.", vNone: "Aucune correspondance pour ce texte dans nos livres ni dans Dorar.", vPct: "Correspondance", vYour: "Votre texte (en rouge : mots introuvables)", vSrc: "Texte de la source", vGrade: "Statut", vOpen: "Ouvrir le hadith", vOthers: "Autres résultats proches", vJami: n => "Talkhis Al-Jami al-Kamil, hadith " + n, vRawi: "Narrateur", vMuh: "Muhaddith", vBook: "Source", vDiff: "Mots différents : ", qOkL: "✓ La formulation correspond au Coran", qDiffL: "La formulation diffère du Coran", intro: "Collez ici le texte reçu sur WhatsApp ou Facebook. Un verset est comparé mot à mot avec le Coran ; un hadith est recherché dans nos livres.", ph: "Collez le texte ici…", go: "Vérifier", clear: "Effacer", paste: "Coller depuis le presse-papiers", short: "Le texte est trop court. Saisissez au moins trois mots arabes.", qHead: "Coran", qFound: n => "Ceci semble être un texte du Coran : " + n, qOk: "✓ La formulation correspond au Coran.", qExtra: "Mots de votre texte introuvables à cet endroit du Coran : ", qMiss: "Mots du verset absents de votre texte : ", qOpen: "Ouvrir le verset", qNone: "Ce texte n’a pas été trouvé dans le Coran.", hHead: "Hadith", hFound: n => "Hadiths similaires dans nos livres : " + n, hNone: "Ce texte n’a pas été trouvé dans Talkhis al-Jami al-Kamil.", hNote: "Ne pas le trouver ici ne signifie pas qu’il est inventé, seulement qu’il n’est pas dans nos livres. Lisez le statut donné par les savants dans le livre.", hMore: "Rechercher dans tous les livres", how: "Comment envoyer directement à l’application", howT: "Ouvrez le message dans WhatsApp ou Facebook → touchez « Partager » → choisissez « Turath Khair Al-Quroon » dans la liste. (Fonctionne si l’application est installée sur le téléphone.)"}, {ex: mkEx(["Un verset avec une erreur","Un hadith authentique","Célèbre mais faible","Sans fondement"])});
   const L = () => S[ui] || S.en;
   const RTL = () => ui === 'ur' || ui === 'ar';
   const qv = () => $('#qv');
@@ -8289,20 +8295,20 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     ur: {shTitle: "کیا شیئر کریں؟", shQuote: "متن (اقتباس)", shPct: "مطابقت کا فیصد", shTr: "حکم اور محدث کا اردو ترجمہ", shAr: "ماخذ کی عربی عبارت", shLink: "لنک", shShort: "مختصر", shLong: "تفصیلی", shWa: "واٹس ایپ", shTg: "ٹیلیگرام", shPrev: "پیش منظر", shClose: "بند کریں", shSrcs: "ماخذ (جو چاہیں چنیں)", shSave: "تصویر محفوظ کریں", shSaveHint: "تصویر کو دبا کر رکھیں تو بھی محفوظ ہو جاتی ہے۔", shImg: "تصویر بنائیں", nomatch: "مکمل مطابقت نہیں ملی (ملتی جلتی روایات نیچے ہیں)", ok: 'مقبول (صحیح یا حسن)', weak: 'ضعیف', bad: 'شدید ضعیف یا بے اصل', mix: 'علماء کا اختلاف ہے', unk: 'حکم نہیں ملا', full: 'پوری عبارت مطابق ہے', most: 'زیادہ تر مطابق، کچھ الفاظ مختلف', part: 'عبارت کا کچھ حصہ مطابق ہے', none: 'اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔ یہ اس بات کا ثبوت نہیں کہ یہ بے اصل ہے۔',
       match: 'مطابقت', took: 'وقت', secs: 's', src: 'ماخذ', book: 'کتاب', muh: 'محدث', rawi: 'راوی', gr: 'حکم', summ: 'خلاصہ', open: 'حدیث کھولیں', share: 'شیئر', copy: 'کاپی', copied: 'کاپی ہو گیا', another: 'کوئی اور متن جانچیں', yours: 'آپ کا متن (سرخ: جو الفاظ نہیں ملے)', diff: 'مختلف الفاظ: ', others: 'دیگر ملتے جلتے نتائج',
       steps: ['متن پڑھنا', 'قرآن سے ملانا', 'ماخذ میں تلاش', 'نتائج تیار کرنا'], working: 'تحقیق ہو رہی ہے…',
-      ocrQ: 'کیا یہ وہی متن ہے؟', ocrSub: 'تصویر سے پڑھا گیا متن؛ غلطی ہو تو درست کر لیں۔', go: 'تصدیق کر کے آگے بڑھیں', edit: 'متن میں تبدیلی', brand: 'تراث خیرالقرون — تحقیق و تصدیق', more: 'مزید تحقیق کے لیے', jami: 'الجامع الکامل', pg: 'صفحہ/نمبر', dorar: 'الدرر السنیۃ', jamiGr: 'الجامع الکامل میں درج حکم', note: 'حکم وہی ہے جو اہلِ علم نے اپنی کتابوں میں لکھا؛ یہاں صرف نقل کیا گیا ہے۔'},
+      ocrQ: 'کیا یہ وہی متن ہے؟', ocrSub: 'تصویر سے پڑھا گیا متن؛ غلطی ہو تو درست کر لیں۔', go: 'تصدیق کر کے آگے بڑھیں', edit: 'متن میں تبدیلی', brand: 'تراث خیرالقرون — تحقیق و تصدیق', more: 'مزید تحقیق کے لیے', jami: 'تلخیص الجامع الکامل', pg: 'صفحہ/نمبر', dorar: 'الدرر السنیۃ', jamiGr: 'تلخیص الجامع الکامل میں درج حکم', note: 'حکم وہی ہے جو اہلِ علم نے اپنی کتابوں میں لکھا؛ یہاں صرف نقل کیا گیا ہے۔'},
     ar: {shTitle: "ماذا تريد أن تشارك؟", shQuote: "النص (المقتبس)", shPct: "نسبة المطابقة", shTr: "", shAr: "نص المصدر", shLink: "الرابط", shShort: "مختصر", shLong: "مفصّل", shWa: "واتساب", shTg: "تيليجرام", shPrev: "معاينة", shClose: "إغلاق", shSrcs: "المصادر (اختر ما تشاء)", shSave: "حفظ الصورة", shSaveHint: "اضغط مطولًا على الصورة لحفظها.", shImg: "إنشاء صورة", nomatch: "لم نجد مطابقة كاملة (الروايات المشابهة أدناه)", ok: 'مقبول (صحيح أو حسن)', weak: 'ضعيف', bad: 'شديد الضعف أو لا أصل له', mix: 'اختلاف العلماء', unk: 'لم نجد حكمًا', full: 'النص كاملًا موافق', most: 'موافق في أكثره مع اختلاف في بعض الألفاظ', part: 'يوافق جزءًا من النص', none: 'لم نجد مطابقة لهذا النص في كتبنا ولا في الدرر السنية، وهذا لا يعني أنه لا أصل له.',
       match: 'المطابقة', took: 'الزمن', secs: 'ث', src: 'المصدر', book: 'الكتاب', muh: 'المحدث', rawi: 'الراوي', gr: 'الحكم', summ: 'خلاصة الحكم', open: 'افتح الحديث', share: 'مشاركة', copy: 'نسخ', copied: 'تم النسخ', another: 'تحقق من نص آخر', yours: 'نصك (بالأحمر: الألفاظ غير الموجودة)', diff: 'ألفاظ مختلفة: ', others: 'نتائج مشابهة أخرى',
       steps: ['قراءة النص', 'المطابقة مع القرآن', 'البحث في المصادر', 'تجهيز النتائج'], working: 'جارٍ التحقق…',
-      ocrQ: 'هل هذا هو النص؟', ocrSub: 'النص المقروء من الصورة؛ صحّحه إن وجدت خطأ.', go: 'تأكيد والمتابعة', edit: 'تعديل النص', brand: 'تراث خير القرون — تحقيق وتصديق', more: 'للمزيد', jami: 'الجامع الكامل', pg: 'الصفحة/الرقم', dorar: 'الدرر السنية', jamiGr: 'الحكم المذكور في الجامع الكامل', note: 'الحكم هو ما نقله أهل العلم في كتبهم، وهو منقول هنا.'},
+      ocrQ: 'هل هذا هو النص؟', ocrSub: 'النص المقروء من الصورة؛ صحّحه إن وجدت خطأ.', go: 'تأكيد والمتابعة', edit: 'تعديل النص', brand: 'تراث خير القرون — تحقيق وتصديق', more: 'للمزيد', jami: 'تلخيص الجامع الكامل', pg: 'الصفحة/الرقم', dorar: 'الدرر السنية', jamiGr: 'الحكم المذكور في تلخيص الجامع الكامل', note: 'الحكم هو ما نقله أهل العلم في كتبهم، وهو منقول هنا.'},
     en: {shTitle: "What to share?", shQuote: "The text (quotation)", shPct: "Match percentage", shTr: "Translated ruling and muhaddith", shAr: "Arabic text of the source", shLink: "Link", shShort: "Short", shLong: "Detailed", shWa: "WhatsApp", shTg: "Telegram", shPrev: "Preview", shClose: "Close", shSrcs: "Sources (choose)", shSave: "Save the picture", shSaveHint: "Or press and hold the picture to save it.", shImg: "Make a picture", nomatch: "No full match (similar narrations below)", ok: 'Accepted (sahih or hasan)', weak: 'Weak', bad: 'Very weak or baseless', mix: 'Scholars differ', unk: 'No ruling found', full: 'The whole text matches', most: 'Mostly matches; some words differ', part: 'Part of the text matches', none: 'No match for this text in our books or Dorar. This does not prove it has no basis.',
       match: 'Match', took: 'Time', secs: 's', src: 'Sources', book: 'Book', muh: 'Muhaddith', rawi: 'Narrator', gr: 'Ruling', summ: 'Summary', open: 'Open the hadith', share: 'Share', copy: 'Copy', copied: 'Copied', another: 'Check another text', yours: 'Your text (red: words not found)', diff: 'Different words: ', others: 'Other similar results',
       steps: ['Reading the text', 'Comparing with the Quran', 'Searching the sources', 'Preparing the results'], working: 'Checking…',
-      ocrQ: 'Is this the right text?', ocrSub: 'Text read from the picture; correct it if there is a mistake.', go: 'Confirm and continue', edit: 'Edit the text', brand: 'Turath Khair Al-Quroon — Verify', more: 'More', jami: 'Al-Jami al-Kamil', pg: 'Page/No.', dorar: 'Dorar as-Saniyyah', jamiGr: 'Ruling given in al-Jami al-Kamil', note: 'The ruling is what scholars wrote in their books; it is only quoted here.'}
+      ocrQ: 'Is this the right text?', ocrSub: 'Text read from the picture; correct it if there is a mistake.', go: 'Confirm and continue', edit: 'Edit the text', brand: 'Turath Khair Al-Quroon — Verify', more: 'More', jami: 'Talkhis Al-Jami al-Kamil', pg: 'Page/No.', dorar: 'Dorar as-Saniyyah', jamiGr: 'Ruling given in Talkhis al-Jami al-Kamil', note: 'The ruling is what scholars wrote in their books; it is only quoted here.'}
   };
-  LB.bn = {shTitle: "কী শেয়ার করবেন?", shQuote: "লেখা (উদ্ধৃতি)", shPct: "মিলের শতকরা হার", shTr: "হুকুম ও মুহাদ্দিসের অনুবাদ", shAr: "উৎসের আরবি পাঠ", shLink: "লিংক", shShort: "সংক্ষিপ্ত", shLong: "বিস্তারিত", shWa: "হোয়াটসঅ্যাপ", shTg: "টেলিগ্রাম", shPrev: "প্রিভিউ", shClose: "বন্ধ করুন", shSrcs: "উৎস (বেছে নিন)", shSave: "ছবি সংরক্ষণ করুন", shSaveHint: "অথবা ছবিতে চেপে ধরে রেখে সংরক্ষণ করুন।", shImg: "ছবি বানান", nomatch: "পূর্ণ মিল পাওয়া যায়নি (কাছাকাছি বর্ণনা নিচে)", ok: "গ্রহণযোগ্য (সহীহ বা হাসান)", weak: "দুর্বল", bad: "খুব দুর্বল বা ভিত্তিহীন", mix: "আলেমদের মতভেদ আছে", unk: "হুকুম পাওয়া যায়নি", full: "পুরো লেখা মিলেছে", most: "বেশির ভাগ মিলেছে; কিছু শব্দ আলাদা", part: "লেখার কিছু অংশ মিলেছে", none: "আমাদের কিতাব ও আদ-দুরারে এই লেখার মিল পাওয়া যায়নি। এতে প্রমাণ হয় না যে এর ভিত্তি নেই।", match: "মিল", took: "সময়", secs: "সে", src: "উৎস", book: "বই", muh: "মুহাদ্দিস", rawi: "বর্ণনাকারী", gr: "হুকুম", summ: "সারসংক্ষেপ", open: "হাদীসটি খুলুন", share: "শেয়ার", copy: "কপি", copied: "কপি হয়েছে", another: "আরেকটি লেখা যাচাই করুন", yours: "আপনার লেখা (লাল: যে শব্দগুলো মেলেনি)", diff: "ভিন্ন শব্দ: ", others: "অন্যান্য কাছাকাছি ফলাফল", steps: ["লেখা পড়া","কুরআনের সাথে মেলানো","উৎসে খোঁজা","ফলাফল তৈরি"], working: "যাচাই হচ্ছে…", ocrQ: "এটাই কি সঠিক লেখা?", ocrSub: "ছবি থেকে পড়া লেখা; ভুল থাকলে ঠিক করে নিন।", go: "নিশ্চিত করে এগিয়ে যান", edit: "লেখা সম্পাদনা", brand: "তুরাস খাইরুল কুরূন — যাচাই", more: "আরও জানতে", jami: "আল-জামি আল-কামিল", pg: "পৃষ্ঠা/নম্বর", dorar: "আদ-দুরারুস সানিয়্যা", jamiGr: "আল-জামি আল-কামিলে উল্লিখিত হুকুম", note: "হুকুম তা-ই যা আলেমগণ নিজেদের কিতাবে লিখেছেন; এখানে শুধু উদ্ধৃত করা হয়েছে।"};
-  LB.hi = {shTitle: "क्या शेयर करना है?", shQuote: "पाठ (उद्धरण)", shPct: "मेल का प्रतिशत", shTr: "हुक्म और मुहद्दिस का अनुवाद", shAr: "स्रोत का अरबी पाठ", shLink: "लिंक", shShort: "संक्षिप्त", shLong: "विस्तृत", shWa: "व्हाट्सऐप", shTg: "टेलीग्राम", shPrev: "पूर्वावलोकन", shClose: "बंद करें", shSrcs: "स्रोत (चुनें)", shSave: "तस्वीर सहेजें", shSaveHint: "या तस्वीर को दबाए रखकर सहेजें।", shImg: "तस्वीर बनाएँ", nomatch: "पूरा मेल नहीं मिला (मिलती-जुलती रिवायतें नीचे हैं)", ok: "स्वीकार्य (सहीह या हसन)", weak: "ज़ईफ़", bad: "बहुत ज़ईफ़ या बे-बुनियाद", mix: "उलमा में मतभेद है", unk: "हुक्म नहीं मिला", full: "पूरा पाठ मेल खाता है", most: "ज़्यादातर मेल खाता है; कुछ शब्द अलग", part: "पाठ का कुछ हिस्सा मेल खाता है", none: "हमारी किताबों और अद-दुरर में इस पाठ का मेल नहीं मिला। इससे यह साबित नहीं होता कि इसकी कोई बुनियाद नहीं।", match: "मेल", took: "समय", secs: "से", src: "स्रोत", book: "किताब", muh: "मुहद्दिस", rawi: "रावी", gr: "हुक्म", summ: "सारांश", open: "हदीस खोलें", share: "शेयर", copy: "कॉपी", copied: "कॉपी हो गया", another: "कोई और पाठ जाँचें", yours: "आपका पाठ (लाल: जो शब्द नहीं मिले)", diff: "अलग शब्द: ", others: "अन्य मिलते-जुलते नतीजे", steps: ["पाठ पढ़ना","क़ुरआन से मिलाना","स्रोतों में खोज","नतीजे तैयार करना"], working: "जाँच हो रही है…", ocrQ: "क्या यही सही पाठ है?", ocrSub: "तस्वीर से पढ़ा गया पाठ; ग़लती हो तो सुधार लें।", go: "पुष्टि करके आगे बढ़ें", edit: "पाठ बदलें", brand: "तुरास ख़ैरुल क़ुरून — जाँच", more: "और जानने के लिए", jami: "अल-जामिउल कामिल", pg: "पृष्ठ/नंबर", dorar: "अद-दुरर अस-सनिय्या", jamiGr: "अल-जामिउल कामिल में दर्ज हुक्म", note: "हुक्म वही है जो उलमा ने अपनी किताबों में लिखा; यहाँ सिर्फ़ नक़ल किया गया है।"};
-  LB.gu = {shTitle: "શું શેર કરવું છે?", shQuote: "લખાણ (અવતરણ)", shPct: "મેળની ટકાવારી", shTr: "હુકમ અને મુહદ્દિસનો અનુવાદ", shAr: "સ્રોતનું અરબી લખાણ", shLink: "લિંક", shShort: "ટૂંકું", shLong: "વિગતવાર", shWa: "વોટ્સએપ", shTg: "ટેલિગ્રામ", shPrev: "પૂર્વાવલોકન", shClose: "બંધ કરો", shSrcs: "સ્રોત (પસંદ કરો)", shSave: "ફોટો સાચવો", shSaveHint: "અથવા ફોટા પર દબાવી રાખીને સાચવો.", shImg: "ફોટો બનાવો", nomatch: "પૂરો મેળ મળ્યો નથી (મળતી રિવાયતો નીચે છે)", ok: "સ્વીકાર્ય (સહીહ કે હસન)", weak: "ઝઈફ", bad: "ખૂબ ઝઈફ કે પાયા વગરની", mix: "વિદ્વાનોમાં મતભેદ છે", unk: "હુકમ મળ્યો નથી", full: "આખું લખાણ મેળ ખાય છે", most: "મોટે ભાગે મેળ ખાય છે; કેટલાક શબ્દો જુદા", part: "લખાણનો થોડો ભાગ મેળ ખાય છે", none: "અમારા પુસ્તકો અને અદ-દુરરમાં આ લખાણનો મેળ મળ્યો નથી. આનાથી સાબિત થતું નથી કે તેનો કોઈ આધાર નથી.", match: "મેળ", took: "સમય", secs: "સે", src: "સ્રોત", book: "પુસ્તક", muh: "મુહદ્દિસ", rawi: "રાવી", gr: "હુકમ", summ: "સારાંશ", open: "હદીસ ખોલો", share: "શેર", copy: "કૉપિ", copied: "કૉપિ થઈ ગયું", another: "બીજું લખાણ ચકાસો", yours: "તમારું લખાણ (લાલ: જે શબ્દો ન મળ્યા)", diff: "જુદા શબ્દો: ", others: "અન્ય મળતાં પરિણામો", steps: ["લખાણ વાંચવું","કુરઆન સાથે મેળવવું","સ્રોતોમાં શોધ","પરિણામ તૈયાર કરવું"], working: "ચકાસણી ચાલી રહી છે…", ocrQ: "શું આ જ સાચું લખાણ છે?", ocrSub: "ફોટામાંથી વાંચેલું લખાણ; ભૂલ હોય તો સુધારી લો.", go: "ખાતરી કરીને આગળ વધો", edit: "લખાણ બદલો", brand: "તુરાસ ખૈરુલ કુરૂન — ચકાસણી", more: "વધુ જાણવા માટે", jami: "અલ-જામિઉલ કામિલ", pg: "પાનું/નંબર", dorar: "અદ-દુરર અસ-સનિય્યહ", jamiGr: "અલ-જામિઉલ કામિલમાં નોંધાયેલો હુકમ", note: "હુકમ તે જ છે જે વિદ્વાનોએ પોતાના પુસ્તકોમાં લખ્યો છે; અહીં ફક્ત ઉતાર્યો છે."};
-  LB.fr = {shTitle: "Que partager ?", shQuote: "Le texte (citation)", shPct: "Pourcentage de correspondance", shTr: "Statut et muhaddith traduits", shAr: "Texte arabe de la source", shLink: "Lien", shShort: "Court", shLong: "Détaillé", shWa: "WhatsApp", shTg: "Telegram", shPrev: "Aperçu", shClose: "Fermer", shSrcs: "Sources (à choisir)", shSave: "Enregistrer l’image", shSaveHint: "Ou appuyez longuement sur l’image pour l’enregistrer.", shImg: "Créer une image", nomatch: "Pas de correspondance complète (récits proches ci-dessous)", ok: "Accepté (sahih ou hasan)", weak: "Faible", bad: "Très faible ou sans fondement", mix: "Les savants divergent", unk: "Aucun statut trouvé", full: "Le texte entier correspond", most: "Correspond en grande partie ; quelques mots diffèrent", part: "Une partie du texte correspond", none: "Aucune correspondance pour ce texte dans nos livres ni dans Dorar. Cela ne prouve pas qu’il n’a aucun fondement.", match: "Correspondance", took: "Durée", secs: "s", src: "Sources", book: "Livre", muh: "Muhaddith", rawi: "Narrateur", gr: "Statut", summ: "Résumé", open: "Ouvrir le hadith", share: "Partager", copy: "Copier", copied: "Copié", another: "Vérifier un autre texte", yours: "Votre texte (en rouge : mots introuvables)", diff: "Mots différents : ", others: "Autres résultats proches", steps: ["Lecture du texte","Comparaison avec le Coran","Recherche dans les sources","Préparation des résultats"], working: "Vérification…", ocrQ: "Est-ce le bon texte ?", ocrSub: "Texte lu sur l’image ; corrigez-le en cas d’erreur.", go: "Confirmer et continuer", edit: "Modifier le texte", brand: "Turath Khair Al-Quroon — Vérification", more: "Pour en savoir plus", jami: "Al-Jami al-Kamil", pg: "Page/N°", dorar: "Dorar as-Saniyyah", jamiGr: "Statut indiqué dans al-Jami al-Kamil", note: "Le statut est celui que les savants ont écrit dans leurs livres ; il est seulement cité ici."};
+  LB.bn = {shTitle: "কী শেয়ার করবেন?", shQuote: "লেখা (উদ্ধৃতি)", shPct: "মিলের শতকরা হার", shTr: "হুকুম ও মুহাদ্দিসের অনুবাদ", shAr: "উৎসের আরবি পাঠ", shLink: "লিংক", shShort: "সংক্ষিপ্ত", shLong: "বিস্তারিত", shWa: "হোয়াটসঅ্যাপ", shTg: "টেলিগ্রাম", shPrev: "প্রিভিউ", shClose: "বন্ধ করুন", shSrcs: "উৎস (বেছে নিন)", shSave: "ছবি সংরক্ষণ করুন", shSaveHint: "অথবা ছবিতে চেপে ধরে রেখে সংরক্ষণ করুন।", shImg: "ছবি বানান", nomatch: "পূর্ণ মিল পাওয়া যায়নি (কাছাকাছি বর্ণনা নিচে)", ok: "গ্রহণযোগ্য (সহীহ বা হাসান)", weak: "দুর্বল", bad: "খুব দুর্বল বা ভিত্তিহীন", mix: "আলেমদের মতভেদ আছে", unk: "হুকুম পাওয়া যায়নি", full: "পুরো লেখা মিলেছে", most: "বেশির ভাগ মিলেছে; কিছু শব্দ আলাদা", part: "লেখার কিছু অংশ মিলেছে", none: "আমাদের কিতাব ও আদ-দুরারে এই লেখার মিল পাওয়া যায়নি। এতে প্রমাণ হয় না যে এর ভিত্তি নেই।", match: "মিল", took: "সময়", secs: "সে", src: "উৎস", book: "বই", muh: "মুহাদ্দিস", rawi: "বর্ণনাকারী", gr: "হুকুম", summ: "সারসংক্ষেপ", open: "হাদীসটি খুলুন", share: "শেয়ার", copy: "কপি", copied: "কপি হয়েছে", another: "আরেকটি লেখা যাচাই করুন", yours: "আপনার লেখা (লাল: যে শব্দগুলো মেলেনি)", diff: "ভিন্ন শব্দ: ", others: "অন্যান্য কাছাকাছি ফলাফল", steps: ["লেখা পড়া","কুরআনের সাথে মেলানো","উৎসে খোঁজা","ফলাফল তৈরি"], working: "যাচাই হচ্ছে…", ocrQ: "এটাই কি সঠিক লেখা?", ocrSub: "ছবি থেকে পড়া লেখা; ভুল থাকলে ঠিক করে নিন।", go: "নিশ্চিত করে এগিয়ে যান", edit: "লেখা সম্পাদনা", brand: "তুরাস খাইরুল কুরূন — যাচাই", more: "আরও জানতে", jami: "তালখীস আল-জামি আল-কামিল", pg: "পৃষ্ঠা/নম্বর", dorar: "আদ-দুরারুস সানিয়্যা", jamiGr: "তালখীস আল-জামি আল-কামিলে উল্লিখিত হুকুম", note: "হুকুম তা-ই যা আলেমগণ নিজেদের কিতাবে লিখেছেন; এখানে শুধু উদ্ধৃত করা হয়েছে।"};
+  LB.hi = {shTitle: "क्या शेयर करना है?", shQuote: "पाठ (उद्धरण)", shPct: "मेल का प्रतिशत", shTr: "हुक्म और मुहद्दिस का अनुवाद", shAr: "स्रोत का अरबी पाठ", shLink: "लिंक", shShort: "संक्षिप्त", shLong: "विस्तृत", shWa: "व्हाट्सऐप", shTg: "टेलीग्राम", shPrev: "पूर्वावलोकन", shClose: "बंद करें", shSrcs: "स्रोत (चुनें)", shSave: "तस्वीर सहेजें", shSaveHint: "या तस्वीर को दबाए रखकर सहेजें।", shImg: "तस्वीर बनाएँ", nomatch: "पूरा मेल नहीं मिला (मिलती-जुलती रिवायतें नीचे हैं)", ok: "स्वीकार्य (सहीह या हसन)", weak: "ज़ईफ़", bad: "बहुत ज़ईफ़ या बे-बुनियाद", mix: "उलमा में मतभेद है", unk: "हुक्म नहीं मिला", full: "पूरा पाठ मेल खाता है", most: "ज़्यादातर मेल खाता है; कुछ शब्द अलग", part: "पाठ का कुछ हिस्सा मेल खाता है", none: "हमारी किताबों और अद-दुरर में इस पाठ का मेल नहीं मिला। इससे यह साबित नहीं होता कि इसकी कोई बुनियाद नहीं।", match: "मेल", took: "समय", secs: "से", src: "स्रोत", book: "किताब", muh: "मुहद्दिस", rawi: "रावी", gr: "हुक्म", summ: "सारांश", open: "हदीस खोलें", share: "शेयर", copy: "कॉपी", copied: "कॉपी हो गया", another: "कोई और पाठ जाँचें", yours: "आपका पाठ (लाल: जो शब्द नहीं मिले)", diff: "अलग शब्द: ", others: "अन्य मिलते-जुलते नतीजे", steps: ["पाठ पढ़ना","क़ुरआन से मिलाना","स्रोतों में खोज","नतीजे तैयार करना"], working: "जाँच हो रही है…", ocrQ: "क्या यही सही पाठ है?", ocrSub: "तस्वीर से पढ़ा गया पाठ; ग़लती हो तो सुधार लें।", go: "पुष्टि करके आगे बढ़ें", edit: "पाठ बदलें", brand: "तुरास ख़ैरुल क़ुरून — जाँच", more: "और जानने के लिए", jami: "तल्ख़ीस अल-जामिउल कामिल", pg: "पृष्ठ/नंबर", dorar: "अद-दुरर अस-सनिय्या", jamiGr: "तल्ख़ीस अल-जामिउल कामिल में दर्ज हुक्म", note: "हुक्म वही है जो उलमा ने अपनी किताबों में लिखा; यहाँ सिर्फ़ नक़ल किया गया है।"};
+  LB.gu = {shTitle: "શું શેર કરવું છે?", shQuote: "લખાણ (અવતરણ)", shPct: "મેળની ટકાવારી", shTr: "હુકમ અને મુહદ્દિસનો અનુવાદ", shAr: "સ્રોતનું અરબી લખાણ", shLink: "લિંક", shShort: "ટૂંકું", shLong: "વિગતવાર", shWa: "વોટ્સએપ", shTg: "ટેલિગ્રામ", shPrev: "પૂર્વાવલોકન", shClose: "બંધ કરો", shSrcs: "સ્રોત (પસંદ કરો)", shSave: "ફોટો સાચવો", shSaveHint: "અથવા ફોટા પર દબાવી રાખીને સાચવો.", shImg: "ફોટો બનાવો", nomatch: "પૂરો મેળ મળ્યો નથી (મળતી રિવાયતો નીચે છે)", ok: "સ્વીકાર્ય (સહીહ કે હસન)", weak: "ઝઈફ", bad: "ખૂબ ઝઈફ કે પાયા વગરની", mix: "વિદ્વાનોમાં મતભેદ છે", unk: "હુકમ મળ્યો નથી", full: "આખું લખાણ મેળ ખાય છે", most: "મોટે ભાગે મેળ ખાય છે; કેટલાક શબ્દો જુદા", part: "લખાણનો થોડો ભાગ મેળ ખાય છે", none: "અમારા પુસ્તકો અને અદ-દુરરમાં આ લખાણનો મેળ મળ્યો નથી. આનાથી સાબિત થતું નથી કે તેનો કોઈ આધાર નથી.", match: "મેળ", took: "સમય", secs: "સે", src: "સ્રોત", book: "પુસ્તક", muh: "મુહદ્દિસ", rawi: "રાવી", gr: "હુકમ", summ: "સારાંશ", open: "હદીસ ખોલો", share: "શેર", copy: "કૉપિ", copied: "કૉપિ થઈ ગયું", another: "બીજું લખાણ ચકાસો", yours: "તમારું લખાણ (લાલ: જે શબ્દો ન મળ્યા)", diff: "જુદા શબ્દો: ", others: "અન્ય મળતાં પરિણામો", steps: ["લખાણ વાંચવું","કુરઆન સાથે મેળવવું","સ્રોતોમાં શોધ","પરિણામ તૈયાર કરવું"], working: "ચકાસણી ચાલી રહી છે…", ocrQ: "શું આ જ સાચું લખાણ છે?", ocrSub: "ફોટામાંથી વાંચેલું લખાણ; ભૂલ હોય તો સુધારી લો.", go: "ખાતરી કરીને આગળ વધો", edit: "લખાણ બદલો", brand: "તુરાસ ખૈરુલ કુરૂન — ચકાસણી", more: "વધુ જાણવા માટે", jami: "તલ્ખીસ અલ-જામિઉલ કામિલ", pg: "પાનું/નંબર", dorar: "અદ-દુરર અસ-સનિય્યહ", jamiGr: "તલ્ખીસ અલ-જામિઉલ કામિલમાં નોંધાયેલો હુકમ", note: "હુકમ તે જ છે જે વિદ્વાનોએ પોતાના પુસ્તકોમાં લખ્યો છે; અહીં ફક્ત ઉતાર્યો છે."};
+  LB.fr = {shTitle: "Que partager ?", shQuote: "Le texte (citation)", shPct: "Pourcentage de correspondance", shTr: "Statut et muhaddith traduits", shAr: "Texte arabe de la source", shLink: "Lien", shShort: "Court", shLong: "Détaillé", shWa: "WhatsApp", shTg: "Telegram", shPrev: "Aperçu", shClose: "Fermer", shSrcs: "Sources (à choisir)", shSave: "Enregistrer l’image", shSaveHint: "Ou appuyez longuement sur l’image pour l’enregistrer.", shImg: "Créer une image", nomatch: "Pas de correspondance complète (récits proches ci-dessous)", ok: "Accepté (sahih ou hasan)", weak: "Faible", bad: "Très faible ou sans fondement", mix: "Les savants divergent", unk: "Aucun statut trouvé", full: "Le texte entier correspond", most: "Correspond en grande partie ; quelques mots diffèrent", part: "Une partie du texte correspond", none: "Aucune correspondance pour ce texte dans nos livres ni dans Dorar. Cela ne prouve pas qu’il n’a aucun fondement.", match: "Correspondance", took: "Durée", secs: "s", src: "Sources", book: "Livre", muh: "Muhaddith", rawi: "Narrateur", gr: "Statut", summ: "Résumé", open: "Ouvrir le hadith", share: "Partager", copy: "Copier", copied: "Copié", another: "Vérifier un autre texte", yours: "Votre texte (en rouge : mots introuvables)", diff: "Mots différents : ", others: "Autres résultats proches", steps: ["Lecture du texte","Comparaison avec le Coran","Recherche dans les sources","Préparation des résultats"], working: "Vérification…", ocrQ: "Est-ce le bon texte ?", ocrSub: "Texte lu sur l’image ; corrigez-le en cas d’erreur.", go: "Confirmer et continuer", edit: "Modifier le texte", brand: "Turath Khair Al-Quroon — Vérification", more: "Pour en savoir plus", jami: "Talkhis Al-Jami al-Kamil", pg: "Page/N°", dorar: "Dorar as-Saniyyah", jamiGr: "Statut indiqué dans Talkhis al-Jami al-Kamil", note: "Le statut est celui que les savants ont écrit dans leurs livres ; il est seulement cité ici."};
   const N = k => (LB[ui] || LB.en)[k];
   /* ---- rulings: category + translation of the common words (for readers who do not know Arabic) ---- */
   function gcat(g) {
@@ -8696,7 +8702,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const renderList = () => { listBox.replaceChildren(...Object.keys(fx).map(k => el('div', {class: 'card', style: 'padding:.4rem;margin:.25rem 0'}, el('b', {dir: 'ltr'}, k.replace(/\|/g, ' · ')), el('div', {dir: 'auto'}, fx[k].slice(0, 120) + (fx[k].length > 120 ? '…' : '')),
       btn('اصلاح ہٹائیں (اصل متن واپس)', async () => { const old = fx[k]; delete fx[k]; if (await save('fixes', fx)) { renderList(); say('اصلاح ہٹا دی گئی؛ صفحہ دوبارہ کھولنے پر اصل متن آئے گا۔'); } else fx[k] = old; }, 'danger'))));
       if (!Object.keys(fx).length) listBox.append(el('p', {class: 'note'}, 'ابھی کوئی اصلاح نہیں۔')); };
-    wrap.append(el('p', {class: 'note'}, 'کتاب، زبان اور حدیث نمبر چنیں، «متن کھولیں» دبائیں، متن درست کریں اور محفوظ کریں۔ (الجامع الکامل کے متن کی اصلاح فی الحال شامل نہیں۔)'), lab('کتاب'), bs, lab('زبان'), ls, lab('نمبر'), num,
+    wrap.append(el('p', {class: 'note'}, 'کتاب، زبان اور حدیث نمبر چنیں، «متن کھولیں» دبائیں، متن درست کریں اور محفوظ کریں۔ (تلخیص الجامع الکامل کے متن کی اصلاح فی الحال شامل نہیں۔)'), lab('کتاب'), bs, lab('زبان'), ls, lab('نمبر'), num,
       el('div', {style: 'margin:.4rem 0'}, btn('متن کھولیں', async () => {
         const n = +num.value; if (!n) { say('نمبر لکھیں۔', true); return; }
         const t = await COLL.admin.text(bs.value, ls.value, n);
