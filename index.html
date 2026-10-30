@@ -916,7 +916,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=fb20834c2a", "data/d2.js?h=bc89aca078", "data/d3.js?h=7af44f3a47", "data/d4.js?h=dccda11f38", "data/d5.js?h=5e6a42fecf", "data/d6.js?h=27f98efc13", "data/d7.js?h=f950090cb9", "data/d8.js?h=60d4aacb64", "data/d9.js?h=ee90684a55", "data/d10.js?h=d9b0979cac"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=8b2791d878", "data/d2.js?h=9cbd9defef", "data/d3.js?h=1a762d0fe3", "data/d4.js?h=c9d1b199de", "data/d5.js?h=d3f0a6edbe", "data/d6.js?h=2fd7fdc1fe", "data/d7.js?h=55d18b3d9d", "data/d8.js?h=11fb8736d0", "data/d9.js?h=4dba1398fb", "data/d10.js?h=c6b9044e7b"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1624,7 +1624,12 @@ function refMk(key,n,red){const nm=+n;return el('a',{class:'rlink'+(red?' red':'
 function refRich(t){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
   const out=[];let last=0;RRE.lastIndex=0;let m;
   while((m=RRE.exec(t))){const key=RKEY[NK(m[1])];if(!key||!window.COLL)continue;const bn=m[1];
-    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner))continue;
+    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm&&((window.TURATH_DATA||{}).mkrow||{})[hm[1]+'/'+hm[2]];if(!row)continue;
+      if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));out.push(m[1]+m[2]+'(');const cl0=pr[0]&&pr[0].cl;
+      out.push(el('a',{class:'rlink'+(cl0?' '+cl0:''),href:'#',title:T('cmpRefs'),on:{click:async e=>{e.preventDefault();const p=e.target.closest('p')||e.target.parentNode;
+        let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+inner)){box=el('div',{class:'refbox rinl','data-k':key+inner});p.after(box);
+          box.append(el('b',{},(COLL.name(key)||bn)+' ('+inner.trim()+')'));if(!await COLL.refBox(key,+hm[2],box,row))box.append(el('p',{class:'note'},T('nobook')));}else box.remove();}}},m[4].replace(MKS_,'')));
+      out.push(')');last=m.index+m[0].length;continue;}
     const nums=inner.split(/[،,و]/).map(x=>(x.match(/^\s*(\d+)/)||[])[1]).filter(Boolean);if(!nums.length)continue;
     if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));
     out.push(m[1]+m[2]+'(');
