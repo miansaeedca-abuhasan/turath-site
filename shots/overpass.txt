@@ -1,0 +1,6 @@
+https://maps.mail.ru/osm/tools/overpass/api/interpreter 200 44.111896 elements~128
+https://overpass-api.de/api/interpreter 502 0.590831 elements~0
+https://overpass.private.coffee/api/interpreter 000 70.000420 elements~0
+https://overpass.kumi.systems/api/interpreter 000 70.002693 elements~0
+nominatim 200 0.517943 results~1
+photon 200 0.764637 results~50
