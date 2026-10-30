@@ -830,9 +830,20 @@ function ENGINE(){
   const VIRT = (D.langs || []).map(l => ({key: 'jami_' + l, name: (LANGN[l] || [l])[0], name_en: (LANGN[l] || [l, l])[1], kind: 'lang', lang: l}));
   const inLang = (h, tl) => !tl ? h : Object.assign({}, h, {part_en: h['part_' + tl] || h.part_en, group_en: h['group_' + tl] || h.group_en,
     chapter_en: h['chapter_' + tl] || h.chapter_en, takhrij_en: h['takhrij_' + tl] || '', tl});
+  // the full al-Jami al-Kamil (Arabic only, its own kitabs and babs, empty babs too) over the same hadith text; structure in jstruct.js
+  const FULLB = {key: 'jamik', name: 'الجامع الكامل في الحديث الصحيح الشامل', name_en: 'Al-Jame Al-Kamil (full, Arabic)', kind: 'full'};
+  let JS_P = null;
+  const needStruct = () => JS_P || (JS_P = new Promise((ok, no) => { if (window.JSTRUCT) return ok(); window.TURATH_JSTRUCT = x => { window.JSTRUCT = x; ok(); };
+    const s = document.createElement('script'); s.src = 'jstruct.js?h=' + ((window.TURATH_DATA && TURATH_DATA.jsh) || ''); s.onerror = no; document.head.append(s); }));
   const realApi = async function (u, tl) {
     const [path, qs] = u.split('?'), q = Object.fromEntries(new URLSearchParams(qs || ''));
-    if (path === 'books') return {books: D.books.slice(0, 1).concat(VIRT, D.books.slice(1))};
+    const FULLK = q.book === 'jamik'; if (FULLK) q.book = 'jami';
+    if (path === 'books') return {books: D.books.slice(0, 1).concat([FULLB], VIRT, D.books.slice(1))};
+    if (path === 'toc' && FULLK) {
+      await needStruct();
+      return {kitabs: window.JSTRUCT.map(k => { const ch = k[2].map(c => ({no: c[0], en: c[1], ar: c[1], group_no: 0, group_en: c[3] || '', group_ar: c[3] || '', nums: c[2].filter(n => byNum.has(n))}));
+        return {no: k[0], en: k[1], ar: k[1], count: ch.reduce((s, c) => s + c.nums.length, 0), chapters: ch}; })};
+    }
     if (path === 'toc') {
       const kit = new Map();
       D.hadith.filter(h => !h.demo && hasJami(h)).map(h => inLang(h, tl)).forEach(h => {
@@ -904,7 +915,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44e3ee947f", "data/d2.js?h=588ee29a92", "data/d3.js?h=1bc074762e", "data/d4.js?h=40d520bb5e", "data/d5.js?h=2b90bc6612", "data/d6.js?h=8fae95c921", "data/d7.js?h=8515a9c49c", "data/d8.js?h=ca6ca9e275", "data/d9.js?h=023a45224b", "data/d10.js?h=0733b0c371"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=131f145892", "data/d2.js?h=588ee29a92", "data/d3.js?h=1bc074762e", "data/d4.js?h=40d520bb5e", "data/d5.js?h=2b90bc6612", "data/d6.js?h=8fae95c921", "data/d7.js?h=8515a9c49c", "data/d8.js?h=ca6ca9e275", "data/d9.js?h=023a45224b", "data/d10.js?h=0733b0c371"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1148,7 +1159,7 @@ function hadithCard(d,scope){
   d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(el('span',{class:'sanad'},d.sanad+' '));pe.append(...rich(p,'ar'));mt.append(pe);});
   {const tb=fullTabs(d,mt,fb);if(tb)c.append(tb);}
   c.append(mt,fb);
-  const tr=trOf(d);
+  const tr=book==='jamik'?null:trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
   c.append(actions(d,scope,true));return c;
 }
@@ -1175,8 +1186,8 @@ function row(r){
   if((r.fields||[]).length){const m=el('span',{class:'cs'});r.fields.forEach(f=>m.append(el('span',{class:'tag'},T('field')[f]||f)));a.append(m);}
   return a;
 }
-async function loadToc(){TOC=TOC||{};const k=TL()?book:'jami';if(!TOC[k])TOC[k]=(await api('toc?book='+k)).kitabs;return TOC[k];}
-const rng=nums=>{const a=Math.min(...nums),b=Math.max(...nums);return T('range')(a,b);};
+async function loadToc(){TOC=TOC||{};const k=(TL()||book==='jamik')?book:'jami';if(!TOC[k])TOC[k]=(await api('toc?book='+k)).kitabs;return TOC[k];}
+const rng=nums=>{if(!nums.length)return '';const a=Math.min(...nums),b=Math.max(...nums);return T('range')(a,b);};
 const kitNums=k=>k.chapters.flatMap(c=>c.nums);
 /* ---------- Hadith home, laid out like the Quran home: tiles, filter, book rows, resume ---------- */
 const H_UR={hFind:'حدیث نمبر',hSearch:'تلاش',hBooks:'کتب و تراجم',hKitabs:'کتابیں',hRead:'ریڈنگ موڈ',hListen:'سنیں',hTuhfa:'شرح تحفۃ المتقین',hFilter:'کتاب کا نام یا نمبر، یا حدیث نمبر لکھیں',hResume:'جہاں چھوڑا تھا وہاں سے پڑھیں',hNum:'حدیث نمبر',hGo:'کھولیں',hClose:'بند کریں',hReadOn:'ریڈنگ موڈ چل گیا',hReadOff:'کارڈ موڈ چل گیا',hPick:'کتاب یا ترجمہ چنیں',hOpenRead:'ریڈنگ موڈ میں پڑھیں'};
@@ -1215,7 +1226,7 @@ function hResume(){
 function hSaveLast(){try{localStorage.hlast=JSON.stringify({h:location.hash,b:book})}catch(e){}}
 async function showKitabs(){
   const ks=await loadToc(),box=$('#list');box.replaceChildren();
-  {const bo=BOOKS.find(x=>x.key===book);bar(curBookName(),T('count')(ks.reduce((s,k)=>s+k.count,0)+((book==='jami'||(bo&&bo.kind==='lang'))?6:0)),false);}
+  {const bo=BOOKS.find(x=>x.key===book);bar(curBookName(),T('count')(ks.reduce((s,k)=>s+k.count,0)+((book==='jami'||book==='jamik'||(bo&&bo.kind==='lang'))?6:0)),false);}
   const f=el('input',{type:'search',class:'filter',placeholder:T('hFilter'),'aria-label':T('hFilter'),id:'kfilter'});
   const list=el('div');
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[\u064b-\u0652]/g,''),n=toNum(f.value);
@@ -1228,22 +1239,22 @@ async function showKitabs(){
         el('button',{class:'ab',type:'button',title:T('hOpenRead'),'aria-label':T('hOpenRead'),on:{click:e=>{e.preventDefault();HM.mode='read';hsave();location.hash='#/c/'+k.no+'/0';}}},icon('read')));
       return a;}));
     // after the last kitab: the index of hadith fragments (فهرس أطراف الجامع الكامل) — its text and numbers open the hadith
-    if((book==='jami'||(BOOKS.find(x=>x.key===book)||{}).kind==='lang')&&(!q||'فهرس الاطراف اطراف atraf index fragments'.includes(q))){
+    if(book==='jamik'&&(!q||'فهرس الاطراف اطراف atraf index fragments'.includes(q))){
       list.append(el('a',{class:'card srow2',href:'#/s/atraf'},el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'فهرس أطراف الجامع الكامل'))));}
   };
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jami'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
 Object.assign(I.ur,{hbTabBooks:'کتب',hbNBooks:n=>n+' کتب',hbCats:'موضوعات',hbRbMore:'مزید ١٣٢٨ کتب',hbAuthors:'مؤلفین',hbFilter:'کتابوں کی فہرست: نمبر یا نام لکھیں',hbCount:n=>'احادیث: '+n,hbBooks:'کتبِ حدیث',hbResume:'اس کتاب میں جہاں چھوڑا تھا',hbArabic:'عربی کتبِ حدیث (صرف عربی متن)',hbExt:'الگ لنک میں کھلتی ہے ↗'});
 Object.assign(I.en,{hbTabBooks:'Books',hbNBooks:n=>n+' books',hbCats:'Topics',hbRbMore:'1,328 more books',hbAuthors:'Authors',hbFilter:'Filter Book List by Number or Name',hbCount:n=>'Ahadith: '+n,hbBooks:'Hadith Books',hbResume:'Resume this book',hbArabic:'Arabic hadith books (Arabic text only)',hbExt:'opens in its own link ↗'});
-const HB_AR=window.HB_AR_={jami:'تلخيص الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
+const HB_AR=window.HB_AR_={jami:'تلخيص الجامع الكامل في الحديث الصحيح الشامل',jamik:'الجامع الكامل في الحديث الصحيح الشامل',tuhfa:'تحفة المتقين'};
 let HBC=null;const hbF=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'').replace(/[أإآٱ]/g,'ا').replace(/ة/g,'ه').replace(/[()\s]/g,'');const hbN=t=>String(t).replace(/ک/g,'ك').replace(/[یى]/g,'ي').replace(/[\u064b-\u0652]/g,'');
 async function hbCounts(){if(HBC)return HBC;HBC={};
   for(const b of BOOKS){if(b.kind==='external'||b.kind==='lang')continue;try{HBC[b.key]=(await api('list?limit=1&book='+encodeURIComponent(b.key))).total;}catch(e){}}
-  if(HBC.jami)HBC.jami+=6; // the printed book: 16546 numbered hadith and 6 with a sub-number (10345-1 ...)
+  if(HBC.jami)HBC.jami+=6;if(HBC.jamik)HBC.jamik+=6; // the printed book: 16546 numbered hadith and 6 with a sub-number (10345-1 ...)
   BOOKS.filter(b=>b.kind==='lang').forEach(b=>HBC[b.key]=HBC.jami);return HBC;}
 function hbOpen(key,h){book=key;try{localStorage.book=key}catch(e){}$('#book').value=key;$('#q').value='';location.hash=h||'#/b';}
 function hbLast(key){try{return localStorage['bl:'+key]||null}catch(e){return null}}
@@ -1362,6 +1373,7 @@ async function showChapter(no,idx,page){
   xt.append(tb(HM.mode==='read'?'list':'read',HM.mode==='read'?T('cardMode'):T('readMode'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();showChapter(no,idx);}),tb('tune',T('settings'),()=>hSettings(()=>showChapter(no,idx))));
   box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},EN()?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(ad(c.no)+' — '+c.ar)),
     EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
+  if(!c.nums.length){box.append(el('p',{class:'note',lang:ui},({ur:'اس باب میں احادیث درج نہیں ہیں۔',ar:'لا توجد أحاديث في هذا الباب.',bn:'এই অধ্যায়ে কোনো হাদীস নেই।',hi:'इस अध्याय में कोई हदीस नहीं है।',gu:'આ પ્રકરણમાં કોઈ હદીસ નથી.',fr:'Ce chapitre ne contient aucun hadith.'})[ui]||'This chapter has no hadith.'));return;}
   box.append(el('p',{},el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
     const items=[...box.querySelectorAll('article.card,section.hr-item')];
@@ -1420,7 +1432,7 @@ let timer;
 async function showHome(){
   drawModes();$('#q').placeholder=T('phIn')(curBookName());
   const q=$('#q').value.trim(),box=$('#list');
-  if(!q&&(book==='jami'||TL()))return showKitabs();
+  if(!q&&(book==='jami'||book==='jamik'||TL()))return showKitabs();
   box.replaceChildren();bar(curBookName(),'',false);if(!q)box.append(hTiles());
   const bk=encodeURIComponent(book);
   const d=await api(q?'search?q='+encodeURIComponent(q)+'&book='+bk+'&mode='+HMODE():'list?limit=40&book='+bk);
@@ -1689,13 +1701,13 @@ async function showHadith(num){
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
-  if((d.dr||d.full)&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);try{const sc=sanadChips([d.takhrij]);if(sc)v.append(sc);}catch(e){}if(/\ue000\(/.test(d.takhrij)||lafzRefs(d.takhrij).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(d.takhrij))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(d.takhrij))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(d.takhrij))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr)v.append(drBlock(d));}
+  if((d.dr||d.full)&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);try{const sc=sanadChips([d.takhrij]);if(sc)v.append(sc);}catch(e){}if(/\ue000\(/.test(d.takhrij)||lafzRefs(d.takhrij).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(d.takhrij))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(d.takhrij))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(d.takhrij))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr&&book==='jamik')v.append(drBlock(d));}
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
   else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);try{const sc=sanadChips([d.takhrij]);if(sc)v.append(sc);}catch(e){}}
   v.append(...refBlock(d));
   if(window.COLL_SH){const shh=el('div',{class:'shhold'});v.append(shh);COLL_SH.forRefs(d.refs).then(bx=>{if(bx)shh.append(bx);});}
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
-  const kinds=KIND_ORDER.filter(k=>d.content[k]);
+  const kinds=book==='jamik'?[]:KIND_ORDER.filter(k=>d.content[k]);
   if(kinds.length){
     const pref=(TL()?[TL()]:[]).concat((ui==='bn'||ui==='hi'||ui==='gu'||ui==='fr')?[ui,'en','ar','ur']:ui==='ar'?['ar','ur','en']:LTR()?['en','ar','ur']:['ur','en','ar']);
     let lang=pref.find(l=>kinds.some(k=>d.content[k][l])),kind=null;
@@ -2903,7 +2915,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(T('brand'), '', false);
     const v = qv(); v.replaceChildren();
     const g = el('div', {class: 'tiles'});
-    g.append(tile('hadith', T('jami'), null, () => goBook('jami')), tile('hadith', T('tuhfa'), null, () => goBook('tuhfa')),
+    g.append(tile('hadith', T('jami'), null, () => goBook('jami')), tile('hadith', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('hadith', T('tuhfa'), null, () => goBook('tuhfa')),
       tile('read', T('quran'), '#/q'), tile('listen', T('audio'), '#/q/audio'),
       tile('bms', T('bmHadith'), '#/bm'), tile('bm0', T('bmQuran'), '#/q/bm'),
       tile('hadith', T('hbBooks'), '#/hb'),
@@ -4957,6 +4969,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261029j', d: '29-10-2026', keys: [],
+      t: {ur: 'نئی: مکمل الجامع الکامل اور حفظ کا امتحان', en: 'New: the full Al-Jami al-Kamil and the Hifz exam', ar: 'جديد: الجامع الكامل كاملًا واختبار الحفظ'},
+      i: {ur: ['مکمل الجامع الکامل الگ کتاب کے طور پر شامل ہو گئی ہے: صرف عربی، تخریج اور مفصل دراسۃ الحدیث کے ساتھ، اپنے تمام ابواب (بغیر احادیث والے ابواب سمیت)، شروع میں مقدمہ اور آخر میں فہرس الاطراف۔ ترجمے والی کتابیں تلخیص الجامع الکامل سے جڑی رہیں گی۔', 'حفظ میں نیا زمرہ «حفظ کا امتحان»: پارہ یا آیات کی حد چنیں، تین لفظ سن کر آگے پڑھیں، مائیک سے سنا جائے گا، اور آخر میں نتیجہ اور غلطیاں دکھائی جائیں گی۔'],
+        en: ['The full Al-Jami al-Kamil is now a separate book: Arabic only, with its takhrij and the detailed study of each hadith, all its chapters (including those without hadith), the introduction first and the index of fragments last. The translated books stay linked to Talkhis al-Jami al-Kamil.', 'New in Hifz: the Hifz exam. Choose a juz or a range of ayahs, listen to three words, continue reciting with the microphone on, and see your result and mistakes at the end.']}},
     {id: '20261029i', d: '29-10-2026', keys: ['fitan'],
       t: {ur: 'نئی کتاب: فتنوں اور قرب قیامت کے حالات و واقعات', en: 'New book: Trials and the Signs of the Hour', ar: 'كتاب جديد: الفتن وأشراط الساعة'},
       i: {ur: ['صحیح احادیث کی روشنی میں فتنوں اور قیامت کی نشانیوں کی 424 احادیث، اردو ترجمہ، شرح اور فوائد کے ساتھ۔ عربی متن اور تخریج تلخیص الجامع الکامل سے ہے، اس لیے ہر حدیث کا لنک بھی وہیں کھلتا ہے۔', 'سیرت اور فضائلِ صحابہ کی کتابوں میں عربی آیات اب اردو یا انگریزی عبارت سے الگ سطر میں آتی ہیں۔ تلخیص الجامع الکامل کا نام تمام زبانوں میں درست کر دیا گیا ہے۔'],
@@ -7718,7 +7734,7 @@ Object.assign(I.fr, {
 <script>
 // حفظ: one place for memorising the Quran — repeat (the reader's own dialog), «سبق سناؤ» (the child recites into the microphone, the words are
 // compared with the Quran and the mistakes are shown at the end), «یاد سے پڑھو» (ayahs with hidden words) and a daily revision schedule.
-// Voice: the browser's own speech recognition (webkitSpeechRecognition); nothing is sent to or stored by this site. Routes: #/hifz, #/hifz/say, #/hifz/recall, #/hifz/plan
+// Voice: the browser's own speech recognition (webkitSpeechRecognition); nothing is sent to or stored by this site. Routes: #/hifz, #/hifz/say, #/hifz/recall, #/hifz/exam, #/hifz/plan
 (function () {
   const E = (t, a, ...k) => el(t, a, ...k.flat().filter(x => x != null && x !== false));
   const RTL = () => ui === 'ur' || ui === 'ar';
@@ -7969,12 +7985,12 @@ Object.assign(I.fr, {
     const p = plan(), t = today(), due = p.filter(x => x.due <= t), sk = streak();
     const hero = E('div', {class: 'hzhero'}, E('div', {class: 'hzh1'}, L().hero), E('p', {}, L().heroSub),
       E('div', {class: 'hzpills'}, E('span', {class: 'hzpill'}, '✦ ' + (sk ? L().streak(UD(sk)) : L().streak0)), E('span', {class: 'hzpill'}, due.length ? L().todayN(UD(due.length)) : L().today + ' ✓')));
-    const HC = {rep: '#c0762c', say: '#c0392b', recall: '#6a4fb3', plan: '#2b7bb9', hadith: '#17786e'};
+    const HC = {rep: '#c0762c', say: '#c0392b', recall: '#6a4fb3', exam: '#d35400', plan: '#2b7bb9', hadith: '#17786e'};
     const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', style: '--hc:' + (HC[k] || '#17786e'), href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), E('small', {}, c[1]))); };
     const la = lastRange();
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
-      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
+      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('timer', 'exam', '#/hifz/exam'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
   }
   const rangeName = x => Qn().sName(x.s) + ' ' + UD(x.f) + (x.t !== x.f ? '–' + UD(x.t) : '');
   function lessonRow(x, compact) {
@@ -8115,6 +8131,174 @@ Object.assign(I.fr, {
     page(fc.node, stage);
     showSession();
   }
+  /* ---------- exam («حفظ کا امتحان»): three words are read aloud, the child goes on reciting (microphone on), after a few ayahs the next place ---------- */
+  Object.assign(S.ur, {examCard: ['حفظ کا امتحان', 'سبق چنیں، تین لفظ سن کر آگے پڑھیں، آخر میں نتیجہ اور غلطیاں دیکھیں'],
+    exScope: 'امتحان کس حصے سے', exPara: 'پارہ', exRange: 'سورت اور آیات', exParaNo: 'پارہ نمبر', exQN: 'کتنے سوال', exAyN: 'ہر سوال میں آیات', exStart: 'امتحان شروع کریں',
+    exQ: (i, n) => 'سوال ' + i + ' از ' + n, exListen: 'تین لفظ غور سے سنیں', exSpeak: 'اب آگے پڑھیں، مائیک چل رہا ہے', exReplay: 'تین لفظ دوبارہ سنیں', exDone: 'پڑھ لیا', exNext: 'اگلا سوال', exSee: 'نتیجہ دیکھیں',
+    exPass: 'کامیاب', exFail: 'مزید محنت کریں', exCueWas: 'یہ لفظ سنائے گئے تھے', exRes: 'امتحان کا نتیجہ', exPassed: (a, b) => b + ' میں سے ' + a + ' سوال کامیاب', exWordsOk: (a, b) => b + ' میں سے ' + a + ' الفاظ درست',
+    exMist: 'غلطیاں', exNoMist: 'ماشاء اللہ، کوئی غلطی نہیں ملی', exMissed: 'رہ گئے', exWrongL: 'غلط پڑھے گئے', exSaidL: 'سنا گیا', exEach: 'ہر سوال کا جائزہ', exAgain: 'نیا امتحان', exChange: 'سبق بدلیں',
+    exCueFail: 'تین لفظ کی آواز نہیں چل سکی، اس لیے وہ لکھ کر دکھائے گئے ہیں۔', exSilent: 'کچھ سنائی نہیں دیا', exNoAyah: 'اس حصے میں آیات نہیں ملیں۔', exLimit: 'پارہ نمبر 1 سے 30 کے درمیان لکھیں۔', exMicOn: 'مائیک بند کریں', exMicOff: 'مائیک چلائیں'});
+  Object.assign(S.en, {examCard: ['Hifz exam', 'Pick a lesson, hear three words, go on reciting, then see your result and mistakes'],
+    exScope: 'Examine me on', exPara: 'Juz', exRange: 'Surah and ayahs', exParaNo: 'Juz number', exQN: 'Number of questions', exAyN: 'Ayahs per question', exStart: 'Start the exam',
+    exQ: (i, n) => 'Question ' + i + ' of ' + n, exListen: 'Listen to the three words', exSpeak: 'Now go on reciting, the microphone is on', exReplay: 'Hear the three words again', exDone: 'I have recited', exNext: 'Next question', exSee: 'See the result',
+    exPass: 'Passed', exFail: 'Needs more practice', exCueWas: 'These words were read to you', exRes: 'Exam result', exPassed: (a, b) => a + ' of ' + b + ' questions passed', exWordsOk: (a, b) => a + ' of ' + b + ' words correct',
+    exMist: 'Mistakes', exNoMist: 'Masha Allah, no mistakes found', exMissed: 'Missed', exWrongL: 'Read wrongly', exSaidL: 'heard', exEach: 'Each question', exAgain: 'New exam', exChange: 'Change lesson',
+    exCueFail: 'The three words could not be played, so they are shown in writing.', exSilent: 'Nothing was heard', exNoAyah: 'No ayahs found in this part.', exLimit: 'Enter a juz number from 1 to 30.', exMicOn: 'Stop the microphone', exMicOff: 'Start the microphone'});
+  Object.assign(S.ar, {examCard: ['امتحان الحفظ', 'اختر درسًا، واستمع إلى ثلاث كلمات، ثم أكمل القراءة، وانظر النتيجة والأخطاء'],
+    exScope: 'الامتحان في', exPara: 'الجزء', exRange: 'السورة والآيات', exParaNo: 'رقم الجزء', exQN: 'عدد الأسئلة', exAyN: 'عدد الآيات في كل سؤال', exStart: 'ابدأ الامتحان',
+    exQ: (i, n) => 'السؤال ' + UD(i) + ' من ' + UD(n), exListen: 'استمع إلى الكلمات الثلاث', exSpeak: 'أكمل القراءة الآن، المايكروفون يعمل', exReplay: 'أعد سماع الكلمات الثلاث', exDone: 'أتممت القراءة', exNext: 'السؤال التالي', exSee: 'اعرض النتيجة',
+    exPass: 'ناجح', exFail: 'يحتاج إلى مزيد من التدريب', exCueWas: 'هذه الكلمات التي سُمعت', exRes: 'نتيجة الامتحان', exPassed: (a, b) => 'نجحت في ' + UD(a) + ' من ' + UD(b) + ' أسئلة', exWordsOk: (a, b) => UD(a) + ' كلمة صحيحة من ' + UD(b),
+    exMist: 'الأخطاء', exNoMist: 'ما شاء الله، لا أخطاء', exMissed: 'متروكة', exWrongL: 'قُرئت خطأً', exSaidL: 'المسموع', exEach: 'كل سؤال', exAgain: 'امتحان جديد', exChange: 'غيّر الدرس',
+    exCueFail: 'تعذّر تشغيل الكلمات الثلاث فعُرضت كتابةً.', exSilent: 'لم يُسمع شيء', exNoAyah: 'لا آيات في هذا الجزء.', exLimit: 'اكتب رقم جزء من 1 إلى 30.', exMicOn: 'أوقف المايكروفون', exMicOff: 'شغّل المايكروفون'});
+  ['ur', 'en', 'ar'].forEach(l => { S[l].cards.exam = S[l].examCard; });
+  const JUZ0 = [[1, 1], [2, 142], [2, 253], [3, 93], [4, 24], [4, 148], [5, 82], [6, 111], [7, 88], [8, 41], [9, 93], [11, 6], [12, 53], [15, 1], [17, 1], [18, 75], [21, 1], [23, 1], [25, 21], [27, 56], [29, 46], [33, 31], [36, 28], [39, 32], [41, 47], [46, 1], [51, 31], [58, 1], [67, 1], [78, 1]];
+  const ayahList = (s0, a0, s1, a1) => { const out = []; let s = s0, a = a0; while (s <= 114 && !(s === s1 && a === a1)) { out.push([s, a]); a++; if (a > Qn().surahs()[s - 1][4]) { s++; a = 1; } } return out; };
+  const juzAyahs = n => { const [s0, a0] = JUZ0[n - 1], nx = n < 30 ? JUZ0[n] : [115, 1]; return ayahList(s0, a0, nx[0], nx[1]); };
+  const rangeAyahs = (s, f, t) => ayahList(s, f, t < Qn().surahs()[s - 1][4] ? s : s + 1, t < Qn().surahs()[s - 1][4] ? t + 1 : 1);
+  const playUrlX = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
+  async function showExam(h) {
+    bar(L().cards.exam[0], L().title, true);
+    page(note('…'));
+    try { await ready(); } catch (e) { return page(note(L().fail)); }
+    if (!SRc()) return page(E('div', {class: 'card'}, note(L().noSR)));
+    const cfg = Object.assign({m: 'juz', j: 30, s: 1, f: 1, t: 10, p: 5, k: 3}, get('exam', {})), la = lastRange();
+    if (!get('exam', null)) Object.assign(cfg, {s: la.s, f: la.f, t: la.t});
+    let token = 0, R = null, tmr = null;
+    const stage = E('div', {class: 'card hzstage hzexam'});
+    const stopRec = () => { clearInterval(tmr); tmr = null; if (R) { const r = R; R = null; r.onend = null; r.onresult = null; r.onerror = null; try { r.abort ? r.abort() : r.stop(); } catch (e) {} } };
+    const stopAll = () => { token++; stopAudio(); stopRec(); };
+    window.__hzStop = stopAll;
+    /* the form */
+    const sel = E('select', {'aria-label': L().surah, class: 'hzin hzselect'});
+    Qn().surahs().forEach((m, i) => sel.append(E('option', {value: i + 1}, UD(i + 1) + '. ' + Qn().sName(i + 1)))); sel.value = cfg.s;
+    const nA = () => Qn().surahs()[sel.value - 1][4];
+    const fi = numBox(cfg.f, 1, 286), ti = numBox(cfg.t, 1, 286), ji = numBox(cfg.j, 1, 30), pi = numBox(cfg.p, 1, 20), ki = numBox(cfg.k, 1, 10);
+    const sync = () => { fi.max = ti.max = nA(); if (+fi.value > nA()) fi.value = 1; if (+ti.value > nA() || +ti.value < +fi.value) ti.value = Math.min(nA(), +fi.value + 4); };
+    sel.addEventListener('change', () => { fi.value = 1; ti.value = Math.min(nA(), 20); sync(); }); sync();
+    const rangeBox = E('div', {class: 'hzfgrid'}, tileF('hadith', L().surah, sel, '#17786e', true), tileF('layers', L().from, fi, '#2b7bb9'), tileF('list', L().to, ti, '#2b7bb9'));
+    const juzBox = E('div', {class: 'hzfgrid'}, tileF('layers', L().exParaNo, ji, '#2b7bb9', true));
+    const showMode = () => { rangeBox.hidden = cfg.m !== 'range'; juzBox.hidden = cfg.m !== 'juz'; [...mode.children].forEach((c, i) => c.setAttribute('aria-pressed', String((i === 0) === (cfg.m === 'juz')))); };
+    const mode = E('div', {class: 'seg', role: 'group'}, ...[['juz', L().exPara], ['range', L().exRange]].map(([v, l]) => E('button', {type: 'button', class: 'segb', on: {click: () => { cfg.m = v; showMode(); }}}, l)));
+    const startBtn = E('button', {type: 'button', class: 'hzgo wide'}, L().exStart), msg = E('p', {class: 'cs hzstat'});
+    const form = E('div', {class: 'card hzform'}, E('h3', {}, L().exScope), mode, juzBox, rangeBox, E('div', {class: 'hzfgrid'}, tileF('list', L().exQN, pi, '#c0762c'), tileF('replay', L().exAyN, ki, '#8a4fb3')), startBtn, msg);
+    showMode();
+    page(form, stage);
+    /* building the questions */
+    let LIST = [], TURNS = [], RES = [];
+    const buildTurns = () => {
+      const N = LIST.length, k = cfg.k, P = Math.max(1, Math.min(cfg.p, Math.ceil(N / k))), starts = [];
+      for (let j = 0; j < P; j++) { const lo = Math.floor(j * N / P), hi = Math.max(lo, Math.floor((j + 1) * N / P) - 1); starts.push(lo + Math.floor(Math.random() * (hi - lo + 1))); }
+      return starts.map(i0 => {
+        const ays = LIST.slice(i0, i0 + k); let exp = [];
+        const wordsAt = ([s, a]) => ayahWords(s, a).map((x, ix) => ({w: x.w, n: NORM(x.w), s, ay: a, idx: ix + 1})).filter(x => x.n);
+        ays.forEach(x => { exp = exp.concat(wordsAt(x)); });
+        for (let q = i0 + k; exp.length < 6 && q < N; q++) { ays.push(LIST[q]); exp = exp.concat(wordsAt(LIST[q])); }
+        const cueN = Math.max(1, Math.min(3, exp.length - 1));
+        return {ays, exp, cueN};
+      }).filter(t => t.exp.length > 1);
+    };
+    const wbw = x => ['https://audio.qurancdn.com/wbw/', 'https://verses.quran.com/wbw/'].map(b => b + p3(x.s) + '_' + p3(x.ay) + '_' + p3(x.idx) + '.mp3');
+    async function playCue(T, tk) {
+      for (const x of T.exp.slice(0, T.cueN)) {
+        let ok = false;
+        for (const u of wbw(x)) { const r = await playUrlX(u); if (tk !== token) return 'stop'; if (r === 'end') { ok = true; break; } }
+        if (!ok) return 'fail'; await sleep(150); if (tk !== token) return 'stop';
+      }
+      return 'ok';
+    }
+    const surahAyah = T => { const a = T.ays[0], b = T.ays[T.ays.length - 1]; return Qn().sName(a[0]) + ' ' + UD(a[1]) + (b[1] !== a[1] || b[0] !== a[0] ? '–' + (b[0] !== a[0] ? Qn().sName(b[0]) + ' ' : '') + UD(b[1]) : ''); };
+    const view = (T, A) => { const v = E('div', {class: 'hzayah hzres', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
+      T.exp.forEach((x, i) => { const first = i === 0 || x.ay !== T.exp[i - 1].ay || x.s !== T.exp[i - 1].s; if (first && i) v.append(aya(T.exp[i - 1].ay));
+        const st = i < T.cueN ? 'cue' : A.st[i], w = E('span', {class: 'hzw ' + st}, x.w + ' '); if (st === 'wrong' && A.said[i]) w.append(E('small', {class: 'hzsaid'}, A.said[i])); v.append(w); });
+      v.append(aya(T.exp[T.exp.length - 1].ay)); return v; };
+    const legend = () => E('div', {class: 'hzleg'}, ...['ok', 'wrong', 'miss'].map(k => E('span', {}, E('i', {class: 'hzw ' + k}, 'ـــ'), ' ' + L().legend[k])));
+    /* one question */
+    function turn(i) {
+      const tk = ++token, T = TURNS[i]; stopAudio(); stopRec();
+      let finals = [], interim = '', lastT = 0, t0 = 0, finished = false;
+      const dots = E('div', {class: 'hzayah hzcue', lang: 'ar', dir: 'rtl'}, '••• ••• •••');
+      const status = E('p', {class: 'cs hzstat'}, L().exListen), live = E('p', {class: 'cs hzlive', dir: 'rtl', lang: 'ar'});
+      const replay = E('button', {type: 'button', class: 'btn'}, L().exReplay), done = E('button', {type: 'button', class: 'hzgo', hidden: true}, L().exDone);
+      const mic = E('button', {type: 'button', class: 'hzmic', 'aria-label': L().exMicOff}, icon('mic'));
+      stage.replaceChildren(E('h3', {}, L().exQ(UD(i + 1), UD(TURNS.length))), E('div', {class: 'hzbar'}, E('i', {style: 'width:' + Math.round(i / TURNS.length * 100) + '%'})), dots, E('div', {class: 'hzmicw'}, mic), status, live, E('div', {class: 'hzrow'}, replay, done));
+      stage.scrollIntoView({block: 'start'});
+      const finish = () => {
+        if (finished || tk !== token) return; finished = true; if (interim.trim()) finals.push(interim); stopRec(); mic.classList.remove('on');
+        const heard = finals.join(' ').split(/\s+/).map(NORM).filter(Boolean), cn = T.exp.slice(0, T.cueN).map(x => x.n);
+        let hd = heard; if (cn.length && hd.length >= Math.min(2, cn.length) && cn.slice(0, 3).filter((c, q) => hd[q] && sim(hd[q], c) >= TH).length >= Math.min(2, cn.length)) hd = hd.slice(cn.length);   // the child repeated the three words
+        const rest = T.exp.slice(T.cueN), B = hd.length ? align(rest, hd) : null;         // the three given words are right by themselves; the child's words are compared with the rest
+        const A = {st: cn.map(() => 'ok').concat(B ? B.st.map(x => x === 'rest' ? 'miss' : x) : rest.map(() => 'miss')), said: cn.map(() => '').concat(B ? B.said : rest.map(() => '')), extra: B ? B.extra : []};
+        const tot = T.exp.length - T.cueN, ok = A.st.slice(T.cueN).filter(x => x === 'ok').length, acc = tot ? ok / tot : 0;
+        RES[i] = {T, A, ok, tot, acc, silent: !hd.length, pass: acc >= 0.75}; feedback(i);
+      };
+      const startRec = async () => {
+        if (tk !== token) return;
+        try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({audio: true}); st.getTracks().forEach(x => x.stop()); } } catch (e) { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); return; }
+        if (tk !== token) return;
+        const r = new (SRc())(); R = r; r.lang = 'ar-SA'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
+        r.onresult = e => { interim = ''; for (let q = e.resultIndex; q < e.results.length; q++) { const x = e.results[q]; if (x.isFinal) finals.push(x[0].transcript); else interim += x[0].transcript; }
+          lastT = Date.now(); const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); done.hidden = false; };
+        r.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopRec(); mic.classList.remove('on'); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); } else status.textContent = L().errNet; };
+        r.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (R === r && !finished && tk === token) { try { r.start(); } catch (e) {} } };
+        t0 = Date.now(); lastT = 0; mic.classList.add('on'); status.textContent = L().exSpeak; done.hidden = false;
+        try { r.start(); } catch (e) {}
+        const need = T.exp.length - T.cueN;
+        tmr = setInterval(() => { if (tk !== token) return clearInterval(tmr); const now = Date.now(), heardN = (finals.join(' ') + ' ' + interim).trim().split(/\s+/).filter(Boolean).length;
+          if (heardN >= need && lastT && now - lastT > 1800) return finish();   // the whole part has been recited
+          if (lastT && now - lastT > 6500) return finish();                // silence after reciting
+          if (!lastT && now - t0 > 15000) return finish();                 // nothing said at all
+          if (now - t0 > 120000) finish(); }, 500);
+      };
+      mic.addEventListener('click', () => { if (R) { finish(); } else { stopAudio(); finals = []; interim = ''; startRec(); } });
+      done.addEventListener('click', finish);
+      replay.addEventListener('click', async () => { if (finished) return; stopRec(); mic.classList.remove('on'); finals = []; interim = ''; live.textContent = ''; status.textContent = L().exListen; const r = await playCue(T, tk); if (tk === token && !finished) startRec(); });
+      (async () => { const r = await playCue(T, tk); if (tk !== token) return;
+        if (r === 'fail') { dots.textContent = T.exp.slice(0, T.cueN).map(x => x.w).join(' '); toastMsg(L().exCueFail); }
+        startRec(); })();
+    }
+    /* after one question: right or wrong, then the next place */
+    function feedback(i) {
+      const q = RES[i], last = i === TURNS.length - 1, st = q.pass;
+      const next = E('button', {type: 'button', class: 'hzgo wide'}, last ? L().exSee : L().exNext);
+      next.addEventListener('click', () => last ? result() : turn(i + 1));
+      stage.replaceChildren(E('h3', {}, L().exQ(UD(i + 1), UD(TURNS.length)) + ' — ' + surahAyah(q.T)),
+        E('div', {class: 'hzverdict ' + (st ? 'pass' : 'fail')}, (st ? '✓ ' : '✗ ') + (st ? L().exPass : L().exFail) + ' — ' + Math.round(q.acc * 100) + '%'),
+        ...[q.silent ? note(L().exSilent) : null, legend(), view(q.T, q.A), note(L().exWordsOk(UD(q.ok), UD(q.tot))), next].filter(Boolean));
+      stage.scrollIntoView({block: 'start'});
+    }
+    /* the result of the whole exam, with the mistakes */
+    function result() {
+      stopAll(); logToday();
+      const ok = RES.reduce((a, q) => a + q.ok, 0), tot = RES.reduce((a, q) => a + q.tot, 0), acc = tot ? ok / tot : 0, pct = Math.round(acc * 100), stars = acc >= .9 ? 3 : acc >= .75 ? 2 : acc >= .5 ? 1 : 0;
+      const passed = RES.filter(q => q.pass).length;
+      const bad = [];       // [turn, wrongPairs[], missedWords[]]
+      RES.forEach((q, i) => { const wr = [], ms = []; q.T.exp.forEach((x, w) => { if (w < q.T.cueN) return; if (q.A.st[w] === 'wrong') wr.push([x.w, q.A.said[w]]); else if (q.A.st[w] === 'miss') ms.push(x.w); }); if (wr.length || ms.length) bad.push([i, wr, ms]); });
+      const fixAy = []; bad.forEach(([i]) => RES[i].T.exp.forEach((x, w) => { if (w >= RES[i].T.cueN && (RES[i].A.st[w] === 'wrong' || RES[i].A.st[w] === 'miss') && !fixAy.some(z => z[0] === x.s && z[1] === x.ay)) fixAy.push([x.s, x.ay]); }));
+      const again = E('button', {type: 'button', class: 'hzgo'}, L().exAgain), change = E('button', {type: 'button', class: 'btn'}, L().exChange);
+      again.addEventListener('click', () => begin()); change.addEventListener('click', () => { stage.replaceChildren(); form.scrollIntoView({block: 'start'}); });
+      stage.replaceChildren(E('h3', {}, L().exRes),
+        E('div', {class: 'hzscore'}, E('div', {class: 'hzbig'}, pct + '%'), E('div', {class: 'hzstars'}, '★'.repeat(stars) + '☆'.repeat(3 - stars)), E('p', {}, L().stars[stars]),
+          E('p', {class: 'cs'}, L().exPassed(UD(passed), UD(RES.length))), E('p', {class: 'cs'}, L().exWordsOk(UD(ok), UD(tot)))),
+        E('h3', {}, L().exMist),
+        bad.length ? E('div', {}, ...bad.map(([i, wr, ms]) => E('div', {class: 'hzmist'}, E('b', {}, L().exQ(UD(i + 1), UD(RES.length)) + ' — ' + surahAyah(RES[i].T)),
+          wr.length ? E('p', {}, L().exWrongL + ': ', ...wr.flatMap(([w, s], k) => [k ? '، ' : '', E('span', {lang: 'ar', dir: 'rtl', class: 'hzw wrong'}, w), s ? E('span', {class: 'cs'}, ' (' + L().exSaidL + ': '): null, s ? E('span', {lang: 'ar', dir: 'rtl'}, s) : null, s ? E('span', {class: 'cs'}, ')') : null])) : null,
+          ms.length ? E('p', {}, L().exMissed + ': ', E('span', {lang: 'ar', dir: 'rtl', class: 'hzw miss'}, ms.join(' '))) : null))) : E('p', {}, L().exNoMist),
+        E('h3', {}, L().exEach), legend(), ...RES.map((q, i) => E('div', {class: 'hzmist'}, E('b', {}, L().exQ(UD(i + 1), UD(RES.length)) + ' — ' + surahAyah(q.T) + ' — ' + Math.round(q.acc * 100) + '%' + (q.pass ? ' ✓' : ' ✗')), view(q.T, q.A))),
+        E('div', {class: 'hzrow'}, fixAy.length ? E('button', {type: 'button', class: 'btn', on: {click: () => playList(fixAy)}}, L().listenFix) : null, again, change), note(L().note));
+      stage.scrollIntoView({block: 'start'});
+    }
+    function begin() {
+      stopAll(); RES = [];
+      cfg.j = clampN(ji.value, 1, 30); cfg.s = +sel.value; cfg.f = clampN(fi.value, 1, nA()); cfg.t = clampN(ti.value, cfg.f, nA()); cfg.p = clampN(pi.value, 1, 20); cfg.k = clampN(ki.value, 1, 10);
+      put('exam', {m: cfg.m, j: cfg.j, s: cfg.s, f: cfg.f, t: cfg.t, p: cfg.p, k: cfg.k});
+      LIST = cfg.m === 'juz' ? juzAyahs(cfg.j) : rangeAyahs(cfg.s, cfg.f, cfg.t);
+      TURNS = LIST.length ? buildTurns() : [];
+      if (!TURNS.length) { msg.textContent = L().exNoAyah; return; }
+      msg.textContent = '';
+      turn(0);
+    }
+    startBtn.addEventListener('click', () => consent(begin));
+  }
   /* ---------- routes ---------- */
   function route(h) {
     document.querySelectorAll('.sheetbg').forEach(x => x.remove());
@@ -8124,6 +8308,7 @@ Object.assign(I.fr, {
     if (k === 'rep') return go(showRep);
     if (k === 'say') return go(showSay);
     if (k === 'recall') return go(showRecall);
+    if (k === 'exam') return go(showExam);
     if (k === 'plan') return go(showPlan);
     return go(showHub);
   }
@@ -8177,6 +8362,10 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 .hzscore{text-align:center}.hzbig{font:700 2.8rem/1.2 var(--sans);color:var(--accent)}.hzstars{font-size:1.7rem;color:#e0a82d;letter-spacing:.2em}
 .hzyes,.hzno{border:0;border-radius:999px;padding:.3rem 1.4rem;font:inherit;cursor:pointer;color:#fff}.hzyes{background:#1d7f4e}.hzno{background:#c0392b}
 .hzcnt{text-align:center}.hzsheet p{line-height:1.9}.hzok{background:var(--accent);color:#fff;border-color:var(--accent)}
+.hzbar{height:6px;border-radius:6px;background:var(--wash);overflow:hidden;margin:.2rem 0 .6rem}.hzbar i{display:block;height:100%;background:var(--accent)}
+.hzcue{font-size:1.9rem;letter-spacing:.1em}.hzw.cue{color:var(--muted)}
+.hzverdict{text-align:center;font-weight:700;font-size:1.15rem;margin:.2rem 0}.hzverdict.pass{color:#1d7f4e}.hzverdict.fail{color:#c0392b}
+.hzmist{border-top:1px solid var(--line);padding:.5rem 0}.hzmist p{margin:.2rem 0;line-height:2}
 @media (min-width:640px){.hzgrid{grid-template-columns:1fr 1fr;gap:0 .8rem}}
 `);
   document.head.append(css);
