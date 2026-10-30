@@ -69,12 +69,25 @@ object Events {
             }
             // salawat: Thursday from 40 minutes after Maghrib until an hour after Isha (three times); Friday from Fajr until Maghrib, every two hours
             if (pr.salJumuah) {
+                // never during a prayer: from the adhan until some minutes after the iqamah (on Friday the Jumu'ah prayer is longer); a time that falls inside moves to just after it
+                fun afterPrayer(at: ZonedDateTime): ZonedDateTime {
+                    var x = at
+                    for (p in FIVE) {
+                        val fri = p == P.DHUHR && dow == java.time.DayOfWeek.FRIDAY
+                        val iq = if (fri) LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, p.name)
+                        val a = t[p]
+                        val core = if (iq >= 0) d.atTime(iq / 60, iq % 60).atZone(zone) else a.plusMinutes(if (fri) 30 else 12)
+                        val b = (if (core.isAfter(a)) core else a.plusMinutes(12)).plusMinutes(if (fri) 45 else 20)
+                        if (!x.isBefore(a) && x.isBefore(b)) x = b.plusMinutes(2)
+                    }
+                    return x
+                }
                 if (dow == java.time.DayOfWeek.THURSDAY) {
                     val a = t[P.MAGHRIB].plusMinutes(40); val b = t[P.ISHA].plusMinutes(60)
-                    if (b.isAfter(a)) for (k in 0..2) out += Ev(a.plusSeconds(java.time.Duration.between(a, b).seconds * k / 2), "salawat", null, Snd.DUROOD_JUMUAH, "thu")
+                    if (b.isAfter(a)) for (k in 0..2) out += Ev(afterPrayer(a.plusSeconds(java.time.Duration.between(a, b).seconds * k / 2)), "salawat", null, Snd.DUROOD_JUMUAH, "thu")
                 } else if (dow == java.time.DayOfWeek.FRIDAY) {
                     var at = t[P.FAJR].plusHours(2)
-                    while (at.isBefore(t[P.MAGHRIB].minusMinutes(15))) { out += Ev(at, "salawat", null, Snd.DUROOD_JUMUAH, "fri"); at = at.plusHours(2) }
+                    while (at.isBefore(t[P.MAGHRIB].minusMinutes(15))) { out += Ev(afterPrayer(at), "salawat", null, Snd.DUROOD_JUMUAH, "fri"); at = at.plusHours(2) }
                 }
             }
             // before / after each prayer
