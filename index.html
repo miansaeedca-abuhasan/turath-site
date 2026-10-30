@@ -3554,6 +3554,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       el('div', {class: 'wnav'},
         el('button', {class: 'btn', type: 'button', disabled: w <= 1, on: {click: () => { closeSheet(); wordSheet(s, a, w - 1, null, i); }}}, (LTR() ? '‹ ' : '› ') + wl('prev')),
         el('button', {class: 'btn', type: 'button', disabled: w >= n, on: {click: () => { closeSheet(); wordSheet(s, a, w + 1, null, i); }}}, wl('next') + (LTR() ? ' ›' : ' ‹'))),
+      window.IDEA ? window.IDEA('word', 'p') : null,
       el('p', {class: 'note wcred'}, wl('credit')));
     const btns = [[T('close'), null]];
     if (i != null) btns.unshift([wl('ayah'), () => { setTimeout(() => ayahMenu(i), 0); }]);
@@ -7782,6 +7783,13 @@ Object.assign(I.fr, {
 (function () {
   const E = (t, a, ...k) => el(t, a, ...k.flat().filter(x => x != null && x !== false));
   const RTL = () => ui === 'ur' || ui === 'ar';
+  /* «idea of» credits (children's ideas): a small decorative pill; names as the family asked */
+  const IDEAS = {exam: {ur: 'اُم ھانی بنت سعید کا آئیڈیا', ar: 'فكرة أُمّ هاني بنت سعيد', en: "Omme Hani binte Saeed's idea"},
+    word: {ur: 'اُمیمہ بنت سعید کا آئیڈیا', ar: 'فكرة أُميمة بنت سعيد', en: "Omaimah binte Saeed's idea"},
+    hifz: {ur: 'اُمامہ بنت سعید کا آئیڈیا', ar: 'فكرة أُمامة بنت سعيد', en: "Omamah binte Saeed's idea"}};
+  const idl = () => (ui === 'ur' || ui === 'ar') ? ui : 'en';
+  window.IDEAT = k => '(' + IDEAS[k][idl()] + ')';
+  window.IDEA = (k, tag) => el(tag || 'span', {class: 'idea', lang: idl() === 'en' ? 'en' : idl()}, '✦ ' + window.IDEAT(k));
   const UD = n => ui === 'ur' ? String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]) : ui === 'ar' ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(n);
   const S = {
     ur: {
@@ -8025,12 +8033,12 @@ Object.assign(I.fr, {
   }
   /* ---------- hub ---------- */
   function showHub() {
-    bar(L().title, L().sub, true);
+    bar(L().title, L().sub + ' ' + window.IDEAT('hifz'), true);
     const p = plan(), t = today(), due = p.filter(x => x.due <= t), sk = streak();
-    const hero = E('div', {class: 'hzhero'}, E('div', {class: 'hzh1'}, L().hero), E('p', {}, L().heroSub),
+    const hero = E('div', {class: 'hzhero'}, E('div', {class: 'hzh1'}, L().hero), window.IDEA('hifz', 'div'), E('p', {}, L().heroSub),
       E('div', {class: 'hzpills'}, E('span', {class: 'hzpill'}, '✦ ' + (sk ? L().streak(UD(sk)) : L().streak0)), E('span', {class: 'hzpill'}, due.length ? L().todayN(UD(due.length)) : L().today + ' ✓')));
     const HC = {rep: '#c0762c', say: '#c0392b', recall: '#6a4fb3', exam: '#d35400', plan: '#2b7bb9', hadith: '#17786e'};
-    const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', style: '--hc:' + (HC[k] || '#17786e'), href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), E('small', {}, c[1]))); };
+    const card = (ic, k, link, fn) => { const c = L().cards[k]; return E(link ? 'a' : 'button', {class: 'card hzcard', style: '--hc:' + (HC[k] || '#17786e'), href: link || null, type: link ? null : 'button', on: fn ? {click: fn} : null}, E('span', {class: 'tico'}, icon(ic)), E('span', {class: 'hzct'}, E('b', {}, c[0]), k === 'exam' ? window.IDEA('exam') : null, E('small', {}, c[1]))); };
     const la = lastRange();
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
@@ -8201,7 +8209,7 @@ Object.assign(I.fr, {
   const rangeAyahs = (s, f, t) => ayahList(s, f, t < Qn().surahs()[s - 1][4] ? s : s + 1, t < Qn().surahs()[s - 1][4] ? t + 1 : 1);
   const playUrlX = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
   async function showExam(h) {
-    bar(L().cards.exam[0], L().title, true);
+    bar(L().cards.exam[0] + ' ' + window.IDEAT('exam'), L().title, true);
     page(note('…'));
     try { await ready(); } catch (e) { return page(note(L().fail)); }
     if (!SRc()) return page(E('div', {class: 'card'}, note(L().noSR)));
@@ -8383,6 +8391,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 .grp{margin:.5rem 0 .2rem;color:var(--accent);font-weight:600}
 .hzstage2{text-align:center}.hzay{border-radius:12px;transition:background .25s}.hzay.cur{background:rgba(224,168,45,.22);box-shadow:0 0 0 4px rgba(224,168,45,.22)}
 .hzw.tap{cursor:pointer;border-radius:8px;transition:background .2s}.hzw.tap:active,.hzw.say{background:rgba(23,120,110,.22)}
+.idea{display:inline-block;margin:.15rem .4rem;padding:.05rem .65rem;border-radius:999px;font-size:.78rem;font-weight:600;line-height:1.9;color:#8a5a00;background:linear-gradient(90deg,#fff4d9,#ffe2a8);border:1px solid #e3b95c;box-shadow:0 1px 3px rgba(150,100,0,.18)}
+.hzhero .idea{color:#fff;background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.45);box-shadow:none}
 .hzhero{background:linear-gradient(135deg,var(--bar),#0f5b52);color:#fff;border-radius:20px;padding:1.2rem 1.3rem;margin:.6rem 0;box-shadow:var(--shadow);position:relative;overflow:hidden}
 .hzhero:after{content:"";position:absolute;inset-inline-end:-2.2rem;top:-2.2rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.22),transparent 70%)}
 .hzh1{font-size:1.35rem;font-weight:700;line-height:1.7}.hzhero p{margin:.2rem 0 .7rem;opacity:.95}
