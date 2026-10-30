@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>صلاۃ خیرالقرون</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#00838F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="صلاۃ">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+:root{--bg:#f6f7f7;--card:#fff;--ink:#16191a;--dim:#5f6b6e;--pri:#00838F;--pri2:#e0f2f4;--line:#dfe4e5;--warn:#c62828}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1213;--card:#1a1f21;--ink:#eef2f2;--dim:#9aa7aa;--pri:#26C6DA;--pri2:#16363b;--line:#2a3235;--warn:#ef5350}}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Noto Nastaliq Urdu","Geeza Pro","Segoe UI",system-ui,sans-serif;line-height:1.6}
+body{padding:env(safe-area-inset-top) 0 calc(72px + env(safe-area-inset-bottom)) 0}
+main{max-width:560px;margin:0 auto;padding:12px 16px}
+.hide{display:none!important}
+header.top{text-align:center;padding:6px 0 2px}
+header.top img{width:44px;height:44px;border-radius:11px}
+.city{font-size:26px;font-weight:700;margin:2px 0;cursor:pointer}
+.hijri{color:var(--pri);font-size:17px}.day{font-size:15px}.greg{color:var(--dim);font-size:14px}
+.next{background:var(--card);border:1px solid var(--line);border-radius:20px;text-align:center;padding:16px 12px;margin:14px 0}
+.next .n{font-size:30px;font-weight:700}.next .t{color:var(--dim)}.next .c{font-size:38px;color:var(--pri);font-variant-numeric:tabular-nums;direction:ltr;letter-spacing:1px}
+.list{background:var(--card);border:1px solid var(--line);border-radius:20px;overflow:hidden}
+.row{display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}
+.row .nm{flex:1;font-size:17px}.row .tm{font-variant-numeric:tabular-nums;direction:ltr;font-size:17px}
+.row.cur{background:var(--pri);color:#fff}.row.dim .nm,.row.dim .tm{color:var(--dim)}
+h2{font-size:15px;color:var(--pri);margin:20px 4px 6px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:12px 16px;margin:8px 0}
+.up{display:flex;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}.up:last-child{border:0}.up .a{flex:1}.up small{display:block;color:var(--dim)}
+.chip{background:var(--pri2);color:var(--pri);border-radius:50px;padding:3px 12px;font-size:13px;font-weight:700;white-space:nowrap}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .h{font-size:12px;color:var(--dim)}.cal .d{padding:8px 0;border-radius:12px;font-size:15px;position:relative}
+.cal .d small{display:block;font-size:10px;color:var(--dim);line-height:1}.cal .d.today{background:var(--pri);color:#fff}.cal .d.today small{color:#fff}
+.cal .d.sp::after{content:"";position:absolute;bottom:3px;left:50%;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:var(--pri)}
+.cal .d.today.sp::after{background:#fff}
+.nav{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}.nav b{font-size:20px;text-align:center}.nav small{display:block;color:var(--dim);font-weight:400;font-size:13px}
+button,select,input{font:inherit;color:inherit}
+.btn{background:var(--pri);color:#fff;border:0;border-radius:14px;padding:10px 16px;font-weight:700}
+.btn.o{background:transparent;color:var(--pri);border:1px solid var(--pri)}
+.ib{background:transparent;border:0;font-size:26px;color:var(--pri);padding:4px 12px}
+.field{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}.field:last-child{border:0}
+.field input[type=text]{flex:1;min-width:0}.btn{white-space:nowrap}.field select,.field input[type=text]{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:6px 8px;max-width:58%}
+.hit{padding:10px 0;border-bottom:1px solid var(--line);cursor:pointer}.hit small{color:var(--dim);display:block}
+.q{text-align:center}.q .deg{font-size:34px;color:var(--pri);direction:ltr}
+.dial{position:relative;width:260px;height:260px;margin:14px auto;border-radius:50%;border:3px solid var(--line);background:var(--card)}
+.dial .ndl{position:absolute;inset:0;transition:transform .15s linear}
+.dial .ndl::before{content:"";position:absolute;left:50%;top:14px;width:0;height:0;margin-left:-12px;border-left:12px solid transparent;border-right:12px solid transparent;border-bottom:96px solid var(--pri)}
+.dial .ndl::after{content:"🕋";position:absolute;left:50%;top:-8px;margin-left:-14px;font-size:26px}
+.dial .n{position:absolute;top:6px;left:50%;margin-left:-6px;font-size:12px;color:var(--dim);direction:ltr}
+.note{color:var(--dim);font-size:13px;padding:6px 4px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;display:flex;background:var(--card);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}
+nav.tabs button{flex:1;background:none;border:0;padding:8px 2px 6px;color:var(--dim);font-size:11px}
+nav.tabs button span{display:block;font-size:22px;line-height:1.2}
+nav.tabs button.on{color:var(--pri);font-weight:700}
+</style>
+</head>
+<body>
+<main>
+  <section id="p-home">
+    <header class="top"><img src="icon-192.png" alt=""><div class="city" id="city" onclick="go('set')"></div>
+      <div class="hijri" id="hijri"></div><div class="day" id="dayname"></div><div class="greg" id="greg"></div></header>
+    <div class="next"><div class="n" id="nxName"></div><div class="t" id="nxTime"></div><div class="c" id="nxCount"></div><div class="t" id="nxLeft"></div></div>
+    <div class="list" id="times"></div>
+    <div class="note" id="homeNote"></div>
+  </section>
+  <section id="p-cal" class="hide">
+    <div class="nav"><button class="ib" id="calPrev">›</button><b id="calTitle"></b><button class="ib" id="calNext">‹</button></div>
+    <div class="card"><div class="cal" id="calGrid"></div></div>
+    <div id="upWrap"><h2 id="upTitle"></h2><div class="card" id="upList"></div></div>
+  </section>
+  <section id="p-qibla" class="hide q">
+    <h2 id="qTitle"></h2>
+    <div class="deg" id="qDeg"></div><div class="note" id="qDist"></div>
+    <div class="dial"><div class="n">N</div><div class="ndl" id="needle"></div></div>
+    <button class="btn" id="compassBtn"></button>
+    <div class="note" id="qNote"></div>
+  </section>
+  <section id="p-set" class="hide">
+    <h2 id="sCity"></h2>
+    <div class="card">
+      <div class="field"><input type="text" id="q" style="max-width:none"><button class="btn" id="qBtn"></button></div>
+      <div id="hits"></div>
+      <div class="field"><button class="btn o" id="gps" style="width:100%"></button></div>
+    </div>
+    <h2 id="sCalc"></h2>
+    <div class="card">
+      <div class="field"><label id="lMethod"></label><select id="method"></select></div>
+      <div class="field"><label id="lAsr"></label><select id="asr"></select></div>
+      <div class="field"><label id="lAdj"></label><select id="adj"></select></div>
+      <div class="field"><label id="lH24"></label><select id="h24"></select></div>
+      <div class="field"><label id="lLang"></label><select id="lang"><option value="ur">اردو</option><option value="ar">العربية</option><option value="en">English</option></select></div>
+    </div>
+    <div class="note" id="sNote"></div>
+    <h2 id="sInstall"></h2>
+    <div class="card" id="installText"></div>
+  </section>
+</main>
+<nav class="tabs" id="tabs"></nav>
+<script src="calc.js"></script>
+<script src="app.js"></script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))</script>
+</body>
+</html>
