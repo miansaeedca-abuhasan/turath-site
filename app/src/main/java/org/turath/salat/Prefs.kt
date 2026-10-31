@@ -140,6 +140,8 @@ class Prefs(ctx: Context) {
     var duroodFiles: List<String>
         get() = sp.getString("duroodFiles", null)?.let { s -> val a = JSONArray(s); (0 until a.length()).map { a.getString(it) } } ?: emptyList()
         set(v) = sp.edit().putString("duroodFiles", JSONArray().apply { v.forEach { put(it) } }.toString()).apply()
+    /** the temperature in Fahrenheit (false = Celsius) */
+    var tempF: Boolean get() = sp.getBoolean("tempF", false); set(v) = sp.edit().putBoolean("tempF", v).apply()
     var h24: Boolean get() = sp.getBoolean("h24", false); set(v) = sp.edit().putBoolean("h24", v).apply()
 
     fun adjust(p: P): Int = sp.getInt("adj_" + p.name, 0)
@@ -185,8 +187,8 @@ class Prefs(ctx: Context) {
     var takbirHijjah: Boolean get() = sp.getBoolean("tkHijjah", true); set(v) = sp.edit().putBoolean("tkHijjah", v).apply()
     var takbirTashreeq: Boolean get() = sp.getBoolean("tkTashreeq", true); set(v) = sp.edit().putBoolean("tkTashreeq", v).apply()
     // morning and evening adhkar
-    var azkarMorning: Boolean get() = sp.getBoolean("azkarM", false); set(v) = sp.edit().putBoolean("azkarM", v).apply()
-    var azkarEvening: Boolean get() = sp.getBoolean("azkarE", false); set(v) = sp.edit().putBoolean("azkarE", v).apply()
+    var azkarMorning: Boolean get() = sp.getBoolean("azkarM", true); set(v) = sp.edit().putBoolean("azkarM", v).apply()
+    var azkarEvening: Boolean get() = sp.getBoolean("azkarE", true); set(v) = sp.edit().putBoolean("azkarE", v).apply()
     /** a notification always showing the next prayer and its count */
     var persistent: Boolean get() = sp.getBoolean("persist", false); set(v) = sp.edit().putBoolean("persist", v).apply()
     var monThu: Boolean get() = sp.getBoolean("monthu", false); set(v) = sp.edit().putBoolean("monthu", v).apply()

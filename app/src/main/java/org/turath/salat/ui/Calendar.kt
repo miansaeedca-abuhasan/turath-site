@@ -177,7 +177,7 @@ fun CalendarScreen(s: AppState) {
                 Text(Tr["myEvents"], Modifier.padding(top = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
                 for ((d, e) in myItems) Row(Modifier.fillMaxWidth().clickable { edit = e }.padding(vertical = 4.dp)) {
                     Text(Tr.num(d) + " " + Tr.hijriMonth(m), Modifier.width(120.dp), color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
-                    Text(e.label.ifEmpty { Tr["event"] } + "  · " + whenText(e), color = Color(0xFF1F8FD1))
+                    Text(e.label.ifEmpty { Tr["event"] } + "  · " + whenText(e, s.prefs), color = Color(0xFF1F8FD1))
                 }
             }
         }
@@ -191,7 +191,7 @@ fun CalendarScreen(s: AppState) {
             text = {
                 Column {
                     for (n in specialsOf(m, d)) Text("• $n", color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(vertical = 2.dp))
-                    for (e in eventsOn(d)) Text("• " + e.label.ifEmpty { Tr["event"] } + " — " + whenText(e), Modifier.clickable { dayOpen = null; edit = e }.padding(vertical = 2.dp))
+                    for (e in eventsOn(d)) Text("• " + e.label.ifEmpty { Tr["event"] } + " — " + whenText(e, s.prefs), Modifier.clickable { dayOpen = null; edit = e }.padding(vertical = 2.dp))
                     if (specialsOf(m, d).isEmpty() && eventsOn(d).isEmpty()) Text(Tr["noEvents"])
                 }
             },
@@ -203,9 +203,9 @@ fun CalendarScreen(s: AppState) {
 }
 
 /** «9:00 am» or «25 min after Asr» */
-fun whenText(e: CalEvent): String = if (e.base != null)
+fun whenText(e: CalEvent, pr: Prefs): String = if (e.base != null)
     Tr.num(kotlin.math.abs(e.offset).toString()) + " " + Tr["min"] + " " + (if (e.offset < 0) Tr["before"] else Tr["after"]) + " " + Tr.p(e.base).substringBefore(" (")
-else Tr.num("%d:%02d".format(e.atMin / 60, e.atMin % 60))
+else Alarms.fmtMin(pr, e.atMin)
 
 /** an event on a page of its own: name, date (hijri or gregorian), repeat, time (of the clock or with a prayer), sound */
 @OptIn(ExperimentalLayoutApi::class)
@@ -265,7 +265,7 @@ private fun EventEditor(s: AppState, e0: CalEvent, close: () -> Unit) {
                     }
                     if (!withPrayer) OutlinedButton(onClick = {
                         TimePickerDialog(s.act, { _, hh, mm -> e = e.copy(atMin = hh * 60 + mm) }, maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60, s.prefs.h24).show()
-                    }, Modifier.fillMaxWidth().height(52.dp)) { Text(Tr.num("%d:%02d".format(maxOf(0, e.atMin) / 60, maxOf(0, e.atMin) % 60)), fontSize = 20.sp) }
+                    }, Modifier.fillMaxWidth().height(52.dp)) { Text(Alarms.fmtMin(s.prefs, e.atMin), fontSize = 20.sp) }
                     else {
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA))

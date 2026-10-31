@@ -30,12 +30,13 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
         }
         for (k in listOf("FAJR", "DHUHR", "ASR", "MAGHRIB", "ISHA", "JUMUAH")) {
             val on = pr.vibOn(k)
+            Fold(s, if (k == "JUMUAH") Tr["JUMUAH"] else Tr[k], k) {
             Card0 {
                 SwitchRow(if (k == "JUMUAH") Tr["JUMUAH"] else Tr[k], on) { x -> pr.setVibOn(k, x); ver++; s.changed(); if (x && act.needDnd()) act.askDnd() }
                 val iq = if (k == "JUMUAH") LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, k)
                 val byIq = iq >= 0 && pr.vibByIq(k)
                 if (on && iq >= 0) {
-                    SwitchRow(Tr["vibFollowIq"], pr.vibByIq(k), Tr["vibIqAt"] + " " + Tr.num(iq / 60) + ":" + Tr.num(iq % 60).padStart(2, '0')) { x -> pr.setVibByIq(k, x); ver++; s.changed() }
+                    SwitchRow(Tr["vibFollowIq"], pr.vibByIq(k), Tr["vibIqAt"] + " " + Alarms.fmt(pr, java.time.ZonedDateTime.now().withHour(iq / 60).withMinute(iq % 60))) { x -> pr.setVibByIq(k, x); ver++; s.changed() }
                 }
                 if (on && byIq) {
                     var lead by remember(k) { mutableFloatStateOf(pr.vibLead(k).toFloat()) }
@@ -57,6 +58,7 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
                     Text(Tr["vibLasts"] + ": " + Tr.num(len.toInt()) + " " + Tr["min"], fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     Slider(len, { len = it }, valueRange = 0f..120f, steps = 119, onValueChangeFinished = { pr.setVibLen(k, len.toInt()); s.changed() })
                 }
+            }
             }
         }
         Text("Log", Modifier.padding(horizontal = 16.dp, vertical = 4.dp), fontWeight = FontWeight.Bold, fontSize = 13.sp)

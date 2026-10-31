@@ -108,7 +108,7 @@ class Widget : AppWidgetProvider() {
             val v = RemoteViews(ctx.packageName, layout)
             background(v, pr)
             val ink = ink(pr); val dim = dim(pr)
-            v.setTextViewText(R.id.city, place.name)
+            v.setTextViewText(R.id.city, place.name + (Weather.text(pr)?.let { "  $it" } ?: ""))
             v.setTextColor(R.id.city, accent(pr))
             v.setTextColor(R.id.prayer, ink); v.setTextColor(R.id.count, ink)
             size(v, R.id.city, 12f, pr); size(v, R.id.prayer, 30f, pr); size(v, R.id.count, 28f, pr)

@@ -132,6 +132,8 @@ object Events {
             // the widget shows the next prayer: refresh at each prayer and at midnight
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")
+            // the temperature on the widget: fetched every hour
+            for (h in 0..23) out += Ev(d.atTime(h, 2).atZone(zone), "weather")
         }
         // vibration windows that touch or overlap are one: the phone must not ring again in the middle of the next window
         val merged = mutableListOf<Pair<ZonedDateTime, ZonedDateTime>>()
@@ -269,9 +271,12 @@ object Alarms {
             "vibon" -> Vibrate.on(ctx, pr, e.extra)
             "viboff" -> Vibrate.off(ctx, pr)
             "widget" -> Widget.update(ctx)
+            "weather" -> { Weather.refresh(ctx, pr, true); Widget.update(ctx) }
         }
     }
 
+    /** a time of day given in minutes after midnight, in the clock style the user chose */
+    fun fmtMin(pr: Prefs, m: Int): String { val x = maxOf(0, m); return fmt(pr, ZonedDateTime.now().withHour(x / 60 % 24).withMinute(x % 60)) }
     fun fmt(pr: Prefs, t: ZonedDateTime): String {
         val h = t.hour; val m = t.minute
         val s = if (pr.h24) "%02d:%02d".format(h, m) else "%d:%02d %s".format(if (h % 12 == 0) 12 else h % 12, m,

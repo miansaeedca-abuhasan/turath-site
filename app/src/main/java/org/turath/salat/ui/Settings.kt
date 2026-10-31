@@ -54,6 +54,10 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
     val pr = s.prefs; val act = s.act
     var tick by remember { mutableIntStateOf(0) }       // redraw after returning from a system permission screen
     LaunchedEffect(Unit) { act.onPermResult = { tick++ } }
+    // the real time of each prayer as it is now (with the minutes added or taken away), drawn again at every change
+    val place = pr.place
+    val dayT = place?.let { Schedule.day(pr, it, s.now.withZoneSameInstant(Schedule.zone(it)).toLocalDate()) }
+    fun tm(p: P): String = dayT?.let { "  —  " + s.fmt(it[p]) } ?: ""
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["settings"], back)
         key(tick) {
@@ -64,56 +68,78 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 if (!act.needNotifications() && !act.needExact() && !act.needBattery()) Text("✓", color = Color(0xFF2E9E5B))
             }
         }
-        SectionTitle(Tr["soundSet"])
-        Card0 {
-            Text(Tr["volSource"], fontSize = 14.sp)
-            Choice(Tr["volMedia"], pr.volStream == "media") { pr.volStream = "media"; s.changed() }
-            Choice(Tr["volRing"], pr.volStream == "ring") { pr.volStream = "ring"; s.changed() }
-            Choice(Tr["volAlarm"], pr.volStream == "alarm") { pr.volStream = "alarm"; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["adhanSilent"], pr.adhanInSilent, Tr["adhanSilentNote"]) { pr.adhanInSilent = it; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["persistent"], pr.persistent, Tr["persistentNote"]) { pr.persistent = it; Widget.update(s.act); s.changed() }
+        Fold(s, Tr["soundSet"]) {
+            Card0 {
+                Text(Tr["volSource"], fontSize = 14.sp)
+                Choice(Tr["volMedia"], pr.volStream == "media") { pr.volStream = "media"; s.changed() }
+                Choice(Tr["volRing"], pr.volStream == "ring") { pr.volStream = "ring"; s.changed() }
+                Choice(Tr["volAlarm"], pr.volStream == "alarm") { pr.volStream = "alarm"; s.changed() }
+                HorizontalDivider()
+                SwitchRow(Tr["adhanSilent"], pr.adhanInSilent, Tr["adhanSilentNote"]) { pr.adhanInSilent = it; s.changed() }
+                HorizontalDivider()
+                SwitchRow(Tr["persistent"], pr.persistent, Tr["persistentNote"]) { pr.persistent = it; Widget.update(s.act); s.changed() }
+            }
         }
-        SectionTitle(Tr["school"])
-        Card0 {
-            Choice(Tr["shafii"], pr.school == "shafii") { pr.school = "shafii"; s.changed() }
-            Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
-            if (pr.school == "hanafi") Text(Tr["hanafiVibNote"], Modifier.padding(horizontal = 4.dp, vertical = 6.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+        Fold(s, Tr["school"]) {
+            Card0 {
+                Choice(Tr["shafii"], pr.school == "shafii") { pr.school = "shafii"; s.changed() }
+                Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
+                if (pr.school == "hanafi") Text(Tr["hanafiVibNote"], Modifier.padding(horizontal = 4.dp, vertical = 6.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
+            }
         }
-        SectionTitle(Tr["method"])
-        Card0 {
-            Choice(Tr["mAuto"] + " — " + Tr[PrayerCalc.defaultMethod(pr.place?.country ?: "")], pr.method.isEmpty()) { pr.method = ""; s.changed() }
-            for (m in PrayerCalc.METHODS) Choice(Tr[m.key], pr.method == m.key) { pr.method = m.key; s.changed() }
+        Fold(s, Tr["method"]) {
+            Card0 {
+                Choice(Tr["mAuto"] + " — " + Tr[PrayerCalc.defaultMethod(pr.place?.country ?: "")], pr.method.isEmpty()) { pr.method = ""; s.changed() }
+                for (m in PrayerCalc.METHODS) Choice(Tr[m.key], pr.method == m.key) { pr.method = m.key; s.changed() }
+            }
         }
-        SectionTitle(Tr["adjust"])
-        Card0 {
-            for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) Stepper(Tr.p(p), pr.adjust(p), -30, 30, 1) { pr.setAdjust(p, it); s.changed() }
-            // Tahajjud (the last third of the night): the calculated time, moved earlier or later by up to 200 minutes
-            Stepper(Tr.p(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
+        Fold(s, Tr["adjust"]) {
+            Card0 {
+                for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) Stepper(Tr.p(p) + tm(p), pr.adjust(p), -30, 30, 1) { pr.setAdjust(p, it); s.changed() }
+                // Tahajjud (the last third of the night): the calculated time, moved earlier or later by up to 200 minutes
+                Stepper(Tr.p(P.TAHAJJUD) + tm(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
+            }
         }
-        SectionTitle(Tr["naflTimes"])
-        Card0 {
-            Stepper(Tr["ishraqAfter"], pr.ishraqAfter, 5, 60, 1) { pr.ishraqAfter = it; s.changed() }
-            Stepper(Tr["chashtAfter"], pr.chashtAfter, 20, 240, 5) { pr.chashtAfter = it; s.changed() }
-            Stepper(Tr["zawalBefore"], pr.zawalBefore, 0, 30, 1) { pr.zawalBefore = it; s.changed() }
+        Fold(s, Tr["naflTimes"]) {
+            Card0 {
+                Stepper(Tr["ishraqAfter"] + tm(P.ISHRAQ), pr.ishraqAfter, 5, 60, 1) { pr.ishraqAfter = it; s.changed() }
+                Stepper(Tr["chashtAfter"] + tm(P.CHASHT), pr.chashtAfter, 20, 240, 5) { pr.chashtAfter = it; s.changed() }
+                Stepper(Tr["zawalBefore"] + tm(P.ZAWAL), pr.zawalBefore, 0, 30, 1) { pr.zawalBefore = it; s.changed() }
+            }
         }
-        SectionTitle(Tr["vibPage"])
-        Card0 { Text(Tr["vibPage"] + "  ›", Modifier.fillMaxWidth().clickable { s.page = "vibration"; s.sub = "" }.padding(vertical = 8.dp), fontSize = 16.sp) }
-        SectionTitle(Tr["hijriAdj"])
-        Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -3, 3, 1) { pr.hijriAdjust = it; s.changed() } }
-        SectionTitle(Tr["dst"])
-        Card0 {
-            Choice(Tr["dstAuto"], pr.dst == "auto") { pr.dst = "auto"; s.changed() }
-            Choice(Tr["dstOn"], pr.dst == "on") { pr.dst = "on"; s.changed() }
-            Choice(Tr["dstOff"], pr.dst == "off") { pr.dst = "off"; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["h24"], pr.h24) { pr.h24 = it; s.changed() }
+        FoldLink(Tr["vibPage"]) { s.page = "vibration"; s.sub = "" }
+        Fold(s, Tr["hijriAdj"]) {
+            Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -3, 3, 1) { pr.hijriAdjust = it; s.changed() } }
         }
-        SectionTitle(Tr["weekStart"])
-        Card0 {
-            Row(Modifier.horizontalScroll(rememberScrollState())) {
-                for (v in listOf(1, 6, 7)) ChoiceChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
+        Fold(s, Tr["dst"]) {
+            Card0 {
+                Choice(Tr["dstAuto"], pr.dst == "auto") { pr.dst = "auto"; s.changed() }
+                Choice(Tr["dstOn"], pr.dst == "on") { pr.dst = "on"; s.changed() }
+                Choice(Tr["dstOff"], pr.dst == "off") { pr.dst = "off"; s.changed() }
+            }
+        }
+        Fold(s, Tr["timeFmt"]) {
+            Card0 {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ChoiceChip(!pr.h24, { pr.h24 = false; Widget.update(s.act); s.changed() }, { Text("12", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
+                    ChoiceChip(pr.h24, { pr.h24 = true; Widget.update(s.act); s.changed() }, { Text("24", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
+                }
+            }
+        }
+        Fold(s, Tr["weatherT"]) {
+            Card0 {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    ChoiceChip(!pr.tempF, { pr.tempF = false; Widget.update(s.act); s.changed() }, { Text("C", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
+                    ChoiceChip(pr.tempF, { pr.tempF = true; Widget.update(s.act); s.changed() }, { Text("F", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
+                }
+                Text(Tr["weatherNote"], Modifier.padding(top = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .65f))
+            }
+        }
+        Fold(s, Tr["weekStart"]) {
+            Card0 {
+                Row(Modifier.horizontalScroll(rememberScrollState())) {
+                    for (v in listOf(1, 6, 7)) ChoiceChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
+                }
             }
         }
         Spacer(Modifier.height(30.dp))

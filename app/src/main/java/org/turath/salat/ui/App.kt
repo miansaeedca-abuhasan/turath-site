@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +41,8 @@ class AppState(val act: MainActivity) {
     var tab by mutableIntStateOf(0)
     var page by mutableStateOf("")        // a page opened from the menu ("settings", "widgets" …), "" = the tabs
     var sub by mutableStateOf("")         // a sub-page of a page ("city" …)
-    fun changed() { version++; Thread { runCatching { Alarms.schedule(act) } }.start() }
+    val folds = mutableStateMapOf<String, Boolean>()     // which heading bars are open (kept while the app runs)
+    fun changed() { version++; Thread { runCatching { Weather.refresh(act); Alarms.schedule(act) } }.start() }
     fun fmt(t: ZonedDateTime) = Alarms.fmt(prefs, t)
 }
 
@@ -302,4 +304,34 @@ fun Card0(content: @Composable ColumnScope.() -> Unit) = Card(
 fun hms(sec: Long): String {
     val a = kotlin.math.abs(sec)
     return Tr.num("%02d:%02d:%02d".format(a / 3600, a / 60 % 60, a % 60))
+}
+
+
+/** a heading bar: tap to open the details below it, tap again to hide them */
+@Composable
+fun Fold(s: AppState, title: String, id: String = title, content: @Composable ColumnScope.() -> Unit) {
+    val key = s.page + "/" + id
+    val open = s.folds[key] == true
+    val bar = MaterialTheme.colorScheme.primary
+    val ink = if (bar.luminance() > .45f) Color(0xFF0B1F24) else Color.White
+    Column(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(bar)
+            .clickable { s.folds[key] = !open }.padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(title, Modifier.weight(1f), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            Icon(if (open) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null, tint = ink)
+        }
+        if (open) Column(content = content)
+    }
+}
+
+/** a heading bar that opens a page of its own */
+@Composable
+fun FoldLink(title: String, go: () -> Unit) {
+    val bar = MaterialTheme.colorScheme.primary
+    val ink = if (bar.luminance() > .45f) Color(0xFF0B1F24) else Color.White
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(bar)
+        .clickable(onClick = go).padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, Modifier.weight(1f), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+        Icon(Icons.Outlined.ChevronRight, null, tint = ink)
+    }
 }

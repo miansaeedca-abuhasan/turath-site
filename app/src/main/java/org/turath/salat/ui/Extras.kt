@@ -17,6 +17,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -131,53 +133,55 @@ fun FastingPage(s: AppState, back: () -> Unit) {
                 }
             }
         }
-        SectionTitle(Tr["ramadan"])
-        Card0 {
-            SwitchRow(Tr["ramadanFast"], pr.ramadan, Tr["ramadanNote"]) { pr.ramadan = it; s.changed() }
+        Fold(s, Tr["ramadan"]) {
+            Card0 {
+                SwitchRow(Tr["ramadanFast"], pr.ramadan, Tr["ramadanNote"]) { pr.ramadan = it; s.changed() }
+            }
         }
-        SectionTitle(Tr["fasting"])
-        Card0 {
-            SwitchRow(Tr["fAshura"], pr.ashura) { pr.ashura = it; s.changed() }
-            SwitchRow(Tr["fArafah"], pr.arafah) { pr.arafah = it; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["monThu"], pr.monThu) { pr.monThu = it; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["beed"], pr.beed, Tr["beedNote"]) { pr.beed = it; s.changed() }
-            HorizontalDivider()
-            SwitchRow(Tr["qaza"], pr.qazaOn, Tr["qazaNote"]) { on ->
-                pr.qazaOn = on; s.changed()
-                if (on) {
-                    // a calendar opens for the first day, then for the last day
-                    val d0 = java.time.LocalDate.now()
-                    android.app.DatePickerDialog(s.act, { _, y, mo, d ->
-                        val from = java.time.LocalDate.of(y, mo + 1, d)
-                        pr.qazaFrom = from.toEpochDay(); if (pr.qazaTo < pr.qazaFrom) pr.qazaTo = pr.qazaFrom; s.changed()
-                        android.app.DatePickerDialog(s.act, { _, y2, mo2, d2 ->
-                            val to = java.time.LocalDate.of(y2, mo2 + 1, d2)
-                            pr.qazaTo = maxOf(to.toEpochDay(), pr.qazaFrom); s.changed()
-                        }, from.year, from.monthValue - 1, from.dayOfMonth).apply { datePicker.minDate = from.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(); setTitle(Tr["qazaTo"]) }.show()
-                    }, d0.year, d0.monthValue - 1, d0.dayOfMonth).apply { setTitle(Tr["qazaFrom"]) }.show()
+        Fold(s, Tr["fasting"]) {
+            Card0 {
+                SwitchRow(Tr["fAshura"], pr.ashura) { pr.ashura = it; s.changed() }
+                SwitchRow(Tr["fArafah"], pr.arafah) { pr.arafah = it; s.changed() }
+                HorizontalDivider()
+                SwitchRow(Tr["monThu"], pr.monThu) { pr.monThu = it; s.changed() }
+                HorizontalDivider()
+                SwitchRow(Tr["beed"], pr.beed, Tr["beedNote"]) { pr.beed = it; s.changed() }
+                HorizontalDivider()
+                SwitchRow(Tr["qaza"], pr.qazaOn, Tr["qazaNote"]) { on ->
+                    pr.qazaOn = on; s.changed()
+                    if (on) {
+                        // a calendar opens for the first day, then for the last day
+                        val d0 = java.time.LocalDate.now()
+                        android.app.DatePickerDialog(s.act, { _, y, mo, d ->
+                            val from = java.time.LocalDate.of(y, mo + 1, d)
+                            pr.qazaFrom = from.toEpochDay(); if (pr.qazaTo < pr.qazaFrom) pr.qazaTo = pr.qazaFrom; s.changed()
+                            android.app.DatePickerDialog(s.act, { _, y2, mo2, d2 ->
+                                val to = java.time.LocalDate.of(y2, mo2 + 1, d2)
+                                pr.qazaTo = maxOf(to.toEpochDay(), pr.qazaFrom); s.changed()
+                            }, from.year, from.monthValue - 1, from.dayOfMonth).apply { datePicker.minDate = from.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli(); setTitle(Tr["qazaTo"]) }.show()
+                        }, d0.year, d0.monthValue - 1, d0.dayOfMonth).apply { setTitle(Tr["qazaFrom"]) }.show()
+                    }
                 }
+                if (pr.qazaOn) {
+                    fun pick(cur: Long, title: String, set: (Long) -> Unit) {
+                        val c = java.time.LocalDate.ofEpochDay(cur)
+                        android.app.DatePickerDialog(s.act, { _, y, mo, d -> set(java.time.LocalDate.of(y, mo + 1, d).toEpochDay()); s.changed() }, c.year, c.monthValue - 1, c.dayOfMonth)
+                            .apply { setTitle(title) }.show()
+                    }
+                    Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaFrom, Tr["qazaFrom"]) { pr.qazaFrom = it; if (pr.qazaTo < it) pr.qazaTo = it } }.padding(vertical = 8.dp)) {
+                        Text(Tr["qazaFrom"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaFrom).toString(), color = MaterialTheme.colorScheme.primary)
+                    }
+                    Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaTo, Tr["qazaTo"]) { pr.qazaTo = maxOf(it, pr.qazaFrom) } }.padding(vertical = 8.dp)) {
+                        Text(Tr["qazaTo"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaTo).toString(), color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                HorizontalDivider()
+                Stepper(Tr["suhoor"] + " — " + Tr["minBeforeFajr"], pr.suhoorBefore, 10, 120) { pr.suhoorBefore = it; s.changed() }
+                Row(Modifier.fillMaxWidth().clickable { suhoorSnd = true }.padding(vertical = 8.dp)) {
+                    Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(pr.suhoorSound), color = MaterialTheme.colorScheme.primary)
+                }
+                Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
             }
-            if (pr.qazaOn) {
-                fun pick(cur: Long, title: String, set: (Long) -> Unit) {
-                    val c = java.time.LocalDate.ofEpochDay(cur)
-                    android.app.DatePickerDialog(s.act, { _, y, mo, d -> set(java.time.LocalDate.of(y, mo + 1, d).toEpochDay()); s.changed() }, c.year, c.monthValue - 1, c.dayOfMonth)
-                        .apply { setTitle(title) }.show()
-                }
-                Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaFrom, Tr["qazaFrom"]) { pr.qazaFrom = it; if (pr.qazaTo < it) pr.qazaTo = it } }.padding(vertical = 8.dp)) {
-                    Text(Tr["qazaFrom"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaFrom).toString(), color = MaterialTheme.colorScheme.primary)
-                }
-                Row(Modifier.fillMaxWidth().clickable { pick(pr.qazaTo, Tr["qazaTo"]) { pr.qazaTo = maxOf(it, pr.qazaFrom) } }.padding(vertical = 8.dp)) {
-                    Text(Tr["qazaTo"], Modifier.weight(1f)); Text(java.time.LocalDate.ofEpochDay(pr.qazaTo).toString(), color = MaterialTheme.colorScheme.primary)
-                }
-            }
-            HorizontalDivider()
-            Stepper(Tr["suhoor"] + " — " + Tr["minBeforeFajr"], pr.suhoorBefore, 10, 120) { pr.suhoorBefore = it; s.changed() }
-            Row(Modifier.fillMaxWidth().clickable { suhoorSnd = true }.padding(vertical = 8.dp)) {
-                Text(Tr["sound"], Modifier.weight(1f)); Text(Tr.snd(pr.suhoorSound), color = MaterialTheme.colorScheme.primary)
-            }
-            Stepper(Tr["iftar"] + " — " + Tr["minBeforeMaghrib"], pr.iftarBefore, 5, 60) { pr.iftarBefore = it; s.changed() }
         }
         Spacer(Modifier.height(20.dp))
     }
@@ -341,7 +345,18 @@ fun AudiosPage(s: AppState, back: () -> Unit) {
             var group = ""
             for ((x, fajr, id) in rows) {
                 val g = when (x.city) { "makkah" -> "gMakkah"; "madinah" -> "gMadinah"; "other" -> "gOther"; "birds" -> "gBirds"; else -> "gPhone" }
-                if (g != group) { group = g; Text(Tr[g], Modifier.padding(start = 20.dp, end = 20.dp, top = 16.dp, bottom = 4.dp), color = MaterialTheme.colorScheme.primary, fontSize = 14.sp, fontWeight = FontWeight.Bold) }
+                if (g != group) {
+                    group = g
+                    val gk = "audios/" + g; val gOpen = s.folds[gk] == true
+                    val bar = MaterialTheme.colorScheme.primary
+                    val ink = if (bar.luminance() > .45f) Color(0xFF0B1F24) else Color.White
+                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(bar)
+                        .clickable { s.folds[gk] = !gOpen }.padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Text(Tr[g], Modifier.weight(1f), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+                        Icon(if (gOpen) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null, tint = ink)
+                    }
+                }
+                if (s.folds["audios/" + g] != true) continue
                 Row(Modifier.fillMaxWidth().clickable {
                     if (playing == id) { Preview.stop(); playing = null }
                     else { Preview.play(ctx, x, fajr) { playing = null }; playing = id }
