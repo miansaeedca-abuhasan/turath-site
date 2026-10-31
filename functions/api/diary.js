@@ -27,11 +27,17 @@ const SCHEMA = [
   'CREATE TABLE IF NOT EXISTS d_sess (token TEXT PRIMARY KEY, user INTEGER NOT NULL, exp INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS d_fail (k TEXT PRIMARY KEY, n INTEGER NOT NULL, ts INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS d_meta (k TEXT PRIMARY KEY, v INTEGER)',
+  'CREATE TABLE IF NOT EXISTS d_pending (email TEXT PRIMARY KEY, data TEXT NOT NULL, salt TEXT NOT NULL, hash TEXT NOT NULL, exp INTEGER NOT NULL, tries INTEGER DEFAULT 0, sent_n INTEGER DEFAULT 1, sent_ts INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS d_student_inst ON d_student (inst)',
   'CREATE INDEX IF NOT EXISTS d_note_user ON d_note (user, seen)',
 ];
 let ready = false;
-async function init(db) { if (ready) return; await db.batch(SCHEMA.map(s => db.prepare(s))); ready = true; }
+async function init(db) {
+  if (ready) return;
+  await db.batch(SCHEMA.map(s => db.prepare(s)));
+  try { await db.prepare('ALTER TABLE d_inst ADD COLUMN email TEXT').run(); } catch (e) {} // already there
+  ready = true;
+}
 
 async function notify(db, inst, user, kind, text) { await db.prepare('INSERT INTO d_note (inst, user, kind, text, ts) VALUES (?,?,?,?,?)').bind(inst, user, kind, str(text, 300), Date.now()).run(); }
 async function principals(db, inst) { return ((await db.prepare("SELECT id FROM d_user WHERE inst=? AND role='principal'").bind(inst).all()).results || []).map(r => r.id); }
@@ -49,6 +55,7 @@ async function sweep(db) {
   const gone = (await db.prepare('SELECT id FROM d_inst WHERE warned_at IS NOT NULL AND warned_at < ? AND last_active < warned_at').bind(now - GRACE).all()).results || [];
   for (const i of gone) await wipe(db, i.id);
   await db.prepare('DELETE FROM d_sess WHERE exp < ?').bind(now).run();
+  await db.prepare('DELETE FROM d_pending WHERE exp < ?').bind(now - 3600000).run();
 }
 async function wipe(db, id) {
   await db.batch([
@@ -75,7 +82,18 @@ async function addUser(db, inst, role, name, uname, pw) {
   return r.meta.last_row_id;
 }
 const unameOk = u => /^[a-z0-9._-]{3,30}$/.test(u);
-const pwOk = p => typeof p === 'string' && p.length >= 6 && p.length <= 100;
+// strong password: at least 10 characters with a letter, a digit and a symbol
+const pwOk = p => typeof p === 'string' && p.length >= 10 && p.length <= 100 && /[A-Za-z\u0600-\u06FF]/.test(p) && /\d/.test(p) && /[^A-Za-z0-9\u0600-\u06FF\s]/.test(p);
+const emailOk = e => /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(e) && e.length <= 254;
+async function sendMail(env, to, code) {
+  if (!env.RESEND_API_KEY) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {method: 'POST', headers: {Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'Hifz Diary verification code / حفظ ڈائری تصدیقی کوڈ',
+        text: 'Your verification code: ' + code + '\nIt is valid for 10 minutes. If you did not ask for it, ignore this message.\n\nآپ کا تصدیقی کوڈ: ' + code + '\nیہ 10 منٹ تک چلے گا۔ اگر آپ نے نہیں مانگا تو اس پیغام کو نظر انداز کریں۔'})});
+    return r.ok;
+  } catch (e) { return false; }
+}
 
 // students the caller may see
 async function myStudents(db, u) {
@@ -103,13 +121,33 @@ export async function onRequest({request, env}) {
     await sweep(db);
     const a = b.a;
 
-    if (a === 'register') {
-      const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase();
-      if (!name || !pname || !unameOk(uname) || !pwOk(b.pw)) return json({error: 'invalid'}, 400);
+    if (a === 'register') { // step 1: check the details, mail a 6-digit code to the principal's email
+      const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase(), email = str(b.email, 254).toLowerCase();
+      if (!name || !pname || !unameOk(uname) || !pwOk(b.pw) || !emailOk(email)) return json({error: !pwOk(b.pw) ? 'weak' : 'invalid'}, 400);
+      const now = Date.now(), old = await db.prepare('SELECT sent_n, sent_ts FROM d_pending WHERE email=?').bind(email).first();
+      if (old && now - old.sent_ts < 3600000 && old.sent_n >= 3) return json({error: 'toomany'}, 429);
+      if (old && now - old.sent_ts < 45000) return json({error: 'wait'}, 429);
+      const code = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000)), salt = rnd(8), pw = {s: rnd(8)};
+      pw.h = await hashPw(b.pw, pw.s);
+      if (!(await sendMail(env, email, code))) return json({error: env.RESEND_API_KEY ? 'mailfail' : 'nomail'}, 503);
+      const n = old && now - old.sent_ts < 3600000 ? old.sent_n + 1 : 1;
+      await db.prepare('INSERT INTO d_pending (email,data,salt,hash,exp,tries,sent_n,sent_ts) VALUES (?,?,?,?,?,0,?,?) ON CONFLICT(email) DO UPDATE SET data=excluded.data, salt=excluded.salt, hash=excluded.hash, exp=excluded.exp, tries=0, sent_n=excluded.sent_n, sent_ts=excluded.sent_ts')
+        .bind(email, JSON.stringify({inst: name, name: pname, uname, pws: pw.s, pwh: pw.h}), salt, await hashPw(code, salt), now + 600000, n, now).run();
+      return json({ok: 1, step: 'verify'});
+    }
+    if (a === 'register_verify') { // step 2: the code from the email creates the institution
+      const email = str(b.email, 254).toLowerCase(), now = Date.now(), p = await db.prepare('SELECT * FROM d_pending WHERE email=?').bind(email).first();
+      if (!p || p.exp < now) return json({error: 'expired'}, 400);
+      if (p.tries >= 5) return json({error: 'toomany'}, 429);
+      await db.prepare('UPDATE d_pending SET tries=tries+1 WHERE email=?').bind(email).run();
+      if (!(await same(await hashPw(str(b.code, 10), p.salt), p.hash))) return json({error: 'badcode'}, 401);
+      const d = JSON.parse(p.data);
       let code; for (let i = 0; i < 8; i++) { code = rnd(3).toUpperCase(); if (!(await db.prepare('SELECT 1 FROM d_inst WHERE code=?').bind(code).first())) break; }
-      const now = Date.now(), r = await db.prepare('INSERT INTO d_inst (code,name,created,last_active) VALUES (?,?,?,?)').bind(code, name, now, now).run();
-      const uid = await addUser(db, r.meta.last_row_id, 'principal', pname, uname, b.pw);
-      return json({ok: 1, code, token: await newSession(db, uid)});
+      const r = await db.prepare('INSERT INTO d_inst (code,name,created,last_active,email) VALUES (?,?,?,?,?)').bind(code, d.inst, now, now, email).run();
+      const iid = r.meta.last_row_id;
+      const ur = await db.prepare('INSERT INTO d_user (inst,role,name,uname,salt,pw,created) VALUES (?,?,?,?,?,?,?)').bind(iid, 'principal', d.name, d.uname, d.pws, d.pwh, now).run();
+      await db.prepare('DELETE FROM d_pending WHERE email=?').bind(email).run();
+      return json({ok: 1, code, token: await newSession(db, ur.meta.last_row_id)});
     }
     if (a === 'login') {
       const code = str(b.code, 10).toUpperCase(), uname = str(b.uname, 30).toLowerCase(), k = code + '|' + uname, now = Date.now();
