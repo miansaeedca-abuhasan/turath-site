@@ -921,7 +921,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=1f63bbb69a", "data/d2.js?h=cad3430944", "data/d3.js?h=c9d57a9601", "data/d4.js?h=ac77337f7f", "data/d5.js?h=0b8e704e6a", "data/d6.js?h=f3d22f4e6c", "data/d7.js?h=093f914ce4", "data/d8.js?h=0951272cb9", "data/d9.js?h=a87873d691", "data/d10.js?h=c9da79aa62"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=4a05d22f34", "data/d2.js?h=5995d26013", "data/d3.js?h=e25a73c6c4", "data/d4.js?h=102599932b", "data/d5.js?h=3c542e7ce3", "data/d6.js?h=21dc70d9d7", "data/d7.js?h=075c80b218", "data/d8.js?h=cf1bd170c1", "data/d9.js?h=c421eb91fe", "data/d10.js?h=52f75580d1"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1546,7 +1546,6 @@ const isHome=()=>{const h=location.hash;return h===''||h==='#/'||h==='#/home';};
 let SCR={};try{SCR=JSON.parse(sessionStorage.scr||'{}')}catch(e){}
 let HDEPTH=0;try{HDEPTH=+sessionStorage.hdepth||0}catch(e){}
 try{history.scrollRestoration='manual'}catch(e){}
-(()=>{const b=document.createElement('button');b.id='totop';b.type='button';b.hidden=true;b.setAttribute('aria-label',X('top'));b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>';b.onclick=()=>scrollTo({top:0,behavior:'smooth'});document.body.append(b);addEventListener('scroll',()=>{b.hidden=scrollY<900;},{passive:true});})();
 let isRestore=false;
 addEventListener('hashchange',e=>{const old=(e.oldURL||'').split('#')[1];if(old!=null){SCR['#'+old]=Math.round(scrollY);const ks=Object.keys(SCR);if(ks.length>80)delete SCR[ks[0]];try{sessionStorage.scr=JSON.stringify(SCR)}catch(x){}}});
 function histMark(){const st=history.state;if(st&&st.i!=null){isRestore=true;HDEPTH=Math.max(HDEPTH,st.i);}else{isRestore=false;HDEPTH++;try{history.replaceState(Object.assign({},st||{},{i:HDEPTH}),'',location.href)}catch(e){}}try{sessionStorage.hdepth=HDEPTH}catch(e){}}
