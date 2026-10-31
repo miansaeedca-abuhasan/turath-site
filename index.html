@@ -7910,6 +7910,8 @@ Object.assign(I.fr, {
   Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
     prog: (a, k, K, r, R) => 'الآية ' + UD(a) + ' — المرة ' + UD(k) + '/' + UD(K) + (R > 1 ? ' — الدورة ' + UD(r) + '/' + UD(R) : ''), errAudio: 'تعذّر تشغيل الصوت. تحقق من الإنترنت.', wordFail: 'تعذّر تشغيل هذه الكلمة.', done2: 'تم',
     openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم.', startNew: 'ابدأ', again2: 'مرة أخرى'});
+  const DIARY = {t: {ur: 'حفظ ڈائری (استاد، والدین اور پرنسپل کے لیے)', ar: 'دفتر الحفظ (للمعلم وولي الأمر والمدير)', en: 'Hifz diary (for teachers, parents and principals)'},
+    s: {ur: 'روزانہ سبق، سبقی اور منزل کا اندراج اور رپورٹ کارڈ — مفت', ar: 'تسجيل الدرس اليومي والمراجعة وبطاقة التقرير — مجاني', en: 'Daily lesson, revision and manzil entries with a report card — free'}};
   const L = () => S[ui] || S.en;
   const $q = () => document.querySelector('#qv');
   const Qn = () => window.QURAN;
@@ -8077,7 +8079,8 @@ Object.assign(I.fr, {
     const la = lastRange();
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
-      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('timer', 'exam', '#/hifz/exam'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')));
+      E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('timer', 'exam', '#/hifz/exam'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')),
+      E('a', {class: 'card', href: 'diary.html', style: 'display:block;padding:14px 16px;margin-top:12px;text-decoration:none;color:inherit'}, E('b', {}, DIARY.t[ui] || DIARY.t.en), E('div', {style: 'opacity:.75;font-size:.9em'}, DIARY.s[ui] || DIARY.s.en)));
   }
   const rangeName = x => Qn().sName(x.s) + ' ' + UD(x.f) + (x.t !== x.f ? '–' + UD(x.t) : '');
   function lessonRow(x, compact) {

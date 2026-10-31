@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>حفظ ڈائری — تراث خيرالقرون</title>
+<style>
+@font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
+@font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
+:root{--ink:#16222c;--muted:#5d6b75;--paper:#f3f6fa;--card:#fff;--accent:#0c5c6e;--line:#d8e0e8;--good:#1b7a3d;--mid:#b7791f;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--ink:#e8eceb;--muted:#9aa8b0;--paper:#0f161b;--card:#18222a;--accent:#74b6e6;--line:#2c3a45;--good:#6fcf8f;--mid:#e0b25a;--bad:#f08a80}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 system-ui,sans-serif}
+html[lang=ur] body{font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;line-height:2.1}
+main{max-width:820px;margin:0 auto;padding:12px 14px 60px}
+header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px 0}
+header h1{font-size:1.25rem;margin:0;flex:1;color:var(--accent)}
+.card{background:var(--card);border-radius:14px;padding:14px 16px;margin:12px 0;box-shadow:0 1px 8px rgba(20,40,70,.08)}
+h2{font-size:1.05rem;color:var(--accent);margin:.2rem 0 .5rem}
+button,select,input,textarea{font:inherit;color:inherit}
+button{background:var(--accent);color:#fff;border:0;border-radius:10px;padding:8px 16px;cursor:pointer}
+@media (prefers-color-scheme:dark){button{color:#0f161b}}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button.bad{background:var(--bad);color:#fff}
+button.sm{padding:3px 10px;font-size:.9rem}
+input,select,textarea{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:4px 0 8px}
+label{display:block;font-size:.92rem;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1 1 140px}
+.tabs button{flex:1}
+.stu{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid var(--line);cursor:pointer}
+.stu:last-child{border:0}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line);flex:none}
+.dot.on{background:var(--good)}.dot.ab{background:var(--mid)}
+.muted{color:var(--muted);font-size:.9rem}
+.big{display:flex;gap:6px}
+.big button{flex:1;background:var(--paper);color:var(--ink);border:1px solid var(--line)}
+.big button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media (prefers-color-scheme:dark){.big button.on{color:#0f161b}}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:46px;padding:6px 0;font-size:1.3rem}
+.step input{text-align:center;width:90px;margin:0}
+.badge{background:var(--bad);color:#fff;border-radius:99px;padding:0 8px;font-size:.8rem}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{border:1px solid var(--line);padding:4px 6px;text-align:center}
+th{background:var(--paper)}
+.err{color:var(--bad);min-height:1.5em}
+.hide{display:none}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:14px;z-index:5}
+.modal>div{background:var(--card);border-radius:14px;padding:16px;width:100%;max-width:520px}
+.code{font-family:monospace;letter-spacing:.15em;font-weight:bold;direction:ltr;display:inline-block}
+@media print{header,.noprint,button{display:none!important}body{background:#fff;color:#000}.card{box-shadow:none;border:1px solid #999}}
+</style>
+</head>
+<body><main>
+<header class="noprint"><h1 id="ttl"></h1><button class="sec sm" id="lang"></button><button class="sec sm hide" id="bell"></button><button class="sec sm hide" id="out"></button></header>
+<div id="app"></div>
+<p class="muted noprint" id="foot" style="text-align:center"></p>
+</main>
+<script>
+const L={ur:{
+title:'حفظ ڈائری',foot:'مفت سہولت — فی سبیل اللہ۔ بچوں کا ڈیٹا صرف آپ کے ادارے کے پاس رہتا ہے۔',lang:'English',out:'باہر نکلیں',
+login:'لاگ ان',reg:'نیا ادارہ بنائیں',code:'ادارے کا کوڈ',uname:'صارف نام (چھوٹے انگریزی حروف اور ہندسے)',pw:'پاس ورڈ (کم از کم 6)',
+inst:'ادارے کا نام',pname:'پرنسپل کا نام',go:'آگے بڑھیں',bad:'کوڈ، صارف نام یا پاس ورڈ غلط ہے',locked:'بہت زیادہ غلط کوششیں۔ 15 منٹ بعد دوبارہ کوشش کریں',
+invalid:'معلومات درست نہیں',exists:'یہ صارف نام پہلے سے موجود ہے',server:'سرور میں خرابی، دوبارہ کوشش کریں',
+regnote:'نیا ادارہ بنانے کے بعد ایک کوڈ ملے گا۔ استاد اور والدین اسی کوڈ سے لاگ ان کریں گے۔ اگر ادارہ ایک ماہ تک استعمال نہ ہوا تو پرنسپل کو اطلاع دی جائے گی، اور 5 دن میں بھی استعمال نہ ہوا تو ادارے کا ڈیٹا مٹا دیا جائے گا۔',
+yourcode:'آپ کے ادارے کا کوڈ',sharecode:'یہ کوڈ استادوں اور والدین کو دیں',
+teachers:'استاد',students:'طلبہ',addteacher:'استاد شامل کریں',addstudent:'طالب علم شامل کریں',sname:'طالب علم کا نام',
+tname:'استاد کا نام',pn:'والد/سرپرست کا نام',pu:'والد کا صارف نام',ppw:'والد کا پاس ورڈ',noparent:'(خالی چھوڑیں تو والدین کا اکاؤنٹ نہیں بنے گا)',
+teacher:'استاد',save:'محفوظ کریں',cancel:'بند کریں',date:'تاریخ',absent:'غیر حاضر',
+sabaq:'سبق',lines:'سنائی گئی لائنیں',q:'کیفیت',q3:'بہت اچھا',q2:'اچھا',q1:'کمزور',
+sabqi:'سبقی پارہ',manzil:'منزل',para:'پارہ',err:'غلطیاں',note:'نوٹ (اختیاری)',
+done:'اندراج ہو چکا',todo:'باقی',report:'رپورٹ کارڈ',month:'مہینہ',print:'چھاپیں',
+present:'حاضر دن',absentd:'غیر حاضر دن',tl:'کل لائنیں',avgq:'سبق کی اوسط کیفیت',avgs:'سبقی میں اوسط غلطیاں',avgm:'منزل میں اوسط غلطیاں',grade:'مجموعی درجہ',
+g3:'ممتاز',g2:'اچھا',g1:'محنت درکار',noent:'اس مہینے کا کوئی اندراج نہیں',
+notes:'اطلاعات',nonotes:'کوئی اطلاع نہیں',
+n_new:(a)=>`${a.by} نے ${a.s} کا ${a.d} کا اندراج کیا`,n_edit:(a)=>`${a.by} نے ${a.s} کا ${a.d} کا اندراج تبدیل کیا`,
+n_warn:'آپ کا ادارہ ایک ماہ سے استعمال نہیں ہوا۔ 5 دن میں استعمال نہ ہوا تو ادارے کا ڈیٹا مٹا دیا جائے گا۔ لاگ ان کرنے سے یہ ہدایت ختم ہو جاتی ہے۔',
+settings:'ترتیبات',newpw:'نیا پاس ورڈ',chpw:'پاس ورڈ بدلیں',pwdone:'پاس ورڈ بدل گیا',
+delinst:'پورا ادارہ مٹائیں',delconf:'تصدیق کے لیے ادارے کا کوڈ لکھیں',delwarn:'یہ سب طلبہ، استاد اور اندراجات ہمیشہ کے لیے مٹا دے گا۔',
+remove:'طالب علم ہٹائیں',rmconf:'یہ طالب علم اور اس کا سارا ریکارڈ مٹ جائے گا۔ جاری رکھیں؟',
+nostu:'ابھی کوئی طالب علم نہیں',noteach:'ابھی کوئی استاد نہیں',children:'میرے بچے',parentacc:'والدین کا اکاؤنٹ',
+role_principal:'پرنسپل',role_teacher:'استاد',role_parent:'والد/سرپرست',reset:'والد کا پاس ورڈ بدلیں',
+sabaq_avg:'سبق',days:'دن',unit:'لائن',
+},en:{
+title:'Hifz Diary',foot:'A free service. Children\'s data stays with your institution only.',lang:'اردو',out:'Log out',
+login:'Log in',reg:'Create institution',code:'Institution code',uname:'Username (lowercase letters and digits)',pw:'Password (at least 6)',
+inst:'Institution name',pname:'Principal\'s name',go:'Continue',bad:'Wrong code, username or password',locked:'Too many wrong attempts. Try again in 15 minutes',
+invalid:'Invalid information',exists:'This username already exists',server:'Server error, please try again',
+regnote:'After creating the institution you get a code. Teachers and parents log in with that code. If the institution is unused for one month the principal is notified, and if it stays unused for 5 more days its data is deleted.',
+yourcode:'Your institution code',sharecode:'Give this code to teachers and parents',
+teachers:'Teachers',students:'Students',addteacher:'Add teacher',addstudent:'Add student',sname:'Student name',
+tname:'Teacher name',pn:'Parent / guardian name',pu:'Parent username',ppw:'Parent password',noparent:'(leave empty to skip creating a parent account)',
+teacher:'Teacher',save:'Save',cancel:'Close',date:'Date',absent:'Absent',
+sabaq:'Sabaq (new lesson)',lines:'Lines recited',q:'Quality',q3:'Excellent',q2:'Good',q1:'Weak',
+sabqi:'Sabqi (recent revision)',manzil:'Manzil (old revision)',para:'Para',err:'Mistakes',note:'Note (optional)',
+done:'Entered',todo:'Pending',report:'Report card',month:'Month',print:'Print',
+present:'Days present',absentd:'Days absent',tl:'Total lines',avgq:'Average sabaq quality',avgs:'Average sabqi mistakes',avgm:'Average manzil mistakes',grade:'Overall grade',
+g3:'Excellent',g2:'Good',g1:'Needs effort',noent:'No entries this month',
+notes:'Notifications',nonotes:'No notifications',
+n_new:(a)=>`${a.by} entered ${a.d} for ${a.s}`,n_edit:(a)=>`${a.by} changed the entry of ${a.d} for ${a.s}`,
+n_warn:'Your institution has not been used for a month. If it stays unused for 5 more days its data will be deleted. Logging in cancels this.',
+settings:'Settings',newpw:'New password',chpw:'Change password',pwdone:'Password changed',
+delinst:'Delete the whole institution',delconf:'Type the institution code to confirm',delwarn:'This permanently deletes all students, teachers and entries.',
+remove:'Remove student',rmconf:'This student and all of his records will be deleted. Continue?',
+nostu:'No students yet',noteach:'No teachers yet',children:'My children',parentacc:'Parent account',
+role_principal:'Principal',role_teacher:'Teacher',role_parent:'Parent',reset:'Change parent password',
+}};
+let lg=(()=>{try{return localStorage.getItem('dlang')||'ur'}catch(e){return 'ur'}})(),tk=(()=>{try{return localStorage.getItem('dtk')||''}catch(e){return ''}})(),ME=null,today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+const T=k=>L[lg][k],$=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>String(n);
+async function api(b){
+  try{const r=await fetch('/api/diary',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify(b)});
+    const j=await r.json().catch(()=>({error:'server'}));if(r.status===401&&j.error==='auth'){tk='';try{localStorage.removeItem('dtk')}catch(e){}ME=null;auth();return {error:'auth'}}return j;}catch(e){return {error:'server'}}
+}
+function setTk(t){tk=t;try{localStorage.setItem('dtk',t)}catch(e){}}
+function shell(){document.documentElement.lang=lg;document.documentElement.dir=lg==='ur'?'rtl':'ltr';$('#ttl').textContent=T('title');$('#lang').textContent=T('lang');$('#out').textContent=T('out');$('#foot').textContent=T('foot');document.title=T('title')+' — Turath Khair al-Quroon'}
+$('#lang').onclick=()=>{lg=lg==='ur'?'en':'ur';try{localStorage.setItem('dlang',lg)}catch(e){}shell();ME?home():auth()};
+$('#out').onclick=async()=>{await api({a:'logout'});setTk('');ME=null;auth()};
+$('#bell').onclick=()=>notes();
+function chrome(){ $('#out').classList.toggle('hide',!ME);$('#bell').classList.toggle('hide',!ME);if(ME)$('#bell').innerHTML=T('notes')+(ME.unseen?` <span class="badge">${ME.unseen}</span>`:'') }
+function msg(e){return T(e)||T('server')}
+
+/* ---------- login / register ---------- */
+function auth(mode){
+  mode=mode||'login';shell();chrome();
+  $('#app').innerHTML=`<div class="card"><div class="row tabs"><button class="${mode==='login'?'':'sec'}" id="t1">${T('login')}</button><button class="${mode==='reg'?'':'sec'}" id="t2">${T('reg')}</button></div>
+  ${mode==='reg'?`<p class="muted">${T('regnote')}</p><label>${T('inst')}</label><input id="f_i" maxlength="80"><label>${T('pname')}</label><input id="f_n" maxlength="60">`:`<label>${T('code')}</label><input id="f_c" maxlength="10" dir="ltr" autocapitalize="characters">`}
+  <label>${T('uname')}</label><input id="f_u" dir="ltr" autocapitalize="none" maxlength="30"><label>${T('pw')}</label><input id="f_p" type="password" dir="ltr">
+  <div class="err" id="e"></div><button id="go">${T('go')}</button></div>`;
+  $('#t1').onclick=()=>auth('login');$('#t2').onclick=()=>auth('reg');
+  $('#go').onclick=async()=>{
+    $('#go').disabled=true;let r;
+    if(mode==='reg'){r=await api({a:'register',inst:$('#f_i').value,name:$('#f_n').value,uname:$('#f_u').value,pw:$('#f_p').value});if(r.ok){setTk(r.token);await load();return home(true)}}
+    else{r=await api({a:'login',code:$('#f_c').value,uname:$('#f_u').value,pw:$('#f_p').value});if(r.ok){setTk(r.token);await load();return home()}}
+    $('#go').disabled=false;$('#e').textContent=msg(r.error==='login'?'bad':r.error);
+  };
+}
+async function load(){const r=await api({a:'me'});if(r.user){ME=r;return true}return false}
+
+/* ---------- home ---------- */
+function home(first){
+  shell();chrome();const u=ME.user,p=u.role==='principal',t=u.role==='teacher',pa=u.role==='parent';
+  let h=`<div class="card"><b>${esc(ME.inst.name)}</b> — ${esc(u.name)} <span class="muted">(${T('role_'+u.role)})</span>`;
+  if(p)h+=`<div class="muted">${T('yourcode')}: <span class="code">${esc(ME.inst.code)}</span><br>${T('sharecode')}</div>`;
+  h+='</div>';
+  if(t||p){
+    h+=`<div class="card"><div class="row"><div><label>${T('date')}</label><input type="date" id="dt" value="${esc(sel||today)}" max="${today}"></div></div><div id="stu"></div><p><button id="addS">${T('addstudent')}</button></p></div>`;
+  }
+  if(pa)h+=`<div class="card"><h2>${T('children')}</h2><div id="stu"></div></div>`;
+  if(p){
+    h+=`<div class="card"><h2>${T('teachers')}</h2>${ME.teachers.length?ME.teachers.map(x=>`<div class="stu" style="cursor:default"><span style="flex:1">${esc(x.name)} <span class="muted" dir="ltr">${esc(x.uname)}</span></span><button class="sec sm" data-pw="${x.id}">${T('chpw')}</button></div>`).join(''):`<p class="muted">${T('noteach')}</p>`}<p><button id="addT">${T('addteacher')}</button></p></div>`;
+  }
+  h+=`<div class="card noprint"><h2>${T('settings')}</h2><div class="row"><input id="np" type="password" dir="ltr" placeholder="${T('newpw')}"><button class="sec" id="chp">${T('chpw')}</button></div><div class="err" id="pe"></div>${p?`<button class="bad sm" id="del">${T('delinst')}</button>`:''}</div>`;
+  $('#app').innerHTML=h;
+  if(t||p){$('#dt').onchange=e=>{sel=e.target.value||today;drawStu()};$('#addS').onclick=addStudent}
+  if(p){$('#addT').onclick=addTeacher;document.querySelectorAll('[data-pw]').forEach(b=>b.onclick=()=>resetPw(+b.dataset.pw))}
+  $('#chp').onclick=async()=>{const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
+  if(p)$('#del').onclick=delInst;
+  drawStu();
+}
+let sel='',DAYS={};
+async function drawStu(){
+  const box=$('#stu');if(!box)return;const u=ME.user,pa=u.role==='parent';
+  if(!ME.students.length){box.innerHTML=`<p class="muted">${T('nostu')}</p>`;return}
+  if(!pa){const r=await api({a:'day',day:sel||today});DAYS=r.day||{}}
+  box.innerHTML=ME.students.map(s=>{const e=DAYS[s.id];return `<div class="stu" data-s="${s.id}"><span class="dot ${e?(e.absent?'ab':'on'):''}"></span><span style="flex:1">${esc(s.name)}${u.role==='principal'&&s.teacher_name?` <span class="muted">— ${esc(s.teacher_name)}</span>`:''}</span><span class="muted">${pa?T('report'):e?(e.absent?T('absent'):T('done')):T('todo')}</span></div>`}).join('');
+  box.querySelectorAll('.stu').forEach(d=>d.onclick=()=>{const s=ME.students.find(x=>x.id==d.dataset.s);pa?reportView(s):entry(s)});
+}
+
+/* ---------- modal helper ---------- */
+function modal(html){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div>${html}</div>`;m.addEventListener('click',e=>{if(e.target===m)m.remove()});document.body.appendChild(m);return m}
+
+/* ---------- daily entry ---------- */
+function stepper(id,v,max){return `<div class="step"><button type="button" data-d="-1" data-t="${id}">−</button><input id="${id}" type="number" inputmode="numeric" min="0" max="${max}" value="${v==null?'':v}"><button type="button" data-d="1" data-t="${id}">+</button></div>`}
+function paraSel(id,v){return `<select id="${id}"><option value=""></option>${Array.from({length:30},(_,i)=>`<option value="${i+1}"${v==i+1?' selected':''}>${i+1}</option>`).join('')}</select>`}
+function entry(s){
+  const d=sel||today,e=DAYS[s.id]||{};let last={};try{last=JSON.parse(localStorage.getItem('dl'+s.id)||'{}')}catch(x){}
+  const sp=e.sabqi_para!=null?e.sabqi_para:last.sp,mp=e.manzil_para!=null?e.manzil_para:last.mp;let q=e.sabaq_q||3,ab=!!e.absent;
+  const m=modal(`<h2>${esc(s.name)} <span class="muted">${esc(d)}</span></h2>
+  <label><input type="checkbox" id="ab" style="width:auto"${ab?' checked':''}> ${T('absent')}</label>
+  <div id="fm"><h2>${T('sabaq')}</h2><label>${T('lines')}</label>${stepper('sl',e.sabaq_lines,999)}<label>${T('q')}</label><div class="big" id="qq">${[3,2,1].map(n=>`<button type="button" data-q="${n}" class="${q===n?'on':''}">${T('q'+n)}</button>`).join('')}</div>
+  <h2>${T('sabqi')}</h2><div class="row"><div><label>${T('para')}</label>${paraSel('sp',sp)}</div><div><label>${T('err')}</label>${stepper('se',e.sabqi_err,999)}</div></div>
+  <h2>${T('manzil')}</h2><div class="row"><div><label>${T('para')}</label>${paraSel('mp',mp)}</div><div><label>${T('err')}</label>${stepper('me',e.manzil_err,999)}</div></div></div>
+  <label>${T('note')}</label><input id="nt" maxlength="200" value="${esc(e.note||'')}"><div class="err" id="e"></div>
+  <div class="row"><button id="sv">${T('save')}</button><button class="sec" id="rp">${T('report')}</button><button class="sec" id="cl">${T('cancel')}</button></div>
+  ${ME.user.role==='principal'?`<p><button class="bad sm" id="rm">${T('remove')}</button></p>`:''}`);
+  const fm=m.querySelector('#fm');fm.style.display=ab?'none':'';
+  m.querySelector('#ab').onchange=x=>{ab=x.target.checked;fm.style.display=ab?'none':''};
+  m.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const i=m.querySelector('#'+b.dataset.t);i.value=Math.max(0,(+i.value||0)+(+b.dataset.d))});
+  m.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q=+b.dataset.q;m.querySelectorAll('[data-q]').forEach(x=>x.classList.toggle('on',x===b))});
+  m.querySelector('#cl').onclick=()=>m.remove();m.querySelector('#rp').onclick=()=>{m.remove();reportView(s)};
+  if(m.querySelector('#rm'))m.querySelector('#rm').onclick=async()=>{if(!confirm(T('rmconf')))return;await api({a:'remove_student',student:s.id});m.remove();await load();home()};
+  m.querySelector('#sv').onclick=async()=>{
+    const v=i=>m.querySelector('#'+i).value;
+    const r=await api({a:'save',student:s.id,day:d,absent:ab,sabaq_lines:v('sl'),sabaq_q:q,sabqi_para:v('sp'),sabqi_err:v('sp')?(v('se')||0):v('se'),manzil_para:v('mp'),manzil_err:v('mp')?(v('me')||0):v('me'),note:v('nt')});
+    if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}
+    try{localStorage.setItem('dl'+s.id,JSON.stringify({sp:v('sp'),mp:v('mp')}))}catch(x){}
+    m.remove();drawStu();
+  };
+}
+
+/* ---------- add teacher / student / reset ---------- */
+function addTeacher(){
+  const m=modal(`<h2>${T('addteacher')}</h2><label>${T('tname')}</label><input id="a" maxlength="60"><label>${T('uname')}</label><input id="b" dir="ltr" autocapitalize="none"><label>${T('pw')}</label><input id="c" type="password" dir="ltr"><div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
+  m.querySelector('#x').onclick=()=>m.remove();
+  m.querySelector('#s').onclick=async()=>{const r=await api({a:'add_teacher',name:m.querySelector('#a').value,uname:m.querySelector('#b').value,pw:m.querySelector('#c').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}m.remove();await load();home()};
+}
+function addStudent(){
+  const p=ME.user.role==='principal';
+  const m=modal(`<h2>${T('addstudent')}</h2><label>${T('sname')}</label><input id="a" maxlength="60">
+  ${p?`<label>${T('teacher')}</label><select id="t"><option value=""></option>${ME.teachers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`:''}
+  <h2>${T('parentacc')}</h2><p class="muted">${T('noparent')}</p><label>${T('pn')}</label><input id="pn" maxlength="60"><label>${T('pu')}</label><input id="pu" dir="ltr" autocapitalize="none"><label>${T('ppw')}</label><input id="pp" type="password" dir="ltr">
+  <div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
+  m.querySelector('#x').onclick=()=>m.remove();
+  m.querySelector('#s').onclick=async()=>{const g=i=>m.querySelector('#'+i);const r=await api({a:'add_student',name:g('a').value,teacher:p?g('t').value:null,parent_name:g('pn').value,parent_uname:g('pu').value,parent_pw:g('pp').value});if(!r.ok){g('e').textContent=msg(r.error);return}m.remove();await load();home()};
+}
+function resetPw(id){
+  const m=modal(`<h2>${T('chpw')}</h2><label>${T('newpw')}</label><input id="a" type="password" dir="ltr"><div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
+  m.querySelector('#x').onclick=()=>m.remove();
+  m.querySelector('#s').onclick=async()=>{const r=await api({a:'passwd',user:id,pw:m.querySelector('#a').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}m.remove()};
+}
+function delInst(){
+  const m=modal(`<h2>${T('delinst')}</h2><p class="muted">${T('delwarn')}</p><label>${T('delconf')}</label><input id="a" dir="ltr"><div class="err" id="e"></div><div class="row"><button class="bad" id="s">${T('delinst')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
+  m.querySelector('#x').onclick=()=>m.remove();
+  m.querySelector('#s').onclick=async()=>{const r=await api({a:'delete_inst',code:m.querySelector('#a').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}setTk('');ME=null;m.remove();auth()};
+}
+
+/* ---------- notifications ---------- */
+async function notes(){
+  const r=await api({a:'notes'});ME.unseen=0;chrome();
+  const li=(r.notes||[]).map(n=>{let t='';try{if(n.kind==='warn')t=T('n_warn');else{const a=JSON.parse(n.text);t=T(a.edit?'n_edit':'n_new')(a)}}catch(e){}
+    return `<div class="stu" style="cursor:default${n.seen?'':';font-weight:bold'}"><span style="flex:1">${esc(t)}<div class="muted">${new Date(n.ts).toLocaleString(lg==='ur'?'ur-PK':'en-GB')}</div></span></div>`}).join('');
+  const m=modal(`<h2>${T('notes')}</h2>${li||`<p class="muted">${T('nonotes')}</p>`}<p><button class="sec" id="x">${T('cancel')}</button></p>`);m.querySelector('#x').onclick=()=>m.remove();
+}
+
+/* ---------- report card ---------- */
+async function reportView(s,month){
+  month=month||today.slice(0,7);
+  const from=month+'-01',to=month+'-31',r=await api({a:'entries',student:s.id,from,to}),E=r.entries||[];
+  const pres=E.filter(e=>!e.absent),abs=E.length-pres.length,sum=k=>pres.reduce((a,e)=>a+(e[k]||0),0),avg=(k,f)=>{const v=pres.filter(e=>e[k]!=null);return v.length?(v.reduce((a,e)=>a+e[k],0)/v.length):null},f1=x=>x==null?'—':(Math.round(x*10)/10).toString();
+  const aq=avg('sabaq_q'),as=avg('sabqi_err'),am=avg('manzil_err');
+  let g=null;if(aq!=null){const sc=(aq-1)/2*0.5+(1-Math.min(((as||0)+(am||0))/2,6)/6)*0.5;g=sc>=.75?3:sc>=.5?2:1}
+  const qn=n=>n?T('q'+n):'—';
+  const m=modal(`<div id="rc"><h2>${T('report')}</h2><p><b>${esc(s.name)}</b> — ${esc(ME.inst.name)}</p><div class="noprint"><label>${T('month')}</label><input type="month" id="mo" value="${month}" max="${today.slice(0,7)}"></div>
+  ${E.length?`<table><tr><th>${T('present')}</th><th>${T('absentd')}</th><th>${T('tl')}</th><th>${T('avgq')}</th><th>${T('avgs')}</th><th>${T('avgm')}</th></tr><tr><td>${pres.length}</td><td>${abs}</td><td>${sum('sabaq_lines')}</td><td>${aq==null?'—':qn(Math.round(aq))}</td><td>${f1(as)}</td><td>${f1(am)}</td></tr></table>
+  <p><b>${T('grade')}:</b> ${g?T('g'+g):'—'}</p>
+  <table><tr><th>${T('date')}</th><th>${T('sabaq')}</th><th>${T('q')}</th><th>${T('sabqi')}</th><th>${T('manzil')}</th></tr>
+  ${E.map(e=>e.absent?`<tr><td>${e.day.slice(8)}</td><td colspan="4">${T('absent')}</td></tr>`:`<tr><td>${e.day.slice(8)}</td><td>${e.sabaq_lines==null?'—':e.sabaq_lines}</td><td>${qn(e.sabaq_q)}</td><td>${e.sabqi_para||'—'}: ${e.sabqi_err==null?'—':e.sabqi_err}</td><td>${e.manzil_para||'—'}: ${e.manzil_err==null?'—':e.manzil_err}</td></tr>`).join('')}</table>`:`<p class="muted">${T('noent')}</p>`}
+  <p class="row noprint"><button id="pr">${T('print')}</button><button class="sec" id="x">${T('cancel')}</button></p></div>`);
+  m.querySelector('#x').onclick=()=>m.remove();m.querySelector('#pr').onclick=()=>window.print();
+  m.querySelector('#mo').onchange=e=>{if(e.target.value){m.remove();reportView(s,e.target.value)}};
+}
+
+shell();
+(async()=>{if(tk&&await load())home();else auth()})();
+</script>
+</body>
+</html>
