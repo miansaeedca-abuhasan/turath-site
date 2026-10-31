@@ -916,7 +916,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=1f63bbb69a", "data/d2.js?h=cad3430944", "data/d3.js?h=c9d57a9601", "data/d4.js?h=ac77337f7f", "data/d5.js?h=0b8e704e6a", "data/d6.js?h=f3d22f4e6c", "data/d7.js?h=093f914ce4", "data/d8.js?h=36c5663685", "data/d9.js?h=a87873d691", "data/d10.js?h=c9da79aa62"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=1f63bbb69a", "data/d2.js?h=cad3430944", "data/d3.js?h=c9d57a9601", "data/d4.js?h=ac77337f7f", "data/d5.js?h=0b8e704e6a", "data/d6.js?h=f3d22f4e6c", "data/d7.js?h=093f914ce4", "data/d8.js?h=0951272cb9", "data/d9.js?h=a87873d691", "data/d10.js?h=c9da79aa62"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1204,6 +1204,7 @@ const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||nu
 function hTiles(){
   const g=el('div',{class:'tiles'});
   g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),hTile('hsearch',T('hsTile'),null,'#/hs'),
+    hTile('read',T('qaTile'),null,'#/qa'),
     hTile('bm0',T('bm'),null,'#/bm'),hTile('translate',T('hBooks'),pickBook),
     hTile('read',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
     hTile('layers',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
@@ -1791,7 +1792,7 @@ function route(){
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
-  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
+  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(ow)OWNER.route();
@@ -1807,6 +1808,7 @@ function route(){
   else if(hb)showBookList((h.match(/^#\/hb\/c\/(\d+)/)||[])[1],(h.match(/^#\/hb\/a\/([a-z0-9]+)/)||[])[1],h==='#/hb/a',h==='#/hb/t');
   else if(gs)COLL.showSearch();
   else if(hs)COLL.showHadithSearch();
+  else if(qa)COLL.showQA();
   else if(cm)CMP.route(h);
   else if(x)showExt(decodeURIComponent(x[1]),x[2]);
   else if(m)showHadith(m[1]);
@@ -4034,6 +4036,19 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   if (I.ar) Object.assign(I.ar, {hsTile: 'البحث الحديثي', hsTitle: 'البحث الحديثي — مع الحكم', hsPlace: 'اكتب ألفاظ الحديث، مثل: لا تغضب', hsHint: 'يُبحث أولًا في جميع كتب هذا الموقع، ثم في الموسوعة الحديثية (الدرر السنية) مع أحكام المحدثين.',
     hsSite: 'في كتب تراث خير القرون', hsDorar: 'الموسوعة الحديثية (الدرر السنية) — مع الحكم', hsGrade: 'خلاصة حكم المحدث', hsRawi: 'الراوي', hsMuh: 'المحدث', hsSrc: 'المصدر', hsNo: 'الصفحة أو الرقم',
     hsOpenDorar: 'افتح في الدرر السنية', hsDorarErr: 'تعذّر جلب النتائج من الدرر السنية. افتحها مباشرة من الزر أدناه.', hsDorarSrc: 'هذه النتائج من خدمة الموسوعة الحديثية — الدرر السنية (dorar.net).'});
+  const QAN = {ur: 'اسلام سوال و جواب', ar: 'الإسلام سؤال وجواب', en: 'Islam Question & Answer', bn: 'ইসলাম প্রশ্ন ও উত্তর', hi: 'इस्लाम सवाल जवाब', gu: 'ઇસ્લામ પ્રશ્ન અને જવાબ', fr: 'Islam Question Réponse'};
+  const QAS = {
+    ur: {qaPlace: 'اپنا مسئلہ یا سوال لکھیں، مثلاً: نماز میں سہو', qaHint: 'فتاویٰ اور سوالات کے جوابات «اسلام سوال و جواب» (islamqa.info) کی سائٹ پر تلاش ہوں گے اور وہیں کھلیں گے۔', qaGo: 'تلاش کریں', qaOpen: 'سائٹ کھولیں', hsMore: 'دوسری سائٹوں پر اسی لفظ کی تلاش', hsTurath: 'تراث پر تلاش', hsShamela: 'شاملہ پر تلاش', hsQa: 'فتاویٰ و جوابات میں تلاش'},
+    en: {qaPlace: 'Type your question, e.g. forgetfulness in prayer', qaHint: 'Fatwas and answers are searched on the «Islam Question & Answer» site (islamqa.info) and open there.', qaGo: 'Search', qaOpen: 'Open the site', hsMore: 'Search the same words on other sites', hsTurath: 'Search on Turath', hsShamela: 'Search on Shamela', hsQa: 'Search fatwas and answers'},
+    ar: {qaPlace: 'اكتب سؤالك، مثل: سجود السهو', qaHint: 'يُبحث في الفتاوى والأجوبة على موقع «الإسلام سؤال وجواب» (islamqa.info) وتُفتح هناك.', qaGo: 'بحث', qaOpen: 'افتح الموقع', hsMore: 'ابحث بالكلمات نفسها في مواقع أخرى', hsTurath: 'البحث في تراث', hsShamela: 'البحث في الشاملة', hsQa: 'البحث في الفتاوى والأجوبة'},
+    bn: {qaPlace: 'আপনার প্রশ্ন লিখুন, যেমন: নামাজে ভুলে যাওয়া', qaHint: 'ফতোয়া ও প্রশ্নোত্তর «ইসলাম প্রশ্ন ও উত্তর» সাইটে (islamqa.info) খোঁজা হবে এবং সেখানেই খুলবে।', qaGo: 'খুঁজুন', qaOpen: 'সাইট খুলুন', hsMore: 'অন্য সাইটে একই শব্দ খুঁজুন', hsTurath: 'তুরাসে খুঁজুন', hsShamela: 'শামেলায় খুঁজুন', hsQa: 'ফতোয়া ও উত্তরে খুঁজুন'},
+    hi: {qaPlace: 'अपना सवाल लिखें, जैसे: नमाज़ में भूल', qaHint: 'फ़तवे और जवाब «इस्लाम सवाल जवाब» साइट (islamqa.info) पर खोजे जाएँगे और वहीं खुलेंगे।', qaGo: 'खोजें', qaOpen: 'साइट खोलें', hsMore: 'दूसरी साइटों पर यही शब्द खोजें', hsTurath: 'तुरास पर खोजें', hsShamela: 'शामिला पर खोजें', hsQa: 'फ़तवों और जवाबों में खोजें'},
+    gu: {qaPlace: 'તમારો પ્રશ્ન લખો, જેમ કે: નમાઝમાં ભૂલ', qaHint: 'ફતવા અને જવાબ «ઇસ્લામ પ્રશ્ન અને જવાબ» સાઇટ (islamqa.info) પર શોધાશે અને ત્યાં જ ખૂલશે.', qaGo: 'શોધો', qaOpen: 'સાઇટ ખોલો', hsMore: 'બીજી સાઇટ પર આ જ શબ્દો શોધો', hsTurath: 'તુરાસ પર શોધો', hsShamela: 'શામેલા પર શોધો', hsQa: 'ફતવા અને જવાબોમાં શોધો'},
+    fr: {qaPlace: 'Écrivez votre question, par ex. : oubli dans la prière', qaHint: 'Les fatwas et réponses sont recherchées sur le site «Islam Question Réponse» (islamqa.info) et s’y ouvrent.', qaGo: 'Rechercher', qaOpen: 'Ouvrir le site', hsMore: 'Chercher les mêmes mots sur d’autres sites', hsTurath: 'Chercher sur Turath', hsShamela: 'Chercher sur Shamela', hsQa: 'Chercher dans les fatwas et réponses'}};
+  Object.keys(QAN).forEach(l => { if (I[l]) Object.assign(I[l], QAS[l], {qaTile: QAN[l], qaTitle: QAN[l]}); });
+  // the site's own address for each language (islamqa.info has no Gujarati: English there)
+  const QAL = l => ({ur: 'ur', ar: 'ar', en: 'en', bn: 'bn', hi: 'hi', fr: 'fr'})[l] || 'en';
+  const qaUrl = (l, v) => 'https://islamqa.info/' + QAL(l) + (v ? '/search?q=' + encodeURIComponent(v) : '');
   Object.assign(I.ur, {sxTitle: 'شروح', sxMore: 'مکمل شرح پڑھیں', sxLess: 'کم کریں', sxOpen: 'کتاب میں کھولیں', sxBab: 'باب کی شرح', sxHad: 'اس حدیث کی شرح', sxNone: 'شرح لوڈ نہیں ہو سکی۔'});
   Object.assign(I.en, {sxTitle: 'Commentaries', sxMore: 'Read the full commentary', sxLess: 'Show less', sxOpen: 'Open in the book', sxBab: 'Commentary on the chapter', sxHad: 'Commentary on this hadith', sxNone: 'The commentary could not be loaded.'});
   if (I.ar) Object.assign(I.ar, {sxTitle: 'الشروح', sxMore: 'اقرأ الشرح كاملاً', sxLess: 'أقل', sxOpen: 'افتح في الكتاب', sxBab: 'شرح الباب', sxHad: 'شرح هذا الحديث', sxNone: 'تعذّر تحميل الشرح.'});
@@ -4603,6 +4618,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       out.append(h1, sum, site);
       const dsec = el('div');
       out.append(el('h3', {class: 'grp'}, T('hsDorar')), dsec);
+      const more = el('div', {class: 'gsbar'});
+      [[T('hsTurath'), 'https://app.turath.io/search?q=' + encodeURIComponent(v)], [T('hsShamela'), 'https://shamela.ws/search?query=' + encodeURIComponent(v)], [T('hsQa'), qaUrl(ui, v)]].forEach(x => more.append(el('a', {class: 'btn lbtn', href: x[1], target: '_blank', rel: 'noopener'}, x[0]), ' '));
+      out.append(el('h3', {class: 'grp'}, T('hsMore')), more);
       siteSearch({v, words, md, sel: null, cur: () => tk === run, site, sum}).catch(() => {});
       // 2. Dorar, with the grades
       dorarPage(v, 1, dsec, tk);
@@ -4994,7 +5012,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
-    {id: '20261030b', d: '30-10-2026', keys: ['sh8477', 'sh1440', 'sh13013', 'sh13018', 'sh26823', 'sh13062', 'sh12051', 'sh13026', 'sh13001', 'sh1342', 'sh13146', 'sh12217', 'sh14119', 'sh5597', 'sh13090', 'sh13091', 'sh23604', 'sh21809', 'sh9241'],
+    {id: '20261030c', d: '30-10-2026', keys: ['sh9442', 'sh13092', 'sh1503'],
+      t: {ur: 'نئی کتب: سلسلہ صحیحہ للالبانی، تہذیب الآثار مسند عمر، اور تفسیر ابن کثیر کا نیا نسخہ', en: 'New books: As-Silsilah as-Sahihah (al-Albani), Tahdhib al-Athar Musnad Umar, and a new edition of Tafsir Ibn Kathir', ar: 'كتب جديدة: السلسلة الصحيحة للألباني، وتهذيب الآثار مسند عمر، وطبعة جديدة من تفسير ابن كثير'},
+      i: {ur: ['تین کتب شامل ہوئیں، اور تفسیر ابن کثیر کا پرانا نسخہ ہٹا کر ابن الجوزی کی طباعت لگا دی گئی ہے۔'],
+        en: ['Three books were added, and the old copy of Tafsir Ibn Kathir was replaced by the Ibn al-Jawzi edition.'],
+        ar: ['أُضيفت ثلاثة كتب، واستُبدلت نسخة تفسير ابن كثير القديمة بطبعة ابن الجوزي.']}},
+    {id: '20261030b', d: '30-10-2026', keys: ['sh8477', 'sh1440', 'sh13013', 'sh13018', 'sh26823', 'sh13062', 'sh12051', 'sh13026', 'sh13001', 'sh1342', 'sh13146', 'sh12217', 'sh14119', 'sh5597', 'sh13090', 'sh13091', 'sh1503', 'sh21809', 'sh9241'],
       t: {ur: 'نئی کتب: ابن ابی خیثمہ، ابن ابی عاصم کی کتب، تفسیر بغوی، مصابیح السنہ اور دیگر', en: 'New books: Ibn Abi Khaythamah, books of Ibn Abi Asim, Tafsir al-Baghawi, Masabih as-Sunnah and more', ar: 'كتب جديدة: ابن أبي خيثمة وكتب ابن أبي عاصم وتفسير البغوي ومصابيح السنة وغيرها'},
       i: {ur: ['انیس نئی کتب شامل ہوئیں (ان میں تہذیب الآثار للطبری کے تین حصے اور ابن کثیر کی تین کتب: تفسیر، جامع المسانید، الفصول) اور ان کے حوالے الجامع الکامل سے جوڑ دیے گئے ہیں۔', 'صحیح مسلم اب ترکی نسخے کی ہے (دونوں ترقیم: عبد الباقی اور عام نمبر) اور پرانی کتاب کے اردو، انگریزی اور بنگالی تراجم اسی کی احادیث پر لگا دیے گئے ہیں۔', 'کتابوں کی فہرست میں الجامع الکامل پہلے اور تلخیص بعد میں ہے، اور کتابوں کی سرچ میں لکھا ہوا متن کتاب دیکھ کر واپس آنے پر موجود رہتا ہے۔'],
         en: ['Nineteen new books were added (including three parts of Tahdhib al-Athar by at-Tabari and three books of Ibn Kathir: Tafsir, Jami al-Masanid, al-Fusul) and the references of al-Jami al-Kamil now link to them.', 'Sahih Muslim is now the Turkish edition (both numberings: Abd al-Baqi and general), and the Urdu, English and Bangla translations of the old book are placed on its hadith.', 'In the book list, al-Jami al-Kamil comes first and its Talkhis after it; text typed in a search box stays when you come back from a book.'],
@@ -5233,8 +5256,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     setTimeout(() => inp.focus(), 50);
     return true;
   }
+  // «Islam Question & Answer»: the question is searched on islamqa.info in the reader's language (their site shows the answers)
+  function showQA() {
+    bar(T('qaTitle'), '', true);
+    const box = $('#list'); box.replaceChildren();
+    const q = el('input', {type: 'search', class: 'filter', placeholder: T('qaPlace'), 'aria-label': T('qaPlace'), id: 'qaq'});
+    const open = () => { const v = q.value.trim(); window.open(qaUrl(ui, v), '_blank', 'noopener'); };
+    const go = el('button', {class: 'btn lbtn', type: 'button', on: {click: open}}, icon('search'), T('qaGo'));
+    q.addEventListener('keydown', e => { if (e.key === 'Enter') open(); });
+    const site = el('a', {class: 'btn lbtn', href: qaUrl(ui, ''), target: '_blank', rel: 'noopener'}, T('qaOpen'));
+    const root = el('div'); root.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), el('div', {class: 'gsbar'}, go, ' ', site), el('p', {class: 'note'}, T('qaHint')));
+    box.append(root); q.focus();
+  }
   window.COLL = {
-    bookSearch,
+    bookSearch, showQA,
     // owner panel: text corrections (published settings, keyed book|lang|number) and a reader for the editor
     applyFixes(fx) { C.fixes = fx || {}; for (const k in C.fixes) { const p = k.split('|'), m = C.data[p[0] + '|' + p[1]], r = m && m.get(+p[2]); if (r) { const c = r.slice(); c[1] = C.fixes[k]; m.set(+p[2], c); } } },
     admin: {
@@ -6268,7 +6303,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (s === 0) render();
     }
   }
-  // the Tashkeel button sits just under the panel's title bar (desktop widths): in right-to-left languages it overlaps the panel's left edge, otherwise it sits inside on the left
+  // the Tashkeel button sits just under the panel's title bar (desktop widths): in right-to-left languages it overlaps the panel's left edge, otherwise (mirrored) it overlaps the panel's right edge
   function placeHk() {
     const hb = document.querySelector('.harakat-btn'); if (!hb) return;
     const hd = side.querySelector('.hd'), r = side.getBoundingClientRect();
@@ -6276,7 +6311,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const shown = hb.style.display !== 'none'; side.classList.toggle('hasHk', shown); hb.classList.add('inpanel');
     hb.style.setProperty('inset-inline-start', 'auto', 'important'); hb.style.setProperty('right', 'auto', 'important'); hb.style.setProperty('bottom', 'auto', 'important');
     hb.style.setProperty('top', (r.top + hd.offsetTop + hd.offsetHeight + 10) + 'px', 'important');
-    hb.style.setProperty('left', (rtl() ? r.left - 37 : r.left + 10) + 'px', 'important');
+    hb.style.setProperty('left', (rtl() ? r.left - 37 : r.right + 37 - hb.offsetWidth) + 'px', 'important');
   }
   addEventListener('resize', placeHk); setInterval(placeHk, 1500);
   function render() {
