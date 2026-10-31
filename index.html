@@ -206,6 +206,7 @@ body.withplayer.pshut .speedbox{bottom:calc(8.3rem + env(safe-area-inset-bottom,
 .tile:hover{background:var(--wash)}
 .tico{width:2.6rem;height:2.6rem;border-radius:50%;background:var(--wash);color:var(--accent);display:flex;align-items:center;justify-content:center}
 .tico svg{width:1.5rem;height:1.5rem}
+.tico.im{background:none;width:3.1rem;height:3.1rem}.tico.im img{width:100%;height:100%;object-fit:contain;display:block}
 .card.pad0{padding:0}
 .moment .mh{display:flex;align-items:center;justify-content:center;gap:.4rem;margin:0 0 .4rem;color:var(--accent);font:600 1.1rem/1.6 var(--sans)}
 html[lang=ur] .moment .mh{font:600 1.2rem/1.9 var(--urdu)}
@@ -434,7 +435,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .numhit .cs{flex:0 0 100%}
 .lbtn{display:inline-flex;align-items:center;gap:.3rem}
 .lbtn svg{width:1.1rem;height:1.1rem}
-@media (max-width:420px){.tiles{grid-template-columns:repeat(4,1fr)}.tile{font-size:.78rem}.tico{width:2.3rem;height:2.3rem}.rbtn.wide{min-width:8.5rem}}
+@media (max-width:420px){.tiles{grid-template-columns:repeat(4,1fr)}.tile{font-size:.78rem}.tico{width:2.3rem;height:2.3rem}.tico.im{width:2.8rem;height:2.8rem}.rbtn.wide{min-width:8.5rem}}
 
 /* tajweed colours */
 .tj0,.tj1,.tj2{color:#9a9a9a}.tj3{color:#537fff}.tj4,.tj6{color:#4050ff}.tj5{color:#2144c1}.tj7{color:#000ebc}.tj8{color:#ff7e1e}.tj9{color:#9400a8}.tj10{color:#d500b7}
@@ -1200,15 +1201,15 @@ const kitNums=k=>k.chapters.flatMap(c=>c.nums);
 const H_UR={hFind:'حدیث نمبر',hSearch:'تلاش',hBooks:'کتب و تراجم',hKitabs:'کتابیں',hRead:'ریڈنگ موڈ',hListen:'سنیں',hTuhfa:'شرح تحفۃ المتقین',hFilter:'کتاب کا نام یا نمبر، یا حدیث نمبر لکھیں',hResume:'جہاں چھوڑا تھا وہاں سے پڑھیں',hNum:'حدیث نمبر',hGo:'کھولیں',hClose:'بند کریں',hReadOn:'ریڈنگ موڈ چل گیا',hReadOff:'کارڈ موڈ چل گیا',hPick:'کتاب یا ترجمہ چنیں',hOpenRead:'ریڈنگ موڈ میں پڑھیں'};
 const H_EN={hFind:'Find Hadith',hSearch:'Search',hBooks:'Books & Translations',hKitabs:'Books',hRead:'Reading Mode',hListen:'Listen',hTuhfa:'Sharh Tuhfat al-Muttaqin',hFilter:'Book name or number, or a hadith number',hResume:'Resume Hadith Reading',hNum:'Hadith number',hGo:'Open',hClose:'Close',hReadOn:'Reading mode on',hReadOff:'Card mode on',hPick:'Choose a book or translation',hOpenRead:'Read in reading mode'};
 Object.assign(I.ur,H_UR);Object.assign(I.en,H_EN);
-const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||null,type:href?null:'button',on:fn?{click:fn}:null},el('span',{class:'tico'},icon(ic)),el('span',{},label));
+const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||null,type:href?null:'button',on:fn?{click:fn}:null},el('span',{class:'tico'+(ic.startsWith('img:')?' im':'')},ic.startsWith('img:')?el('img',{src:'icons/'+ic.slice(4)+'.png',alt:'',width:56,height:56,loading:'lazy',decoding:'async'}):icon(ic)),el('span',{},label));
 function hTiles(){
   const g=el('div',{class:'tiles'});
-  g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),hTile('hsearch',T('hsTile'),null,'#/hs'),
-    hTile('qa',T('qaTile'),null,'#/qa'),
-    hTile('bm0',T('bm'),null,'#/bm'),hTile('layers',T('hBooks'),pickBook),
-    hTile('list',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
-    hTile('read',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
-    hTile('listen',T('hListen'),()=>LISTEN.settings()),hTile('sharh',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
+  g.append(hTile('img:find_ayah',T('hFind'),findHadith),hTile('img:search',T('hSearch'),null,'#/search'),hTile('img:hadith_search',T('hsTile'),null,'#/hs'),
+    hTile('img:qa',T('qaTile'),null,'#/qa'),
+    hTile('img:saved_hadith',T('bm'),null,'#/bm'),hTile('img:hadith_books',T('hBooks'),pickBook),
+    hTile('img:narrators',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
+    hTile('img:surahs',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
+    hTile('img:tilawat_audio',T('hListen'),()=>LISTEN.settings()),hTile('img:tuhfa_sharh',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
   return el('div',{class:'card pad0'},g);
 }
 function findHadith(){
@@ -1333,8 +1334,8 @@ async function showBookList(cat,aut,authors,topics){
       return a;};
   f.addEventListener('input',()=>{window.HBQ[hbk]=f.value;draw();});draw();
   const g=el('div',{class:'tiles t4'});
-  g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),
-    hTile('bm0',T('bm'),null,'#/bm'),hTile('compare',T('cmp'),null,'#/cmp'));
+  g.append(hTile('img:find_ayah',T('hFind'),findHadith),hTile('img:search',T('hSearch'),null,'#/search'),
+    hTile('img:saved_hadith',T('bm'),null,'#/bm'),hTile('img:compare',T('cmp'),null,'#/cmp'));
   // total hadith in the app: Talkhis al-Jami al-Kamil once (its Bengali text, Tuhfa and Fazail-e-Sahaba are taken from it),
   // the other books added; books of narrators' biographies and Hisn al-Muslim (du'as) are not counted
   const NOTH=new Set(['tahdhibkamal','sh149213','sh132965','sh26112','sh9863','shadharat','siyar','tarikhbukhari','thiqat','khaythama','sh10906','sh23764','hisn','atraf']);
@@ -2906,7 +2907,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const pad = n => String(n).padStart(3, '0');
 
   /* ---------- small builders ---------- */
-  const tile = (ic, label, href, fn) => el(href ? 'a' : 'button', {class: 'tile', href: href || null, type: href ? null : 'button', on: fn ? {click: fn} : null}, el('span', {class: 'tico'}, icon(ic)), el('span', {}, label));
+  const tile = (ic, label, href, fn) => el(href ? 'a' : 'button', {class: 'tile', href: href || null, type: href ? null : 'button', on: fn ? {click: fn} : null}, el('span', {class: 'tico' + (ic.startsWith('img:') ? ' im' : '')}, ic.startsWith('img:') ? el('img', {src: 'icons/' + ic.slice(4) + '.png', alt: '', width: 56, height: 56, loading: 'lazy', decoding: 'async'}) : icon(ic)), el('span', {}, label));
   const qv = () => $('#qv');
   const ayahNum = n => el('span', {class: 'ae', 'aria-label': String(n)}, ad(n));
   const sajdaSet = () => new Set(Q.meta.sajda.map(x => x[0] + ':' + x[1]));
@@ -2943,15 +2944,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(T('brand'), '', false);
     const v = qv(); v.replaceChildren();
     const g = el('div', {class: 'tiles'});
-    g.append(tile('hadith', T('jami'), null, () => goBook('jami')), tile('read', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('sharh', T('tuhfa'), null, () => goBook('tuhfa')),
-      tile('mushaf', T('quran'), '#/q'), tile('listen', T('audio'), '#/q/audio'),
-      tile('bms', T('bmHadith'), '#/bm'), tile('bm0', T('bmQuran'), '#/q/bm'),
-      tile('layers', T('hbBooks'), '#/hb'),
-      tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
-      tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
-      tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('replay', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
-    if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('listen', ABK.title(), '#/ab')); }
+    g.append(tile('img:talkhis', T('jami'), null, () => goBook('jami')), tile('img:jami_full', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('img:tuhfa_sharh', T('tuhfa'), null, () => goBook('tuhfa')),
+      tile('img:quran', T('quran'), '#/q'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
+      tile('img:saved_hadith', T('bmHadith'), '#/bm'), tile('img:saved_ayat', T('bmQuran'), '#/q/bm'),
+      tile('img:hadith_books', T('hbBooks'), '#/hb'),
+      tile('img:seerah', T('seerahT'), '#/s/seerah'), tile('img:sahaba', T('navFazail'), '#/s/fazail'),
+      tile('img:siyar_salaf', T('navSalaf'), '#/s/siyar'), tile('img:shadharat', T('navShFull'), '#/s/shadharat'),
+      tile('img:rijal_search', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
+      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
+    if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('img:audiobooks', ABK.title(), '#/ab')); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
     if (window.mkDateBar) v.append(mkDateBar());
     tickerBar(v);
@@ -3027,8 +3028,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     await need([]);
     v.replaceChildren();
     const g = el('div', {class: 'tiles'});
-    g.append(tile('find', T('findAyah'), null, findAyah), tile('search', T('qsearch'), '#/q/search'), tile('bm0', T('qbm'), '#/q/bm'), tile('translate', T('trans'), null, () => pickTr()),
-      tile('read', T('surahs'), '#/q'), tile('mushaf', T('mushafTile'), '#/q/mushaf'), tile('layers', T('para'), '#/q/para'), tile('list', T('ruku'), '#/q/ruku'), tile('listen', T('audio'), '#/q/audio'));
+    g.append(tile('img:find_ayah', T('findAyah'), null, findAyah), tile('img:search', T('qsearch'), '#/q/search'), tile('img:saved_ayat', T('qbm'), '#/q/bm'), tile('img:translate', T('trans'), null, () => pickTr()),
+      tile('img:surahs', T('surahs'), '#/q'), tile('img:quran', T('mushafTile'), '#/q/mushaf'), tile('img:para', T('para'), '#/q/para'), tile('img:ruku', T('ruku'), '#/q/ruku'), tile('img:tilawat_audio', T('audio'), '#/q/audio'));
     v.append(el('div', {class: 'card pad0'}, g));
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')});
     const list = el('div');
@@ -8099,7 +8100,7 @@ Object.assign(I.fr, {
     page(hero,
       due.length ? E('div', {class: 'card hzdue'}, E('h3', {}, L().today), ...due.slice(0, 3).map(x => lessonRow(x, true)), due.length > 3 ? E('a', {class: 'btn', href: '#/hifz/plan'}, L().planAll) : null) : null,
       E('div', {class: 'hzgrid'}, card('replay', 'rep', '#/hifz/rep?s=' + la.s + '&f=' + la.f + '&t=' + la.t), card('mic', 'say', '#/hifz/say'), card('eye', 'recall', '#/hifz/recall'), card('timer', 'exam', '#/hifz/exam'), card('event', 'plan', '#/hifz/plan'), card('hadith', 'hadith', '#/s/hifzhadith')),
-      E('a', {class: 'card', href: 'diary.html', style: 'display:block;padding:14px 16px;margin-top:12px;text-decoration:none;color:inherit'}, E('b', {}, DIARY.t[ui] || DIARY.t.en), E('div', {style: 'opacity:.75;font-size:.9em'}, DIARY.s[ui] || DIARY.s.en)));
+      E('a', {class: 'card', href: 'diary.html', style: 'display:block;padding:14px 16px;margin-top:12px;text-decoration:none;color:inherit'}, E('img', {src: 'icons/hifz_diary.png', alt: '', width: 44, height: 44, loading: 'lazy', style: 'float:inline-start;margin-inline-end:12px'}), E('b', {}, DIARY.t[ui] || DIARY.t.en), E('div', {style: 'opacity:.75;font-size:.9em'}, DIARY.s[ui] || DIARY.s.en)));
   }
   const rangeName = x => Qn().sName(x.s) + ' ' + UD(x.f) + (x.t !== x.f ? '–' + UD(x.t) : '');
   function lessonRow(x, compact) {
