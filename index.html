@@ -949,7 +949,7 @@ const ICON={
  globe:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-2.95a15.6 15.6 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14a8.2 8.2 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4H4.26zm.81 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.07 16zm2.95-8H5.07a7.99 7.99 0 0 1 4.33-3.56A15.6 15.6 0 0 0 8.02 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14a16.5 16.5 0 0 0 0-4h3.38a8.2 8.2 0 0 1 0 4h-3.38z',
  palette:'M12 3a9 9 0 0 0 0 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z',
  hsearch:'M7 9H2V7h5v2zm0 3H2v2h5v-2zm13.59 7l-3.83-3.83c-.8.52-1.74.83-2.76.83-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5c0 1.02-.31 1.96-.83 2.75L22 17.59 20.59 19zM17 11c0-1.65-1.35-3-3-3s-3 1.35-3 3 1.35 3 3 3 3-1.35 3-3zM2 19h10v-2H2v2z',
- read:'M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z'};
+ mushaf:'M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V4H6zm2 3h8v2H8V7zm0 4h8v2H8v-2zm0 4h5v2H8v-2z', read:'M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zm0 13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z'};
 const icon=n=>{const s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','i');s.setAttribute('aria-hidden','true');const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',ICON[n]);s.append(p);return s;};
 let ui='en',book='jami',BOOKS=[],TOC=null;
 try{ui=localStorage.ui||'en';book=localStorage.book||'jami'}catch(e){}
@@ -1520,7 +1520,7 @@ function appSettings(){
     el('p',{class:'grp'},T('dayNight')),seg([['light','☀ '+T('modeLight')],['dark','☾ '+T('modeDark')],['auto',T('modeAuto')]],LOOK.mode,k=>{LOOK.mode=k;save();}),
     ...(window.TODAY?TODAY.settingsRows():[]),
     ...(window.OFFLINE?[OFFLINE.row()]:[]),
-    el('p',{class:'grp'},T('urduFont')),el('div',{class:'seg',role:'group'},...urduNames().map(([k,l])=>el('button',{type:'button',class:'segb',lang:ui==='ur'?'ur':ui==='ar'?'ar':'en',style:ui==='ur'?'font-family:'+URDU_FONTS[k]:null,'aria-pressed':String(k===LOOK.urdu),on:{click:()=>{LOOK.urdu=k;save();}}},l)))]);
+    ...(ui==='ur'?[el('p',{class:'grp'},T('urduFont')),el('div',{class:'seg',role:'group'},...urduNames().map(([k,l])=>el('button',{type:'button',class:'segb',lang:ui==='ur'?'ur':ui==='ar'?'ar':'en',style:ui==='ur'?'font-family:'+URDU_FONTS[k]:null,'aria-pressed':String(k===LOOK.urdu),on:{click:()=>{LOOK.urdu=k;save();}}},l)))]:[])]);
 }
 // Talkhis al-Jami al-Kamil in the interface language: the Bangla interface reads the Bangla layer
 function uiBook(){const nb=ui==='bn'&&book==='jami'?'jami_bn':ui!=='bn'&&book==='jami_bn'?'jami':book;if(nb!==book){book=nb;try{localStorage.book=nb}catch(e){}}}
@@ -2745,7 +2745,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   /* ---------- settings ---------- */
   const SMIN = 10, SMAX = 80;
-  const QS = {tr: ['ur_junagarhi'], mode: 'tr', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: false,
+  { const MT = {ur: 'مصحف', ar: 'المصحف', en: 'Mushaf', bn: 'মুসহাফ', hi: 'मुसहफ़', gu: 'મુસહફ', fr: 'Mushaf'}; Object.keys(MT).forEach(l => { if (I[l]) I[l].mushafTile = MT[l]; }); }
+  const QS = {tr: ['ur_junagarhi'], mode: 'pages', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: true,
     hifz: {s: 1, from: 1, to: 7, ayahRep: 3, rangeRep: 1, gap: 0}};
   try { Object.assign(QS, JSON.parse(localStorage.qset || '{}')); } catch (e) {}
   QS.speed = Math.max(SMIN, Math.min(SMAX, QS.speed || 30));
@@ -3027,7 +3028,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.replaceChildren();
     const g = el('div', {class: 'tiles'});
     g.append(tile('find', T('findAyah'), null, findAyah), tile('search', T('qsearch'), '#/q/search'), tile('bm0', T('qbm'), '#/q/bm'), tile('translate', T('trans'), null, () => pickTr()),
-      tile('read', T('surahs'), '#/q'), tile('layers', T('para'), '#/q/para'), tile('list', T('ruku'), '#/q/ruku'), tile('listen', T('audio'), '#/q/audio'));
+      tile('read', T('surahs'), '#/q'), tile('mushaf', T('mushafTile'), '#/q/mushaf'), tile('layers', T('para'), '#/q/para'), tile('list', T('ruku'), '#/q/ruku'), tile('listen', T('audio'), '#/q/audio'));
     v.append(el('div', {class: 'card pad0'}, g));
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')});
     const list = el('div');
@@ -3197,7 +3198,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const tj = el('input', {type: 'checkbox'}); tj.checked = !!QS.tajweed;
     tj.addEventListener('change', () => { QS.tajweed = tj.checked; if (tj.checked) QS.rasm = 'uthmani'; qsave(); closeSheet(); redraw(); });
     sheet(T('viewMode'), [radio('mode', opts, QS.mode, k => { QS.mode = k; qsave(); tools(); redraw(); }),
-      el('p', {class: 'grp'}, T('rasm')), radio('rasm', rs, QS.rasm, k => { QS.rasm = k; if (k === 'indopak') QS.tajweed = false; qsave(); redraw(); }),
+      ...(QS.mode === 'pages' ? [] : [el('p', {class: 'grp'}, T('rasm')), radio('rasm', rs, QS.rasm, k => { QS.rasm = k; if (k === 'indopak') QS.tajweed = false; qsave(); redraw(); })]),
       el('label', {class: 'srow chk'}, tj, el('span', {}, T('tajweed'))),
       el('button', {class: 'btn', type: 'button', on: {click: tajweedLegend}}, T('tjLegend')),
       (() => { const wb = el('input', {type: 'checkbox'}); wb.checked = wbwOn(); wb.addEventListener('change', () => { QS.wbw = wb.checked; qsave(); }); return el('label', {class: 'srow chk'}, wb, el('span', {}, wl('set'))); })()]);
@@ -3814,11 +3815,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- translation picker (like the screenshot: checkboxes, Reset / Done) ---------- */
   async function pickTr(redraw) {
     await need([]);
-    const chosen = new Set(QS.tr), rows = [];
+    const chosen = new Set(QS.tr), rows = [], orows = [];
+    const mine = Q.meta.editions.some(e => e.lang === ui); // the interface language's own translations come first; the other languages sit under one fold
     const add = (e, dis) => {
       const c = el('input', {type: 'checkbox', disabled: dis ? '' : null}); c.checked = chosen.has(e.key);
       c.addEventListener('change', () => { c.checked ? chosen.add(e.key) : chosen.delete(e.key); });
-      rows.push(el('label', {class: 'srow chk' + (dis ? ' dim' : '')}, c, el('span', {dir: 'auto'}, edLabel(e), dis ? el('small', {class: 'cs'}, T('unavailable')) : null)));
+      (mine && e.lang !== ui ? orows : rows).push(el('label', {class: 'srow chk' + (dis ? ' dim' : '')}, c, el('span', {dir: 'auto'}, edLabel(e), dis ? el('small', {class: 'cs'}, T('unavailable')) : null)));
       return c;
     };
     const boxes = [];
@@ -3834,7 +3836,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const r = el('input', {type: 'radio', name: 'tafpick'}); r.checked = t.key === tcur; r.addEventListener('change', () => { tsel = t.key; });
       trows.push(el('label', {class: 'srow chk'}, r, el('span', {dir: 'auto'}, LTR() ? t.en : t.ur)));
     }));
-    const allRows = tl.length ? [el('p', {class: 'grp'}, T('selectTr'))].concat(rows, [el('p', {class: 'grp'}, T('tafsir'))], trows) : rows;
+    const OL = {ur: 'دوسری زبانوں کے تراجم', ar: 'تراجم بلغات أخرى', en: 'Other languages', bn: 'অন্যান্য ভাষা', hi: 'अन्य भाषाएँ', gu: 'અન્ય ભાષાઓ', fr: 'Autres langues'};
+    const more = orows.length ? [el('details', {class: 'moretr', open: Q.meta.editions.some(e => chosen.has(e.key) && e.lang !== ui) ? '' : null}, el('summary', {class: 'grp'}, OL[ui] || OL.en), ...orows)] : [];
+    const allRows = tl.length ? [el('p', {class: 'grp'}, T('selectTr'))].concat(rows, more, [el('p', {class: 'grp'}, T('tafsir'))], trows) : rows.concat(more);
     sheet(T('selectTr'), allRows, [[T('reset'), () => { chosen.clear(); chosen.add('ur_junagarhi'); boxes.forEach(([e, c]) => c.checked = chosen.has(e.key)); return false; }],
       [T('done'), () => { if (tsel) QS.tafsir = tsel; QS.tr = Q.meta.editions.filter(e => chosen.has(e.key)).map(e => e.key); QS.trBy[ui] = QS.tr.slice(); qsave(); if (redraw && R) showReader(R.kind, R.n, (R.verses[firstVisible()] || [])[1]); else if (location.hash === '' || location.hash === '#/') route(); }]]);
   }
@@ -3849,8 +3853,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const fsel = el('select', {'aria-label': T('qfont')});
     Object.entries(FONTS).forEach(([k, f]) => fsel.append(el('option', {value: k}, f[1])));
     fsel.value = QS.font; fsel.addEventListener('change', () => { QS.font = fsel.value; qsave(); });
-    sheet(T('settings'), [slider(T('arSize'), 'ar', 20, 56, 1), slider(T('trSize'), 'trs', 14, 30, 1), slider(T('speed'), 'speed', SMIN, SMAX, 1),
-      el('label', {class: 'srow'}, el('span', {}, T('qfont')), fsel),
+    const pg = QS.mode === 'pages';   // the Madinah pages have their own fixed script and no translation, so those options are left out there
+    sheet(T('settings'), [...(pg ? [] : [slider(T('arSize'), 'ar', 20, 56, 1)]), ...(pg || QS.mode === 'mushaf' ? [] : [slider(T('trSize'), 'trs', 14, 30, 1)]), slider(T('speed'), 'speed', SMIN, SMAX, 1),
+      ...(pg ? [] : [el('label', {class: 'srow'}, el('span', {}, T('qfont')), fsel)]),
       el('label', {class: 'srow'}, el('span', {}, T('reciter')), el('button', {class: 'btn', type: 'button', on: {click: reciterSheet}}, recLabel(recOf()))),
       ]);
   }
@@ -3998,6 +4003,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       trForLang();
       if (window.QIBLA) QIBLA.stop();
       if (h === '' || h === '#/' || h === '#/home') return showHome();
+      if (h === '#/q/mushaf') { // the Mushaf tile: Madinah Mushaf pages with the tajweed colours, Arabic only, from where the reader stopped
+        QS.mode = 'pages'; QS.tajweed = true; QS.rasm = 'uthmani'; qsave();
+        const la = lsGet('qlast', null); location.replace('#/q/s/' + (la ? la.s + '/' + la.a : '1')); return;
+      }
       const m = h.match(/^#\/q\/([sjr])\/(\d+)(?:\/(\d+))?(\/play|\/hifz)?/);
       if (m) return showReader(m[1], +m[2], m[3] ? +m[3] : 0, m[4] === '/play', m[4] === '/hifz');
       if (h === '#/q/para') return showPara();
