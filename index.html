@@ -138,6 +138,10 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .nav{display:flex;justify-content:space-between;margin-top:2rem}
 .secnav{margin:1.2rem 0 .5rem}.secnext{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;border-inline-start:4px solid var(--accent)}.secnext .ct{font-weight:700;color:var(--accent)}.secprev{display:block;text-align:center;margin-top:.6rem;color:var(--muted);font-size:.9em}.readstart{display:inline-flex;align-items:center;margin:.3rem 0 .6rem}
 .nav a{color:var(--accent)}
+.secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}
+.hstrip{display:flex;margin:-.2rem -.2rem .8rem;background:var(--bar,var(--accent));border-radius:12px;overflow:hidden}.hstrip .hs{flex:1;min-width:0;padding:.7rem .3rem;text-align:center;color:#ffffffb8;text-decoration:none;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:3px solid transparent}.hstrip .hs.on{color:#fff;font-weight:700;border-bottom-color:#fff}
+.hpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(5.1rem + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:.9rem;padding:.35rem .9rem;background:var(--card,#fff);border-radius:2rem;box-shadow:0 2px 14px #0003;direction:ltr}.hpill b{color:var(--accent);font-size:1.15rem;min-width:5.2rem;display:flex;justify-content:center;gap:.35rem;direction:ltr}.hpill b i{font-style:normal;unicode-bidi:isolate}.hpill .hpb{border:0;background:none;color:var(--accent);font-size:1.15rem;padding:.3rem .4rem;cursor:pointer}.hpill .hpb:disabled{opacity:.3}
+.hpg{display:flex;justify-content:center;gap:.4rem;margin:.8rem 0;flex-wrap:nowrap}.hpg a,.hpg span{min-width:2.6rem;padding:.45rem .5rem;text-align:center;border:1px solid var(--line,#c9cde8);border-radius:6px;color:var(--accent);text-decoration:none;font-variant-numeric:tabular-nums}.hpg span.on{background:var(--accent);color:#fff;font-weight:700;border-color:var(--accent)}
 .snip{display:block;font-size:.95rem;color:var(--muted);margin-top:.3rem}
 mark{background:var(--mark);color:inherit;border-radius:2px}
 .tag{display:inline-block;border:1px solid var(--line);border-radius:4px;padding:0 .4rem;margin-inline-end:.3rem;font-size:.8rem}
@@ -4706,9 +4710,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     more.addEventListener('click', add); await add();
     // reading in order: the previous / next section (person, kitab) at the end
     const i = b.sections.indexOf(s), pv = b.sections[i - 1], nx = b.sections[i + 1];
-    box.append(el('div', {class: 'secnav'},
-      nx ? el('a', {class: 'card secnext', href: '#/s/' + b.key + '/' + nx[0]}, el('span', {class: 'cs'}, T('nextSec')), el('span', {class: 'ct', dir: 'auto'}, fmtN(nx[0]) + '. ' + secT(b, nx))) : '',
-      pv ? el('a', {class: 'secprev', href: '#/s/' + b.key + '/' + pv[0]}, T('prevSec') + ': ' + secT(b, pv)) : '', tocBtn()));
+    const SB = {ur: ['پچھلا باب', 'اگلا باب'], ar: ['الباب السابق', 'الباب التالي'], en: ['Previous chapter', 'Next chapter'], bn: ['আগের অধ্যায়', 'পরের অধ্যায়'], hi: ['पिछला अध्याय', 'अगला अध्याय'], gu: ['પાછલો અધ્યાય', 'આગળનો અધ્યાય'], fr: ['Chapitre précédent', 'Chapitre suivant']}[ui] || ['Previous chapter', 'Next chapter'];
+    box.append(el('div', {class: 'secnav'}, el('div', {class: 'secbtns'},
+      pv ? el('a', {href: '#/s/' + b.key + '/' + pv[0]}, SB[0]) : el('span', {class: 'off'}),
+      nx ? el('a', {href: '#/s/' + b.key + '/' + nx[0]}, SB[1]) : el('span', {class: 'off'})), tocBtn()));
     // auto scroll bar, as in the other reading pages (hides aside after 20 s of not being used)
     if (window.QURAN && QURAN.scrollBar) { const go = h => () => { location.hash = h; }; const sl = T('chapShort') || T('nextSec');
       box.append(QURAN.scrollBar({prev: [['prev', sl, pv ? go('#/s/' + b.key + '/' + pv[0]) : null]], next: [['next', sl, nx ? go('#/s/' + b.key + '/' + nx[0]) : null]]})); setTimeout(() => QURAN.showTime(), 50); }
@@ -4720,11 +4725,33 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(bname(b), T(b.key === 'shadharat' ? 'cNasNo' : b.key === 'siyar' ? 'cParaNo' : 'hadith')(fmtN(n)), true);
     box.append(langChips(b, () => showOne(b, n)));
     if (s) box.append(el('a', {class: 'grp', href: '#/s/' + b.key + '/' + s[0], dir: 'auto'}, fmtN(s[0]) + '. ' + secT(b, s)));
-    box.append(row(b, 'ar', n) ? card(b, n, lang) : el('p', {class: 'note'}, T('cNotHere')));
-    const nav = el('div', {class: 'nav'});
     const own = b.key === 'shadharat' || b.key === 'siyar';
-    nav.append(n > 1 ? el('a', {href: '#/s/' + b.key + '/n/' + (n - 1)}, T(own ? 'prevSec' : 'prev')) : el('span'), n < b.count ? el('a', {href: '#/s/' + b.key + '/n/' + (n + 1)}, T(own ? 'nextSec' : 'next')) : el('span'));
-    box.append(nav);
+    const pager = () => { const a = Math.max(1, Math.min(n - 2, b.count - 4)), z = Math.min(b.count, a + 4), r = el('div', {class: 'hpg'});
+      for (let k = a; k <= z; k++) r.append(k === n ? el('span', {class: 'on', 'aria-current': 'page'}, fmtN(k)) : el('a', {href: '#/s/' + b.key + '/n/' + k}, fmtN(k)));
+      return r; };
+    // the installed app (or an app window) gets the reading strip + a floating counter; the website gets the number row below
+    const IS_APP = (() => { try { return matchMedia('(display-mode: standalone)').matches || navigator.standalone || /^android-app:/.test(document.referrer) || /; wv\)/.test(navigator.userAgent); } catch (e) { return false; } })();
+    if (!own && IS_APP) { const st = el('div', {class: 'hstrip'});
+      for (const k of [n - 1, n, n + 1]) st.append(k < 1 || k > b.count ? el('span', {class: 'hs'}) : el(k === n ? 'span' : 'a', {class: 'hs' + (k === n ? ' on' : ''), href: k === n ? null : '#/s/' + b.key + '/n/' + k}, bname(b) + ' ' + fmtN(k)));
+      box.append(st); }
+    box.append(row(b, 'ar', n) ? card(b, n, lang) : el('p', {class: 'note'}, T('cNotHere')));
+    if (own) {
+      const nav = el('div', {class: 'nav'});
+      nav.append(n > 1 ? el('a', {href: '#/s/' + b.key + '/n/' + (n - 1)}, T('prevSec')) : el('span'), n < b.count ? el('a', {href: '#/s/' + b.key + '/n/' + (n + 1)}, T('nextSec')) : el('span'));
+      box.append(nav);
+    } else if (IS_APP) {
+      const g = k => () => { location.hash = '#/s/' + b.key + '/n/' + k; }, bt = (t, k, lb) => el('button', {type: 'button', class: 'hpb', disabled: k < 1 || k > b.count || k === n ? '' : null, 'aria-label': lb, on: {click: g(k)}}, t);
+      box.append(el('div', {class: 'hpill'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
+    } else box.append(pager());
+    // flipping the page: a swipe moves to the next / previous hadith (the next one is on the left in a right-to-left interface)
+    if (box._sw) { box.removeEventListener('touchstart', box._sw[0]); box.removeEventListener('touchend', box._sw[1]); }
+    let sx = 0, sy = 0, st = 0, ok = false;
+    const ts = e => { const p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now(); ok = e.touches.length === 1 && !e.target.closest('input,textarea,select,table,pre,[data-noswipe]'); };
+    const te = e => { if (!ok) return; ok = false; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy;
+      if (Math.abs(dx) < 90 || Math.abs(dy) > Math.abs(dx) * .5 || Date.now() - st > 700) return;
+      const fwd = getComputedStyle(document.documentElement).direction === 'rtl' ? dx > 0 : dx < 0, to = fwd ? n + 1 : n - 1;
+      if (to >= 1 && to <= b.count) location.hash = '#/s/' + b.key + '/n/' + to; };
+    box.addEventListener('touchstart', ts, {passive: true}); box.addEventListener('touchend', te, {passive: true}); box._sw = [ts, te];
   }
 
 
@@ -6556,11 +6583,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     });
   }
   function restore() { orig.forEach((v, n) => { n.nodeValue = v; }); orig.clear(); }
-  function apply() { if (off) strip(document.body); }
-  function sched() { if (pend || !off) return; pend = true; requestAnimationFrame(() => { pend = false; orig.forEach((v, n) => { if (!n.isConnected) orig.delete(n); }); strip(document.body); }); }
+  const allowed = () => (document.documentElement.lang || 'ur') === 'ar'; // the harakat switch only exists in the Arabic interface
+  function apply() { if (off && allowed()) strip(document.body); }
+  function sched() { if (pend || !off || !allowed()) return; pend = true; requestAnimationFrame(() => { pend = false; orig.forEach((v, n) => { if (!n.isConnected) orig.delete(n); }); strip(document.body); }); }
   function show() {
     const h = location.hash, hide = /^#\/(q|quiz|hifz|nar|n|ab|owner)(\/|$)/.test(h) || h === '#/q' || /^#?\/?(home)?$/.test(h);
-    if (btn) btn.style.display = hide ? 'none' : '';
+    if (!allowed() && orig.size) { restore(); }
+    if (btn) btn.style.display = (hide || !allowed()) ? 'none' : '';
   }
   function label() { const L = document.documentElement.lang || 'ur'; return LBL[L] || LBL.ur; }
   function paint() { if (!btn) return; const hm = document.createElement('span'); hm.className = 'hm'; hm.setAttribute('aria-hidden', 'true');
@@ -6572,9 +6601,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     st.textContent = '.harakat-btn{position:fixed;inset-inline-start:.7rem;bottom:calc(7.2rem + env(safe-area-inset-bottom,0px));z-index:40;width:max-content;max-width:calc(100vw - 6rem);height:auto;display:inline-flex;align-items:center;gap:.4rem;padding:.2rem .65rem .2rem .5rem;border:1px solid var(--line,#d9d2c3);border-radius:999px;background:var(--card,#fff);color:var(--accent,#0b5d4b);font:700 1rem/1.4 var(--urdu,serif);box-shadow:0 2px 10px rgba(0,0,0,.16);cursor:pointer;opacity:.95;-webkit-tap-highlight-color:transparent}.harakat-btn .hm{display:inline-flex;align-items:center;gap:.15rem;direction:rtl;padding:0 .35rem;border-radius:999px;color:#d9480f;display:inline-flex;align-items:center;line-height:0;padding:0 .1rem}.harakat-btn.on{background:var(--accent,#0b5d4b);border-color:var(--accent,#0b5d4b);color:#fff}.harakat-btn.on .hm{color:#ffd27a}html.sheetopen .harakat-btn{display:none}';
     document.head.appendChild(st);
     btn = document.createElement('button'); btn.type = 'button'; btn.className = 'harakat-btn';
-    btn.onclick = () => { off = !off; try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (e) {} if (off) strip(document.body); else restore(); paint(); };
+    btn.onclick = () => { if (!allowed()) return; off = !off; try { localStorage.setItem(KEY, off ? '1' : '0'); } catch (e) {} if (off) strip(document.body); else restore(); paint(); };
     document.body.appendChild(btn); paint(); show(); apply();
-    new MutationObserver(() => { sched(); const l = label(); if (btn.lastChild && btn.lastChild.nodeValue !== l) paint(); }).observe(document.body, {childList: true, subtree: true});
+    new MutationObserver(() => { show(); sched(); const l = label(); if (btn.lastChild && btn.lastChild.nodeValue !== l) paint(); }).observe(document.body, {childList: true, subtree: true});
     addEventListener('hashchange', show);
   }
   if (document.body) init(); else addEventListener('DOMContentLoaded', init);
