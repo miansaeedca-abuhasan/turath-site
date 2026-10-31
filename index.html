@@ -1204,11 +1204,11 @@ const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||nu
 function hTiles(){
   const g=el('div',{class:'tiles'});
   g.append(hTile('find',T('hFind'),findHadith),hTile('search',T('hSearch'),null,'#/search'),hTile('hsearch',T('hsTile'),null,'#/hs'),
-    hTile('read',T('qaTile'),null,'#/qa'),
-    hTile('bm0',T('bm'),null,'#/bm'),hTile('translate',T('hBooks'),pickBook),
-    hTile('read',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
-    hTile('layers',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
-    hTile('listen',T('hListen'),()=>LISTEN.settings()),hTile('hadith',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
+    hTile('qa',T('qaTile'),null,'#/qa'),
+    hTile('bm0',T('bm'),null,'#/bm'),hTile('layers',T('hBooks'),pickBook),
+    hTile('list',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
+    hTile('read',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
+    hTile('listen',T('hListen'),()=>LISTEN.settings()),hTile('sharh',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
   return el('div',{class:'card pad0'},g);
 }
 function findHadith(){
@@ -2672,6 +2672,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     hMore: 'More settings (repeat whole part, pause, reciter)', hFrom: 'From ayah', hTo: 'To ayah', hAyahRep: 'Each ayah, times', hAyahRepHint: 'For one ayah, put the same number in From and To', hRangeRep: 'Whole part, times', hRangeRepHint: 'After the chosen ayahs, start again from the first',
     hGap: 'Pause after each time (seconds)', hRepN: (a, b) => 'repeat ' + a + '/' + b, hRoundN: (a, b) => 'round ' + a + '/' + b,
     previewAudio: 'This Claude link may not play sound from other websites. Recitation plays on your own website and in the app.', hifzNoSurah: 'For hifz repetition choose a reciter with ayah-by-ayah audio.', hifzDone: 'Repetition finished'});
+  Object.assign(ICON, {qa: 'M21 6h-2v9H6v2c0 .55.45 1 1 1h11l4 4V7c0-.55-.45-1-1-1zm-4 6V3c0-.55-.45-1-1-1H3c-.55 0-1 .45-1 1v14l4-4h10c.55 0 1-.45 1-1z', sharh: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 1.5L18.5 9H13V3.5zM8 13h8v2H8v-2zm0 4h8v2H8v-2zm0-8h3v2H8V9z', mushaf: 'M7 2h11a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a3 3 0 0 1-3-3V5a3 3 0 0 1 3-3zm0 2a1 1 0 0 0-1 1v11.2c.3-.13.64-.2 1-.2h11V4H7zm1 14a1 1 0 0 0 0 2h10v-2H8zm6.2-12.2A3.2 3.2 0 1 0 14.2 12a4 4 0 0 1 0-6.2z'});
   Object.assign(ICON, {
     home: 'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z',
     hadith: 'M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z',
@@ -2942,12 +2943,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(T('brand'), '', false);
     const v = qv(); v.replaceChildren();
     const g = el('div', {class: 'tiles'});
-    g.append(tile('hadith', T('jami'), null, () => goBook('jami')), tile('hadith', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('hadith', T('tuhfa'), null, () => goBook('tuhfa')),
-      tile('read', T('quran'), '#/q'), tile('listen', T('audio'), '#/q/audio'),
+    g.append(tile('hadith', T('jami'), null, () => goBook('jami')), tile('read', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('sharh', T('tuhfa'), null, () => goBook('tuhfa')),
+      tile('mushaf', T('quran'), '#/q'), tile('listen', T('audio'), '#/q/audio'),
       tile('bms', T('bmHadith'), '#/bm'), tile('bm0', T('bmQuran'), '#/q/bm'),
-      tile('hadith', T('hbBooks'), '#/hb'),
+      tile('layers', T('hbBooks'), '#/hb'),
       tile('seerah', T('seerahT'), '#/s/seerah'), tile('sahaba', T('navFazail'), '#/s/fazail'),
-      tile('hadith', ({ur: 'فتنے اور قرب قیامت', ar: 'الفتن وأشراط الساعة', en: 'Trials and Signs of the Hour', bn: 'ফিতনা ও কিয়ামতের আলামত', hi: 'फ़ितने और क़ियामत की निशानियाँ', gu: 'ફિતનાઓ અને કયામતની નિશાનીઓ', fr: 'Épreuves et signes de l’Heure'})[ui] || 'Trials and Signs of the Hour', '#/s/fitan'),
       tile('sahaba', T('navSalaf'), '#/s/siyar'), tile('gem', T('navShFull'), '#/s/shadharat'),
       tile('hsearch', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
       tile('hsearch', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('replay', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('quiz', T('quizT'), '#/quiz'), tile('verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
@@ -5021,6 +5021,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261031a', d: '31-10-2026', keys: ['sh13032'],
+      t: {ur: 'نئی کتاب: السنة للامام محمد بن نصر المروزی (عربی مکمل، اردو ترجمہ اور تشریح کے ساتھ)', en: 'New book: As-Sunnah by Imam Muhammad ibn Nasr al-Marwazi (full Arabic, with Urdu translation and commentary)', ar: 'كتاب جديد: السنة للإمام محمد بن نصر المروزي (نص عربي كامل مع ترجمة أردية وشرح)'},
+      i: {ur: ['پوری عربی کتاب شامل ہوئی۔ اردو ترجمہ (ابو ذر محمد زکریا) فوائد، تشریح اور تخریج کے ساتھ ہے؛ ترجمہ شدہ احادیث میں عربی متن اسی مکمل عربی کتاب سے ہے۔'],
+        en: ['The full Arabic book was added. The Urdu translation (Abu Dhar Muhammad Zakariya) comes with benefits, commentary and takhrij; the Arabic of translated hadith is taken from the full Arabic book.'],
+        ar: ['أُضيف الكتاب كاملاً بالعربية، مع الترجمة الأردية والفوائد والشرح والتخريج، ونصّ الأحاديث المترجمة من الكتاب العربي الكامل.']}},
     {id: '20261030c', d: '30-10-2026', keys: ['sh9442', 'sh13092', 'sh1503'],
       t: {ur: 'نئی کتب: سلسلہ صحیحہ للالبانی، تہذیب الآثار مسند عمر، اور تفسیر ابن کثیر کا نیا نسخہ', en: 'New books: As-Silsilah as-Sahihah (al-Albani), Tahdhib al-Athar Musnad Umar, and a new edition of Tafsir Ibn Kathir', ar: 'كتب جديدة: السلسلة الصحيحة للألباني، وتهذيب الآثار مسند عمر، وطبعة جديدة من تفسير ابن كثير'},
       i: {ur: ['تین کتب شامل ہوئیں، اور تفسیر ابن کثیر کا پرانا نسخہ ہٹا کر ابن الجوزی کی طباعت لگا دی گئی ہے۔'],
