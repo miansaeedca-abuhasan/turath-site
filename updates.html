@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تراث خیرالقرون نئی اپڈیٹس</title>
+<style>
+@font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
+@font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
+:root{--ink:#16222c;--muted:#5d6b75;--paper:#f3f6fa;--card:#fff;--accent:#0c5c6e;--line:#dbe3ea}
+@media (prefers-color-scheme:dark){:root{--ink:#e8eceb;--muted:#9aa8b0;--paper:#0f161b;--card:#18222a;--accent:#74b6e6;--line:#2a3944}}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:24px 16px 48px}
+h1{font-size:1.5rem;margin:.2rem 0 1rem}
+article{background:var(--card);border-radius:14px;padding:16px 20px;margin:14px 0;box-shadow:0 1px 8px rgba(20,40,70,.08)}
+article time{display:block;color:var(--muted);font-size:.85rem;direction:ltr;text-align:start}
+article h2{font-size:1.1rem;color:var(--accent);margin:.3rem 0 .5rem}
+article ul{margin:.3rem 0;padding-inline-start:1.2rem}
+.bk{display:inline-block;margin:.4rem .4rem 0 0;padding:.15rem .7rem;border:1px solid var(--line);border-radius:999px;font-size:.85rem;text-decoration:none;color:var(--accent)}
+.ur{font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;line-height:2.3}
+a{color:var(--accent)}
+</style>
+</head>
+<body><main id="m">
+<p><a href="./" id="back">← تراث خیرالقرون</a></p>
+<h1 id="h">تراث خیرالقرون نئی اپڈیٹس</h1>
+<div id="list"></div>
+</main>
+<script>
+(function(){
+var ui='ur';try{ui=localStorage.ui||'ur'}catch(e){}
+var T={ur:'تراث خیرالقرون نئی اپڈیٹس',ar:'تراث خير القرون: آخر التحديثات',en:'Turath Khair al-Quroon: What’s new'};
+var H=T[ui]||T.en, rtl=(ui==='ur'||ui==='ar');
+document.documentElement.lang=ui;document.documentElement.dir=rtl?'rtl':'ltr';
+document.title=H;document.getElementById('h').textContent=H;
+if(ui==='ur')document.getElementById('m').classList.add('ur');
+fetch('news.json').then(function(r){return r.json()}).then(function(N){
+  var L=document.getElementById('list');
+  N.forEach(function(n){
+    var a=document.createElement('article'),d=document.createElement('time');d.textContent=n.d;a.append(d);
+    var h=document.createElement('h2');h.textContent=(n.t&&(n.t[ui]||n.t.en||n.t.ur))||'';a.append(h);
+    var is=(n.i&&(n.i[ui]||n.i.en||n.i.ur))||[],u=document.createElement('ul');
+    is.forEach(function(x){var li=document.createElement('li');li.textContent=x;u.append(li)});a.append(u);
+    (n.keys||[]).forEach(function(k){var l=document.createElement('a');l.className='bk';l.href='./#/s/'+k;l.textContent=k;a.append(l)});
+    L.append(a);
+  });
+}).catch(function(){document.getElementById('list').textContent='…'});
+})();
+</script>
+</body>
+</html>
