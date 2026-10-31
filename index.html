@@ -5263,8 +5263,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   setTimeout(() => { try {
     const last = window.NEWS[0], seen = localStorage.newsSeen;
     if (seen === last.id) return;
+    const today = new Date().toDateString();
+    if (localStorage.newsDay === today) return;           // at most one update message per day; a skipped one is shown on the next day
     const existing = localStorage.length > 0;
-    localStorage.newsSeen = last.id;
+    localStorage.newsSeen = last.id; localStorage.newsDay = today;
     if (!existing || !window.sheet) return;               // a new installation does not need the message
     const L = k => k[ui] || k.en || k.ur;
     window.sheet(rt('news'), [el('p', {class: 'grp', dir: 'auto'}, L(last.t)), el('ul', {class: 'newsul', dir: ui === 'ur' || ui === 'ar' ? 'rtl' : 'ltr'}, ...L(last.i).map(t => el('li', {}, t)))],
