@@ -1,6 +1,28 @@
 <!doctype html>
 <html lang="en" dir="ltr">
-<head><style>html{background:#03170f}</style>
+<head><style>html{background:#03170f}
+/* sharh / fawaid: two buttons that open and close their text; second language under the translation */
+.lchips{align-items:center}.lchl{margin-inline-end:.2rem}
+.xtr{margin:.5rem 0;padding:.45rem .7rem;border-inline-start:3px solid color-mix(in srgb,var(--accent) 45%,transparent);background:color-mix(in srgb,var(--accent) 5%,transparent);border-radius:.4rem}
+.xtr .xlab{font-size:.78rem;color:var(--accent);margin-bottom:.15rem;font-weight:700}
+.ftabs{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0 .3rem}
+.ftab{font:inherit;cursor:pointer;border:1.5px solid color-mix(in srgb,var(--accent) 55%,transparent);background:transparent;color:var(--accent);border-radius:.7rem;padding:.4rem 1.1rem;font-weight:700;display:inline-flex;align-items:center;gap:.45rem;min-height:2.4rem}
+.ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
+.ftab[aria-expanded=true]{background:var(--accent);color:#fff}.ftab[aria-expanded=true]::after{transform:rotate(180deg)}
+html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
+.fpanel{margin:.45rem 0;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:.7rem;overflow:hidden}
+.fpanel[hidden]{display:none}
+.fhead{background:color-mix(in srgb,var(--accent) 12%,transparent);padding:.45rem .8rem;border-bottom:1px solid color-mix(in srgb,var(--accent) 25%,transparent);font-weight:700}
+.fhead .fsrc{font-weight:400}
+.fpanel>.tr{padding:.5rem .8rem}
+.fnum{list-style:none;counter-reset:fn;padding-inline-start:.8rem!important}
+.fnum li{counter-increment:fn;position:relative;padding-inline-start:2.1rem;margin:.5rem 0}
+.fnum li::before{content:counter(fn);position:absolute;inset-inline-start:0;top:.15rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;font:700 .8rem/1.5rem system-ui,sans-serif;text-align:center}
+
+.shk{margin:.8rem 0 .4rem;padding:.6rem .8rem;border-radius:.7rem;background:color-mix(in srgb,#b8860b 9%,transparent);border:1px solid color-mix(in srgb,#b8860b 35%,transparent)}
+.shkt{display:flex;align-items:center;gap:.4rem;color:#8a6508}.shki{font-size:.9rem}
+.shks{margin:.2rem 0 .45rem}.shkn{display:flex;flex-wrap:wrap;gap:.4rem}
+</style>
 <meta charset="utf-8">
 <meta name="theme-color" content="#2f7fc0">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -4074,9 +4096,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const once = (id, src) => C.loading[id] || (C.loading[id] = load(src));
   async function index() { if (!C.idx) await once('index', 'coll/index.js'); return C.idx; }
   const bookOf = k => (C.idx || []).find(b => b.key === k);
-  async function needRange(b, lang, from, to) {
+  async function needRange0(b, lang, from, to) {
     const fs = (b.files[lang] || []).filter(f => f[1] >= from && f[0] <= to);
     await Promise.allSettled(fs.map(f => once(f[2], 'coll/' + f[2])));
+  }
+  // the primary translation language and any extra ones the reader switched on (Urdu + English ...) are loaded together
+  async function needRange(b, lang, from, to) {
+    await needRange0(b, lang, from, to);
+    if (b.files && b.files.jx) await needRange0(b, 'jx', from, to);
+    if (lang && lang !== 'ar') for (const x of getExtras(b)) if (x !== lang) await needRange0(b, x, from, to);
   }
   async function needAll(b, lang) { await Promise.allSettled((b.files[lang] || []).map(f => once(f[2], 'coll/' + f[2]))); }
   const row = (b, lang, n) => (C.data[b.key + '|' + lang] || new Map()).get(n);
@@ -4095,15 +4123,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // Memorizing Hadith: the wording when a hadith has no translation yet, and the other al-Jami numbers with exactly the same words
   const HFM = {ur: 'اس حدیث کا یہ ترجمہ ابھی دستیاب نہیں۔', ar: 'ترجمة هذا الحديث غير متاحة بعد.', en: 'The translation of this hadith is not available yet.', bn: 'এই হাদীসের অনুবাদ এখনও পাওয়া যায়নি।', hi: 'इस हदीस का अनुवाद अभी उपलब्ध नहीं है।', gu: 'આ હદીસનો અનુવાદ હજી ઉપલબ્ધ નથી.', fr: 'La traduction de ce hadith n’est pas encore disponible.'};
   const HFD = {ur: 'یہی فرمان تلخیص الجامع الکامل کی ان احادیث میں بھی ہے', ar: 'وردت هذه الألفاظ نفسها في تلخيص الجامع الكامل برقم', en: 'The same words also occur in Talkhis al-Jami al-Kamil, hadith', bn: 'একই বাক্য তালখীস আল-জামি আল-কামিলের এই হাদীসগুলোতেও আছে', hi: 'यही शब्द तल्ख़ीस अल-जामिउल कामिल की इन हदीसों में भी हैं', gu: 'આ જ શબ્દો તલ્ખીસ અલ-જામિઅ અલ-કામિલની આ હદીસોમાં પણ છે', fr: 'Les mêmes paroles figurent aussi dans Talkhis al-Jami al-Kamil, hadiths'};
-  const getLang = b => { let l = null; try { l = localStorage['clang_' + ui]; } catch (e) {} if (l === 'none') return null; if (!l) { if (ui === 'ar' || !b.langs.includes(ui)) return null; l = ui; } return b.langs.includes(l) ? l : (b.langs.find(x => x !== 'ar') || null); };
-  const setLang = l => { try { localStorage['clang_' + ui] = l || 'none'; } catch (e) {} };
+  // translation languages: each can be switched on or off (Urdu is on by default in the Urdu interface); none on = Arabic only
+  const getSel = b => { let v = null; try { v = JSON.parse(localStorage['csel_' + ui] || 'null'); } catch (e) {}
+    if (!Array.isArray(v)) v = ui !== 'ar' && b.langs.includes(ui) ? [ui] : [];
+    return v.filter(l => l !== 'ar' && b.langs.includes(l)); };
+  const getLang = b => { const v = getSel(b); return v.includes(ui) ? ui : (v[0] || null); };
+  const getExtras = b => { const p = getLang(b); return getSel(b).filter(l => l !== p); };
+  const setSel = v => { try { localStorage['csel_' + ui] = JSON.stringify(v); } catch (e) {} };
   const LNAME = {ur: 'اردو', en: 'English', bn: 'বাংলা', hi: 'हिन्दी', gu: 'ગુજરાતી', fr: 'Français'};
 
   function langChips(b, redraw) {
-    const cur = getLang(b), box = el('div', {class: 'chips'});
+    const box = el('div', {class: 'chips lchips'}), cur = getSel(b);
     if (b.langs.length < 2) return box;
-    box.append(el('button', {class: 'chip' + (!cur ? ' on' : ''), type: 'button', on: {click: () => { setLang(null); redraw(); }}}, T('cOnlyAr')));
-    b.langs.filter(l => l !== 'ar').forEach(l => box.append(el('button', {class: 'chip' + (cur === l ? ' on' : ''), type: 'button', on: {click: () => { setLang(l); redraw(); }}}, LNAME[l] || l)));
+    box.append(el('span', {class: 'cs lchl'}, (TRL[ui] || TRL.en) + ':'));
+    b.langs.filter(l => l !== 'ar').forEach(l => { const on = cur.includes(l);
+      box.append(el('button', {class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), on: {click: () => { setSel(on ? cur.filter(x => x !== l) : [...cur, l]); redraw(); }}}, (on ? '✓ ' : '') + (LNAME[l] || l))); });
     return box;
   }
   // small tab with the translator's name above a translation: «ترجمہ: name» (book.trn = {lang: name})
@@ -4203,6 +4237,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (!SHT.has(b.key)) return;
     shBox([[b.key, n, '']]).then(box => { if (box) c.insertBefore(box, acts); }).catch(() => {});
   }
+  const SHK_T = {ur: 'شیخ کی تحقیق و تخریج', ar: 'تحقيق الشيخ وتخريجه', en: 'The Shaykh’s research and takhrij', bn: 'শায়খের তাহকীক ও তাখরীজ', hi: 'शैख़ की तहक़ीक़ और तख़रीज', gu: 'શૈખનું સંશોધન અને તખરીજ', fr: 'Recherche et takhrij du Cheikh'};
+  const SHK_S = {ur: 'محدثانہ نکات اور اصطلاحی مطالعہ از ڈاکٹر محمد عبداللہ اعظمی رحمہ اللہ، الجامع الکامل حدیث نمبر:', ar: 'للدكتور محمد عبد الله الأعظمي رحمه الله، الجامع الكامل، الحديث رقم:', en: 'By Dr. Muhammad Abdullah al-A‘zami (may Allah have mercy on him), al-Jami al-Kamil, hadith no.:', bn: 'ড. মুহাম্মাদ আবদুল্লাহ আল-আ‘যামী (রহ.), আল-জামি আল-কামিল, হাদীস নং:', hi: 'डॉ. मुहम्मद अब्दुल्लाह अल-आज़मी रहमतुल्लाह अलैह, अल-जामिउल कामिल, हदीस क्रमांक:', gu: 'ડૉ. મુહમ્મદ અબ્દુલ્લાહ અલ-આઝમી રહ., અલ-જામિઉલ કામિલ, હદીસ નં.:', fr: 'Dr Muhammad Abdullah al-A‘zami (qu’Allah lui fasse miséricorde), al-Jami al-Kamil, hadith n° :'};
+  // sharh / fawaid: two plain buttons; a tap opens the text under them, a second tap closes it again
+  function foldTabs(b, n, items) {
+    const bar = el('div', {class: 'ftabs', role: 'tablist'}), box = el('div', {class: 'fbox'});
+    items.forEach(it => {
+      const head = el('div', {class: 'fhead'}, el('span', {class: 'fttl'}, it.label), el('span', {class: 'fsrc cs'}, ' — ' + bname(b) + ' (' + fmtN(b.an[n] || n) + ')'));
+      const body = it.ol ? el('ol', {class: 'tr pben fnum', dir: DIR(it.lang)}, ...it.nodes) : el('div', {class: 'tr', dir: DIR(it.lang)}, ...it.nodes);
+      const panel = el('section', {class: 'fpanel ' + it.k, hidden: ''}, head, body);
+      const btn = el('button', {class: 'ftab ' + it.k, type: 'button', 'aria-expanded': 'false', on: {click: () => { const op = panel.hidden; panel.hidden = !op; btn.setAttribute('aria-expanded', String(op)); btn.classList.toggle('on', op); }}}, it.label);
+      bar.append(btn); box.append(panel);
+    });
+    return [bar, box];
+  }
   function card(b, n, lang, q) {
     if (b.atraf) { // فہرس الأطراف: the text and each number open the hadith of Talkhis al-Jami al-Kamil
       const r = row(b, 'ar', n) || [], nums = String(r[2] || '').split(',').filter(Boolean), c = el('article', {class: 'card atraf'});
@@ -4211,6 +4259,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       return c;
     }
     const d = hobj(b, n, lang), c = el('article', {class: 'card'});
+    // the other translation languages the reader switched on (English next to Urdu ...), each under its own small label
+    const addExtras = () => { if (!lang) return;
+      for (const l2 of getExtras(b)) { const r2 = row(b, l2, n); if (!r2 || !r2[1]) continue;
+        c.append(el('div', {class: 'xtr', lang: l2, dir: DIR(l2)}, el('div', {class: 'xlab cs'}, LNAME[l2] || l2), el('div', {class: 'tr'}, ...r2[1].split('\n').filter(t => t.trim()).map(t => paraEl(t, l2))))); } };
     // Arabic library books (turath.io) show the book's own printed number; the others show the app number and the printed one beside it
     const own = b.grp === 'ar' || !!b.jami, pn = b.an[n] || n;
     const mus = (b.key === 'muslim' || b.abno) && b.an[n] && !(b.nn && b.nn[n]);
@@ -4247,15 +4299,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (lang && !rr) c.append(el('p', {class: 'note'}, T('cLangMissing')));
       if (x && x.t) c.insertBefore(el('p', {class: 'ptitle ' + L, lang: L, dir: DIR(L)}, x.t), c.children[1]);
       if (lang && rr) c.append(H('pTr'), trTab(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
+      addExtras();
       if (x && x.k) c.append(H('pTakh'), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...x.k.split('\n').filter(t => t.trim()).map(P)));
       // explanation and benefits in the chosen language; when that translation has none, the Arabic ones
       const ra = (row(b, 'ar', n) || [])[3] || {}, part = k => x && x[k] ? [x[k], L] : ra[k] ? [ra[k], 'ar'] : null;
       const PL = (t, l) => paraEl(t, l);
       const ex = part('e'), bf = part('b');
-      if (ex) c.append(H('pExpl'), el('div', {class: 'tr'}, ...ex[0].split('\n').filter(t => t.trim()).map(t => PL(t, ex[1]))));
-      if (bf) c.append(H('pBen'), el('ol', {class: 'tr pben', dir: DIR(bf[1])}, ...bf[0].split('\n').filter(t => t.trim()).map(t => el('li', {class: bf[1], lang: bf[1]}, ...rich(t, bf[1])))));
+      const fold = [];
+      if (ex) fold.push({k: 'e', label: T('pExpl'), nodes: ex[0].split('\n').filter(t => t.trim()).map(t => PL(t, ex[1])), lang: ex[1]});
+      if (bf) fold.push({k: 'b', label: T('pBen'), ol: true, nodes: bf[0].split('\n').filter(t => t.trim()).map(t => el('li', {class: bf[1], lang: bf[1]}, ...rich(t, bf[1]))), lang: bf[1]});
+      if (x && x.f && !bf) fold.push({k: 'b', label: T('pBen'), nodes: x.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => PL(t, L)), lang: L});
+      if (fold.length) c.append(...foldTabs(b, n, fold));
     }
-    else if (lang && d.content.translation) c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(x, lang))));
+    else if (lang && d.content.translation) { c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(x, lang)))); addExtras();
+      const xf = (row(b, lang, n) || [])[3];   // a book without «parts» whose rows carry a fawaid text (Sunan ad-Darimi ...)
+      if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => paraEl(t, lang)), lang}])); }
     else if (lang) c.append(el('p', {class: 'note'}, b.key === 'hifzhadith' ? (HFM[ui] || HFM.en) : T('cLangMissing')));
     // footer of the compiler under each item (شذرات الذهب: Sahaba / Salaf; Fazail as-Sahaba: Sahaba)
     const foot = footOf(b, n);
@@ -4268,6 +4326,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (b.dup && b.dup[n]) { const dl = el('p', {class: 'cs hdup', lang: ui === 'ar' ? 'ar' : ui, dir: DIR(ui === 'ar' ? 'ar' : ui)}, (HFD[ui] || HFD.en) + ' (');
       b.dup[n].forEach((x, i) => { if (i) dl.append(ui === 'ur' || ui === 'ar' ? '، ' : ', '); dl.append(el('a', {href: '#/h/' + x}, fmtN(x))); }); dl.append(')'); c.append(dl); }
     if (q && q.length) c.querySelectorAll('.mt, .tr').forEach(x => markHits(x, q));
+    // the Sheikh's research and takhrij: the al-Jami hadith (Dr. al-A'zami) that cite this hadith, as small number buttons
+    { const jr = row(b, 'jx', n), jl = jr && jr[1] ? String(jr[1]).split(',').filter(Boolean) : [];
+      if (jl.length && !(b.jami && b.jami[n])) c.append(el('div', {class: 'shk', lang: ui === 'ar' ? 'ar' : ui, dir: DIR(ui === 'ar' ? 'ar' : ui)},
+        el('div', {class: 'shkt'}, el('span', {class: 'shki'}, '✦'), el('b', {}, SHK_T[ui] || SHK_T.en)), el('div', {class: 'shks cs'}, SHK_S[ui] || SHK_S.en),
+        el('div', {class: 'shkn'}, ...jl.map(x => el('a', {class: 'btn', href: '#/h/' + x}, fmtN(+x)))))); }
     // actions: bookmark (stored as c:<book>), copy, share, listen
     const scope = 'c:' + b.key, acts = el('div', {class: 'acts'});
     const bm = el('button', {class: 'ab', type: 'button', 'aria-label': T('bookmark'), title: T('bookmark')});
@@ -5048,6 +5111,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261101a', d: '01-11-2026', keys: ['darimi','sh13032','shamail'],
+      t: {ur: 'سنن دارمی، السنۃ اور شمائل کے تراجم اصل کتاب سے درست کیے گئے؛ نئی ٹیبیں اور انگریزی ترجمہ', en: 'Darimi, as-Sunnah and Shama\'il translations corrected from the printed books; new tabs and English translation', ar: 'تصحيح ترجمات سنن الدارمي والسنة والشمائل من الكتب المطبوعة، مع تبويبات جديدة وترجمة إنجليزية'},
+      i: {ur: ['سنن دارمی، السنۃ اور شمائل کا اردو ترجمہ، حاشیہ اور فوائد صفحہ بہ صفحہ اصل کتاب سے ملا کر درست کیا گیا ہے۔ رضی اللہ عنہ اور صلی اللہ علیہ وسلم کی املا خاص طور پر درست کی گئی ہے۔ چند مقامات پر اسکین کے مدھم ہونے سے معمولی غلطی کا امکان باقی ہے۔', 'شرح اور فوائد اب الگ ٹیبوں میں ہیں۔ ٹیب پر دبائیں تو کھل جاتی ہے اور دوبارہ دبائیں تو بند ہو جاتی ہے۔', 'اردو میں ترجمے والی کتاب کھولیں تو عربی کے نیچے اردو ترجمہ پہلے سے کھلا ہوتا ہے۔ انگریزی کی ٹیب دبانے سے انگریزی ترجمہ بھی نیچے آ جاتا ہے۔', 'ہر حدیث کے نیچے ہمارے شیخ کی تحقیق و تخریج کا حوالہ (الجامع الکامل کا حدیث نمبر) دیا جا رہا ہے۔'],
+        en: ['The Urdu translation, footnotes and benefits of Darimi, as-Sunnah and the Shama\'il were checked page by page against the printed books, with special care for the honorific formulas. Small reading errors may remain where the scan was faint.', 'Commentary and benefits are now separate tabs: tap to open, tap again to close.', 'In translated books the Urdu translation now shows under the Arabic by default, and an English tab shows the English translation below it.', 'Under each hadith a reference to our Sheikh\'s research and takhrij (the hadith number in al-Jami al-Kamil) is shown.'],
+        ar: ['صُحّحت الترجمة الأردية والحواشي والفوائد في سنن الدارمي والسنة والشمائل صفحةً صفحةً بمقابلتها بالكتب المطبوعة، مع العناية بصيغ الترضي والصلاة. وقد تبقى أخطاء قراءة يسيرة حيث كان المسح الضوئي باهتاً.', 'الشرح والفوائد صارا في تبويبين مستقلين: اضغط لفتحه واضغط ثانيةً لإخفائه.', 'في الكتب المترجمة تظهر الترجمة الأردية تحت العربي افتراضياً، وتبويب الإنجليزية يعرض الترجمة الإنجليزية تحته.', 'تحت كل حديث إحالة إلى تحقيق شيخنا وتخريجه (رقم الحديث في الجامع الكامل).']}},
     {id: '20261031e', d: '31-10-2026', keys: ['shamail'],
       t: {ur: 'شمائل ترمذی: اردو ترجمہ، تخریج، مفردات اور شرح شامل (خصائل نبوی)', en: 'Shama\'il of at-Tirmidhi: Urdu translation, takhrij, vocabulary and commentary added (Khasa\'il Nabawi)', ar: 'الشمائل المحمدية: أُضيفت الترجمة الأردية والتخريج والمفردات والشرح (خصائل نبوي)'},
       i: {ur: ['عربی متن اعراب کے ساتھ وہی ہے جو پہلے سے موجود تھا۔ اس کے ساتھ اردو ترجمہ، تخریج، مفردات، شرح، ابواب کے اردو عنوان اور امام ترمذی رحمہ اللہ کے حالات شامل کیے گئے ہیں۔ یہ سب اسکین شدہ کتاب سے پڑھا گیا ہے، اس لیے کہیں کہیں پڑھنے کی غلطیاں ممکن ہیں۔'],
