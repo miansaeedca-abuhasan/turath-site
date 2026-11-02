@@ -111,10 +111,10 @@ class Widget : AppWidgetProvider() {
             val wx = Weather.text(pr) ?: ""
             // the full widget: the weather stands between the prayer and its count; the small one has it beside the city
             v.setTextViewText(R.id.city, if (full) place.name else place.name + (if (wx.isEmpty()) "" else "  $wx"))
-            if (full) { v.setTextViewText(R.id.wx, wx); v.setTextColor(R.id.wx, accent(pr)); size(v, R.id.wx, 20f, pr) }
+            if (full) { v.setTextViewText(R.id.wx, wx); v.setTextColor(R.id.wx, accent(pr)); size(v, R.id.wx, 16f, pr) }
             v.setTextColor(R.id.city, accent(pr))
             v.setTextColor(R.id.prayer, ink); v.setTextColor(R.id.count, ink)
-            size(v, R.id.city, 12f, pr); size(v, R.id.prayer, 30f, pr); size(v, R.id.count, 28f, pr)
+            size(v, R.id.city, 12f, pr); size(v, R.id.prayer, if (full) 24f else 30f, pr); size(v, R.id.count, if (full) 22f else 28f, pr)
             // within 30 minutes of a prayer's time: count up from it; otherwise: count down to the next
             val upFrom = st.currentAt?.takeIf { st.current != P.SUNRISE && now.isBefore(it.plusMinutes(30)) }
             val base = SystemClock.elapsedRealtime() - System.currentTimeMillis()
@@ -122,7 +122,7 @@ class Widget : AppWidgetProvider() {
             v.setTextViewText(R.id.prayer, pname(shown, now))
             // the zawal time (no prayer): «Prohibited Time» in red
             if (t.forbiddenAt(now)?.first == t[P.ZAWAL]) {
-                v.setTextViewText(R.id.prayer, Tr["prohibited"]); v.setTextColor(R.id.prayer, 0xFFFF3B30.toInt()); size(v, R.id.prayer, 21f, pr)
+                v.setTextViewText(R.id.prayer, Tr["prohibited"]); v.setTextColor(R.id.prayer, 0xFFFF3B30.toInt()); size(v, R.id.prayer, if (full) 17f else 21f, pr)
             }
             if (upFrom != null) {
                 v.setChronometer(R.id.count, base + upFrom.toInstant().toEpochMilli(), "+%s", true)
