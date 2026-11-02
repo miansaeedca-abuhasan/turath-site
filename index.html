@@ -5187,7 +5187,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (window.Notification && Notification.permission === 'granted' && navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(L(last.t), {body: L(last.i)[0], icon: 'icon-192.png', tag: 'news-' + last.id, data: {url: '#/s/rijal'}})).catch(() => {});
   } catch (e) {} }, 3500);
 
-  setTimeout(() => index().catch(() => {}), 0);
+  (window.requestIdleCallback ? requestIdleCallback : fn => setTimeout(fn, 1500))(() => index().catch(() => {}), {timeout: 4000});
 
   // the search button of the top bar, inside an open book: hadith number, words (all / any) or a whole sentence, in this book only
   async function bookSearch(key) {
