@@ -106,7 +106,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .fr{font-family:var(--serif);direction:ltr;text-align:left;line-height:1.75}
 .phead{margin:.9rem 0 .2rem;font-size:.95rem;color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 25%,transparent);padding-bottom:.15rem}
 html[lang=ur] .phead{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
-.refcard{padding:.7rem .9rem;margin:.4rem 0}.refcard p{margin:.15rem 0}.reflinks{line-height:1.9}.reflinks a{font-weight:700;margin-inline-start:.9rem}.trtab{display:flex;margin:.1rem 0 .35rem}.trtab span{display:inline-block;padding:.12rem .8rem;border:1px solid var(--line,#d9d2c3);border-bottom:2px solid var(--accent,#0b5d4b);border-radius:.6rem .6rem 0 0;background:var(--card,#fff);color:var(--accent,#0b5d4b);font-size:.85rem;font-weight:700;line-height:1.5}.ptakh{font-size:.92rem;opacity:.92}
+.pfn{font-size:16px!important;line-height:2;margin:.9rem 0 .2rem;padding-top:.6rem;border-top:1px solid rgba(128,128,128,.35)}.refcard{padding:.7rem .9rem;margin:.4rem 0}.refcard p{margin:.15rem 0}.reflinks{line-height:1.9}.reflinks a{font-weight:700;margin-inline-start:.9rem}.trtab{display:flex;margin:.1rem 0 .35rem}.trtab span{display:inline-block;padding:.12rem .8rem;border:1px solid var(--line,#d9d2c3);border-bottom:2px solid var(--accent,#0b5d4b);border-radius:.6rem .6rem 0 0;background:var(--card,#fff);color:var(--accent,#0b5d4b);font-size:.85rem;font-weight:700;line-height:1.5}.ptakh{font-size:.92rem;opacity:.92}
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
@@ -4306,7 +4306,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const PL = (t, l) => paraEl(t, l);
       const ex = part('e'), bf = part('b');
       const fold = [];
-      if (ex) fold.push({k: 'e', label: T('pExpl'), nodes: ex[0].split('\n').filter(t => t.trim()).map(t => PL(t, ex[1])), lang: ex[1]});
+      if (ex) fold.push({k: 'e', label: T('pExpl'), nodes: ex[0].split('\n').filter(t => t.trim()).map(t => PL(t, ex[1])).concat(x && x.n && ex[1] === L ? [el('p', {class: 'pfn', lang: L, dir: DIR(L)}, x.n)] : []), lang: ex[1]});
       if (bf) fold.push({k: 'b', label: T('pBen'), ol: true, nodes: bf[0].split('\n').filter(t => t.trim()).map(t => el('li', {class: bf[1], lang: bf[1]}, ...rich(t, bf[1]))), lang: bf[1]});
       if (x && x.f && !bf) fold.push({k: 'b', label: T('pBen'), nodes: x.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => PL(t, L)), lang: L});
       if (fold.length) c.append(...foldTabs(b, n, fold));
