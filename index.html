@@ -943,7 +943,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=4a05d22f34", "data/d2.js?h=5995d26013", "data/d3.js?h=e25a73c6c4", "data/d4.js?h=102599932b", "data/d5.js?h=3c542e7ce3", "data/d6.js?h=21dc70d9d7", "data/d7.js?h=075c80b218", "data/d8.js?h=cf1bd170c1", "data/d9.js?h=c421eb91fe", "data/d10.js?h=52f75580d1"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=10d57b3ded", "data/d2.js?h=32fe40d49f", "data/d3.js?h=e25a73c6c4", "data/d4.js?h=102599932b", "data/d5.js?h=3c542e7ce3", "data/d6.js?h=1aa8d2f204", "data/d7.js?h=075c80b218", "data/d8.js?h=cf1bd170c1", "data/d9.js?h=c421eb91fe", "data/d10.js?h=52f75580d1"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -5127,6 +5127,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
+    {id: '20261102', d: '02-11-2026', keys: ['sh13064', 'adabbayhaqi'],
+      t: {ur: "نئی تراجم والی کتب", en: "New translated books", ar: "كتب مترجمة جديدة"},
+      i: {ur: ["امام ابن ابی الدنیا: المرض والکفارات – اردو ترجمہ (237)", "امام بیہقی: الآداب – تہذیب و اردو ترجمہ (859)"], en: ["امام ابن ابی الدنیا: المرض والکفارات – اردو ترجمہ (237)", "امام بیہقی: الآداب – تہذیب و اردو ترجمہ (859)"], ar: ["امام ابن ابی الدنیا: المرض والکفارات – اردو ترجمہ (237)", "امام بیہقی: الآداب – تہذیب و اردو ترجمہ (859)"]}},
     {id: '20261101a', d: '01-11-2026', keys: ['darimi', 'sh13032', 'shamail'],
       t: {ur: "نئی تراجم والی کتب", en: "New translated books", ar: "كتب مترجمة جديدة"},
       i: {ur: ["سنن دارمی – اردو ترجمہ (3406)", "السنۃ للمروزی – اردو ترجمہ (393)", "شمائل ترمذی – اردو ترجمہ (402)", "ہر حدیث کے نیچے محدث مدینہ محمد عبداللہ اعظمی (المعروف بالضیاء) رحمہ اللہ کی تحقیق و تخریج کا حوالہ (الجامع الکامل کا حدیث نمبر)"], en: ["سنن دارمی – اردو ترجمہ (3406)", "السنۃ للمروزی – اردو ترجمہ (393)", "شمائل ترمذی – اردو ترجمہ (402)", "ہر حدیث کے نیچے محدث مدینہ محمد عبداللہ اعظمی (المعروف بالضیاء) رحمہ اللہ کی تحقیق و تخریج کا حوالہ (الجامع الکامل کا حدیث نمبر)"], ar: ["سنن دارمی – اردو ترجمہ (3406)", "السنۃ للمروزی – اردو ترجمہ (393)", "شمائل ترمذی – اردو ترجمہ (402)", "ہر حدیث کے نیچے محدث مدینہ محمد عبداللہ اعظمی (المعروف بالضیاء) رحمہ اللہ کی تحقیق و تخریج کا حوالہ (الجامع الکامل کا حدیث نمبر)"]}},
