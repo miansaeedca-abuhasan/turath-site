@@ -7887,6 +7887,19 @@ Object.assign(I.fr, {
   const DIARY = {t: {ur: 'حفظ ڈائری (استاد، والدین اور پرنسپل کے لیے)', ar: 'دفتر الحفظ (للمعلم وولي الأمر والمدير)', en: 'Hifz diary (for teachers, parents and principals)'},
     s: {ur: 'روزانہ سبق، سبقی اور منزل کا اندراج اور رپورٹ کارڈ — مفت', ar: 'تسجيل الدرس اليومي والمراجعة وبطاقة التقرير — مجاني', en: 'Daily lesson, revision and manzil entries with a report card — free'}};
   const L = () => S[ui] || S.en;
+  // microphone help: one clear panel (never repeated), the steps for the phone, and buttons that open the phone settings page of Chrome and try again
+  const MIC = {
+    ur: {t: 'مائیکروفون کی اجازت دیں', s: ['نیچے والا بٹن دبا کر فون کی سیٹنگ کھولیں۔', 'اجازتیں ← مائیکروفون ← اجازت دیں۔', 'واپس آ کر دوبارہ کوشش کا بٹن دبائیں۔'], o: 'فون کی سیٹنگ کھولیں', r: 'دوبارہ کوشش کریں', c: 'اگر سیٹنگ نہ کھلے تو: فون کی سیٹنگ ← ایپس ← کروم ← اجازتیں ← مائیکروفون ← اجازت دیں۔'},
+    en: {t: 'Allow the microphone', s: ['Tap the button below to open the phone settings.', 'Permissions → Microphone → Allow.', 'Come back and tap Try again.'], o: 'Open phone settings', r: 'Try again', c: 'If the settings do not open: Phone Settings → Apps → Chrome → Permissions → Microphone → Allow.'},
+    ar: {t: 'اسمح بالمايكروفون', s: ['اضغط الزر أدناه لفتح إعدادات الهاتف.', 'الأذونات ← المايكروفون ← السماح.', 'ارجع واضغط المحاولة مرة أخرى.'], o: 'افتح إعدادات الهاتف', r: 'حاول مرة أخرى', c: 'إن لم تفتح الإعدادات: إعدادات الهاتف ← التطبيقات ← كروم ← الأذونات ← المايكروفون ← السماح.'}
+  };
+  const micPanel = stage => {
+    const M = MIC[ui] || MIC.en; try { stage.querySelectorAll('.mhelp').forEach(x => x.remove()); } catch (e) {}
+    const android = /Android/i.test(navigator.userAgent || '');
+    const retry = E('button', {type: 'button', class: 'btn', on: {click: () => { try { navigator.mediaDevices.getUserMedia({audio: true}).then(st => { st.getTracks().forEach(x => x.stop()); location.reload(); }, () => {}); } catch (e) {} }}}, M.r);
+    stage.append(E('div', {class: 'cs mhelp'}, E('b', {}, M.t), E('ol', {}, ...M.s.map(x => E('li', {}, x))),
+      android ? E('a', {class: 'btn', href: 'intent:package:com.android.chrome#Intent;action=android.settings.APPLICATION_DETAILS_SETTINGS;end'}, M.o) : null, ' ', retry, E('p', {class: 'cs'}, M.c)));
+  };
   const $q = () => document.querySelector('#qv');
   const Qn = () => window.QURAN;
   /* ---------- storage ---------- */
@@ -8142,20 +8155,20 @@ Object.assign(I.fr, {
       const text = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'});
       let live_A = null;   // the words read so far (from the live recognition): shown / coloured as they are recited
       const drawText = () => { const A = live_A, lastI = A ? A.last : -1; text.replaceChildren(...words.map((x, i) => { const first = i === 0 || x.ay !== words[i - 1].ay; const b = []; if (first && i) b.push(aya(words[i - 1].ay));
-        const done = A && i <= lastI, stt = done ? A.st[i] : '', cls = done ? (stt === 'ok' ? ' ok' : stt === 'wrong' ? ' wrong' : ' miss') : '';
+        const done = A && i <= lastI, stt = done ? A.st[i] : '', cls = done ? (stt === 'ok' ? ' ok' : stt === 'wrong' ? ' wrong' : '') : '';
         b.push(openBook || done ? E('span', {class: 'hzw' + cls}, x.w + ' ') : E('span', {class: 'hzb mute'}, '•••')); return b; }).flat(), aya(t)); };
       const tog = E('div', {class: 'seg', role: 'group'}, ...[[true, L().open], [false, L().closed]].map(([v, l]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(openBook === v), on: {click: () => { openBook = v; put('open', v); [...tog.children].forEach((c, i) => c.setAttribute('aria-pressed', String((i === 0) === v))); drawText(); }}}, l)));
       const tick = () => { const sec = Math.floor((Date.now() - started) / 1000); status.textContent = L().listening + ' · ' + UD(pad(Math.floor(sec / 60)) + ':' + pad(sec % 60)); };
       const build = () => {
         const R = new (SRc())(); R.lang = 'ar-SA'; R.continuous = true; R.interimResults = true; R.maxAlternatives = 1;
-        R.onresult = e => { interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const r = e.results[i]; if (r.isFinal) finals.push(r[0].transcript); else interim += r[0].transcript; } const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false;
-          try { const hd = all.map(NORM).filter(Boolean); if (hd.length) { live_A = align(words, hd); drawText(); const cur = text.querySelectorAll('.hzw.ok,.hzw.wrong,.hzw.miss'); if (cur.length) cur[cur.length - 1].scrollIntoView({block: 'nearest'}); } } catch (er) {} };
+        R.onresult = e => { interim = Array.from(e.results).map(r => r[0].transcript).join(' '); const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); fin.hidden = false;
+          try { const hd = all.map(NORM).filter(Boolean); if (hd.length) { live_A = align(words.slice(0, Math.min(words.length, Math.ceil(hd.length * 1.6) + 4)), hd); drawText(); const cur = text.querySelectorAll('.hzw.ok,.hzw.wrong,.hzw.miss'); if (cur.length) cur[cur.length - 1].scrollIntoView({block: 'nearest'}); } } catch (er) {} };
         R.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopping = true; on = false; cleanup(); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') micHelp(); else status.textContent = L().errNet; };
         R.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (on && !stopping) { try { R.start(); } catch (e) {} } };
         return R;
       };
       const cleanup = () => { on = false; clearInterval(timer); mic.classList.remove('on'); fin.hidden = !finals.length; };
-      const micHelp = () => { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); };
+      const micHelp = () => { status.textContent = L().errMic; micPanel(stage); };
       mic.addEventListener('click', async () => {
         if (on) { stopping = true; try { rec.stop(); } catch (e) {} cleanup(); status.textContent = L().tapStart; return; }
         if (!get('consent', 0)) return consent(() => mic.click());
@@ -8297,12 +8310,12 @@ Object.assign(I.fr, {
       };
       const startRec = async () => {
         if (tk !== token) return;
-        try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({audio: true}); st.getTracks().forEach(x => x.stop()); } } catch (e) { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); return; }
+        try { if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) { const st = await navigator.mediaDevices.getUserMedia({audio: true}); st.getTracks().forEach(x => x.stop()); } } catch (e) { status.textContent = L().errMic; micPanel(stage); return; }
         if (tk !== token) return;
         const r = new (SRc())(); R = r; r.lang = 'ar-SA'; r.continuous = true; r.interimResults = true; r.maxAlternatives = 1;
-        r.onresult = e => { interim = ''; for (let q = e.resultIndex; q < e.results.length; q++) { const x = e.results[q]; if (x.isFinal) finals.push(x[0].transcript); else interim += x[0].transcript; }
+        r.onresult = e => { interim = Array.from(e.results).map(x => x[0].transcript).join(' ');
           lastT = Date.now(); const all = (finals.join(' ') + ' ' + interim).trim().split(/\s+/); live.textContent = all.slice(-6).join(' '); done.hidden = false; };
-        r.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopRec(); mic.classList.remove('on'); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { status.textContent = L().errMic; stage.append(E('p', {class: 'cs'}, L().micApp)); } else status.textContent = L().errNet; };
+        r.onerror = e => { if (e.error === 'no-speech' || e.error === 'aborted') return; stopRec(); mic.classList.remove('on'); if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { status.textContent = L().errMic; micPanel(stage); } else status.textContent = L().errNet; };
         r.onend = () => { if (interim.trim()) { finals.push(interim); interim = ''; } if (R === r && !finished && tk === token) { try { r.start(); } catch (e) {} } };
         t0 = Date.now(); lastT = 0; mic.classList.add('on'); status.textContent = L().exSpeak; done.hidden = false;
         try { r.start(); } catch (e) {}
