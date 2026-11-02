@@ -129,6 +129,7 @@ object Events {
             t.forbidden.firstOrNull { it.first == t[P.ZAWAL] }?.let { out += Ev(it.first, "info", P.ZAWAL, text = "zawalNow", extra = it.second.toInstant().toEpochMilli()) }
             // the widget blinks in the forbidden times: refresh when they begin and end
             for (f in t.forbidden) { out += Ev(f.first, "widget"); out += Ev(f.second, "widget") }
+            out += Ev(t[P.SUNRISE].minusMinutes(15), "widget")
             // the widget shows the next prayer: refresh at each prayer and at midnight
             for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")

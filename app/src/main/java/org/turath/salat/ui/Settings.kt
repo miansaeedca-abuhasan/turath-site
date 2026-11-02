@@ -118,17 +118,23 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 Choice(Tr["dstOff"], pr.dst == "off") { pr.dst = "off"; s.changed() }
             }
         }
-        Fold(s, Tr["timeFmt"]) {
+        Fold(s, Tr["formatT"]) {
             Card0 {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(Tr["dateFmt"], fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                val today = java.time.LocalDate.now()
+                for ((k, n) in listOf(0 to "dfDMY", 1 to "dfMDY", 2 to "dfYMD", 3 to "dfPhone"))
+                    ChoiceRow(pr.dateFmt == k, { pr.dateFmt = k; Widget.update(s.act); s.changed() }) {
+                        Column { Text(Tr[n], fontSize = 15.sp); Text(DateFmt.sample(s.act, k, today), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)) }
+                    }
+                HorizontalDivider(Modifier.padding(vertical = 10.dp))
+                Text(Tr["timeFmt"], fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ChoiceChip(!pr.h24, { pr.h24 = false; Widget.update(s.act); s.changed() }, { Text("12", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
                     ChoiceChip(pr.h24, { pr.h24 = true; Widget.update(s.act); s.changed() }, { Text("24", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
                 }
-            }
-        }
-        Fold(s, Tr["weatherT"]) {
-            Card0 {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                HorizontalDivider(Modifier.padding(vertical = 10.dp))
+                Text(Tr["weatherT"], fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+                Row(Modifier.fillMaxWidth().padding(top = 6.dp), horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                     ChoiceChip(!pr.tempF, { pr.tempF = false; Widget.update(s.act); s.changed() }, { Text("C", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
                     ChoiceChip(pr.tempF, { pr.tempF = true; Widget.update(s.act); s.changed() }, { Text("F", fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 6.dp, horizontal = 14.dp)) })
                 }

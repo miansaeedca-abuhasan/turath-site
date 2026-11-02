@@ -108,7 +108,10 @@ class Widget : AppWidgetProvider() {
             val v = RemoteViews(ctx.packageName, layout)
             background(v, pr)
             val ink = ink(pr); val dim = dim(pr)
-            v.setTextViewText(R.id.city, place.name + (Weather.text(pr)?.let { "  $it" } ?: ""))
+            val wx = Weather.text(pr) ?: ""
+            // the full widget: the weather stands between the prayer and its count; the small one has it beside the city
+            v.setTextViewText(R.id.city, if (full) place.name else place.name + (if (wx.isEmpty()) "" else "  $wx"))
+            if (full) { v.setTextViewText(R.id.wx, wx); v.setTextColor(R.id.wx, accent(pr)); size(v, R.id.wx, 20f, pr) }
             v.setTextColor(R.id.city, accent(pr))
             v.setTextColor(R.id.prayer, ink); v.setTextColor(R.id.count, ink)
             size(v, R.id.city, 12f, pr); size(v, R.id.prayer, 30f, pr); size(v, R.id.count, 28f, pr)
@@ -151,18 +154,24 @@ class Widget : AppWidgetProvider() {
                 // sunrise until Ishraq and the zawal time: the Sunrise cell and the message are red and blink, the moving line stops
                 val fbStart = t.forbiddenAt(now)?.first
                 val sunriseF = fbStart != null && fbStart == t[P.SUNRISE]
-                val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL])
+                // 15 minutes before sunrise and before sunset: the moving line stops and «Sunrise ↑» / «Sunset ↓» counts down
+                val soonRise = !now.isBefore(t[P.SUNRISE].minusMinutes(15)) && now.isBefore(t[P.SUNRISE])
+                val soonSet = !now.isBefore(t[P.MAGHRIB].minusMinutes(15)) && now.isBefore(t[P.MAGHRIB])
+                val soon = soonRise || soonSet
+                val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL]) || soon
                 v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
                 if (sunriseF) { v.setTextColor(NAMES[1], 0xFFFF3B30.toInt()); v.setTextColor(IDS[1], 0xFFFF3B30.toInt()) }
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
                 if (fb) {
-                    val span = t.forbiddenAt(now)!!
-                    val msg = "⛔ " + Tr["prohibitedEnd"] + " - " + Alarms.fmt(pr, span.second)
+                    val end = when { soonRise -> t[P.SUNRISE]; soonSet -> t[P.MAGHRIB]; else -> t.forbiddenAt(now)!!.second }
+                    val msg = when { soonRise -> Tr["sunriseT"] + " ↑"; soonSet -> Tr["sunsetT"] + " ↓"; else -> "⛔ " + Tr["prohibitedEnd"] + " - " + Alarms.fmt(pr, end) }
                     val b = SystemClock.elapsedRealtime() - System.currentTimeMillis()
                     for ((tv, ch) in listOf(R.id.tb0 to R.id.tc0, R.id.tb1 to R.id.tc1)) {
                         v.setTextViewText(tv, msg)
-                        v.setChronometer(ch, b + span.second.toInstant().toEpochMilli(), "−%s", true)
+                        v.setChronometer(ch, b + end.toInstant().toEpochMilli(), "−%s", true)
                         v.setChronometerCountDown(ch, true)
+                        // the warning before sunrise / sunset stays steady in gold; the prohibited time itself blinks in red
+                        if (soon) { v.setTextColor(tv, 0xFFE0B54A.toInt()); v.setTextColor(ch, 0xFFE0B54A.toInt()) }
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))

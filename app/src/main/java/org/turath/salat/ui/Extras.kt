@@ -48,36 +48,32 @@ fun LookPage(s: AppState, back: () -> Unit) {
     var alpha by remember { mutableIntStateOf(pr.widgetAlpha) }
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         TopBar(Tr["look"], back)
-        SectionTitle(Tr["clockStyle"])
-        Card0 { ClockPicker(pr, s.now) { s.changed() } }
-        SectionTitle(Tr["background"])
-        Card0 { BackgroundPicker(pr, isDark(s, androidx.compose.foundation.isSystemInDarkTheme())) { s.changed() } }
-        SectionTitle(Tr["dateFmt"])
-        Card0 {
-            val today = java.time.LocalDate.now()
-            for ((k, n) in listOf(0 to "dfDMY", 1 to "dfMDY", 2 to "dfYMD", 3 to "dfPhone"))
-                ChoiceRow(pr.dateFmt == k, { pr.dateFmt = k; Widget.update(s.act); s.changed() }) {
-                    Column { Text(Tr[n], fontSize = 15.sp); Text(DateFmt.sample(s.act, k, today), fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f)) }
-                }
+        Fold(s, Tr["clockStyle"]) {
+            Card0 { ClockPicker(pr, s.now) { s.changed() } }
         }
-        SectionTitle(Tr["theme"])
-        Card0 {
-            for ((k, n) in listOf("time" to "themeTime", "light" to "themeLight", "dark" to "themeDark", "phone" to "themePhone"))
-                ChoiceRow(pr.theme == k, { pr.theme = k; s.changed() }) { Text(Tr[n], fontSize = 15.sp) }
+        Fold(s, Tr["background"]) {
+            Card0 { BackgroundPicker(pr, isDark(s, androidx.compose.foundation.isSystemInDarkTheme())) { s.changed() } }
         }
-        Card0 { AppLook(s) }
-        SectionTitle(Tr["widgets"])
-        Card0 {
-            Text(Tr["widgetsHow"], fontSize = 14.sp)
-            Spacer(Modifier.height(10.dp))
-            Text(Tr["transparency"] + ": " + Tr.num(alpha) + "%", fontWeight = FontWeight.Bold)
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                for (v in listOf(0, 20, 40, 60, 80, 100)) {
-                    ChoiceChip(alpha == v, { alpha = v; pr.widgetAlpha = v; Widget.update(s.act) }, { Text(Tr.num(v)) }, Modifier.padding(end = 4.dp))
-                }
+        Fold(s, Tr["theme"]) {
+            Card0 {
+                for ((k, n) in listOf("time" to "themeTime", "light" to "themeLight", "dark" to "themeDark", "phone" to "themePhone"))
+                    ChoiceRow(pr.theme == k, { pr.theme = k; s.changed() }) { Text(Tr[n], fontSize = 15.sp) }
             }
-            SwitchRow(Tr["widgetLight"], pr.widgetLight) { pr.widgetLight = it; Widget.update(s.act); s.changed() }
-            WidgetLook(pr) { Widget.update(s.act) }
+            Card0 { AppLook(s) }
+        }
+        Fold(s, Tr["widgets"]) {
+            Card0 {
+                Text(Tr["widgetsHow"], fontSize = 14.sp)
+                Spacer(Modifier.height(10.dp))
+                Text(Tr["transparency"] + ": " + Tr.num(alpha) + "%", fontWeight = FontWeight.Bold)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    for (v in listOf(0, 20, 40, 60, 80, 100)) {
+                        ChoiceChip(alpha == v, { alpha = v; pr.widgetAlpha = v; Widget.update(s.act) }, { Text(Tr.num(v)) }, Modifier.padding(end = 4.dp))
+                    }
+                }
+                SwitchRow(Tr["widgetLight"], pr.widgetLight) { pr.widgetLight = it; Widget.update(s.act); s.changed() }
+                WidgetLook(pr) { Widget.update(s.act) }
+            }
         }
         Spacer(Modifier.height(30.dp))
     }
@@ -348,13 +344,7 @@ fun AudiosPage(s: AppState, back: () -> Unit) {
                 if (g != group) {
                     group = g
                     val gk = "audios/" + g; val gOpen = s.folds[gk] == true
-                    val bar = MaterialTheme.colorScheme.primary
-                    val ink = if (bar.luminance() > .45f) Color(0xFF0B1F24) else Color.White
-                    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(bar)
-                        .clickable { s.folds[gk] = !gOpen }.padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Text(Tr[g], Modifier.weight(1f), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-                        Icon(if (gOpen) Icons.Outlined.ExpandLess else Icons.Outlined.ExpandMore, null, tint = ink)
-                    }
+                    FoldBar(Tr[g], gOpen) { s.folds[gk] = !gOpen }
                 }
                 if (s.folds["audios/" + g] != true) continue
                 Row(Modifier.fillMaxWidth().clickable {
