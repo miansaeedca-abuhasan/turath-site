@@ -156,7 +156,9 @@ class Widget : AppWidgetProvider() {
                 val sunriseF = fbStart != null && fbStart == t[P.SUNRISE]
                 // 15 minutes before sunrise and before sunset: the moving line stops and «Sunrise ↑» / «Sunset ↓» counts down
                 val soonRise = !now.isBefore(t[P.SUNRISE].minusMinutes(15)) && now.isBefore(t[P.SUNRISE])
-                val soonSet = !now.isBefore(t[P.MAGHRIB].minusMinutes(15)) && now.isBefore(t[P.MAGHRIB])
+                // on a fasting day the countdown to sunset and the reminder of the iftar du'a are one (it starts when the iftar reminder does)
+                val fasting = pr.fastDay(now.toLocalDate())
+                val soonSet = !now.isBefore(t[P.MAGHRIB].minusMinutes(if (fasting) pr.iftarBefore.toLong() else 15)) && now.isBefore(t[P.MAGHRIB])
                 val soon = soonRise || soonSet
                 val fb = sunriseF || (fbStart != null && fbStart == t[P.ZAWAL]) || soon
                 v.setViewVisibility(R.id.blink1, if (sunriseF) android.view.View.VISIBLE else android.view.View.GONE)
@@ -164,7 +166,7 @@ class Widget : AppWidgetProvider() {
                 v.setViewVisibility(R.id.tbl, if (fb) android.view.View.VISIBLE else android.view.View.GONE)
                 if (fb) {
                     val end = when { soonRise -> t[P.SUNRISE]; soonSet -> t[P.MAGHRIB]; else -> t.forbiddenAt(now)!!.second }
-                    val msg = when { soonRise -> Tr["sunriseT"] + " ↑"; soonSet -> Tr["sunsetT"] + " ↓"; else -> "⛔ " + Tr["prohibitedEnd"] + " - " + Alarms.fmt(pr, end) }
+                    val msg = when { soonRise -> Tr["sunriseT"] + " ↑"; soonSet -> Tr["sunsetT"] + (if (fasting) " · " + Tr["iftarShort"] else "") + " ↓"; else -> "⛔ " + Tr["prohibitedEnd"] + " - " + Alarms.fmt(pr, end) }
                     val b = SystemClock.elapsedRealtime() - System.currentTimeMillis()
                     for ((tv, ch) in listOf(R.id.tb0 to R.id.tc0, R.id.tb1 to R.id.tc1)) {
                         v.setTextViewText(tv, msg)

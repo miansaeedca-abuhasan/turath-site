@@ -58,6 +58,7 @@ object Events {
             if (pr.fastDay(d)) {
                 out += Ev(t[P.FAJR].minusMinutes(pr.suhoorBefore.toLong()), "suhoor", P.FAJR, pr.suhoorSound)
                 out += Ev(t[P.MAGHRIB].minusMinutes(pr.iftarBefore.toLong()), "iftar", P.MAGHRIB, Snd.NOTIFY, extra = t[P.MAGHRIB].toInstant().toEpochMilli())
+                out += Ev(t[P.MAGHRIB].minusMinutes(pr.iftarBefore.toLong()), "widget")
             }
             // the evening before the 13th: ask whether to fast the white days
             if (pr.beed && h.day == 12 && !pr.beedAccepted(key) && !pr.beedDeclined(key))
@@ -331,8 +332,10 @@ object Preview {
 
 /** the phone on vibrate at prayer time, back to ringing afterwards (only if the app put it on vibrate) */
 object Vibrate {
+    private const val LOGGING = false
     /** the last things the app did to the phone's sound mode, newest last (shown on the vibration page, so a wrong result can be traced) */
     fun log(pr: Prefs, what: String) {
+        if (!LOGGING) return
         val t = java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("dd HH:mm:ss"))
         val old = (pr.sp.getString("vibLog", "") ?: "").split("\n").filter { it.isNotBlank() }.takeLast(39)
         pr.sp.edit().putString("vibLog", (old + "$t  $what").joinToString("\n")).apply()

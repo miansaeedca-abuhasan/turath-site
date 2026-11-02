@@ -257,6 +257,13 @@ fun AboutPage(s: AppState, back: () -> Unit) {
 @Composable
 fun WorldList(s: AppState, now: ZonedDateTime) {
     val myOff = now.offset.totalSeconds
+    // the weather of each city: fetched in the background when the page opens, shown when it arrives
+    var wxTick by remember { mutableIntStateOf(0) }
+    @Suppress("UNUSED_VARIABLE") val wxRead = wxTick
+    LaunchedEffect(s.prefs.worldCities.size) {
+        kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) { for (c in s.prefs.worldCities) runCatching { Weather.refreshAt(s.prefs, c.lat, c.lng) } }
+        wxTick++
+    }
     for (c in s.prefs.worldCities) key(c.name, c.lat) {
         var open by remember { mutableStateOf(false) }
         val z = Schedule.zone(c)
@@ -269,7 +276,8 @@ fun WorldList(s: AppState, now: ZonedDateTime) {
             Row(Modifier.fillMaxWidth().clickable { open = !open }, verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(when (c.name) { "Makkah" -> Tr["wMakkah"]; "Madinah" -> Tr["wMadinah"]; "Al-Quds" -> Tr["wQuds"]; else -> c.name }, fontSize = 19.sp, fontWeight = FontWeight.Bold)
-                    Text(when { diff > 0 -> Tr.num(fmtH(diff)) + " " + Tr["hoursAhead"]; diff < 0 -> Tr.num(fmtH(-diff)) + " " + Tr["hoursBehind"]; else -> Tr["sameTime"] },
+                    Text(when { diff > 0 -> Tr.num(fmtH(diff)) + " " + Tr["hoursAhead"]; diff < 0 -> Tr.num(fmtH(-diff)) + " " + Tr["hoursBehind"]; else -> Tr["sameTime"] } +
+                        (Weather.textAt(s.prefs, c.lat, c.lng)?.let { "   ·   $it" } ?: ""),
                         fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .6f))
                 }
                 Text(s.fmt(there), fontSize = 18.sp, fontWeight = FontWeight.Medium)
