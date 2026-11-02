@@ -270,7 +270,7 @@ body.withplayer .resume.float{display:none}
 .rjst{font:700 1.05rem/1.8 var(--arabic);color:var(--accent,#0b5d4b)}.rjcnt{font:600 .85rem/1 var(--sans,system-ui);background:var(--accent,#0b5d4b);color:#fff;border-radius:999px;padding:.2rem .65rem}
 .rjnotes{list-style:none;margin:0;padding:0}.rjnotes li{padding:.55rem .9rem;border-top:1px solid var(--line,#e6e0d2);font:1.08rem/2 var(--arabic)}.rjnotes li:first-child{border-top:0}.rjwho{color:var(--accent,#0b5d4b)}
 .rjpills{display:flex;flex-wrap:wrap;gap:.4rem;padding:.7rem .8rem}.rjpill{font:1.02rem/1.8 var(--arabic);border:1px solid var(--line,#d9d2c3);border-radius:10px;padding:.15rem .7rem;text-decoration:none;color:inherit}.rjpill small{margin-inline-start:.4rem;color:var(--muted,#7a7468);font-size:.75rem}.rjpill:active{background:var(--wash)}
-.babbox{font-family:var(--arabic);font-size:1.15rem;line-height:1.9;font-weight:700;text-align:center;color:var(--accent);background:var(--card2,rgba(127,127,127,.1));border:1px solid var(--line,rgba(127,127,127,.3));border-radius:12px;padding:.6rem .8rem;margin:0 0 .7rem}
+.babtr{font-size:1.05rem;line-height:2;font-weight:700;text-align:center;color:var(--accent);margin:-.3rem 0 .7rem}.babbox{font-family:var(--arabic);font-size:1.15rem;line-height:1.9;font-weight:700;text-align:center;color:var(--accent);background:var(--card2,rgba(127,127,127,.1));border:1px solid var(--line,rgba(127,127,127,.3));border-radius:12px;padding:.6rem .8rem;margin:0 0 .7rem}
 .grpbox{padding:0;overflow:hidden}.grpbox>summary{cursor:pointer;list-style:none;padding:.9rem 1.1rem;display:block;border-inline-start:4px solid var(--accent)}
 .grpbox>summary::-webkit-details-marker{display:none}.grpbox[open]>summary{background:var(--wash)}
 .grpbox .gt{display:block;font:600 1.15rem/2 var(--urdu);color:var(--accent)}.grpbox summary .ca{font-size:1.1rem;color:var(--ink)}
@@ -4281,7 +4281,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a note of the book (text between the hadith, e.g. in the Seerah) has no number: a small star instead
     const note = b.nn && b.nn[n];
     if (b.bab && b.bab[n]) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, b.bab[n]));
-    else { const cs = chapStr(b, n); if (cs) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, cs)); }
+    else { const cs = chapStr(b, n); if (cs) { c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, cs));
+      // the chapter's name in the reading language (shamail ...), under the Arabic one
+      const sc = ui !== 'ar' && b.secL && b.secL[ui] ? b.sections.find(s => s[2] <= n && n <= s[3]) : null, st = sc && b.secL[ui][sc[0] - 1];
+      if (st) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, st)); } }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
@@ -4322,7 +4325,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
     else if (lang && d.content.translation) { c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(x, lang)))); addExtras();
       const xf = (row(b, lang, n) || [])[3];   // a book without «parts» whose rows carry a fawaid text (Sunan ad-Darimi ...)
-      if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => paraEl(t, lang)), lang}])); }
+      const FN2 = nd => { if (window.fnm) window.fnm(nd); return nd; };
+      if (xf && !Array.isArray(xf) && xf.k && /^\(\d+\)/m.test(xf.k)) c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang, dir: DIR(lang)}, ...xf.k.split('\n').filter(t => t.trim()).map(t => FN2(paraEl(t, lang)))));
+      if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => /(^|\n)\(\d+\)/.test(xf.f) ? FN2(paraEl(t, lang)) : paraEl(t, lang)), lang}])); }
     else if (lang) c.append(el('p', {class: 'note'}, b.key === 'hifzhadith' ? (HFM[ui] || HFM.en) : T('cLangMissing')));
     // footer of the compiler under each item (شذرات الذهب: Sahaba / Salaf; Fazail as-Sahaba: Sahaba)
     const foot = footOf(b, n);
@@ -4375,7 +4380,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch'), 'aria-label': T('cSecSearch'), id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
-    const intro = () => ((b.introL && (b.introL[ui] || b.introL.en)) || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => paraEl(p, (b.introL && (b.introL[ui] || b.introL.en)) ? (b.introL[ui] ? ui : 'en') : 'ur'))));
+    const intro = () => ((b.introL && (b.introL[ui] || b.introL.en)) || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, (b.introL && (b.introL[ui] || b.introL.en)) ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
     const bookAudio = () => { const rs = BA[b.key]; if (!rs) return [];
