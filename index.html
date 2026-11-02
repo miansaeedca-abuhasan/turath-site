@@ -1404,6 +1404,7 @@ async function showBookList(cat,aut,authors,topics){
   const totCard=el('div',{class:'card totcard'},el('div',{class:'totn'},T('totAll')(G(tot))),
     el('div',{class:'cs'},T('totParts')(G(cnt.jami||0),G(oSum),N(oN))),
     el('div',{class:'cs totnote'},T('totNote')));
+  if(cat==5)box.append(el('a',{class:'card srow2',href:'#/q/tafsir'},el('span',{class:'snum'},icon('tafsir')),el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},T('tafsir')+' — '+({ur:'ابن کثیر، جلالین، سعدی، قرطبی، بغوی اور دیگر',ar:'ابن كثير والجلالين والسعدي والقرطبي والبغوي وغيرها',en:'Ibn Kathir, Jalalayn, As-Sa‘di, Qurtubi, Baghawi and more'}[ui]||'Ibn Kathir, Jalalayn, As-Sa‘di, Qurtubi, Baghawi and more')))));
   if(cat||aut)box.append(el('div',{class:'card pad0 filterbox'},icon('search'),f),list);
   else if(authors)box.append(seg,el('div',{class:'card pad0 filterbox'},icon('search'),f),list);
   else box.append(el('div',{class:'card pad0'},g),totCard,seg,el('div',{class:'card pad0 filterbox'},icon('search'),f),list);
@@ -2998,12 +2999,51 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }
     } catch (e) {}
   }
+  /* ---------- Tafsir section: every tafsir of the site in one place, opened by surah (#/q/tafsir, #/q/tafsir/<key>, #/q/tafsir/<key>/<surah>) ---------- */
+  async function showTafsirHub(h) {
+    const v = qv(); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
+    await need(['ar_uthmani']);
+    if (!Q.tafsirs) await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js')));
+    const list = Q.tafsirs.list, m = h.match(/^#\/q\/tafsir(?:\/([A-Za-z0-9_]+))?(?:\/(\d+))?/), key = m && m[1], sn = m && m[2] ? +m[2] : 0;
+    const nameOf = t => LTR() ? t.en : t.ur, dirOf = l => l === 'ur' || l === 'ar' ? 'rtl' : 'ltr';
+    const t = key && list.find(x => x.key === key);
+    if (!t) {
+      bar(T('tafsir'), '', true); v.replaceChildren();
+      const LG = ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui));
+      LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length) return;
+        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x))))); });
+      return;
+    }
+    if (!sn) {
+      bar(nameOf(t), '', true); v.replaceChildren();
+      const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')}), box = el('div');
+      const draw = () => { const q = f.value.trim().toLowerCase().replace(/[ً-ْ]/g, '');
+        box.replaceChildren(...Q.meta.surahs.map((x, i) => [x, i + 1]).filter(([x, n]) => t.where[n] && (!q || String(n) === q || x[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || x[1].includes(q) || x[2].toLowerCase().includes(q)))
+          .map(([x, n]) => el('a', {class: 'card srow2', href: '#/q/tafsir/' + t.key + '/' + n}, el('span', {class: 'snum'}, NUM(n)), el('span', {class: 'sn'}, sName(n))))); };
+      f.addEventListener('input', draw); draw();
+      v.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), f), box); return;
+    }
+    bar(nameOf(t) + ' — ' + sName(sn), '', true); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
+    try { await needTafsir(t.key, sn); } catch (e) { v.replaceChildren(el('p', {class: 'note'}, T('noTafsir'))); return; }
+    const groups = (Q.taf[t.key] || {})[sn] || [];
+    v.replaceChildren();
+    if (!groups.length) { v.append(el('p', {class: 'note'}, T('noTafsir'))); return; }
+    let shown = 0; const more = el('button', {class: 'btn more', type: 'button'}, T('more'));
+    const add = () => { groups.slice(shown, shown + 10).forEach(g => {
+      const ay = []; for (let a = g[0]; a <= g[1]; a++) ay.push(verse('ar_uthmani', sn, a), ' ', ayahNum(a), ' ');
+      const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
+      more.before(el('div', {class: 'card'}, el('p', {class: 'cs'}, sName(sn) + ' · ' + T('tafsirOf')(rng)),
+        el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...ay),
+        ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: dirOf(t.lang)}, ...rich(x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, ''), t.lang)))));
+      }); shown = Math.min(groups.length, shown + 10); if (shown >= groups.length) more.remove(); };
+    v.append(more); more.addEventListener('click', add); add();
+  }
   async function showHome() {
     bar(T('brand'), '', false);
     const v = qv(); v.replaceChildren();
     const g = el('div', {class: 'tiles'});
     g.append(tile('img:talkhis', T('jami'), null, () => goBook('jami')), tile('img:jami_full', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('img:tuhfa_sharh', T('tuhfa'), null, () => goBook('tuhfa')),
-      tile('img:quran', T('quran'), '#/q'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
+      tile('img:quran', T('quran'), '#/q'), tile('tafsir', T('tafsir'), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
       tile('img:saved_hadith', T('bmHadith'), '#/bm'), tile('img:saved_ayat', T('bmQuran'), '#/q/bm'),
       tile('img:hadith_books', T('hbBooks'), '#/hb'),
       tile('img:seerah', T('seerahT'), '#/s/seerah'), tile('img:sahaba', T('navFazail'), '#/s/fazail'),
@@ -3087,7 +3127,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.replaceChildren();
     const g = el('div', {class: 'tiles'});
     g.append(tile('img:find_ayah', T('findAyah'), null, findAyah), tile('img:search', T('qsearch'), '#/q/search'), tile('img:saved_ayat', T('qbm'), '#/q/bm'), tile('img:translate', T('trans'), null, () => pickTr()),
-      tile('img:surahs', T('surahs'), '#/q'), tile('img:quran', T('mushafTile'), '#/q/mushaf'), tile('img:para', T('para'), '#/q/para'), tile('img:ruku', T('ruku'), '#/q/ruku'), tile('img:tilawat_audio', T('audio'), '#/q/audio'));
+      tile('img:surahs', T('surahs'), '#/q'), tile('img:quran', T('mushafTile'), '#/q/mushaf'), tile('img:para', T('para'), '#/q/para'), tile('img:ruku', T('ruku'), '#/q/ruku'), tile('tafsir', T('tafsir'), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'));
     v.append(el('div', {class: 'card pad0'}, g));
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')});
     const list = el('div');
@@ -4066,6 +4106,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         QS.mode = 'pages'; QS.tajweed = true; QS.rasm = 'uthmani'; qsave();
         const la = lsGet('qlast', null); location.replace('#/q/s/' + (la ? la.s + '/' + la.a : '1')); return;
       }
+      if (h.startsWith('#/q/tafsir')) return showTafsirHub(h);
       const m = h.match(/^#\/q\/([sjr])\/(\d+)(?:\/(\d+))?(\/play|\/hifz)?/);
       if (m) return showReader(m[1], +m[2], m[3] ? +m[3] : 0, m[4] === '/play', m[4] === '/hifz');
       if (h === '#/q/para') return showPara();
@@ -4523,8 +4564,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
             if (p.pos >= ns.length) p.more = false;
           } else {
             const part = ns.slice(p.pos, p.pos + 40); p.pos += part.length;
-            await needRange(b, 'ar', part[0], part[part.length - 1]);
-            for (const n of part) { const r = row(b, 'ar', n); if (r && test(r[1])) p.ok.push(n); }
+            await needRange(b, 'ar', part[0], part[part.length - 1]); if (lang) await needRange(b, lang, part[0], part[part.length - 1]);
+            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if ((r && test(r[1])) || (tr && test(tr[1]))) p.ok.push(n); }
             if (p.pos >= ns.length) p.more = false;
           }
           await tick();
@@ -4575,10 +4616,22 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (n && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
     } catch (e) {}
     upd();
-    let hits = new Map(); try { if (arUI || words.some(w => /[\u0600-\u06FF]/.test(w))) hits = await siteHits(words); } catch (e) {}
+    let hits = new Map(), lhits = null;
+    const [h1, h2] = await Promise.all([
+      (async () => { try { return arUI || words.some(w => /[\u0600-\u06FF]/.test(w)) ? await siteHits(words) : new Map(); } catch (e) { return new Map(); } })(),
+      (async () => { try { return !arUI && IXLANG.has(ui) ? await lixHits(ui, words) : null; } catch (e) { return null; } })()]);
+    hits = h1; lhits = h2;
     if (!cur()) return;
     const order = (IX.books || []);
-    if (arUI) {
+    if (lhits) {
+      // the reader's own language: the word index of the translations (and of the Arabic text, when Arabic words were typed) names the rows; no book is read through
+      const all = mergeHits(hits, lhits), pos = k => { const i = (C.idx || []).findIndex(b => b.key === k); return i < 0 ? 100000 + order.indexOf(k) : i; };
+      [...all.keys()].sort((a, b) => pos(a) - pos(b)).forEach(k => {
+        if (SKIP.has(k)) return; const ns = all.get(k); if (!ns || !ns.length) return;
+        if (sel && !sel.has(k)) return;
+        jobs.push({key: k, ns});
+      });
+    } else if (arUI) {
       [...hits.keys()].sort((a, b) => order.indexOf(a) - order.indexOf(b)).forEach(k => {
         if (SKIP.has(k)) return; const ns = hits.get(k); if (!ns || !ns.length) return;
         if (sel && !sel.has(k)) return;
@@ -4620,7 +4673,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let pre0 = null; try { pre0 = sessionStorage.gspre; } catch (e) {}
     if (!pre0 && keepShow(box, 's')) return;
     const books = [{key: 'jami', name: T('jamiName'), count: 16552}]
-      .concat(C.idx.filter(b => !SKIP.has(b.key) && !b.ext && (ui === 'ar' || b.langs.includes(ui))).map(b => ({key: b.key, name: bname(b), count: b.count})));
+      .concat(C.idx.filter(b => !SKIP.has(b.key) && !b.ext && (ui === 'ar' || IXLANG.has(ui) || b.langs.includes(ui))).map(b => ({key: b.key, name: bname(b), count: b.count})));
     try { const K = window.RB && RB.on ? await RB.catalog() : null; if (K) K.b.slice().sort((x, y) => (K.a[x[3]] ? K.a[x[3]][1] || 9999 : 9999) - (K.a[y[3]] ? K.a[y[3]][1] || 9999 : 9999)).forEach(r => books.push({key: 'rb' + r[0], name: r[1] + (K.a[r[3]] ? ' — ' + K.a[r[3]][0] : ''), count: r[4]})); } catch (e) {}
     const allKeys = books.map(x => x.key);
     let sel; try { sel = JSON.parse(localStorage.gsel3 || 'null'); } catch (e) {} sel = Array.isArray(sel) ? sel.filter(k => allKeys.includes(k)) : allKeys.slice();
@@ -4686,6 +4739,32 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     }
     return res || new Map();
   }
+  // word index of the translations (coll/ixl/<lang>/N.js, built by build_search_index_lang.py): the same shape as coll/ix
+  const IXL = {}, IXLANG = new Set(['ur', 'en', 'bn', 'hi', 'gu', 'fr']);
+  window.SIDXL = (l, i, m, books) => { const o = IXL[l] || (IXL[l] = {sh: {}, books: null}); o.sh[i] = m; o.books = books; };
+  async function lixWord(l, w) {
+    const i = fnv(w); try { await once('ixl' + l + i, 'coll/ixl/' + l + '/' + i + '.js'); } catch (e) { return new Map(); }   // a shard without words has no file
+    const o = IXL[l], v = o && o.sh[i] ? o.sh[i][w] : null, m = new Map();
+    if (v) for (const part of v.split(';')) {
+      const [b, list] = part.split(':'); let prev = 0; const ns = [];
+      for (const t of list.split(',')) { if (t[0] === '~') ns.push(parseFloat(t.slice(1))); else { prev += parseInt(t, 36); ns.push(prev); } }
+      m.set(o.books[parseInt(b, 36)], ns);
+    }
+    return m;
+  }
+  async function lixHits(l, words) {
+    const ms = await Promise.all(words.map(w => lixWord(l, w)));
+    let res = null;
+    for (const m of ms) {
+      if (!res) { res = m; continue; }
+      const nx = new Map();
+      for (const [b, ns] of res) { const o = m.get(b); if (o) { const S = new Set(o), k = ns.filter(n => S.has(n)); if (k.length) nx.set(b, k); } }
+      res = nx;
+    }
+    return res || new Map();
+  }
+  window.LIXH = lixHits;
+  const mergeHits = (a, b) => { const r = new Map(a); for (const [k, ns] of b) { const o = r.get(k); r.set(k, o ? [...new Set(o.concat(ns))].sort((x, y) => x - y) : ns); } return r; };
   function dorarParse(html) {
     const doc = new DOMParser().parseFromString(html, 'text/html'), out = [];
     const clean = t => (t || '').replace(/\s+/g, ' ').trim();

@@ -1,0 +1,1 @@
+SIDXL("fr",97,{"alcool":"0:o,6,2,m,59,ci,jz,1e,32,cw,2,3,2,2b","litige":"0:11","mangeai":"0:1g","croyantes":"0:5m,21,3o,py,br","réitérer":"0:97","curait":"0:a1","signifie":"0:dt,6f,8i,4,b,a1,17,5,a5","souillure":"0:k8,m8","laissèrent":"0:s2,8a,cg","hôte":"0:tp","isolés":"0:vv","tracées":"0:we","ribâ":"0:108","emprisonna":"0:1kh","relatera":"0:1n2"},["mutafarriq"]);

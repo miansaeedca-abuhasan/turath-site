@@ -1,0 +1,1 @@
+SIDXL("fr",10,{"douze":"0:15,j6,ac,co,7m,2u","position":"0:2d,2f,1h,5i,1z,eq,7s,1,8n,1l,6e,6y,z,1","martyr":"0:63,66,2o,9,1h,4u,3k,g2,f0","interdisaient":"0:8t","écartent":"0:ev","plume":"0:k1,au,d6,k6","guettait":"0:k6","rendus":"0:s7","hérité":"0:u1,1j","azl":"0:vu,lu","tah":"0:142","arrêter":"0:149","négligé":"0:153","adverses":"0:1l0","tamaris":"0:1or"},["mutafarriq"]);

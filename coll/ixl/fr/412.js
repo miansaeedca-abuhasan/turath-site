@@ -1,0 +1,1 @@
+SIDXL("fr",412,{"entourages":"0:2i","rejoint":"0:4n,1bs,b,49","nés":"0:91,r7","précède":"0:9v,b7,12e","liguait":"0:k1","ra":"0:sf","lassiez":"0:so","épargnent":"0:136","doublement":"0:16m","coudées":"0:1eu"},["mutafarriq"]);

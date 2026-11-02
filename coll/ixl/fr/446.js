@@ -1,0 +1,1 @@
+SIDXL("fr",446,{"mena":"0:v","malgré":"0:3h,1l,13l","parvient":"0:81","badr":"0:8o,3a,2w,d,51,9,11,ah,cj,1,cg,1","pleurerai":"0:by,wl","bandages":"0:da","sonder":"0:gj","toits":"0:i5","quraych":"0:k8,11f,2n","pratiquaient":"0:vs,gl","emportai":"0:10c","poitrines":"0:1a0","frappai":"0:1ir","approvisionnement":"0:1jv","passion":"0:1sj"},["mutafarriq"]);

@@ -1,0 +1,1 @@
+SIDXL("fr",39,{"faveurs":"0:4c,12d,12","tressais":"0:5h","éprouvé":"0:5n,el,b8","œuvré":"0:bs,go,vp","espoir":"0:f7,28,7,kv,7,5f,1g,iv","graisse":"0:j9","profères":"0:k8","craignait":"0:p8","poulain":"0:t2","septième":"0:v5,y,ps","ménagez":"0:xk","scène":"0:112","campement":"0:16d","jahch":"0:16i","sentes":"0:17t","redevenu":"0:1k4","écriture":"0:1ng,4i"},["mutafarriq"]);

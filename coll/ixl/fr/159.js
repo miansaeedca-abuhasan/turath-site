@@ -1,0 +1,1 @@
+SIDXL("fr",159,{"termes":"0:2d,4c,6e,36,4n,1e,b,6j,6g,2x,7,58,90,3h,87","rêve":"0:82,3k,14,2x,gn,3y,bv","wahb":"0:b3,gl,q0","retourna":"0:d6,97,m9,33,74,5d,l","réjouissance":"0:hf,ee,wl","outres":"0:ot,ed","légères":"0:q0","remontent":"0:11f","rue":"0:151","élimine":"0:167","chercherai":"0:1kz","innovées":"0:1nv"},["mutafarriq"]);

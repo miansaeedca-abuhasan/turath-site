@@ -1,0 +1,1 @@
+SIDXL("fr",493,{"vendues":"0:1i,hr","coins":"0:2w","confie":"0:3o,a4,90,fp","compter":"0:53,1db","disputant":"0:dr","rompt":"0:iz,4g,74,70,1,33","aiguille":"0:k0,49","citèrent":"0:k8","observation":"0:li","intacte":"0:s2","voudrai":"0:u1","transgression":"0:zp","leçon":"0:149","oisillons":"0:15e","retomber":"0:1id"},["mutafarriq"]);

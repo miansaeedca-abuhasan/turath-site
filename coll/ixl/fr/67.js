@@ -1,0 +1,1 @@
+SIDXL("fr",67,{"piliers":"0:2q,33,mi,j3,b3,5g","ignore":"0:34,6r,qe,1v","miqdâd":"0:80,69,cs","marcha":"0:f8,bo,9w,8p,2,3k,3n,3r","prononcés":"0:i4","allais":"0:k8,ig,54,2g,8q","plia":"0:qk,op","parfaite":"0:ys,tp","redescendront":"0:zf","ramener":"0:12h,7,bq","disparaissent":"0:13c","propage":"0:196","commue":"0:19j","dressa":"0:1bj,2u","commirent":"0:1dt"},["mutafarriq"]);

@@ -1,0 +1,1 @@
+SIDXL("fr",405,{"entrée":"0:z,6c,vu,z,3z,bg","liguaient":"0:7s","polémiquez":"0:91,11o","linceul":"0:d5,df","pieuses":"0:ep","vertu":"0:i5,19,69,5j","surplus":"0:jb,a9,r4","pain":"0:kw,7,6z,y,42,3a,74,f,55,4z","impôts":"0:t4","souffrent":"0:v4","taper":"0:10s,3k,aj","transmet":"0:17b,v,60","dégoulinait":"0:1ac","fixée":"0:1hu"},["mutafarriq"]);

@@ -1,0 +1,1 @@
+SIDXL("fr",172,{"liées":"0:7","mentionne":"0:l,jc,gi","tourner":"0:2f,dx,d8,3o,1q,ad,7d","ajustait":"0:4d","réparons":"0:fx","entremêlent":"0:lp","devient":"0:p1,jl,jc","treize":"0:sz,ef,5w,2q,o,72","ardents":"0:11f","régulateur":"0:11q","achetai":"0:12i","construisaient":"0:1bd","exécution":"0:1jt"},["mutafarriq"]);

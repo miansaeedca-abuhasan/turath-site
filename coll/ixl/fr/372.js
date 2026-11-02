@@ -1,0 +1,1 @@
+SIDXL("fr",372,{"sentence":"0:l,85","illicite":"0:u,m,g5,2,2,1k,2,z8,o,3d,2,5e,3,7,a","emploieras":"0:78","rapports":"0:7l,sq,64,1,e,4,aq,l,h,1","brocanteur":"0:c5","révélant":"0:ev","éphémère":"0:rh","paie":"0:t4,38","mers":"0:124","poudre":"0:16c","reprîmes":"0:19i","naîtra":"0:1hl"},["mutafarriq"]);

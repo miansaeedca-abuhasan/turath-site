@@ -1,0 +1,1 @@
+SIDXL("fr",114,{"cuisses":"0:10,ie,oy,1o","verse":"0:35,26,da,kl","familles":"0:3p,yi,h","199":"0:5y","funèbre":"0:dc,r1,5,ad","coup":"0:f6,cw,6q,34,2c,2b,20,20,4c,3k,5v","ṣirmah":"0:nn","rouges":"0:su,i6,44,1","lochies":"0:vz,ad","battait":"0:112","perdras":"0:124","khayr":"0:13e","dorénavant":"0:14s","coloré":"0:19j","irbâḍ":"0:1sd"},["mutafarriq"]);

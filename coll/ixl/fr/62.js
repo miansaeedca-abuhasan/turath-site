@@ -1,0 +1,1 @@
+SIDXL("fr",62,{"parlé":"0:j,i8,ae,y,6z,2u,d2","fortune":"0:gp,188","malfaisants":"0:j0","trouvais":"0:k1,e,fu,99","traîtrise":"0:tc","dattier":"0:vw,ol","exhiba":"0:zg","apprendre":"0:108","demeurais":"0:109","rattrapa":"0:115","fuiraient":"0:11f","verrons":"0:121,5y,72","traduisent":"0:17c,fk","rappelez":"0:18j,6q","annonces":"0:1c3","bijou":"0:1iq"},["mutafarriq"]);

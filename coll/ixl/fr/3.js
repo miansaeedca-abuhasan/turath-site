@@ -1,0 +1,1 @@
+SIDXL("fr",3,{"grâce":"0:7,ce,1a,38,2u,b,9i,b,3g,9q,3c,v,6f,4y","torah":"0:q,1mw,1","vendit":"0:18,rw,ky,3s","bain":"0:3f,1,y7","aumônes":"0:65,5l,53,qg,28,9a","débutaient":"0:7k,14c","épiler":"0:dt,7p","produire":"0:m5","torts":"0:po","suspendus":"0:t5,x","souhaiter":"0:v5,s8","mépriser":"0:xm","brefs":"0:1fq","blâmait":"0:1it"},["mutafarriq"]);

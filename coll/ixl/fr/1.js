@@ -1,0 +1,1 @@
+SIDXL("fr",1,{"abî":"0:v,1a,1,3,1m,41,1s,5,7,1a,r,1u,x,2j,4y,1,4,u,1,f,1g,2,1c,m,12,v,9,4,c,i,x,6,m,d,s,1,27,1,1,14,10,h,1e,o,2,e,b,1n,b,14,f,6,g,s,j,15,p,6,n,6,w,5,s,t,j,h,c,m,k,2q,9,4,6,8,39,5,3,35","dârî":"0:hj,1ai","hoûd":"0:rx","dédommagement":"0:zg","brave":"0:153","pleurèrent":"0:1ah,de","jurayrî":"0:1er","ʽamrah":"0:1j1"},["mutafarriq"]);

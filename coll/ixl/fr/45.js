@@ -1,0 +1,1 @@
+SIDXL("fr",45,{"cours":"0:7,1y,45,6e,12,j,2r,38,8w,a,54,1q,2g,1m,5,5b,5h,t,2r,27,5","rapportèrent":"0:71,nl,8k,3g","insignifiants":"0:76,v6","sha":"0:91,hv,6t,2q,6w","jugera":"0:gj,3j","congratula":"0:k8","fortuné":"0:te","lue":"0:xl","ombrageux":"0:10r","réglée":"0:117,8i,1b","gharqad":"0:14c","découvre":"0:15k","polémiquer":"0:1ap,2","relevé":"0:1c4"},["mutafarriq"]);

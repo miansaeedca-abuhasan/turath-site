@@ -1,0 +1,1 @@
+SIDXL("fr",458,{"ça":"0:48,y,5i,4k,jy,6c,6g,9m,2k","entrèrent":"0:4n,vp,ed","chaires":"0:av,9t","ab":"0:d5","amènera":"0:gw,87,cy,ic,31","tombaient":"0:m9,5z,gx","aṭiyah":"0:v6","gardais":"0:xv","muqarrin":"0:14z","hymen":"0:183","bracelets":"0:19h","prêcha":"0:19j","thumâmah":"0:1be"},["mutafarriq"]);

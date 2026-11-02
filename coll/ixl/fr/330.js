@@ -1,0 +1,1 @@
+SIDXL("fr",330,{"tombe":"0:4,4,26,2,2a,a,24,n,7,3,1u,8,6m,y,3y,g,30,4r,g,6i,2c,3x,b,14,9,2q,3c,1,1,3,1,1,2t,ab","épié":"0:1v","détiennent":"0:3r,18b","touchera":"0:42,9u,7m,f6","immoler":"0:7b","étoffes":"0:at","agréa":"0:k8","impur":"0:vq","juhany":"0:yg","uzayr":"0:121","choisi":"0:12g,73,51","voulaient":"0:136,6u","chanterai":"0:18s","embarras":"0:1k0"},["mutafarriq"]);
