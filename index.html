@@ -135,6 +135,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .tr .ur{font-size:1.15rem}
 .tk{margin:.8rem 0;font-size:.95rem;color:var(--muted)}
 .grade{color:var(--ink);font-weight:600}
+.cpick{background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ccc);border-radius:.7rem;box-shadow:0 4px 18px rgba(0,0,0,.25);padding:.25rem;display:flex;flex-direction:column;min-width:13rem}.cpick button{background:none;border:0;padding:.65rem .8rem;text-align:right;font:inherit;font-size:1rem;color:inherit;cursor:pointer;border-radius:.5rem}.cpick button:hover{background:rgba(0,0,0,.07)}
 .acts{display:flex;align-items:center;gap:.2rem;margin-top:.5rem;border-top:1px solid var(--line);padding-top:.4rem}
 .acts .ab{background:none;border:0;color:var(--muted);border-radius:50%;width:2.5rem;height:2.5rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .acts .ab.tafb{width:auto;border-radius:999px;padding:0 .8rem;gap:.35rem;color:var(--accent);border:1px solid var(--accent);font:600 .95rem/1 var(--urdu,serif);height:2.2rem}.acts .ab.tafb span{white-space:nowrap}
@@ -1068,8 +1069,25 @@ function bmToggle(b,n){let a=bmGet();const on=a.some(x=>x.b===b&&x.n===n);a=on?a
 const APP_HOME='https://turathkhairalquroon.com/';
 function appLink(h){const host=location.hostname||'';const hosted=/^https?:$/.test(location.protocol)&&!/claude|anthropic|usercontent|localhost|^127\./.test(host);
   return hosted?location.origin+location.pathname.replace(/index\.html$/,'')+(h||''):APP_HOME;}
-function withLink(t,h){return (t||'').trim()+'\n\n📲 '+T('brand')+': '+appLink(h);}
+// colour / reference marks of the site's own text (private-use characters) must never reach a copy: other apps show them as boxes or little faces
+const CLN=t=>(t||'').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069]/g,'');
+window.CLN=CLN;
+// a small choice under the copy / share button: the hadith only, or with its fawaid / explanation / extra information
+function copyPick(btn,has,go){
+  if(!has){go(false);return;}
+  document.querySelectorAll('.cpick').forEach(x=>x.remove());
+  const m=el('div',{class:'cpick',dir:'rtl',lang:'ur'});
+  const mk=(t,w)=>el('button',{type:'button',on:{click:e=>{e.stopPropagation();m.remove();go(w);}}},t);
+  m.append(mk('صرف حدیث',false),mk('فوائد، تشریح اور اضافی معلومات سمیت',true));
+  const r=btn.getBoundingClientRect();
+  m.style.cssText='position:fixed;z-index:9999;top:'+Math.min(innerHeight-120,r.bottom+4)+'px;'+(r.left>innerWidth/2?'right:'+Math.max(8,innerWidth-r.right):'left:'+Math.max(8,r.left))+'px';
+  document.body.append(m);
+  setTimeout(()=>document.addEventListener('click',function f(){m.remove();document.removeEventListener('click',f);},{once:true}),0);
+}
+window.copyPick=copyPick;
+function withLink(t,h){t=CLN(t);return (t||'').trim()+'\n\n📲 '+T('brand')+': '+appLink(h);}
 async function copyText(s){
+  s=CLN(s);
   try{await navigator.clipboard.writeText(s);return true}catch(e){}
   const ta=document.createElement('textarea');ta.value=s;ta.style.cssText='position:fixed;opacity:0';document.body.append(ta);ta.select();
   let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();return ok;
@@ -4359,8 +4377,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const bm = el('button', {class: 'ab', type: 'button', 'aria-label': T('bookmark'), title: T('bookmark')});
     const paint = () => { bm.replaceChildren(icon(bmHas(scope, n) ? 'bm1' : 'bm0')); bm.classList.toggle('on', bmHas(scope, n)); };
     bm.addEventListener('click', () => { bmToggle(scope, n); paint(); }); paint();
-    const xr = b.parts ? (row(b, lang || 'ar', n) || [])[3] : null, xpart = xr && !Array.isArray(xr) ? [xr.e ? T('pExpl') + ':\n' + xr.e : '', xr.b ? T('pBen') + ':\n' + xr.b : ''].filter(Boolean).join('\n\n') : '';
-    const text = () => [bname(b) + (note ? '' : ' — ' + n + (b.an[n] ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', lang && d.content.translation ? d.content.translation[lang][0] : '', d.grade ? '\n' + d.grade : '', xpart ? '\n' + xpart : '', foot ? '\n' + foot : ''].join('\n').replace(/^§\s*/gm, '').trim();
+    // copy / share text: the hadith (Arabic, grade, takhrij, translation); with `more` also the explanation, benefits (fawaid) and the compiler's footer
+    const xr0 = row(b, lang || 'ar', n), xx = xr0 && xr0[3] && !Array.isArray(xr0[3]) ? xr0[3] : null, xa = (row(b, 'ar', n) || [])[3], xa0 = xa && !Array.isArray(xa) ? xa : {};
+    const xe = xx && xx.e || xa0.e || '', xb = xx && (xx.b || xx.f) || xa0.b || '';
+    const hasMore = !!(xe || xb || foot);
+    const text = more => [bname(b) + (note ? '' : ' — ' + n + (b.an[n] ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', d.grade ? d.grade : '', xx && xx.k ? '\n' + T('pTakh') + ':\n' + xx.k : '', '', lang && d.content.translation ? d.content.translation[lang][0] : '',
+      more && xe ? '\n' + T('pExpl') + ':\n' + xe : '', more && xb ? '\n' + T('pBen') + ':\n' + String(xb).replace(/^§\s*فوائد\s*$/gm, '') : '', more && foot ? '\n' + foot : ''].join('\n').replace(/^§\s*/gm, '').replace(/\n{3,}/g, '\n\n').trim();
     acts.append(bm, window.CMP ? CMP.button({k: b.key, n}) : '',
       el('button', {class: 'ab', type: 'button', title: T('listen'), 'aria-label': T('listen'), on: {click: () => LISTEN.playHadiths([{d, node: c}])}}, icon('listen')),
       el('button', {class: 'ab', type: 'button', title: T('poster'), 'aria-label': T('poster'), on: {click: () => {
@@ -4369,8 +4391,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const jn = b.jami && b.jami[n], g0 = (d.grade || '').trim(), gm = g0.match(/^([^:：]{2,30})[:：]/), gs = gm ? gm[1].trim() : (g0.length <= 30 ? g0 : '');
         const jname = ui === 'ar' ? 'تلخيص الجامع الكامل' : LTR() ? 'Talkhis al-Jami al-Kamil' : 'تلخیص الجامع الکامل';
         POSTER.open({kind: 'hadith', ar: strip(d.matn[0]).replace(/ﷺ/g, 'صلى الله عليه وسلم'), tr, lang: lang || ui, grade: gs, ref: jn ? jname + '(' + jn + ') ' + bname(b) : bname(b) + (note ? '' : ' (' + n + ')'), name: b.key + '-' + n}); }}}, icon('poster')),
-      el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: async () => toast(T(await copyText(withLink(text(), '#/s/' + b.key + '/n/' + n)) ? 'copied' : 'copyfail'))}}, icon('copy')),
-      el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: async () => { const t = withLink(text(), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share')),
+      el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: ev => copyPick(ev.currentTarget, hasMore, async m => toast(T(await copyText(withLink(text(m), '#/s/' + b.key + '/n/' + n)) ? 'copied' : 'copyfail')))}}, icon('copy')),
+      el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: ev => copyPick(ev.currentTarget, hasMore, async m => { const t = withLink(text(m), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); })}}, icon('share')),
       el('span', {class: 'sp'}));
     c.append(acts);
     shPanel(b, n, c, acts);
