@@ -4366,21 +4366,24 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         if (window.NAR && NAR.linkChips) NAR.linkChips(b.key, n, sn.map(x => x.q), chipEls); } }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
-    const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null;
+    const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
       sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, (() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
-    else if (d.grade) c.append(/[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade));
+    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade); c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
       const L = lang || 'ar', rr = row(b, L, n), x = rr && rr[3] && !Array.isArray(rr[3]) ? rr[3] : null;
       const H = k => el('h4', {class: 'phead'}, T(k));
-      const hasFn = !!(x && (x.n || (x.k && /^\(\d+\)/m.test(x.k)))), FM = nd => { if (hasFn && window.fnm) window.fnm(nd); return nd; };
-      const P = t => FM(paraEl(t, L));
+      const hasFn = !!(x && x.n), FM = nd => { if (hasFn && window.fnm) window.fnm(nd); return nd; };
+      // «(1) مسند أحمد …» is the takhrij typed as a note: no number on it, and no matching number in the translation
+      const kNum = x && x.k && !x.n ? (x.k.match(/^\s*\((\d+)\)/) || [])[1] : null, noMark = t => kNum ? t.replace(new RegExp('\\s*\\(' + kNum + '\\)', 'g'), '') : t;
+      const P = t => FM(paraEl(noMark(t), L));
       if (lang && !rr) c.append(el('p', {class: 'note'}, T('cLangMissing')));
       if (x && x.t) c.insertBefore(el('p', {class: 'ptitle ' + L, lang: L, dir: DIR(L)}, x.t), c.children[1]);
       // the same order in every book: the Arabic, then the verification and takhrij right below it, then the translation
-      if (x && x.k) c.append(H('pTakh'), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...x.k.split('\n').filter(t => t.trim()).map(P)));
+      if (x && x.k) { const kl = x.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
+        c.append(H('pTakh'), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl.map(t => paraEl(t, L)))); }
       if (lang && rr) c.append(H('pTr'), trTab(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
       addExtras();
       // explanation and benefits in the chosen language; when that translation has none, the Arabic ones
@@ -4396,8 +4399,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     else if (lang && d.content.translation) {
       const xf = (row(b, lang, n) || [])[3];   // a book without «parts» whose rows carry a fawaid text (Sunan ad-Darimi ...)
       const FN2 = nd => { if (window.fnm) window.fnm(nd); return nd; };
-      if (xf && !Array.isArray(xf) && xf.k && /^\(\d+\)/m.test(xf.k)) c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang, dir: DIR(lang)}, ...xf.k.split('\n').filter(t => t.trim()).map(t => FN2(paraEl(t, lang)))));
-      c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(x, lang)))); addExtras();
+      // the takhrij typed as a note «(1) مسند أحمد …»: heading «تحقیق و تخریج», then «grade: references» in one paragraph, no note number, and no matching number in the translation
+      const tkNum = xf && !Array.isArray(xf) && xf.k ? (xf.k.match(/^\s*\((\d+)\)/) || [])[1] : null;
+      if (tkNum) { const kl = xf.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
+        c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang, dir: DIR(lang)}, ...kl.map(t => paraEl(t, lang)))); }
+      const noTk = t => tkNum ? t.replace(new RegExp('\\s*\\(' + tkNum + '\\)\\s*$'), '') : t;
+      c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras();
       if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => /(^|\n)\(\d+\)/.test(xf.f) ? FN2(paraEl(t, lang)) : paraEl(t, lang)), lang}])); }
     else if (lang) c.append(el('p', {class: 'note'}, b.key === 'hifzhadith' ? (HFM[ui] || HFM.en) : T('cLangMissing')));
     // footer of the compiler under each item (شذرات الذهب: Sahaba / Salaf; Fazail as-Sahaba: Sahaba)
