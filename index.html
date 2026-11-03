@@ -7,6 +7,11 @@
 .xtr .xlab{font-size:.78rem;color:var(--accent);margin-bottom:.15rem;font-weight:700}
 .ftabs{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0 .3rem}
 .ftab{font:inherit;cursor:pointer;border:1.5px solid color-mix(in srgb,var(--accent) 55%,transparent);background:transparent;color:var(--accent);border-radius:.7rem;padding:.4rem 1.1rem;font-weight:700;display:inline-flex;align-items:center;gap:.45rem;min-height:2.4rem}
+.trtabs{display:flex;gap:.4rem;margin:.2rem 0 .6rem;border-bottom:2px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.trbtn{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--accent);padding:.45rem 1.3rem;font-weight:700;border-radius:.7rem .7rem 0 0;min-height:2.4rem;margin-bottom:-2px;border-bottom:2px solid transparent}
+.trbtn.on{background:color-mix(in srgb,var(--accent) 12%,transparent);border-bottom-color:var(--accent)}
+html[lang=ur] .trbtn.ur{font-family:var(--uhead);font-weight:400;font-size:1.15rem}
+@media (max-width:700px){.trtabs{display:grid;grid-template-columns:1fr 1fr}.trbtn{text-align:center;padding:.55rem .4rem}}
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
 .ftab[aria-expanded=true]{background:var(--accent);color:#fff}.ftab[aria-expanded=true]::after{transform:rotate(180deg)}
 html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
@@ -4206,7 +4211,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const HFM = {ur: 'اس حدیث کا یہ ترجمہ ابھی دستیاب نہیں۔', ar: 'ترجمة هذا الحديث غير متاحة بعد.', en: 'The translation of this hadith is not available yet.', bn: 'এই হাদীসের অনুবাদ এখনও পাওয়া যায়নি।', hi: 'इस हदीस का अनुवाद अभी उपलब्ध नहीं है।', gu: 'આ હદીસનો અનુવાદ હજી ઉપલબ્ધ નથી.', fr: 'La traduction de ce hadith n’est pas encore disponible.'};
   const HFD = {ur: 'یہی فرمان تلخیص الجامع الکامل کی ان احادیث میں بھی ہے', ar: 'وردت هذه الألفاظ نفسها في تلخيص الجامع الكامل برقم', en: 'The same words also occur in Talkhis al-Jami al-Kamil, hadith', bn: 'একই বাক্য তালখীস আল-জামি আল-কামিলের এই হাদীসগুলোতেও আছে', hi: 'यही शब्द तल्ख़ीस अल-जामिउल कामिल की इन हदीसों में भी हैं', gu: 'આ જ શબ્દો તલ્ખીસ અલ-જામિઅ અલ-કામિલની આ હદીસોમાં પણ છે', fr: 'Les mêmes paroles figurent aussi dans Talkhis al-Jami al-Kamil, hadiths'};
   // translation languages: each can be switched on or off (Urdu is on by default in the Urdu interface); none on = Arabic only
-  const getSel = b => { let v = null; try { v = JSON.parse(localStorage['csel_' + ui] || 'null'); } catch (e) {}
+  const getSel = b => { if (b.trtabs) return b.langs.filter(l => l !== 'ar');   // a book with translation tabs (Urdu | English): every translation is always there, the reader taps the tab
+    let v = null; try { v = JSON.parse(localStorage['csel_' + ui] || 'null'); } catch (e) {}
     if (!Array.isArray(v)) v = ui !== 'ar' && b.langs.includes(ui) ? [ui] : [];
     return v.filter(l => l !== 'ar' && b.langs.includes(l)); };
   const getLang = b => { const v = getSel(b); return v.includes(ui) ? ui : (v[0] || null); };
@@ -4216,7 +4222,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   function langChips(b, redraw) {
     const box = el('div', {class: 'chips lchips'}), cur = getSel(b);
-    if (b.langs.length < 2) return box;
+    if (b.langs.length < 2 || b.trtabs) return box;
     box.append(el('span', {class: 'cs lchl'}, (TRL[ui] || TRL.en) + ':'));
     b.langs.filter(l => l !== 'ar').forEach(l => { const on = cur.includes(l);
       box.append(el('button', {class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), on: {click: () => { setSel(on ? cur.filter(x => x !== l) : [...cur, l]); redraw(); }}}, (on ? '✓ ' : '') + (LNAME[l] || l))); });
@@ -4410,6 +4416,29 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           fold.push({k, label: lab ? (lab[ui] || lab.en) : T('pExpl'), by: k === 'e' ? by : '', nodes: x[k].split('\n').filter(t => t.trim()).map(t => PL(t, L)), lang: L}); });
       }
       if (fold.length) c.append(...foldTabs(b, n, fold));
+    }
+    else if (b.trtabs && lang) {
+      // the translations of the book as tabs (Urdu | English): a tap on a tab shows that translation; the choice is kept for the other hadith
+      const TL = b.langs.filter(l => l !== 'ar' && (row(b, l, n) || [])[1]);
+      const xo = l => { const r = row(b, l, n); return r && r[3] && !Array.isArray(r[3]) ? r[3] : null; };
+      const kx = TL.map(xo).find(x => x && x.k);
+      if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang: 'ar', dir: 'rtl'}, ...kl.map(t => paraEl(t, 'ur')))); if (gEl) gEl.remove(); }
+      if (TL.length) {
+        let pref = ''; try { pref = localStorage['trtab_' + b.key] || ''; } catch (e) {}
+        const cur0 = TL.includes(pref) ? pref : TL.includes(lang) ? lang : TL[0];
+        const wrap = el('div', {class: 'trwrap'}), bar = el('div', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
+        const show = l => { TL.forEach(k => { pan[k].hidden = k !== l; btn[k].classList.toggle('on', k === l); btn[k].setAttribute('aria-selected', String(k === l)); }); };
+        wrap._show = show;
+        TL.forEach(l => { const r = row(b, l, n), x = xo(l);
+          const p = el('section', {class: 'trpanel ' + l, lang: l, dir: DIR(l), hidden: ''});
+          if (x && x.t) p.append(el('p', {class: 'ptitle ' + l, lang: l, dir: DIR(l)}, x.t));
+          p.append(trTab(b, l), el('div', {class: 'tr'}, ...r[1].split('\n').filter(t => t.trim()).map(t => paraEl(t, l))));
+          if (x && x.f) p.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), by: b.shn ? (({ur: 'شارح', ar: 'الشارح', en: 'Commentator'})[ui] || 'Commentator') + ': ' + (b.shn[ui] || b.shn.ur) : '', nodes: x.f.split('\n').filter(t => t.trim()).map(t => paraEl(t, l)), lang: l}]));
+          pan[l] = p; box.append(p);
+          btn[l] = el('button', {class: 'trbtn ' + l, type: 'button', role: 'tab', lang: l, on: {click: () => { try { localStorage['trtab_' + b.key] = l; } catch (e) {} document.querySelectorAll('.trwrap').forEach(w => w._show && w._show(l)); }}}, LNAME[l] || l);
+          bar.append(btn[l]); });
+        wrap.append(el('h4', {class: 'phead'}, T('pTr')), bar, box); c.append(wrap); show(cur0);
+      }
     }
     else if (lang && d.content.translation) {
       const xf = (row(b, lang, n) || [])[3];   // a book without «parts» whose rows carry a fawaid text (Sunan ad-Darimi ...)
@@ -5268,6 +5297,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
     {"id": "20261102d", "d": "02-11-2026", "keys": ["sh347", "sh11077"], "t": {"ur": "نئی کتب", "ar": "كتب جديدة", "en": "New books", "bn": "নতুন বই", "hi": "नई किताबें", "gu": "નવાં પુસ્તકો", "fr": "Nouveaux livres"}, "i": {"ur": ["تغلیق التعلیق للحافظ ابن حجر (تغليق التعليق) (638)", "تاریخ جرجان للسہمی (تاريخ جرجان) (1191)"], "ar": ["تغليق التعليق (638)", "تاريخ جرجان (1191)"], "en": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "bn": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "hi": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "gu": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "fr": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"]}},
+    {"id": "20261103b", "d": "03-11-2026", "keys": ["adab"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["الادب المفرد (الأدب المفرد): اردو ترجمہ اور شرح از مولانا عثمان منیب (1322)"], "ar": ["الأدب المفرد: ترجمة أردية وشرح للشيخ عثمان منيب (1322)"], "en": ["Al-Adab Al-Mufrad (الأدب المفرد): Urdu translation and commentary by Maulana Usman Munib (1322)"], "bn": ["আল-আদাবুল মুফরাদ (الأدب المفرد): মাওলানা উসমান মুনীবের উর্দু অনুবাদ ও ব্যাখ্যা (1322)"], "hi": ["अल-अदबुल मुफ़रद (الأدب المفرد): मौलाना उस्मान मुनीब का उर्दू अनुवाद और शरह (1322)"], "gu": ["અલ-અદબુલ મુફરદ (الأدب المفرد): મૌલાના ઉસ્માન મુનીબનું ઉર્દૂ ભાષાંતર અને શરહ (1322)"], "fr": ["Al-Adab al-Mufrad (الأدب المفرد) : traduction en ourdou et commentaire de Maulana Usman Munib (1322)"]}},
     {"id": "20261103", "d": "03-11-2026", "keys": ["najm"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["نجم السالکین شرح ریاض الصالحین (1137)"], "ar": ["نجم السالكين شرح رياض الصالحين (1137)"], "en": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "bn": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "hi": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "gu": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "fr": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"]}},
     {"id": "20261102c", "d": "02-11-2026", "keys": ["sh12980"], "t": {"ur": "نئی کتب", "ar": "كتب جديدة", "en": "New books", "bn": "নতুন বই", "hi": "नई किताबें", "gu": "નવાં પુસ્તકો", "fr": "Nouveaux livres"}, "i": {"ur": ["اخلاق النبی وآدابہ لابی الشیخ (أخلاق النبي وآدابه) (822)"], "ar": ["أخلاق النبي وآدابه (822)"], "en": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "bn": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "hi": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "gu": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "fr": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"]}},
     {"id": "20261102b", "d": "02-11-2026", "keys": ["tanveer"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["تنویر الاحوذی اردو شرح جامع ترمذی (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "ar": ["تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية) (2949)"], "en": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "bn": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "hi": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "gu": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "fr": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"]}},
