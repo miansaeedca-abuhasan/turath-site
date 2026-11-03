@@ -38,12 +38,19 @@ class MainActivity : ComponentActivity() {
         Alarms.channels(this)
         Thread { runCatching { Cities.load(this) } }.start()   // the list of towns is read in the background, so that the first search is quick
         tabRequest = intent?.getIntExtra("tab", -1) ?: -1
+        takeShare(intent)
         setContent { App(this) }
     }
 
     /** a tab asked for from a widget (☰ of the calendar widget opens the calendar) */
     var tabRequest by mutableIntStateOf(-1)
-    override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); tabRequest = i.getIntExtra("tab", -1) }
+    override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); tabRequest = i.getIntExtra("tab", -1); takeShare(i) }
+
+    /** a place shared from Google Maps into the app: the masjid page asks where to keep it */
+    var sharedText by mutableStateOf<String?>(null)
+    private fun takeShare(i: Intent?) {
+        if (i?.action == Intent.ACTION_SEND && i.type?.startsWith("text/") == true) { sharedText = i.getStringExtra(Intent.EXTRA_TEXT); tabRequest = -1 }
+    }
 
     /** left for a while (home button, another app): the next opening starts at Today, not where the app was left; a short trip (a permission box, the phone's settings) keeps the place */
     private var stoppedAt = 0L

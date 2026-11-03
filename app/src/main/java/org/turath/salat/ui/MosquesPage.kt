@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,9 +29,13 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
     var radius by remember { mutableIntStateOf(s.prefs.mosqRadius) }
     val place = s.prefs.place
     var hidden by remember { mutableStateOf(s.prefs.hiddenMosques) }
-    var state by remember { mutableIntStateOf(3) }          // 0 loading, 1 list, 2 error, 3 not started (the search button)
+    val saved0 = remember { MosqueStore.last(s.prefs) }
+    var state by remember { mutableIntStateOf(if (saved0.isNotEmpty()) 1 else 3) }          // 0 loading, 1 list, 2 error, 3 not started (the search button)
     var go by remember { mutableIntStateOf(0) }
-    var all by remember { mutableStateOf<List<Mosques.M>>(emptyList()) }
+    var all by remember { mutableStateOf(saved0) }
+    var fv by remember { mutableIntStateOf(0) }
+    @Suppress("UNUSED_VARIABLE") val fvRead = fv
+    var hadSaved by remember { mutableStateOf(saved0.isNotEmpty()) }
     var reload by remember { mutableIntStateOf(0) }
     LaunchedEffect(go, reload, radius > 50) {
         if (go == 0) return@LaunchedEffect
@@ -38,11 +43,23 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
         val here = Mosques.here(act, s.prefs.place)
         if (here == null) { state = 2; return@LaunchedEffect }
         val r = withContext(Dispatchers.IO) { runCatching { Mosques.find(act, here.first, here.second, if (radius > 50) 100 else 50) } }
-        r.onSuccess { all = it; state = 1 }.onFailure { state = 2 }
+        r.onSuccess { all = it; state = 1; hadSaved = true; MosqueStore.saveLast(s.prefs, here.first, here.second, it) }.onFailure { state = 2 }
     }
     val shown = all.filter { it.km <= radius + 0.5 && it.id !in hidden }
     Column(Modifier.fillMaxSize()) {
         TopBar(Tr["mosques"], back)
+        act.sharedText?.let { txt ->
+            val g = MosqueStore.parseShare(txt)
+            if (g == null) act.sharedText = null else AlertDialog(onDismissRequest = { act.sharedText = null }, title = { Text(Tr["mosqSaveWhere"]) },
+                text = { Column { Text(g.name, fontWeight = FontWeight.Bold); if (g.address.isNotEmpty()) Text(g.address, fontSize = 13.sp) } },
+                confirmButton = {
+                    Row {
+                        TextButton(onClick = { MosqueStore.addGoogle(s.prefs, g.copy(kind = "masjid")); act.sharedText = null; fv++; Toast.makeText(act, Tr["mosqSaved"], Toast.LENGTH_SHORT).show() }) { Text(Tr["mosqKMasjid"]) }
+                        TextButton(onClick = { MosqueStore.addGoogle(s.prefs, g.copy(kind = "musalla")); act.sharedText = null; fv++; Toast.makeText(act, Tr["mosqSaved"], Toast.LENGTH_SHORT).show() }) { Text(Tr["mosqKMusalla"]) }
+                    }
+                },
+                dismissButton = { TextButton(onClick = { act.sharedText = null }) { Text(Tr["cancel"]) } })
+        }
         LazyColumn(Modifier.fillMaxSize(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             item {
                 Text(Tr["mosqRadius"], fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .7f))
@@ -53,7 +70,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                 Button(onClick = { if (state != 0) { if (!act.hasLocation()) { act.onPermResult = { go++ }; act.askLocation() } else go++ } }, Modifier.fillMaxWidth().height(52.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(26.dp)) {
                     if (state == 0) { CircularProgressIndicator(Modifier.size(22.dp), color = LocalContentColor.current, strokeWidth = 2.5.dp); Spacer(Modifier.width(10.dp)) }
                     else { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Spacer(Modifier.width(8.dp)) }
-                    Text(Tr["mosqSearch"], fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                    Text(if (state == 0) Tr[if (hadSaved) "mosqSearching" else "mosqFirst"] else Tr["mosqSearch"], fontSize = 17.sp, fontWeight = FontWeight.Medium)
                 }
                 Spacer(Modifier.height(8.dp))
                 // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
@@ -65,6 +82,22 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                             runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/" + Uri.encode(q) + "/@$la,$ln,14z"))) }
                         }
                     }, Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)) { Text(Tr[k], fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+                }
+                Text(Tr["mosqGHow"], Modifier.padding(top = 6.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
+                // favourites: from the search and from Google Maps
+                val favM = MosqueStore.favs(s.prefs); val gAll = MosqueStore.google(s.prefs)
+                val favG = gAll.filter { it.fav }
+                Fold(s, Tr["mosqFav"] + " (" + Tr.num(favM.size + favG.size) + ")", "mqfav") {
+                    if (favM.isEmpty() && favG.isEmpty()) Text(Tr["mosqNoFav"], Modifier.padding(12.dp), fontSize = 14.sp)
+                    for (m in favM) PlaceCard(act, m.name.ifEmpty { Tr["mosqUnnamed"] }, m.address, "geo:${m.lat},${m.lng}?q=${m.lat},${m.lng}(${Uri.encode(m.name)})", true, { MosqueStore.toggleFav(s.prefs, m); fv++ }, null)
+                    for (g in favG) PlaceCard(act, g.name, g.address, g.url, true, { MosqueStore.toggleGoogleFav(s.prefs, g.id); fv++ }, null)
+                }
+                for ((kind, kt) in listOf("masjid" to "mosqGMasjid", "musalla" to "mosqGMusalla")) {
+                    val l = gAll.filter { it.kind == kind }
+                    Fold(s, Tr[kt] + " (" + Tr.num(l.size) + ")", "mqg_$kind") {
+                        if (l.isEmpty()) Text(Tr["mosqGNone"], Modifier.padding(12.dp), fontSize = 14.sp)
+                        for (g in l) PlaceCard(act, g.name, g.address, g.url, g.fav, { MosqueStore.toggleGoogleFav(s.prefs, g.id); fv++ }, { MosqueStore.removeGoogle(s.prefs, g.id); fv++ })
+                    }
                 }
             }
             if (state == 1) item { Text(Tr["mosqCount"] + ": " + Tr.num(shown.size) + "  (" + Tr.num(all.size) + ")", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) }
@@ -100,6 +133,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                                     }
                                 }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqMap"], fontSize = 13.sp, maxLines = 1) }
                                 TextButton(onClick = { hidden = hidden + m.id; s.prefs.hiddenMosques = hidden }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqHide"], fontSize = 13.sp, maxLines = 1) }
+                                TextButton(onClick = { MosqueStore.toggleFav(s.prefs, m); fv++ }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(if (MosqueStore.isFav(s.prefs, m.id)) "★" else "☆", fontSize = 22.sp, color = Color(0xFFD2A21F)) }
                             }
                         }
                     }
@@ -109,6 +143,26 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
             if (Mosques.info.isNotEmpty()) item { Text(Tr.num(shown.size) + " / " + Mosques.info, fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .45f)) }
             if (Mosques.skipped.isNotEmpty()) item { Text(Tr["mosqHidden"] + " (" + Tr.num(Mosques.skipped.size) + "): " + Mosques.skipped.take(12).joinToString("، "), fontSize = 11.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .45f)) }
             item { Text(Tr["mosqNote"], fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .55f), modifier = Modifier.padding(vertical = 10.dp)) }
+        }
+    }
+}
+
+/** a saved place: name, address, copy / map / star (and remove) */
+@Composable
+fun PlaceCard(act: MainActivity, name: String, address: String, link: String, fav: Boolean, onFav: () -> Unit, onRemove: (() -> Unit)?) {
+    Card0 {
+        Column(Modifier.padding(14.dp)) {
+            Text(name, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+            if (address.isNotEmpty()) Text(address, Modifier.padding(top = 4.dp), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .75f))
+            Row(Modifier.padding(top = 8.dp), horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                OutlinedButton(onClick = {
+                    act.getSystemService(ClipboardManager::class.java).setPrimaryClip(ClipData.newPlainText("address", name + "\n" + address))
+                    Toast.makeText(act, Tr["mosqCopied"], Toast.LENGTH_SHORT).show()
+                }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqCopy"], fontSize = 13.sp, maxLines = 1) }
+                if (link.isNotEmpty()) OutlinedButton(onClick = { runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(link))) } }, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqMap"], fontSize = 13.sp, maxLines = 1) }
+                if (onRemove != null) TextButton(onClick = onRemove, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(Tr["mosqHide"], fontSize = 13.sp, maxLines = 1) }
+                TextButton(onClick = onFav, contentPadding = PaddingValues(horizontal = 10.dp)) { Text(if (fav) "★" else "☆", fontSize = 22.sp, color = Color(0xFFD2A21F)) }
+            }
         }
     }
 }

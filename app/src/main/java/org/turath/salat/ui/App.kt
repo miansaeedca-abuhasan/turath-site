@@ -19,7 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.foundation.border
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -71,6 +72,7 @@ fun App(act: MainActivity) {
     val s = remember { AppState(act) }
     Tr.lang = s.prefs.lang.ifEmpty { "en" }
     LaunchedEffect(Unit) { while (true) { s.now = ZonedDateTime.now(); delay(1000) } }
+    LaunchedEffect(act.sharedText) { if (act.sharedText != null) { s.page = "mosques"; s.sub = "" } }
     LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.sub = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
     val acc = s.prefs.appAccent.takeIf { it >= 0 }?.let { Color(Pal.COLORS[it]) }
@@ -93,6 +95,7 @@ fun App(act: MainActivity) {
                     // read here so that a change of settings draws the screens again, keeping where the user is (scroll, open page)
                     @Suppress("UNUSED_VARIABLE") val v = s.version
                     CrashReport(s)
+                    BarSeq.n = 0
                     if (s.prefs.place == null || s.prefs.lang.isEmpty()) Onboard(s) else Main(s)
                 }
               }
@@ -313,34 +316,46 @@ fun hms(sec: Long): String {
 @Composable
 fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
     val dark = MaterialTheme.colorScheme.surface.luminance() < .5f
-    val main = if (dark) Color(0xFF1F4A44) else Color(0xFF21594F)
-    val camel = if (dark) Color(0xFFB08B57) else Color(0xFFC9A46C)
-    val ink = if (dark) Color(0xFFEDE4CB) else Color(0xFFF8F2E2)
-    val brown = Color(0xFF4E3220)
+    val green = if (dark) Color(0xFF1F4A44) else Color(0xFF21594F)
+    val greenDeep = if (dark) Color(0xFF123530) else Color(0xFF0F4A3C)
+    val camel = if (dark) Color(0xFFA9844F) else Color(0xFFC9A46C)
+    val camelDeep = if (dark) Color(0xFF8F6C3C) else Color(0xFFB98F57)
+    val cream = if (dark) Color(0xFFEDE4CB) else Color(0xFFF8F2E2)
+    val brown = Color(0xFF3E2815)
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
-    val zone: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit = {
-        val u = density; val w = size.width; val h = size.height
-        val bx = w - 96f * u; val sl = 20f * u
-        fun band(o: Float, wd: Float, c: Color) {
-            val p = androidx.compose.ui.graphics.Path()
-            p.moveTo(bx + sl - (o + wd) * u, 0f); p.lineTo(bx + sl - o * u, 0f); p.lineTo(bx - o * u, h); p.lineTo(bx - (o + wd) * u, h); p.close()
-            drawPath(p, c)
-        }
-        val z = androidx.compose.ui.graphics.Path()
-        z.moveTo(bx + sl, 0f); z.lineTo(w, 0f); z.lineTo(w, h); z.lineTo(bx, h); z.close()
-        drawPath(z, camel)
-        band(6f, 4f, Color(0xFFF3EAD3)); band(14f, 3f, Color(0xFF9AA09B)); band(21f, 4f, Color(0xFFD2B363))
-    }
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+    // the colours take turns: the first bar of a page has the green at the start (the title's side), the next at the other end
+    val idx = remember { BarSeq.n++ }
+    val greenAtStart = idx % 2 == 0
+    val greenLeft = greenAtStart != rtl                    // where the green is on the screen
+    Box(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
         .drawBehind {
-            drawRect(main)
-            if (rtl) scale(-1f, 1f, androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)) { zone(this) } else zone(this)
+            val w = size.width; val h = size.height; val cx = w / 2
+            drawRect(androidx.compose.ui.graphics.Brush.horizontalGradient(listOf(camelDeep, camel)))
+            // the split runs slantwise ( / ) from one corner of the logo to the other
+            val p = androidx.compose.ui.graphics.Path()
+            if (greenLeft) { p.moveTo(0f, 0f); p.lineTo(cx + h / 2, 0f); p.lineTo(cx - h / 2, h); p.lineTo(0f, h) }
+            else { p.moveTo(cx + h / 2, 0f); p.lineTo(w, 0f); p.lineTo(w, h); p.lineTo(cx - h / 2, h) }
+            p.close()
+            drawPath(p, androidx.compose.ui.graphics.Brush.horizontalGradient(if (greenLeft) listOf(greenDeep, green) else listOf(green, greenDeep)))
         }
-        .clickable(onClick = onClick).padding(start = 16.dp, end = 14.dp, top = 13.dp, bottom = 13.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, Modifier.weight(1f).padding(end = 60.dp), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-        Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> if (rtl) Icons.Outlined.ChevronLeft else Icons.Outlined.ChevronRight }, null, tint = brown)
+        .clickable(onClick = onClick).heightIn(min = 58.dp)) {
+        Row(Modifier.fillMaxWidth().heightIn(min = 58.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
+            Box(Modifier.weight(1f)) {
+                Text(title, Modifier.padding(end = 30.dp, top = 6.dp, bottom = 6.dp), color = if (greenAtStart) cream else brown, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 2, lineHeight = 21.sp)
+            }
+            Spacer(Modifier.width(52.dp))
+            Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> if (rtl) Icons.Outlined.ChevronLeft else Icons.Outlined.ChevronRight }, null, tint = if (greenAtStart) brown else cream)
+            }
+        }
+        androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null,
+            Modifier.align(Alignment.Center).size(44.dp).shadow(3.dp, androidx.compose.foundation.shape.RoundedCornerShape(11.dp))
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(11.dp)).border(1.5.dp, Color(0xFFF3EAD3), androidx.compose.foundation.shape.RoundedCornerShape(11.dp)))
     }
 }
+
+/** the running number of the heading bars on the screen (they take turns in colour) */
+object BarSeq { var n = 0 }
 
 /** a heading bar: tap to open the details below it, tap again to hide them */
 @Composable
