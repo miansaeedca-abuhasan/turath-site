@@ -106,7 +106,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .fr{font-family:var(--serif);direction:ltr;text-align:left;line-height:1.75}
 .phead{margin:.9rem 0 .2rem;font-size:.95rem;color:var(--accent);border-bottom:1px solid color-mix(in srgb,var(--accent) 25%,transparent);padding-bottom:.15rem}
 html[lang=ur] .phead{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
-sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:400;white-space:nowrap}sup.fnm.fnhi{background:#ffe08a;color:#000;border-radius:50%;box-shadow:0 0 0 4px #ffe08a}
+sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:400;white-space:normal;overflow-wrap:anywhere}.hbrow .ct,.hbrow .sinfo{overflow-wrap:anywhere;min-width:0}.hbrow{min-width:0;max-width:100%}sup.fnm.fnhi{background:#ffe08a;color:#000;border-radius:50%;box-shadow:0 0 0 4px #ffe08a}
 .bkitem{margin:0 0 1.1rem;line-height:2.1;font-size:1.12em}.bkitem p{margin:.2rem 0}.bkn{display:inline-block;min-width:1.8em;margin-inline-end:.4rem;padding:0 .35em;font-size:.72em;border:1px solid rgba(128,128,128,.45);border-radius:.6em;color:var(--muted,#888);vertical-align:middle;text-align:center}.ud{font-family:var(--urdu)}.fnm{display:inline-block;box-sizing:border-box;min-width:1.5em;height:1.5em;padding:0 .2em;margin:0 .2em;font:600 .72em/1.4em system-ui,sans-serif;text-align:center;vertical-align:super;border:1px solid currentColor;border-radius:50%;color:#1b5fc9}:root[data-theme=dark] .fnm{color:#8fb0ff}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .fnm{color:#8fb0ff}}.pfn{font-size:16px!important;line-height:2;margin:.9rem 0 .2rem;padding-top:.6rem;border-top:1px solid rgba(128,128,128,.35)}.refcard{padding:.7rem .9rem;margin:.4rem 0}.refcard p{margin:.15rem 0}.reflinks{line-height:1.9}.reflinks a{font-weight:700;margin-inline-start:.9rem}.trtab{display:flex;margin:.1rem 0 .35rem}.trtab span{display:inline-block;padding:.12rem .8rem;border:1px solid var(--line,#d9d2c3);border-bottom:2px solid var(--accent,#0b5d4b);border-radius:.6rem .6rem 0 0;background:var(--card,#fff);color:var(--accent,#0b5d4b);font-size:.85rem;font-weight:700;line-height:1.5}.ptakh{font-size:.92rem;opacity:.92}
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
@@ -1387,7 +1387,7 @@ async function showBookList(cat,aut,authors,topics){
   const rowEl=r=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});
       a.append(el('span',{class:'snum'},N(r.no)),
-        el('span',{class:'sinfo'},el('span',{class:'ct'+(!EN()&&(ui==='ar'||r.ur===r.ar)?' arname':''),dir:'auto',lang:!EN()&&(ui==='ar'||r.ur===r.ar)?'ar':null},EN()?r.en:ui==='ar'?r.ar:r.ur,r.lg&&r.lg.length>1?el('span',{class:'hblg'},' ('+r.lg.map(l=>(LGN[ui]||LGN.en)[l]||l).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),el('span',{class:'cs'},T(r.key==='shadharat'?'cNas':'hbCount')(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
+        el('span',{class:'sinfo'},el('span',{class:'ct'+(!EN()&&(ui==='ar'||r.ur===r.ar)?' arname':''),dir:'auto',lang:!EN()&&(ui==='ar'||r.ur===r.ar)?'ar':null},EN()?r.en:ui==='ar'?r.ar:r.ur,r.lg&&r.lg.length>1?el('span',{class:'hblg'},' ('+r.lg.map(l=>(LGN[ui]||LGN.en)[l]||l).join('+\u200b')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),el('span',{class:'cs'},T(r.key==='shadharat'?'cNas':'hbCount')(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
         !EN()&&(ui==='ar'||hbN(r.ar)===hbN(r.ur)||(r.full&&!r.key))?'':el('span',{class:'sar',lang:'ar'},r.ar),
         el('button',{class:'ab',type:'button',title:T('hbResume'),'aria-label':T('hbResume'),on:{click:e=>{e.preventDefault();e.stopPropagation();r.resume();}}},icon('history')));
       return a;};
@@ -2701,7 +2701,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qnobm: 'ابھی کوئی آیت محفوظ نہیں۔ آیت کے ساتھ بک مارک کا نشان دبائیں۔', ayahOf: 'آیتِ قرآنی', hadithOf: 'حدیثِ نبوی', openIt: 'کھولیں',
     qsearchPh: 'آیت کا لفظ لکھیں، مثلاً: نحن نقص', searchIn: 'منتخب تراجم اور عربی متن میں', netAudio: 'تلاوت کے لیے انٹرنیٹ چاہیے۔',
     audioErr: 'یہ آڈیو نہیں چل سکی۔ انٹرنیٹ یا دوسرا قاری آزمائیں۔', recite: 'تلاوت سنیں', jami: 'تلخیص الجامع الکامل', tuhfa: 'شرح تحفۃ المتقین',
-    thisChapter: 'یہ باب', bmHadith: 'محفوظ احادیث', bmQuran: 'محفوظ آیات', searchHadith: 'حدیث تلاش', start: 'شروع', tafsir: 'تفسیر', tafsirOf: r => 'آیت ' + r + ' کی تفسیر', noTafsir: 'اس آیت کی تفسیر اس کتاب میں الگ سے نہیں دی گئی۔', tafsirMissing: 'یہ تفاسیر ابھی کسی اوپن سورس ماخذ میں نہیں ملیں:', surahShort: 'سورت', paraShort: 'پارہ', chapShort: 'باب', onlyAya: 'صرف آیت', ayaTr: 'آیت مع ترجمہ', results: 'نتائج کی تعداد', copyAll: 'سب کاپی کریں', moreRes: n => 'مزید ' + n + ' نتائج — الفاظ بڑھا کر تلاش محدود کریں'});
+    thisChapter: 'یہ باب', bmHadith: 'محفوظ احادیث', bmQuran: 'محفوظ آیات', searchHadith: 'حدیث تلاش', start: 'شروع', tafsir: 'تفسیر', tafsirs: 'تفاسیر', tafsirOf: r => 'آیت ' + r + ' کی تفسیر', noTafsir: 'اس آیت کی تفسیر اس کتاب میں الگ سے نہیں دی گئی۔', tafsirMissing: 'یہ تفاسیر ابھی کسی اوپن سورس ماخذ میں نہیں ملیں:', surahShort: 'سورت', paraShort: 'پارہ', chapShort: 'باب', onlyAya: 'صرف آیت', ayaTr: 'آیت مع ترجمہ', results: 'نتائج کی تعداد', copyAll: 'سب کاپی کریں', moreRes: n => 'مزید ' + n + ' نتائج — الفاظ بڑھا کر تلاش محدود کریں'});
   Object.assign(I.en, {quran: 'The Holy Quran', home: 'Home', hadithTab: 'Hadith', surahs: 'Surahs', para: 'Parah', ruku: 'Ruku', findAyah: 'Find Ayah',
     qsearch: 'Search', qbm: 'Bookmarks', audio: 'Audio', trans: 'Translations', settings: 'Settings', resume: 'Resume Quran Reading',
     filter: 'Filter Surah list by number or name', meccan: 'Meccan', medinan: 'Medinan', ayahs: n => n + ' Verses', paraN: n => 'Parah ' + n, rukuN: n => 'Ruku ' + n,
@@ -2712,7 +2712,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qnobm: 'No ayah bookmarked yet. Tap the bookmark icon next to an ayah.', ayahOf: 'Ayah of the moment', hadithOf: 'Hadith of the moment', openIt: 'Open',
     qsearchPh: 'Type words of an ayah, e.g. نحن نقص', searchIn: 'in the selected translations and the Arabic text', netAudio: 'Recitation needs internet.',
     audioErr: 'This audio could not play. Check internet or try another reciter.', recite: 'Listen to recitation', jami: 'Talkhis Al-Jame Al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin',
-    thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
+    thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirs: 'Tafsirs', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
 
   Object.assign(I.ur, {qsearchS: 'اس سورت میں: آیت نمبر یا الفاظ', qsSurah: 'اس سورت میں تلاش', qsNoAyah: n => 'اس سورت میں آیت نمبر ' + n + ' نہیں ہے۔', qsGoAyah: 'آیت کھولیں'});
   Object.assign(I.en, {qsearchS: 'In this surah: ayah number or words', qsSurah: 'Search in this surah', qsNoAyah: n => 'This surah has no ayah number ' + n + '.', qsGoAyah: 'Open ayah'});
@@ -3000,6 +3000,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     } catch (e) {}
   }
   /* ---------- Tafsir section: every tafsir of the site in one place, opened by surah (#/q/tafsir, #/q/tafsir/<key>, #/q/tafsir/<key>/<surah>) ---------- */
+  const TFS = () => { const x = T('tafsirs'); return x && x !== 'tafsirs' ? x : T('tafsir'); };
   async function showTafsirHub(h) {
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
     await need(['ar_uthmani']);
@@ -3008,7 +3009,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const nameOf = t => LTR() ? t.en : t.ur, dirOf = l => l === 'ur' || l === 'ar' ? 'rtl' : 'ltr';
     const t = key && list.find(x => x.key === key);
     if (!t) {
-      bar(T('tafsir'), '', true); v.replaceChildren();
+      bar(TFS(), '', true); v.replaceChildren();
       const LG = ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui));
       LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length) return;
         v.append(el('p', {class: 'grp'}, T('langs')[l]), ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x))))); });
@@ -3043,7 +3044,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const v = qv(); v.replaceChildren();
     const g = el('div', {class: 'tiles'});
     g.append(tile('img:talkhis', T('jami'), null, () => goBook('jami')), tile('img:jami_full', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('img:tuhfa_sharh', T('tuhfa'), null, () => goBook('tuhfa')),
-      tile('img:quran', T('quran'), '#/q'), tile('tafsir', T('tafsir'), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
+      tile('img:quran', T('quran'), '#/q'), tile('img:tafsir', TFS(), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
       tile('img:saved_hadith', T('bmHadith'), '#/bm'), tile('img:saved_ayat', T('bmQuran'), '#/q/bm'),
       tile('img:hadith_books', T('hbBooks'), '#/hb'),
       tile('img:seerah', T('seerahT'), '#/s/seerah'), tile('img:sahaba', T('navFazail'), '#/s/fazail'),
@@ -3127,7 +3128,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.replaceChildren();
     const g = el('div', {class: 'tiles'});
     g.append(tile('img:find_ayah', T('findAyah'), null, findAyah), tile('img:search', T('qsearch'), '#/q/search'), tile('img:saved_ayat', T('qbm'), '#/q/bm'), tile('img:translate', T('trans'), null, () => pickTr()),
-      tile('img:surahs', T('surahs'), '#/q'), tile('img:quran', T('mushafTile'), '#/q/mushaf'), tile('img:para', T('para'), '#/q/para'), tile('img:ruku', T('ruku'), '#/q/ruku'), tile('tafsir', T('tafsir'), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'));
+      tile('img:surahs', T('surahs'), '#/q'), tile('img:quran', T('mushafTile'), '#/q/mushaf'), tile('img:para', T('para'), '#/q/para'), tile('img:ruku', T('ruku'), '#/q/ruku'), tile('img:tafsir', TFS(), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'));
     v.append(el('div', {class: 'card pad0'}, g));
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')});
     const list = el('div');
