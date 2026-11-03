@@ -218,8 +218,8 @@ class Prefs(ctx: Context) {
     fun setVibAfter(k: String, v: Boolean) = sp.edit().putBoolean("vibA_$k", v).apply()
     fun vibFrom(k: String) = sp.getInt("vibF_$k", 0).coerceIn(0, 120)
     fun setVibFrom(k: String, v: Int) = sp.edit().putInt("vibF_$k", v.coerceIn(0, 120)).apply()
-    fun vibLen(k: String) = sp.getInt("vibL_$k", defVibLen(k)).coerceIn(0, 120)
-    fun setVibLen(k: String, v: Int) = sp.edit().putInt("vibL_$k", v.coerceIn(0, 120)).apply()
+    fun vibLen(k: String) = sp.getInt("vibL_$k", defVibLen(k)).coerceIn(0, 180)
+    fun setVibLen(k: String, v: Int) = sp.edit().putInt("vibL_$k", v.coerceIn(0, 180)).apply()
 
     /** a fasting day: Ramadan, Monday / Thursday, or an accepted white day (by the hijri date of its daytime) */
     fun fastDay(d: java.time.LocalDate): Boolean {

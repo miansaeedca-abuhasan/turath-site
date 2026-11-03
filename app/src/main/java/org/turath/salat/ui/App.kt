@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -311,13 +312,32 @@ fun hms(sec: Long): String {
 @Composable
 fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
     val dark = MaterialTheme.colorScheme.surface.luminance() < .5f
-    val bar = if (dark) Color(0xFF1F4A44) else Color(0xFF21594F)
+    val main = if (dark) Color(0xFF1F4A44) else Color(0xFF21594F)
+    val camel = if (dark) Color(0xFFB08B57) else Color(0xFFC9A46C)
     val ink = if (dark) Color(0xFFEDE4CB) else Color(0xFFF8F2E2)
-    val gold = Color(0xFFD2B363)
-    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp)).background(bar)
-        .clickable(onClick = onClick).padding(horizontal = 16.dp, vertical = 13.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(title, Modifier.weight(1f), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
-        Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> Icons.Outlined.ChevronRight }, null, tint = gold)
+    val brown = Color(0xFF4E3220)
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val zone: androidx.compose.ui.graphics.drawscope.DrawScope.() -> Unit = {
+        val u = density; val w = size.width; val h = size.height
+        val bx = w - 96f * u; val sl = 20f * u
+        fun band(o: Float, wd: Float, c: Color) {
+            val p = androidx.compose.ui.graphics.Path()
+            p.moveTo(bx + sl - (o + wd) * u, 0f); p.lineTo(bx + sl - o * u, 0f); p.lineTo(bx - o * u, h); p.lineTo(bx - (o + wd) * u, h); p.close()
+            drawPath(p, c)
+        }
+        val z = androidx.compose.ui.graphics.Path()
+        z.moveTo(bx + sl, 0f); z.lineTo(w, 0f); z.lineTo(w, h); z.lineTo(bx, h); z.close()
+        drawPath(z, camel)
+        band(6f, 4f, Color(0xFFF3EAD3)); band(14f, 3f, Color(0xFF9AA09B)); band(21f, 4f, Color(0xFFD2B363))
+    }
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
+        .drawBehind {
+            drawRect(main)
+            if (rtl) androidx.compose.ui.graphics.drawscope.scale(-1f, 1f, androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)) { zone(this) } else zone(this)
+        }
+        .clickable(onClick = onClick).padding(start = 16.dp, end = 14.dp, top = 13.dp, bottom = 13.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, Modifier.weight(1f).padding(end = 60.dp), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
+        Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> if (rtl) Icons.Outlined.ChevronLeft else Icons.Outlined.ChevronRight }, null, tint = brown)
     }
 }
 

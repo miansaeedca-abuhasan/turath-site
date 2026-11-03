@@ -39,13 +39,7 @@ object Events {
                 if (s != Snd.SILENT) out += Ev(t[p], "prayer", p, s)
                 // the phone on vibrate for this prayer (on Fridays Dhuhr's own setting is replaced by the Jumu'ah one)
                 val vk = if (p == P.DHUHR && d.dayOfWeek == DayOfWeek.FRIDAY) "JUMUAH" else p.name
-                if (pr.vibOn(vk) && pr.vibLen(vk) > 0) {
-                    // with the masjid's iqamah known, the vibration starts some minutes before it (that day's own clock time); otherwise it is counted from the prayer's start
-                    val iq = if (vk == "JUMUAH") LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, vk)
-                    val start = if (iq >= 0 && pr.vibByIq(vk)) d.atTime(iq / 60, iq % 60).atZone(zone).minusMinutes(pr.vibLead(vk).toLong())
-                        else t[p].plusMinutes((if (pr.vibAfter(vk)) pr.vibFrom(vk) else -pr.vibFrom(vk)).toLong())
-                    wins += start to start.plusMinutes(pr.vibLen(vk).toLong())
-                }
+                if (pr.vibOn(vk) && pr.vibLen(vk) > 0) wins += VibWin.window(pr, vk, t[p], d, zone, ramadanNight || h0.month == 9)
             }
             for (p in listOf(P.ISHRAQ, P.CHASHT, P.TAHAJJUD)) {
                 val s = pr.sound(p)
@@ -139,12 +133,33 @@ object Events {
         }
         // vibration windows that touch or overlap are one: the phone must not ring again in the middle of the next window
         val merged = mutableListOf<Pair<ZonedDateTime, ZonedDateTime>>()
-        for (w in wins.sortedBy { it.first }) {
+        val sorted = wins.sortedBy { it.first }
+        for ((i, w0) in sorted.withIndex()) {
+            // one prayer's vibration never runs into the next prayer's window
+            val nx = sorted.getOrNull(i + 1)
+            val w = if (nx != null && w0.second.isAfter(nx.first)) w0.first to nx.first else w0
+            if (!w.second.isAfter(w.first)) continue
             val l = merged.lastOrNull()
             if (l != null && !w.first.isAfter(l.second)) merged[merged.size - 1] = l.first to (if (w.second.isAfter(l.second)) w.second else l.second) else merged += w
         }
         for ((a, b) in merged) { out += Ev(a, "vibon", null, extra = b.toInstant().toEpochMilli()); out += Ev(b, "viboff") }
         return out.sortedBy { it.at }
+    }
+}
+
+/** the vibration window of one prayer: where it starts, how long it may last */
+object VibWin {
+    fun maxLen(k: String, ramadan: Boolean) = when (k) { "ISHA" -> if (ramadan) 180 else 90; "JUMUAH" -> 90; else -> 60 }
+    fun iqamah(pr: Prefs, k: String) = if (k == "JUMUAH") LocalMasjid.jumuah(pr).minOrNull() ?: -1 else LocalMasjid.iqamah(pr, k)
+    fun byIq(pr: Prefs, k: String) = iqamah(pr, k) >= 0 && pr.vibByIq(k)
+    fun start(pr: Prefs, k: String, begin: ZonedDateTime, d: java.time.LocalDate, zone: java.time.ZoneId): ZonedDateTime {
+        val iq = iqamah(pr, k)
+        return if (iq >= 0 && pr.vibByIq(k)) d.atTime(iq / 60, iq % 60).atZone(zone).minusMinutes(pr.vibLead(k).toLong())
+        else begin.plusMinutes((if (pr.vibAfter(k)) pr.vibFrom(k) else -pr.vibFrom(k)).toLong())
+    }
+    fun window(pr: Prefs, k: String, begin: ZonedDateTime, d: java.time.LocalDate, zone: java.time.ZoneId, ramadan: Boolean): Pair<ZonedDateTime, ZonedDateTime> {
+        val s = start(pr, k, begin, d, zone)
+        return s to s.plusMinutes(minOf(pr.vibLen(k), maxLen(k, ramadan)).toLong())
     }
 }
 
