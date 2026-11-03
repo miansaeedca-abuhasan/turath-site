@@ -11,7 +11,7 @@
 .trbtn{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--accent);padding:.45rem 1.3rem;font-weight:700;border-radius:.7rem .7rem 0 0;min-height:2.4rem;margin-bottom:-2px;border-bottom:2px solid transparent}
 .trbtn.on{background:color-mix(in srgb,var(--accent) 12%,transparent);border-bottom-color:var(--accent)}
 html[lang=ur] .trbtn.ur{font-family:var(--uhead);font-weight:400;font-size:1.15rem}
-@media (max-width:700px){.trtabs{display:grid;grid-template-columns:1fr 1fr}.trbtn{text-align:center;padding:.55rem .4rem}}
+@media (max-width:700px){.trtabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}.trbtn{text-align:center;padding:.55rem .3rem;line-height:1.5}}
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
 .ftab[aria-expanded=true]{background:var(--accent);color:#fff}.ftab[aria-expanded=true]::after{transform:rotate(180deg)}
 html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
@@ -4418,25 +4418,31 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (fold.length) c.append(...foldTabs(b, n, fold));
     }
     else if (b.trtabs && lang) {
-      // the translations of the book as tabs (Urdu | English): a tap on a tab shows that translation; the choice is kept for the other hadith
+      // the translations of the book as tabs (each translator, English ...): a tap on a tab shows that translation; the choice is kept for the other hadith
       const TL = b.langs.filter(l => l !== 'ar' && (row(b, l, n) || [])[1]);
       const xo = l => { const r = row(b, l, n); return r && r[3] && !Array.isArray(r[3]) ? r[3] : null; };
       const kx = TL.map(xo).find(x => x && x.k);
       if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang: 'ar', dir: 'rtl'}, ...kl.map(t => paraEl(t, 'ur')))); if (gEl) gEl.remove(); }
-      if (TL.length) {
+      const nmOf = o => o ? (o[ui] || o.ur || '') : '';
+      const SP = [];   // one panel per translation: {id, l, text, nm, x}
+      TL.forEach(l => { const r = row(b, l, n), x = xo(l);
+        SP.push({id: l, l, text: r[1], nm: nmOf(b.trn), x});
+        if (x && x.u2) SP.push({id: 'u2', l, text: x.u2, nm: nmOf(b.trn2), x: null}); });
+      if (SP.length) {
         let pref = ''; try { pref = localStorage['trtab_' + b.key] || ''; } catch (e) {}
-        const cur0 = TL.includes(pref) ? pref : TL.includes(lang) ? lang : TL[0];
+        const cur0 = SP.some(p => p.id === pref) ? pref : SP.some(p => p.id === lang) ? lang : SP[0].id;
         const wrap = el('div', {class: 'trwrap'}), bar = el('div', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
-        const show = l => { TL.forEach(k => { pan[k].hidden = k !== l; btn[k].classList.toggle('on', k === l); btn[k].setAttribute('aria-selected', String(k === l)); }); };
+        const show = id => { SP.forEach(p => { pan[p.id].hidden = p.id !== id; btn[p.id].classList.toggle('on', p.id === id); btn[p.id].setAttribute('aria-selected', String(p.id === id)); }); };
         wrap._show = show;
-        TL.forEach(l => { const r = row(b, l, n), x = xo(l);
-          const p = el('section', {class: 'trpanel ' + l, lang: l, dir: DIR(l), hidden: ''});
-          if (x && x.t) p.append(el('p', {class: 'ptitle ' + l, lang: l, dir: DIR(l)}, x.t));
-          p.append(trTab(b, l), el('div', {class: 'tr'}, ...r[1].split('\n').filter(t => t.trim()).map(t => paraEl(t, l))));
-          if (x && x.f) p.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), by: b.shn ? (({ur: 'شارح', ar: 'الشارح', en: 'Commentator'})[ui] || 'Commentator') + ': ' + (b.shn[ui] || b.shn.ur) : '', nodes: x.f.split('\n').filter(t => t.trim()).map(t => paraEl(t, l)), lang: l}]));
-          pan[l] = p; box.append(p);
-          btn[l] = el('button', {class: 'trbtn ' + l, type: 'button', role: 'tab', lang: l, on: {click: () => { try { localStorage['trtab_' + b.key] = l; } catch (e) {} document.querySelectorAll('.trwrap').forEach(w => w._show && w._show(l)); }}}, LNAME[l] || l);
-          bar.append(btn[l]); });
+        SP.forEach(p => { const l = p.l, x = p.x;
+          const pn = el('section', {class: 'trpanel ' + p.id, lang: l, dir: DIR(l), hidden: ''});
+          if (x && x.t) pn.append(el('p', {class: 'ptitle ' + l, lang: l, dir: DIR(l)}, x.t));
+          if (p.nm) pn.append(el('div', {class: 'trtab', lang: l, dir: DIR(l)}, el('span', {}, (TRL[l] || TRL.en) + ': ' + p.nm)));
+          pn.append(el('div', {class: 'tr'}, ...p.text.split('\n').filter(t => t.trim()).map(t => paraEl(t, l))));
+          if (x && x.f) pn.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), by: b.shn ? (({ur: 'شارح', ar: 'الشارح', en: 'Commentator'})[ui] || 'Commentator') + ': ' + nmOf(b.shn) : '', nodes: x.f.split('\n').filter(t => t.trim()).map(t => paraEl(t, l)), lang: l}]));
+          pan[p.id] = pn; box.append(pn);
+          btn[p.id] = el('button', {class: 'trbtn ' + p.id, type: 'button', role: 'tab', lang: l, on: {click: () => { try { localStorage['trtab_' + b.key] = p.id; } catch (e) {} document.querySelectorAll('.trwrap').forEach(w => w._show && w._show(p.id)); }}}, (b.trn2 && p.nm && l !== 'en') ? p.nm : (LNAME[l] || l));
+          bar.append(btn[p.id]); });
         wrap.append(el('h4', {class: 'phead'}, T('pTr')), bar, box); c.append(wrap); show(cur0);
       }
     }
