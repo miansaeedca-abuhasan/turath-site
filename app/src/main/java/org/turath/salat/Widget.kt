@@ -172,8 +172,8 @@ class Widget : AppWidgetProvider() {
                         v.setTextViewText(tv, msg)
                         v.setChronometer(ch, b + end.toInstant().toEpochMilli(), "−%s", true)
                         v.setChronometerCountDown(ch, true)
-                        // the warning before sunrise / sunset stays steady in gold; the prohibited time itself blinks in red
-                        if (soon) { v.setTextColor(tv, 0xFFE0B54A.toInt()); v.setTextColor(ch, 0xFFE0B54A.toInt()) }
+                        // the warning before sunrise / sunset stays steady in the widget colour; the prohibited time itself blinks in red
+                        if (soon) { v.setTextColor(tv, accent(pr)); v.setTextColor(ch, accent(pr)) }
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))

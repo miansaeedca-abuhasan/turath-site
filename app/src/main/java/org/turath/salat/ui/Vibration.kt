@@ -82,10 +82,11 @@ fun VibrationPage(s: AppState, back: () -> Unit) {
                 if (on && place != null) {
                     val w = win(k, today)
                     val len = java.time.Duration.between(w.first, w.second).toMinutes().toInt()
-                    val sum = if (VibWin.byIq(pr, k)) Tr["vibSumIq"].replace("{a}", Tr.num(pr.vibLead(k)))
+                    val a1 = if (VibWin.byIq(pr, k)) Tr["vibSumIq"].replace("{a}", Tr.num(pr.vibLead(k)))
                         else if (pr.vibFrom(k) == 0) Tr["vibSumAt"]
                         else Tr[if (pr.vibAfter(k)) "vibSumAfter" else "vibSumBefore"].replace("{a}", Tr.num(pr.vibFrom(k)))
-                    Text(sum.replace("{b}", Tr.num(len)), Modifier.fillMaxWidth().padding(vertical = 4.dp), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(a1, Modifier.fillMaxWidth().padding(top = 4.dp), fontWeight = FontWeight.Bold, fontSize = 15.sp)
+                    Text(Tr["vibDur"].replace("{b}", Tr.num(len)), Modifier.fillMaxWidth().padding(bottom = 4.dp), fontWeight = FontWeight.Bold, fontSize = 15.sp)
                     Row(Modifier.fillMaxWidth().padding(vertical = 6.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         for (isStart in listOf(true, false)) {
                             val z = if (isStart) w.first else w.second

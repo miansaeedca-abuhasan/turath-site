@@ -1,5 +1,6 @@
 package org.turath.salat.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,6 +23,16 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
+fun ZebraCard(content: @Composable ColumnScope.() -> Unit) = Card(
+    Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp), shape = MaterialTheme.shapes.large,
+    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface), elevation = CardDefaults.cardElevation(1.dp)
+) { Column(Modifier.padding(vertical = 4.dp), content = content) }
+
+/** the rows of a list in turn white and a light grey-blue (as in the masjid's times) */
+@Composable
+fun zebra(i: Int): Color = if (i % 2 == 0) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.primary.copy(alpha = .10f)
+
+@Composable
 fun TimesScreen(s: AppState) {
     val place = s.prefs.place ?: return
     var offset by remember { mutableIntStateOf(0) }
@@ -41,45 +52,48 @@ fun TimesScreen(s: AppState) {
             }
             IconButton(onClick = { offset++ }) { Icon(Icons.Outlined.ChevronRight, null) }
         }
-        Card0 {
+        ZebraCard {
+            var zi = 0
             for (p in P.entries) {
                 val five = p in FIVE
                 val zawal = p == P.ZAWAL
-                Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(s.fmt(t[p]), fontSize = if (five) 20.sp else 16.sp, fontWeight = if (five) FontWeight.Medium else FontWeight.Normal, modifier = Modifier.width(112.dp))
-                    Text(Tr.p(p), Modifier.weight(1f), fontSize = if (five) 19.sp else 15.sp,
-                        color = when { zawal -> Color(0xFFB3261E); five -> MaterialTheme.colorScheme.onSurface; else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .7f) })
+                Row(Modifier.fillMaxWidth().background(zebra(zi++)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(s.fmt(t[p]), fontSize = if (five) 18.sp else 15.sp, fontWeight = if (five) FontWeight.Medium else FontWeight.Normal, modifier = Modifier.width(92.dp), maxLines = 1)
+                    Column(Modifier.weight(1f)) {
+                        Text(Tr.p(p).substringBefore(" ("), fontSize = if (five) 17.sp else 14.sp, maxLines = 1,
+                            color = when { zawal -> Color(0xFFB3261E); five -> MaterialTheme.colorScheme.onSurface; else -> MaterialTheme.colorScheme.onSurface.copy(alpha = .8f) })
+                        if (Tr.p(p).contains(" (")) Text(Tr.p(p).substringAfter(" (").trimEnd(')'), fontSize = 11.sp, maxLines = 1, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .55f))
+                    }
                     if (p in FIVE || p == P.ISHRAQ || p == P.CHASHT || p == P.TAHAJJUD) {
                         // three choices, as in Salatuk: the sound (tap again to choose which), a notification only, silent
                         val snd = s.prefs.sound(p)
                         val mode = when (snd) { Snd.SILENT -> 2; Snd.NOTIFY -> 1; else -> 0 }
                         val on = MaterialTheme.colorScheme.primary; val off = MaterialTheme.colorScheme.onSurface.copy(alpha = .35f)
-                        IconButton(onClick = { if (mode == 0) pick = p else { s.prefs.setSound(p, s.prefs.lastSound(p)); s.changed() } }, Modifier.size(38.dp)) {
+                        IconButton(onClick = { if (mode == 0) pick = p else { s.prefs.setSound(p, s.prefs.lastSound(p)); s.changed() } }, Modifier.size(34.dp)) {
                             Icon(if (snd.bird) Icons.Outlined.Park else Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = if (mode == 0) on else off)
                         }
-                        IconButton(onClick = { s.prefs.setSound(p, Snd.NOTIFY); s.changed() }, Modifier.size(38.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (mode == 1) on else off) }
-                        IconButton(onClick = { s.prefs.setSound(p, Snd.SILENT); s.changed() }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (mode == 2) on else off) }
-                    } else Spacer(Modifier.width(114.dp))
+                        IconButton(onClick = { s.prefs.setSound(p, Snd.NOTIFY); s.changed() }, Modifier.size(34.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (mode == 1) on else off) }
+                        IconButton(onClick = { s.prefs.setSound(p, Snd.SILENT); s.changed() }, Modifier.size(34.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (mode == 2) on else off) }
+                    } else Spacer(Modifier.width(102.dp))
                 }
-                if (p == P.ISHA || p == P.SUNRISE) HorizontalDivider(Modifier.padding(vertical = 4.dp))
             }
             // Friday: the adhan of Jumu'ah (Dhuhr on Fridays)
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(s.fmt(t[P.DHUHR]), fontSize = 16.sp, modifier = Modifier.width(112.dp))
-                Text(Tr["JUMUAH"], Modifier.weight(1f), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+            Row(Modifier.fillMaxWidth().background(zebra(zi++)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(s.fmt(t[P.DHUHR]), fontSize = 15.sp, modifier = Modifier.width(92.dp), maxLines = 1)
+                Text(Tr["JUMUAH"], Modifier.weight(1f), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
                 val jsnd = s.prefs.jumuahSound
                 val jmode = when (jsnd) { Snd.SILENT -> 2; Snd.NOTIFY -> 1; else -> 0 }
                 val jon = MaterialTheme.colorScheme.primary; val joff = MaterialTheme.colorScheme.onSurface.copy(alpha = .35f)
-                IconButton(onClick = { if (jmode == 0) pickJum = true else { s.prefs.jumuahSound = s.prefs.lastJumuah; s.changed() } }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = if (jmode == 0) jon else joff) }
-                IconButton(onClick = { s.prefs.jumuahSound = Snd.NOTIFY; s.changed() }, Modifier.size(38.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (jmode == 1) jon else joff) }
-                IconButton(onClick = { s.prefs.jumuahSound = Snd.SILENT; s.changed() }, Modifier.size(38.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (jmode == 2) jon else joff) }
+                IconButton(onClick = { if (jmode == 0) pickJum = true else { s.prefs.jumuahSound = s.prefs.lastJumuah; s.changed() } }, Modifier.size(34.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeUp, Tr["mSound"], tint = if (jmode == 0) jon else joff) }
+                IconButton(onClick = { s.prefs.jumuahSound = Snd.NOTIFY; s.changed() }, Modifier.size(34.dp)) { Icon(Icons.Outlined.Vibration, Tr["mNotify"], tint = if (jmode == 1) jon else joff) }
+                IconButton(onClick = { s.prefs.jumuahSound = Snd.SILENT; s.changed() }, Modifier.size(34.dp)) { Icon(Icons.AutoMirrored.Outlined.VolumeOff, Tr["mSilent"], tint = if (jmode == 2) jon else joff) }
             }
             // the middle of the night (from Maghrib to the next Fajr)
             val nf = Schedule.day(s.prefs, place, date.plusDays(1))[P.FAJR]
             val mid = t[P.MAGHRIB].plusSeconds(java.time.Duration.between(t[P.MAGHRIB], nf).seconds / 2)
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(s.fmt(mid), fontSize = 16.sp, modifier = Modifier.width(112.dp))
-                Text(Tr["midnight"], Modifier.weight(1f), fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
+            Row(Modifier.fillMaxWidth().background(zebra(zi++)).padding(horizontal = 10.dp, vertical = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(s.fmt(mid), fontSize = 15.sp, modifier = Modifier.width(92.dp), maxLines = 1)
+                Text(Tr["midnight"], Modifier.weight(1f), fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .7f))
             }
         }
         Text(Tr["hijriChange"], Modifier.padding(16.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))

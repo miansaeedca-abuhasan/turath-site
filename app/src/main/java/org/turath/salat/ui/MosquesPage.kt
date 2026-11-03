@@ -67,10 +67,10 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                     for (v in listOf(1, 2, 5, 10, 25, 50, 100)) ChoiceChip(radius == v, { radius = v; s.prefs.mosqRadius = v }, { Text(Tr.num(v) + " " + Tr["km"]) })
                 }
                 Spacer(Modifier.height(10.dp))
-                Button(onClick = { if (state != 0) { if (!act.hasLocation()) { act.onPermResult = { go++ }; act.askLocation() } else go++ } }, Modifier.fillMaxWidth().height(52.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(26.dp)) {
+                Button(onClick = { if (state != 0) { if (!act.hasLocation()) { act.onPermResult = { go++ }; act.askLocation() } else go++ } }, Modifier.fillMaxWidth().heightIn(min = 64.dp), shape = androidx.compose.foundation.shape.RoundedCornerShape(32.dp), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 10.dp)) {
                     if (state == 0) { CircularProgressIndicator(Modifier.size(22.dp), color = LocalContentColor.current, strokeWidth = 2.5.dp); Spacer(Modifier.width(10.dp)) }
                     else { Icon(androidx.compose.material.icons.Icons.Outlined.Search, null); Spacer(Modifier.width(8.dp)) }
-                    Text(if (state == 0) Tr[if (hadSaved) "mosqSearching" else "mosqFirst"] else Tr["mosqSearch"], fontSize = 17.sp, fontWeight = FontWeight.Medium)
+                    Text(if (state == 0) Tr[if (hadSaved) "mosqSearching" else "mosqFirst"] else Tr["mosqSearch"], fontSize = if (state == 0) 14.sp else 17.sp, lineHeight = 18.sp, maxLines = 2, textAlign = androidx.compose.ui.text.style.TextAlign.Center, fontWeight = FontWeight.Medium)
                 }
                 Spacer(Modifier.height(8.dp))
                 // Google Maps knows every masjid and prayer room: the buttons open it round the phone's place
@@ -81,7 +81,7 @@ fun MosquesPage(s: AppState, back: () -> Unit) {
                         runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, u)) }.onFailure {
                             runCatching { act.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/maps/search/" + Uri.encode(q) + "/@$la,$ln,14z"))) }
                         }
-                    }, Modifier.weight(1f), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)) { Text(Tr[k], fontSize = 12.sp, textAlign = androidx.compose.ui.text.style.TextAlign.Center) }
+                    }, Modifier.weight(1f).height(38.dp), contentPadding = PaddingValues(horizontal = 8.dp, vertical = 0.dp)) { Text(Tr[k], fontSize = 13.sp, maxLines = 1) }
                 }
                 Text(Tr["mosqGHow"], Modifier.padding(top = 6.dp), fontSize = 12.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = .6f))
                 // favourites: from the search and from Google Maps

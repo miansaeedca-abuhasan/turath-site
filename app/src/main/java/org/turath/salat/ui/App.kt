@@ -79,7 +79,7 @@ fun App(act: MainActivity) {
     val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
         surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED),
         secondaryContainer = Color(0xFF363B43), onSecondaryContainer = Color(0xFFEDEDED), primaryContainer = Color(0xFF363B43), onPrimaryContainer = Color(0xFFEDEDED))
-    else lightColorScheme(primary = acc ?: Color(0xFF00838F), secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF),
+    else lightColorScheme(primary = acc ?: Color(0xFF0097A7), secondary = Gold, surface = Color(0xFFFFFFFF), background = Color(0xFFF6F6F6), surfaceContainer = Color(0xFFFFFFFF),
         secondaryContainer = Color(0xFFE3E5E9), onSecondaryContainer = Color(0xFF1B1F27), primaryContainer = Color(0xFFE3E5E9), onPrimaryContainer = Color(0xFF1B1F27))
     val baseDensity = androidx.compose.ui.platform.LocalDensity.current
     MaterialTheme(colorScheme = scheme) {
@@ -169,7 +169,7 @@ fun Main(s: AppState) {
                     // Home in the middle: Times and Reminders on one side; Calendar and My masjid on the other (Qibla and the masjid finder are the icons at the top of Home)
                     listOf(1, 2, 0, 3, 6).forEach { i -> val t = tabs[i]
                         NavigationBarItem(selected = s.tab == i, onClick = { s.tab = i }, icon = { Icon(t.icon, Tr[t.key]) },
-                            label = { Text(Tr[t.key], fontSize = 10.sp, maxLines = 1, softWrap = false) })
+                            label = { Text(Tr[t.key], fontSize = 9.sp, letterSpacing = 0.sp, maxLines = 1, softWrap = false) })
                     }
                 }
             }
@@ -316,8 +316,8 @@ fun hms(sec: Long): String {
 @Composable
 fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
     val dark = MaterialTheme.colorScheme.surface.luminance() < .5f
-    val green = if (dark) Color(0xFF1F4A44) else Color(0xFF21594F)
-    val greenDeep = if (dark) Color(0xFF123530) else Color(0xFF0F4A3C)
+    val green = if (dark) Color(0xFF2F5238) else Color(0xFF396347)
+    val greenDeep = if (dark) Color(0xFF1B3A28) else Color(0xFF1F4A33)
     val camel = if (dark) Color(0xFFA9844F) else Color(0xFFC9A46C)
     val camelDeep = if (dark) Color(0xFF8F6C3C) else Color(0xFFB98F57)
     val cream = if (dark) Color(0xFFEDE4CB) else Color(0xFFF8F2E2)
