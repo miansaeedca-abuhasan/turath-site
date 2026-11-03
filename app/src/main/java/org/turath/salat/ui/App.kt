@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -333,7 +334,7 @@ fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
     Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 5.dp).clip(androidx.compose.foundation.shape.RoundedCornerShape(14.dp))
         .drawBehind {
             drawRect(main)
-            if (rtl) androidx.compose.ui.graphics.drawscope.scale(-1f, 1f, androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)) { zone(this) } else zone(this)
+            if (rtl) scale(-1f, 1f, androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)) { zone(this) } else zone(this)
         }
         .clickable(onClick = onClick).padding(start = 16.dp, end = 14.dp, top = 13.dp, bottom = 13.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(title, Modifier.weight(1f).padding(end = 60.dp), color = ink, fontSize = 17.sp, fontWeight = FontWeight.Bold)
