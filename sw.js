@@ -1,9 +1,9 @@
-const C='turath-202611040053';
+const C='turath-202611040919';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon-192.png'])))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='turath-daily'&&k!=='turath-off').map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
 const page=e.request.mode==='navigate'||/\/(index\.html)?$/.test(u.pathname)||/\/coll\/index\.js$|\/quran\/tafsir\/index\.js$|\/daily\.js$|\/ticker\.json$|\/offline\.json$/.test(u.pathname);
-if(page){e.respondWith(caches.match(e.request).then(m=>{const f=fetch(e.request).then(r=>{if(r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));}return r;});if(m){f.catch(()=>{});e.waitUntil(f.catch(()=>{}));return m;}return f;}));return;}
+if(page){e.respondWith((async()=>{const m=await caches.match(e.request);try{const r=await Promise.race([fetch(e.request),new Promise((_,j)=>setTimeout(j,3500))]);if(r&&r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r;}return m||r;}catch(x){return m||fetch(e.request);}})());return;}
 e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok){const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp));}return res;})));});
 
 // daily notifications: the app writes what to show into the 'turath-daily' cache; shown on Periodic Background Sync (or a test from the app)
