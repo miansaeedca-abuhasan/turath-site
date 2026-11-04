@@ -5,16 +5,22 @@
 .lchips{align-items:center}.lchl{margin-inline-end:.2rem}
 .xtr{margin:.5rem 0;padding:.45rem .7rem;border-inline-start:3px solid color-mix(in srgb,var(--accent) 45%,transparent);background:color-mix(in srgb,var(--accent) 5%,transparent);border-radius:.4rem}
 .xtr .xlab{font-size:.78rem;color:var(--accent);margin-bottom:.15rem;font-weight:700}
-.ftabs{display:flex;flex-wrap:wrap;gap:.5rem;margin:.8rem 0 .3rem}
-.ftab{font:inherit;cursor:pointer;border:1.5px solid color-mix(in srgb,var(--accent) 55%,transparent);background:transparent;color:var(--accent);border-radius:.7rem;padding:.4rem 1.1rem;font-weight:700;display:inline-flex;align-items:center;gap:.45rem;min-height:2.4rem}
-.trtabs{display:flex;gap:.4rem;margin:.2rem 0 .6rem;border-bottom:2px solid color-mix(in srgb,var(--accent) 30%,transparent)}
-.trbtn{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--accent);padding:.45rem 1.3rem;font-weight:700;border-radius:.7rem .7rem 0 0;min-height:2.4rem;margin-bottom:-2px;border-bottom:2px solid transparent}
-.trbtn.on{background:color-mix(in srgb,var(--accent) 12%,transparent);border-bottom-color:var(--accent)}
-html[lang=ur] .trbtn.ur{font-family:var(--uhead);font-weight:400;font-size:1.15rem}
-@media (max-width:700px){.trtabs{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}.trbtn{text-align:center;padding:.55rem .3rem;line-height:1.5}}
+.ftabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0 .3rem}
+.ftab{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);border-radius:99px;padding:.1rem .75rem;line-height:1.7;display:inline-flex;align-items:center;gap:.3rem}
+.bkshare{margin:.3rem 0 .6rem}.bkshare .btn{display:inline-flex;align-items:center;gap:.3rem}
+.tbox{border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:.9rem;padding:.55rem .8rem .35rem;margin:.6rem 0}
+.tkrow{display:flex;gap:.6rem;align-items:baseline}.tkrow .ptakh{flex:1;min-width:0}.tkrow .tr p{margin:.1rem 0}
+.tklab{flex:none;font-size:.82rem;font-weight:700;padding:.05rem .65rem;border-radius:99px;color:#8a5a12;background:color-mix(in srgb,#c98a1b 18%,transparent)}
+html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
+@media (prefers-color-scheme:dark){.tklab{color:#f0c46c}}
+.trrow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.45rem 0 .3rem;padding-top:.45rem;border-top:1px dashed color-mix(in srgb,var(--accent) 30%,transparent)}
+.trtabs{display:contents}.trlab{font-size:.85rem;color:var(--muted,#888)}
+.trbtn{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);padding:.1rem .75rem;border-radius:99px;line-height:1.7}
+.trbtn.on{background:var(--accent);color:#fff}.trbtn.static{cursor:default}
+html[lang=ur] .trbtn,html[lang=ur] .trlab{font-family:var(--uhead);font-weight:400;font-size:1.02rem}
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
 .ftab[aria-expanded=true]{background:var(--accent);color:#fff}.ftab[aria-expanded=true]::after{transform:rotate(180deg)}
-html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.1rem}
+html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.02rem}
 .fpanel{margin:.45rem 0;border:0}
 .fpanel[hidden]{display:none}
 .fhead{padding:.2rem 0 .3rem;font-weight:700;color:var(--accent)}
@@ -663,6 +669,7 @@ body.vfpage .appbar{position:static}
 @media (min-aspect-ratio:3/4){#splv{object-fit:contain;width:auto;height:auto;max-width:min(100%,1000px);max-height:92vh;-webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%)}}
 #splskip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);color:#e9d7a1;border:1px solid rgba(233,215,161,.45);border-radius:20px;padding:6px 20px;font:15px system-ui,sans-serif;cursor:pointer}
 </style>
+<script>try{var q=new URLSearchParams(location.search).get('hl');if(q&&/^(ur|en|ar|bn|hi|gu|fr)$/.test(q))localStorage.ui=q}catch(e){}</script>
 <script>
 (function(){
   var d=document.getElementById('splash'),v=document.getElementById('splv'),b=null;
@@ -1078,7 +1085,7 @@ function bmToggle(b,n){let a=bmGet();const on=a.some(x=>x.b===b&&x.n===n);a=on?a
 // every copy / share carries a link to the app, so whoever receives it can open the app too
 const APP_HOME='https://turathkhairalquroon.com/';
 function appLink(h){const host=location.hostname||'';const hosted=/^https?:$/.test(location.protocol)&&!/claude|anthropic|usercontent|localhost|^127\./.test(host);
-  return hosted?location.origin+location.pathname.replace(/index\.html$/,'')+(h||''):APP_HOME;}
+  return hosted?location.origin+location.pathname.replace(/index\.html$/,'')+'?hl='+ui+(h||''):APP_HOME;}
 // colour / reference marks of the site's own text (private-use characters) must never reach a copy: other apps show them as boxes or little faces
 const CLN=t=>(t||'').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069]/g,'');
 window.CLN=CLN;
@@ -4230,6 +4237,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   // small tab with the translator's name above a translation: «ترجمہ: name» (book.trn = {lang: name})
   const TRL = {ur: 'ترجمہ', ar: 'ترجمة', en: 'Translation', bn: 'অনুবাদ', hi: 'अनुवाद', gu: 'અનુવાદ', fr: 'Traduction'};
+  // one compact box per hadith: the takhrij (small coloured label + text), then «ترجمہ :» with the translator as a small tab
+  const tkRow = (kl, L) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
+  const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   function hobj(b, n, lang) {
@@ -4367,6 +4377,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       // the chapter's name in the reading language (shamail ...), under the Arabic one
       const sc = ui !== 'ar' && b.secL && b.secL[ui] ? b.sections.find(s => s[2] <= n && n <= s[3]) : null, st = sc && sc[0] > 0 ? b.secL[ui][sc[0] - 1] : (sc && sc[5] && sc[5][ui]);
       if (st) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, st)); } }
+    if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
@@ -4387,7 +4398,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
       const L = lang || 'ar', rr = row(b, L, n), x = rr && rr[3] && !Array.isArray(rr[3]) ? rr[3] : null;
-      const H = k => el('h4', {class: 'phead'}, T(k));
+      let TB = null; const bx = () => TB || (TB = c.appendChild(el('div', {class: 'tbox'})));
       const hasFn = !!(x && (x.n || x.fn)), FM = nd => { if (hasFn && window.fnm) window.fnm(nd); return nd; };
       // «(1) مسند أحمد …» is the takhrij typed as a note: no number on it, and no matching number in the translation
       const kNum = x && x.k && !x.n ? (x.k.match(/^\s*\((\d+)\)/) || [])[1] : null, noMark = t => kNum ? t.replace(new RegExp('\\s*\\(' + kNum + '\\)', 'g'), '') : t;
@@ -4396,8 +4407,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (x && x.t) c.insertBefore(el('p', {class: 'ptitle ' + L, lang: L, dir: DIR(L)}, x.t), c.children[1]);
       // the same order in every book: the Arabic, then the verification and takhrij right below it, then the translation
       if (x && x.k) { const kl = x.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
-        c.append(H('pTakh'), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl.map(t => paraEl(t, L)))); }
-      if (lang && rr) c.append(H('pTr'), trTab(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
+        bx().append(tkRow(kl.map(t => paraEl(t, L)), L)); }
+      if (lang && rr) bx().append(trRow(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
       if (lang && rr && x && x.fn) c.append(el('div', {class: 'tr pfnbox', lang: L, dir: DIR(L)}, ...x.fn.split('\n').filter(t => t.trim()).map(t => FM(el('p', {class: 'pfn', lang: L, dir: DIR(L)}, t)))));
       addExtras();
       // explanation and benefits in the chosen language; when that translation has none, the Arabic ones
@@ -4422,7 +4433,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const TL = b.langs.filter(l => l !== 'ar' && (row(b, l, n) || [])[1]);
       const xo = l => { const r = row(b, l, n); return r && r[3] && !Array.isArray(r[3]) ? r[3] : null; };
       const kx = TL.map(xo).find(x => x && x.k);
-      if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang: 'ar', dir: 'rtl'}, ...kl.map(t => paraEl(t, 'ur')))); if (gEl) gEl.remove(); }
+      const tb = el('div', {class: 'tbox'}); c.append(tb);
+      if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); tb.append(tkRow(kl.map(t => paraEl(t, 'ur')), 'ar')); if (gEl) gEl.remove(); }
       const nmOf = o => o ? (o[ui] || o.ur || '') : '';
       const SP = [];   // one panel per translation: {id, l, text, nm, x}
       TL.forEach(l => { const r = row(b, l, n), x = xo(l);
@@ -4431,30 +4443,29 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (SP.length) {
         let pref = ''; try { pref = localStorage['trtab_' + b.key] || ''; } catch (e) {}
         const cur0 = SP.some(p => p.id === pref) ? pref : SP.some(p => p.id === lang) ? lang : SP[0].id;
-        const wrap = el('div', {class: 'trwrap'}), bar = el('div', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
+        const wrap = el('div', {class: 'trwrap'}), bar = el('span', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
         const show = id => { SP.forEach(p => { pan[p.id].hidden = p.id !== id; btn[p.id].classList.toggle('on', p.id === id); btn[p.id].setAttribute('aria-selected', String(p.id === id)); }); };
         wrap._show = show;
         SP.forEach(p => { const l = p.l, x = p.x;
           const pn = el('section', {class: 'trpanel ' + p.id, lang: l, dir: DIR(l), hidden: ''});
-          if (x && x.t) pn.append(el('p', {class: 'ptitle ' + l, lang: l, dir: DIR(l)}, x.t));
-          if (p.nm) pn.append(el('div', {class: 'trtab', lang: l, dir: DIR(l)}, el('span', {}, (TRL[l] || TRL.en) + ': ' + p.nm)));
           pn.append(el('div', {class: 'tr'}, ...p.text.split('\n').filter(t => t.trim()).map(t => paraEl(t, l))));
           if (x && x.f) pn.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), by: b.shn ? (({ur: 'شارح', ar: 'الشارح', en: 'Commentator'})[ui] || 'Commentator') + ': ' + nmOf(b.shn) : '', nodes: x.f.split('\n').filter(t => t.trim()).map(t => paraEl(t, l)), lang: l}]));
           pan[p.id] = pn; box.append(pn);
           btn[p.id] = el('button', {class: 'trbtn ' + p.id, type: 'button', role: 'tab', lang: l, on: {click: () => { try { localStorage['trtab_' + b.key] = p.id; } catch (e) {} document.querySelectorAll('.trwrap').forEach(w => w._show && w._show(p.id)); }}}, (b.trn2 && p.nm && l !== 'en') ? p.nm : (LNAME[l] || l));
           bar.append(btn[p.id]); });
-        wrap.append(el('h4', {class: 'phead'}, T('pTr')), bar, box); c.append(wrap); show(cur0);
+        wrap.append(el('div', {class: 'trrow'}, el('span', {class: 'trlab'}, T('pTr') + ' :'), bar), box); tb.append(wrap); show(cur0);
       }
     }
     else if (lang && d.content.translation) {
       const xf = (row(b, lang, n) || [])[3];   // a book without «parts» whose rows carry a fawaid text (Sunan ad-Darimi ...)
+      let TB = null; const bx = () => TB || (TB = c.appendChild(el('div', {class: 'tbox'})));
       const FN2 = nd => { if (window.fnm) window.fnm(nd); return nd; };
       // the takhrij typed as a note «(1) مسند أحمد …»: heading «تحقیق و تخریج», then «grade: references» in one paragraph, no note number, and no matching number in the translation
       const tkNum = xf && !Array.isArray(xf) && xf.k ? (xf.k.match(/^\s*\((\d+)\)/) || [])[1] : null;
       if (tkNum) { const kl = xf.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
-        c.append(el('h4', {class: 'phead'}, T('pTakh')), el('div', {class: 'tr ptakh', lang, dir: DIR(lang)}, ...kl.map(t => paraEl(t, lang)))); }
+        bx().append(tkRow(kl.map(t => paraEl(t, lang)), lang)); }
       const noTk = t => tkNum ? t.replace(new RegExp('\\s*\\(' + tkNum + '\\)\\s*$'), '') : t;
-      c.append(el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras();
+      bx().append(trRow(b, lang), el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras();
       if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => /(^|\n)\(\d+\)/.test(xf.f) ? FN2(paraEl(t, lang)) : paraEl(t, lang)), lang}])); }
     else if (lang) c.append(el('p', {class: 'note'}, b.key === 'hifzhadith' ? (HFM[ui] || HFM.en) : T('cLangMissing')));
     // footer of the compiler under each item (شذرات الذهب: Sahaba / Salaf; Fazail as-Sahaba: Sahaba)
@@ -4502,13 +4513,19 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   const norm = s => (s || '').normalize('NFKD').replace(/[ؐ-ًؚ-ٰٟۖ-ۭـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/[ىی]/g, 'ي').replace(/[ةۃ]/g, 'ه').replace(/ک/g, 'ك')
     .replace(/[^\p{L}\p{M}\p{N}\s]/gu, ' ').toLowerCase().replace(/\s+/g, ' ').trim();
+  // header share button of a book (name + link of its page, opens in the reader's language)
+  const bookShare = b => { const sh = async () => { const t = withLink(bname(b) + (subOf(b) ? '\n' + subOf(b) : ''), '#/s/' + b.key); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); };
+    const xt = document.getElementById('xtools'); if (xt) xt.append(el('button', {class: 'ib bkshb', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: sh}}, icon('share'))); };
   async function showBook(b) {
     const box = $('#list'); box.replaceChildren(); await needChap(b);
     bar(bname(b), (subOf(b) ? subOf(b) + ' — ' : '') + CNT(b)(fmtN(b.count)), true);
+    bookShare(b);
     // a book whose Urdu translation lives on another site: credit + links (b.ref = {ur, en, ar: [text, credit], u: [[label, url], ...]})
     const refCard = () => { const r = b.ref; if (!r) return []; const t = r[ui] || r.ur, L = DIR(ui) === 'rtl' ? ui : ui;
       return [el('div', {class: 'card refcard', lang: ui === 'ar' ? 'ar' : 'ur', dir: 'rtl'}, el('p', {class: 'reflinks'}, t[0], ' ', ...r.u.map(([l, u]) => el('a', {href: u, target: '_blank', rel: 'noopener'}, l))))]; };
     box.append(...refCard());
+    // share the book itself: its name and the link of its page (opens in the reader's language)
+    box.append(el('div', {class: 'bkshare'}, el('button', {class: 'btn', type: 'button', 'aria-label': T('share'), on: {click: async () => { const t = withLink(bname(b) + (subOf(b) ? '\n' + subOf(b) : ''), '#/s/' + b.key); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share'), ' ' + T('share'))));
     const f = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch'), 'aria-label': T('cSecSearch'), id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
@@ -4924,6 +4941,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const s = b.sections.find(x => String(x[0]) === String(no)), box = $('#list'); box.replaceChildren(); await needChap(b);
     if (!s) { box.append(el('p', {class: 'note'}, T('nf'))); return; }
     bar(fmtN(secNo(b, s)) + '. ' + secT(b, s), bname(b), true);
+    bookShare(b);
     try { localStorage['rd:' + b.key] = s[0]; } catch (e) {}
     const TOC = {ur: 'فہرست ابواب', ar: 'الفهرس', en: 'Contents', bn: 'সূচিপত্র', hi: 'विषय-सूची', gu: 'અનુક્રમણિકા', fr: 'Sommaire'}[ui] || 'Contents';
     const tocBtn = () => el('a', {class: 'btn lbtn toc', href: '#/s/' + b.key + '?idx'}, TOC);
@@ -5303,9 +5321,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // ===== What's new: a message once for each update (the new books and what changed); the list is also in the Hadith sciences page =====
   window.NEWS = [
     {"id": "20261102d", "d": "02-11-2026", "keys": ["sh347", "sh11077"], "t": {"ur": "نئی کتب", "ar": "كتب جديدة", "en": "New books", "bn": "নতুন বই", "hi": "नई किताबें", "gu": "નવાં પુસ્તકો", "fr": "Nouveaux livres"}, "i": {"ur": ["تغلیق التعلیق للحافظ ابن حجر (تغليق التعليق) (638)", "تاریخ جرجان للسہمی (تاريخ جرجان) (1191)"], "ar": ["تغليق التعليق (638)", "تاريخ جرجان (1191)"], "en": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "bn": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "hi": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "gu": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"], "fr": ["Taghliq at-Ta'liq (Ibn Hajar) (تغليق التعليق) (638)", "Tarikh Jurjan (Hamza as-Sahmi) (تاريخ جرجان) (1191)"]}},
-    {"id": "20261103c", "d": "03-11-2026", "keys": ["najm"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["نجم السالکین شرح ریاض الصالحین (نجم السالكين شرح رياض الصالحين): تیسری اور آخری جلد (758)"], "ar": ["نجم السالكين شرح رياض الصالحين: المجلد الثالث والأخير (758)"], "en": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين): third and final volume (758)"], "bn": ["নাজমুস সালিকীন — রিয়াদুস সালিহীনের উর্দু ব্যাখ্যা (نجم السالكين شرح رياض الصالحين): তৃতীয় ও শেষ খণ্ড (758)"], "hi": ["नज्मुस सालिकीन — रियाज़ुस सालिहीन की उर्दू शरह (نجم السالكين شرح رياض الصالحين): तीसरा और आख़िरी खंड (758)"], "gu": ["નજમુસ સાલિકીન — રિયાઝુસ સાલિહીનની ઉર્દૂ શરહ (نجم السالكين شرح رياض الصالحين): ત્રીજો અને છેલ્લો ભાગ (758)"], "fr": ["Najm as-Salikin — commentaire en ourdou de Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) : troisième et dernier volume (758)"]}},
-    {"id": "20261103b", "d": "03-11-2026", "keys": ["adab"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["الادب المفرد (الأدب المفرد): اردو ترجمہ اور شرح از مولانا عثمان منیب (1322)"], "ar": ["الأدب المفرد: ترجمة أردية وشرح للشيخ عثمان منيب (1322)"], "en": ["Al-Adab Al-Mufrad (الأدب المفرد): Urdu translation and commentary by Maulana Usman Munib (1322)"], "bn": ["আল-আদাবুল মুফরাদ (الأدب المفرد): মাওলানা উসমান মুনীবের উর্দু অনুবাদ ও ব্যাখ্যা (1322)"], "hi": ["अल-अदबुल मुफ़रद (الأدب المفرد): मौलाना उस्मान मुनीब का उर्दू अनुवाद और शरह (1322)"], "gu": ["અલ-અદબુલ મુફરદ (الأدب المفرد): મૌલાના ઉસ્માન મુનીબનું ઉર્દૂ ભાષાંતર અને શરહ (1322)"], "fr": ["Al-Adab al-Mufrad (الأدب المفرد) : traduction en ourdou et commentaire de Maulana Usman Munib (1322)"]}},
-    {"id": "20261103", "d": "03-11-2026", "keys": ["najm"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["نجم السالکین شرح ریاض الصالحین (1137)"], "ar": ["نجم السالكين شرح رياض الصالحين (1137)"], "en": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "bn": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "hi": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "gu": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"], "fr": ["Najm as-Salikin — Urdu commentary on Riyad as-Salihin (نجم السالكين شرح رياض الصالحين) (1137)"]}},
+    {"id": "20261103b", "d": "03-11-2026", "keys": ["adab"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["الادب المفرد: اردو ترجمہ و شرح از مولانا عثمان منیب، دوسرا ترجمہ از مولانا محمد ارشد کمال (1322)"], "ar": ["الأدب المفرد: ترجمة أردية وشرح للشيخ عثمان منيب، وترجمة ثانية للشيخ محمد أرشد كمال (1322)"], "en": ["Al-Adab Al-Mufrad: Urdu translation and commentary by Maulana Usman Munib; second translation by Maulana Muhammad Arshad Kamal (1322)"], "bn": ["আল-আদাবুল মুফরাদ: মাওলানা উসমান মুনীবের উর্দু অনুবাদ ও ব্যাখ্যা; দ্বিতীয় অনুবাদ মাওলানা মুহাম্মাদ আরশাদ কামাল (1322)"], "hi": ["अल-अदबुल मुफ़रद: मौलाना उस्मान मुनीब का उर्दू अनुवाद और शरह; दूसरा अनुवाद मौलाना मुहम्मद अरशद कमाल (1322)"], "gu": ["અલ-અદબુલ મુફરદ: મૌલાના ઉસ્માન મુનીબનું ઉર્દૂ ભાષાંતર અને શરહ; બીજું ભાષાંતર મૌલાના મુહમ્મદ અરશદ કમાલ (1322)"], "fr": ["Al-Adab al-Mufrad : traduction en ourdou et commentaire de Maulana Usman Munib ; seconde traduction de Maulana Muhammad Arshad Kamal (1322)"]}},
+    {"id": "20261103", "d": "03-11-2026", "keys": ["najm"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["نجم السالکین شرح ریاض الصالحین: اردو ترجمہ از مولانا عطا اللہ ساجد، شرح از شیخ عباس انجم گوندلوی (1137)"], "ar": ["نجم السالكين شرح رياض الصالحين: ترجمة أردية للشيخ عطاء الله ساجد، وشرح للشيخ عباس أنجم غوندلوي (1137)"], "en": ["Najm as-Salikin — commentary on Riyad as-Salihin: Urdu translation by Maulana Ata Ullah Sajid, commentary by Shaykh Abbas Anjum Gondalvi (1137)"], "bn": ["নাজমুস সালিকীন — রিয়াদুস সালিহীনের ব্যাখ্যা: মাওলানা আতাউল্লাহ সাজিদের উর্দু অনুবাদ, শায়খ আব্বাস আনজুম গোন্দালভীর ব্যাখ্যা (1137)"], "hi": ["नज्मुस सालिकीन — रियाज़ुस सालिहीन की शरह: मौलाना अताउल्लाह साजिद का उर्दू अनुवाद, शैख़ अब्बास अंजुम गोंडलवी की शरह (1137)"], "gu": ["નજમુસ સાલિકીન — રિયાઝુસ સાલિહીનની શરહ: મૌલાના અતાઉલ્લાહ સાજિદનું ઉર્દૂ ભાષાંતર, શૈખ અબ્બાસ અંજુમ ગોંડલવીની શરહ (1137)"], "fr": ["Najm as-Salikin — commentaire de Riyad as-Salihin : traduction en ourdou de Maulana Ata Ullah Sajid, commentaire de Shaykh Abbas Anjum Gondalvi (1137)"]}},
     {"id": "20261102c", "d": "02-11-2026", "keys": ["sh12980"], "t": {"ur": "نئی کتب", "ar": "كتب جديدة", "en": "New books", "bn": "নতুন বই", "hi": "नई किताबें", "gu": "નવાં પુસ્તકો", "fr": "Nouveaux livres"}, "i": {"ur": ["اخلاق النبی وآدابہ لابی الشیخ (أخلاق النبي وآدابه) (822)"], "ar": ["أخلاق النبي وآدابه (822)"], "en": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "bn": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "hi": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "gu": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"], "fr": ["Akhlaq an-Nabi wa Adabuhu (Abu ash-Shaykh) (أخلاق النبي وآدابه) (822)"]}},
     {"id": "20261102b", "d": "02-11-2026", "keys": ["tanveer"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["تنویر الاحوذی اردو شرح جامع ترمذی (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "ar": ["تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية) (2949)"], "en": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "bn": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "hi": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "gu": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"], "fr": ["Tanwir al-Ahwadhi — Urdu commentary on Jami at-Tirmidhi (تنوير الأحوذي شرح جامع الترمذي (الترجمة الأردية)) (2949)"]}},
     {"id": "20261102", "d": "02-11-2026", "keys": ["sh13064", "adabbayhaqi", "fadailahmad"], "t": {"ur": "نئی تراجم والی کتب", "ar": "كتب مترجمة جديدة", "en": "New translated books", "bn": "নতুন অনূদিত বই", "hi": "नई अनुवादित किताबें", "gu": "નવાં અનુવાદિત પુસ્તકો", "fr": "Nouveaux livres traduits"}, "i": {"ur": ["المرض والکفارات (المرض والكفارات لابن أبي الدنيا) (237)", "الآداب للبیہقی (تہذیب و ترجمہ) (الآداب للبيهقي) (859)", "فضائل الصحابہ (امام احمد) – اردو ترجمہ (فضائل الصحابة للإمام أحمد) (1962)"], "ar": ["المرض والكفارات لابن أبي الدنيا (237)", "الآداب للبيهقي (859)", "فضائل الصحابة للإمام أحمد (1962)"], "en": ["Al-Maradh wal-Kaffarat (Ibn Abi ad-Dunya) (المرض والكفارات لابن أبي الدنيا) (237)", "Al-Adab of al-Bayhaqi (abridged, with Urdu translation) (الآداب للبيهقي) (859)", "Fada’il as-Sahabah of Imam Ahmad (Urdu translation) (فضائل الصحابة للإمام أحمد) (1962)"], "bn": ["Al-Maradh wal-Kaffarat (Ibn Abi ad-Dunya) (المرض والكفارات لابن أبي الدنيا) (237)", "Al-Adab of al-Bayhaqi (abridged, with Urdu translation) (الآداب للبيهقي) (859)", "Fada’il as-Sahabah of Imam Ahmad (Urdu translation) (فضائل الصحابة للإمام أحمد) (1962)"], "hi": ["Al-Maradh wal-Kaffarat (Ibn Abi ad-Dunya) (المرض والكفارات لابن أبي الدنيا) (237)", "Al-Adab of al-Bayhaqi (abridged, with Urdu translation) (الآداب للبيهقي) (859)", "Fada’il as-Sahabah of Imam Ahmad (Urdu translation) (فضائل الصحابة للإمام أحمد) (1962)"], "gu": ["Al-Maradh wal-Kaffarat (Ibn Abi ad-Dunya) (المرض والكفارات لابن أبي الدنيا) (237)", "Al-Adab of al-Bayhaqi (abridged, with Urdu translation) (الآداب للبيهقي) (859)", "Fada’il as-Sahabah of Imam Ahmad (Urdu translation) (فضائل الصحابة للإمام أحمد) (1962)"], "fr": ["Al-Maradh wal-Kaffarat (Ibn Abi ad-Dunya) (المرض والكفارات لابن أبي الدنيا) (237)", "Al-Adab of al-Bayhaqi (abridged, with Urdu translation) (الآداب للبيهقي) (859)", "Fada’il as-Sahabah of Imam Ahmad (Urdu translation) (فضائل الصحابة للإمام أحمد) (1962)"]}},
