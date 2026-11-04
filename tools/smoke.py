@@ -51,7 +51,7 @@ def from_menu(lang, item):
 place = json.dumps({"n": "Mississauga", "c": "CA", "lat": 43.589, "lng": -79.644, "tz": "America/Toronto"}).replace('"', '&quot;')
 for lang in ['ur', 'ar', 'en']:
     sh('shell', 'am', 'force-stop', 'org.turath.salat')
-    xml = f'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string name="lang">{lang}</string><string name="place">{place}</string><boolean name="monthu" value="true" /><boolean name="beed" value="true" /></map>\n'
+    xml = f'<?xml version="1.0" encoding="utf-8" standalone="yes" ?>\n<map><string name="lang">{lang}</string><string name="place">{place}</string><boolean name="monthu" value="true" /><boolean name="beed" value="true" />' + ('<int name="lm_iq_FAJR" value="375" /><int name="lm_iq_DHUHR" value="780" /><int name="lm_iq_ASR" value="945" /><int name="lm_iq_MAGHRIB" value="1090" /><int name="lm_iq_ISHA" value="1185" />' if lang == 'en' else '') + f'</map>\n'
     sh('shell', 'run-as org.turath.salat sh -c "mkdir -p shared_prefs && cat > shared_prefs/salat.xml"', inp=xml.encode())
     sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(8)
     shot(f'{lang}_1_home')
@@ -82,6 +82,19 @@ for lang in ['ur', 'ar', 'en']:
         tap_text('کیلنڈر'); time.sleep(2)
         if tap_desc('نیا واقعہ'): shot('ur_9_event_editor'); sh('shell', 'input', 'keyevent', '4')
         sh('shell', 'input', 'tap', '540', '900'); shot('ur_9_day_sheet'); sh('shell', 'input', 'keyevent', '4')
+# English screens for the Google Play listing
+sh('shell', 'am', 'force-stop', 'org.turath.salat'); sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(8)
+shot('play_1_home')
+for i, t in [(2, 'Times'), (3, 'Reminders'), (4, 'Calendar')]:
+    if tap_text(t): shot(f'play_{i}_{t}')
+if tap_text('My masjid'): shot('play_5_mymasjid')
+if from_menu('en', 'Vibration at prayer time'):
+    time.sleep(1); tap_text('Dhuhr'); time.sleep(1); shot('play_6_vibration')
+    sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
+if from_menu('en', 'Settings'):
+    shot('play_7_settings'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
+if from_menu('en', 'Nearby masjids'):
+    shot('play_8_masjids'); sh('shell', 'input', 'keyevent', '4'); time.sleep(1)
 # random taps and swipes over the whole app (in English): any crash shows in the log below
 sh('shell', 'am', 'force-stop', 'org.turath.salat'); sh('shell', 'am', 'start', '-n', 'org.turath.salat/.MainActivity'); time.sleep(5)
 print(sh('shell', 'monkey', '-p', 'org.turath.salat', '--pct-syskeys', '0', '--pct-appswitch', '0', '--throttle', '120', '-s', '7', '1500').decode()[-1500:])
