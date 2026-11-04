@@ -172,14 +172,16 @@ class Widget : AppWidgetProvider() {
                         v.setTextViewText(tv, msg)
                         v.setChronometer(ch, b + end.toInstant().toEpochMilli(), "−%s", true)
                         v.setChronometerCountDown(ch, true)
-                        // the warning before sunrise / sunset stays steady in the widget colour; the prohibited time itself blinks in red
-                        if (soon) { v.setTextColor(tv, accent(pr)); v.setTextColor(ch, accent(pr)) }
+                        // the message never blinks: steady in the widget colour before sunrise / sunset, steady red in the prohibited time
+                        // (the Sunrise cell above is what blinks)
+                        val mc = if (soon) accent(pr) else 0xFFFF3B30.toInt()
+                        v.setTextColor(tv, mc); v.setTextColor(ch, mc)
                     }
                 }
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 setTicker(v, ticker(pr, place, now, t), pr)
                 // in the forbidden time the red message lies over the line; the line itself stays in place (hiding it would stop it) but is made clear
-                if (fb) v.setTextColor(R.id.ticker, 0x00000000)
+                if (fb) v.setViewVisibility(R.id.ticker, android.view.View.INVISIBLE) else v.setViewVisibility(R.id.ticker, android.view.View.VISIBLE)
             }
             mgr.updateAppWidget(ids, v)
         }

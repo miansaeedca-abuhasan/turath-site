@@ -75,6 +75,13 @@ fun App(act: MainActivity) {
     LaunchedEffect(act.sharedText) { if (act.sharedText != null) { s.page = "mosques"; s.sub = "" } }
     LaunchedEffect(act.tabRequest) { if (act.tabRequest >= 0) { s.page = ""; s.sub = ""; s.tab = act.tabRequest; act.tabRequest = -1 } }
     val dark = isDark(s, androidx.compose.foundation.isSystemInDarkTheme())
+    // the icons of the status bar and the navigation bar are light on a dark screen and dark on a light one (the app's own dark time, not only the phone's)
+    val view = androidx.compose.ui.platform.LocalView.current
+    SideEffect {
+        val w = (view.context as? android.app.Activity)?.window ?: return@SideEffect
+        val c = androidx.core.view.WindowCompat.getInsetsController(w, view)
+        c.isAppearanceLightStatusBars = !dark; c.isAppearanceLightNavigationBars = !dark
+    }
     val acc = s.prefs.appAccent.takeIf { it >= 0 }?.let { Color(Pal.COLORS[it]) }
     val scheme = if (dark) darkColorScheme(primary = acc ?: Gold, secondary = Color(0xFF6FC3C9), surface = Color(0xFF1A1D22), background = Color(0xFF111316),
         surfaceContainer = Color(0xFF1A1D22), onSurface = Color(0xFFEDEDED), onBackground = Color(0xFFEDEDED),
@@ -240,7 +247,10 @@ private fun Menu(s: AppState, open: (String) -> Unit) {
 
 /** a page from the menu */
 @Composable
-private fun Page(s: AppState, back: () -> Unit) {
+private fun Page(s: AppState, back: () -> Unit) = Box(Modifier.fillMaxSize().navigationBarsPadding().padding(bottom = 24.dp)) { PageBody(s, back) }
+
+@Composable
+private fun PageBody(s: AppState, back: () -> Unit) {
     when (s.page) {
         "city" -> CityPicker(s, false) { s.page = ""; s.sub = "" }
         "language" -> LanguagePage(s, back)
@@ -318,11 +328,10 @@ fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
     val dark = MaterialTheme.colorScheme.surface.luminance() < .5f
     val green = if (dark) Color(0xFF2F5238) else Color(0xFF396347)
     val greenDeep = if (dark) Color(0xFF1B3A28) else Color(0xFF1F4A33)
-    val camel = if (dark) Color(0xFFA9844F) else Color(0xFFC9A46C)
-    val camelDeep = if (dark) Color(0xFF8F6C3C) else Color(0xFFB98F57)
+    val camel = if (dark) Color(0xFF8C6B3C) else Color(0xFFA67C45)
+    val camelDeep = if (dark) Color(0xFF765A30) else Color(0xFF8E6A36)
     val cream = if (dark) Color(0xFFEDE4CB) else Color(0xFFF8F2E2)
-    val brown = Color(0xFF3E2815)
-    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+        val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     // the colours take turns: the first bar of a page has the green at the start (the title's side), the next at the other end
     val idx = remember { BarSeq.n++ }
     val greenAtStart = idx % 2 == 0
@@ -341,11 +350,12 @@ fun FoldBar(title: String, open: Boolean?, onClick: () -> Unit) {
         .clickable(onClick = onClick).heightIn(min = 58.dp)) {
         Row(Modifier.fillMaxWidth().heightIn(min = 58.dp).padding(horizontal = 14.dp), verticalAlignment = Alignment.CenterVertically) {
             Box(Modifier.weight(1f)) {
-                Text(title, Modifier.padding(end = 30.dp, top = 6.dp, bottom = 6.dp), color = if (greenAtStart) cream else brown, fontSize = 17.sp, fontWeight = FontWeight.Bold, maxLines = 2, lineHeight = 21.sp)
+                Text(title, Modifier.padding(end = 4.dp, top = 6.dp, bottom = 6.dp), color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold, maxLines = 2, lineHeight = 19.sp,
+                    style = androidx.compose.ui.text.TextStyle(shadow = androidx.compose.ui.graphics.Shadow(Color(0x99000000), androidx.compose.ui.geometry.Offset(1f, 1f), 3f)))
             }
             Spacer(Modifier.width(52.dp))
             Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> if (rtl) Icons.Outlined.ChevronLeft else Icons.Outlined.ChevronRight }, null, tint = if (greenAtStart) brown else cream)
+                Icon(when (open) { true -> Icons.Outlined.ExpandLess; false -> Icons.Outlined.ExpandMore; null -> if (rtl) Icons.Outlined.ChevronLeft else Icons.Outlined.ChevronRight }, null, tint = Color.White)
             }
         }
         androidx.compose.foundation.Image(androidx.compose.ui.res.painterResource(org.turath.salat.R.drawable.logo), null,

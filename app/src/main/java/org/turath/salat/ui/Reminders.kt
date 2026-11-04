@@ -1,5 +1,6 @@
 package org.turath.salat.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
@@ -17,13 +18,23 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import org.turath.salat.*
 
+/** a text that stays on one line: its size shrinks until it fits */
 @Composable
-fun Stepper(label: String, value: Int, min: Int, max: Int, step: Int = 5, set: (Int) -> Unit) {
-    Row(Modifier.fillMaxWidth().padding(vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
-        Text(label, Modifier.weight(1f), fontSize = 15.sp)
-        IconButton(onClick = { set((value - step).coerceAtLeast(min)) }) { Icon(Icons.Outlined.RemoveCircleOutline, null) }
-        Text(Tr.num(value), fontSize = 18.sp, fontWeight = FontWeight.Bold, modifier = Modifier.widthIn(min = 36.dp))
-        IconButton(onClick = { set((value + step).coerceAtMost(max)) }) { Icon(Icons.Outlined.AddCircleOutline, null) }
+fun FitText(text: String, modifier: Modifier = Modifier, size: Float = 15f, minSize: Float = 9f, color: Color = Color.Unspecified, weight: FontWeight? = null) {
+    var sz by remember(text) { mutableFloatStateOf(size) }
+    Text(text, modifier, fontSize = sz.sp, color = color, fontWeight = weight, maxLines = 1, softWrap = false,
+        onTextLayout = { if (it.hasVisualOverflow && sz > minSize) sz = (sz - 0.7f).coerceAtLeast(minSize) })
+}
+
+/** z >= 0: the row is part of a striped list (white and light grey-blue in turn) */
+@Composable
+fun Stepper(label: String, value: Int, min: Int, max: Int, step: Int = 5, z: Int = -1, set: (Int) -> Unit) {
+    val bg = if (z < 0) Color.Transparent else zebra(z)
+    Row(Modifier.fillMaxWidth().background(bg).padding(horizontal = if (z < 0) 0.dp else 10.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+        FitText(label, Modifier.weight(1f), 15f)
+        IconButton(onClick = { set((value - step).coerceAtLeast(min)) }, Modifier.size(40.dp)) { Icon(Icons.Outlined.RemoveCircleOutline, null) }
+        Text(Tr.num(value), fontSize = 17.sp, fontWeight = FontWeight.Bold, modifier = Modifier.widthIn(min = 34.dp), textAlign = androidx.compose.ui.text.style.TextAlign.Center, maxLines = 1)
+        IconButton(onClick = { set((value + step).coerceAtMost(max)) }, Modifier.size(40.dp)) { Icon(Icons.Outlined.AddCircleOutline, null) }
     }
 }
 

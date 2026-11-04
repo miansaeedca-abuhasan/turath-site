@@ -94,17 +94,17 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
             }
         }
         Fold(s, Tr["adjust"]) {
-            Card0 {
-                for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) Stepper(Tr.p(p) + tm(p), pr.adjust(p), -30, 30, 1) { pr.setAdjust(p, it); s.changed() }
+            ZebraCard {
+                for ((zi, p) in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA).withIndex()) Stepper(Tr.p(p).substringBefore(" (") + tm(p), pr.adjust(p), -30, 30, 1, zi) { pr.setAdjust(p, it); s.changed() }
                 // Tahajjud (the last third of the night): the calculated time, moved earlier or later by up to 200 minutes
-                Stepper(Tr.p(P.TAHAJJUD) + tm(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
+                Stepper(Tr.p(P.TAHAJJUD).substringBefore(" (") + tm(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5, 6) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
             }
         }
         Fold(s, Tr["naflTimes"]) {
-            Card0 {
-                Stepper(Tr["ishraqAfter"] + tm(P.ISHRAQ), pr.ishraqAfter, 5, 60, 1) { pr.ishraqAfter = it; s.changed() }
-                Stepper(Tr["chashtAfter"] + tm(P.CHASHT), pr.chashtAfter, 20, 240, 5) { pr.chashtAfter = it; s.changed() }
-                Stepper(Tr["zawalBefore"] + tm(P.ZAWAL), pr.zawalBefore, 0, 30, 1) { pr.zawalBefore = it; s.changed() }
+            ZebraCard {
+                Stepper(Tr["ishraqAfter"] + tm(P.ISHRAQ), pr.ishraqAfter, 5, 60, 1, 0) { pr.ishraqAfter = it; s.changed() }
+                Stepper(Tr["chashtAfter"] + tm(P.CHASHT), pr.chashtAfter, 20, 240, 5, 1) { pr.chashtAfter = it; s.changed() }
+                Stepper(Tr["zawalBefore"] + tm(P.ZAWAL), pr.zawalBefore, 0, 30, 1, 2) { pr.zawalBefore = it; s.changed() }
             }
         }
         FoldLink(Tr["vibPage"]) { s.page = "vibration"; s.sub = "" }
