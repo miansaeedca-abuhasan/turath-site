@@ -125,8 +125,9 @@ object Events {
             // the widget blinks in the forbidden times: refresh when they begin and end
             for (f in t.forbidden) { out += Ev(f.first, "widget"); out += Ev(f.second, "widget") }
             out += Ev(t[P.SUNRISE].minusMinutes(15), "widget")
+            out += Ev(t[P.MAGHRIB].minusMinutes(15), "widget")
             // the widget shows the next prayer: refresh at each prayer and at midnight
-            for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
+            for (p in listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)) { out += Ev(t[p], "widget"); out += Ev(t[p].plusMinutes(1), "widget"); out += Ev(t[p].plusMinutes(30), "widget") }
             out += Ev(d.plusDays(1).atStartOfDay(zone).plusMinutes(1), "widget")
             // the temperature on the widget: fetched every hour
             for (h in 0..23) out += Ev(d.atTime(h, 2).atZone(zone), "weather")
@@ -199,7 +200,13 @@ object Alarms {
         } catch (e: SecurityException) {
             am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, ms, pi(ctx))
         }
-        Widget.update(ctx)
+        // a second alarm, a little later and on its own: if the first one is ever lost, this one does the work again and sets both afresh
+        runCatching {
+            val wms = minOf(ms + 90_000L, System.currentTimeMillis() + 20 * 60_000L).coerceAtLeast(System.currentTimeMillis() + 60_000L)
+            val wpi = PendingIntent.getBroadcast(ctx, 2, Intent(ctx, AlarmReceiver::class.java).setAction("org.turath.salat.WATCH"), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            am.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wms, wpi)
+        }
+        runCatching { Widget.update(ctx) }
     }
 
     /** do everything that has become due (since the last run, at most 10 minutes back), then set the next alarm */
@@ -213,12 +220,14 @@ object Alarms {
         pr.sp.edit().putLong("lastDone", now.toInstant().toEpochMilli() + 3000).apply()
         // one sound at a time: the prayer's adhan wins over a reminder at the same minute
         val sound = due.filter { it.snd != Snd.SILENT && it.snd != Snd.NOTIFY && it.kind != "iftar" && it.kind != "widget" }.minByOrNull { listOf("suhoor", "prayer", "nafl", "custom").indexOf(it.kind).let { i -> if (i < 0) 9 else i } }
-        for (e in due) handle(ctx, pr, e, e === sound)
+        // one item that fails must never stop the rest, the widget or the next alarm
+        for (e in due) runCatching { handle(ctx, pr, e, e === sound) }
         // the phone must not stay on vibrate after the end of a window (an alarm that came late): ring again when no window is open now
         runCatching {
             val last = Events.list(ctx, now.minusHours(3), 1).filter { (it.kind == "vibon" || it.kind == "viboff") && !it.at.isAfter(now.plusSeconds(3)) }.maxByOrNull { it.at }
             if (last?.kind != "vibon") Vibrate.off(ctx, pr)
         }
+        runCatching { Widget.update(ctx) }
         schedule(ctx)
     }
 
@@ -475,7 +484,7 @@ class SoundService : Service() {
         Tr.lang = Prefs(this).lang.ifEmpty { "en" }
         val alarm = i.getBooleanExtra("alarm", false)
         val stop = PendingIntent.getBroadcast(this, 20, Intent(this, ActionReceiver::class.java).setAction("STOP"), PendingIntent.FLAG_IMMUTABLE)
-        val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+        val open = PendingIntent.getActivity(this, 21, Intent(this, MainActivity::class.java).putExtra("tab", 0).putExtra("overLock", true), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this))
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
             .setContentIntent(if (alarm) open else stop).setOngoing(true).setDeleteIntent(stop)

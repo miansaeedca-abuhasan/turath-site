@@ -35,6 +35,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         enableEdgeToEdge()
+        overLock(intent)
         Alarms.channels(this)
         Thread { runCatching { Cities.load(this) } }.start()   // the list of towns is read in the background, so that the first search is quick
         tabRequest = intent?.getIntExtra("tab", -1) ?: -1
@@ -44,7 +45,12 @@ class MainActivity : ComponentActivity() {
 
     /** a tab asked for from a widget (☰ of the calendar widget opens the calendar) */
     var tabRequest by mutableIntStateOf(-1)
-    override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); tabRequest = i.getIntExtra("tab", -1); takeShare(i) }
+    /** shown over the lock screen only when the suhoor alarm opens it; a normal opening locks with the phone */
+    private fun overLock(i: Intent?) {
+        val on = i?.getBooleanExtra("overLock", false) == true
+        if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(on); setTurnScreenOn(on) }
+    }
+    override fun onNewIntent(i: Intent) { super.onNewIntent(i); setIntent(i); overLock(i); tabRequest = i.getIntExtra("tab", -1); takeShare(i) }
 
     /** a place shared from Google Maps into the app: the masjid page asks where to keep it */
     var sharedText by mutableStateOf<String?>(null)
