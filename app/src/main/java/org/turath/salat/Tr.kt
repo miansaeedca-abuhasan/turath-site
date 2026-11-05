@@ -84,6 +84,7 @@ object Tr {
         "lmEditName" to arrayOf("مسجد کا نام لکھیں", "اكتب اسم المسجد", "Masjid name"),
         "lmNameLbl" to arrayOf("مسجد کا نام", "اسم المسجد", "Masjid name"),
         "lmCityLbl" to arrayOf("شہر / علاقہ", "المدينة / المنطقة", "City / area"),
+        "lmOwn" to arrayOf("اسی نام سے جدول بنائیں اور اقامہ کے اوقات خود لکھیں", "أنشئ الجدول بهذا الاسم وأدخل أوقات الإقامة بنفسك", "Use this name and set the iqamah times myself"),
         "resetDefault" to arrayOf("ڈیفالٹ پر لائیں", "إعادة الضبط الافتراضي", "Back to default"),
         "resetAsk" to arrayOf("صرف یہی زمرہ ڈیفالٹ پر لانا ہے یا ساری سیٹنگز؟", "هل تريد إعادة هذا القسم فقط أم كل الإعدادات؟", "Reset only this section, or all settings?"),
         "resetThis" to arrayOf("صرف یہی زمرہ", "هذا القسم فقط", "Only this section"),

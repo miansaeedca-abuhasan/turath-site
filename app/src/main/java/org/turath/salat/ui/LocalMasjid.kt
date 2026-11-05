@@ -73,7 +73,7 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
         LaunchedEffect(go) {
             if (go == 0 || q.trim().length < 2) return@LaunchedEffect
             asked = q.trim(); hits = emptyList(); searching = true
-            hits = withContext(Dispatchers.IO) { runCatching { MosqueSearch.byName(asked, place?.lat ?: 0.0, place?.lng ?: 0.0) }.getOrDefault(emptyList()) }
+            hits = withContext(Dispatchers.IO) { runCatching { MosqueSearch.byName(asked, place?.lat ?: 0.0, place?.lng ?: 0.0, place?.name ?: "", place?.country ?: "") }.getOrDefault(emptyList()) }
             searching = false
         }
         /** the times of the masjid: from its website; if that gives nothing, from the website a web search finds; what the user wrote stays when nothing is found */
@@ -150,6 +150,8 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                     }
                     if (m.website.isNotBlank()) Icon(Icons.Outlined.Language, null, tint = primary)
                 }
+                // nothing found (or not the one): the name as typed is used, and the user fills in the iqamah times
+                TextButton(onClick = { manual(asked); editName = true }, Modifier.fillMaxWidth()) { Icon(Icons.Outlined.Edit, null); Text("  " + Tr["lmOwn"] + " «" + asked + "»") }
                 // not in the list: the name as typed, its website looked for on the web
                 TextButton(onClick = { choose(asked, place?.name ?: "", "") }) { Icon(Icons.Outlined.Language, null); Text("  " + Tr["lmWeb"] + " «" + asked + "»") }
             }

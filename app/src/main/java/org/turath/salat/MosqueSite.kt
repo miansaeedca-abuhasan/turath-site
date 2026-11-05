@@ -223,7 +223,7 @@ object MosqueSite {
 
 /** finding a masjid by its name: OpenStreetMap's place search (Nominatim), and the masjid's website by an ordinary web search */
 object MosqueSearch {
-    data class Hit(val name: String, val address: String, val city: String, val km: Double, val website: String)
+    data class Hit(val name: String, val address: String, val city: String, val km: Double, val website: String, val cc: String = "")
 
     private fun httpGet(u: String, ms: Int = 12_000): String? = runCatching {
         val c = URL(u).openConnection() as HttpURLConnection
@@ -234,10 +234,10 @@ object MosqueSearch {
     }.getOrNull()
 
     /** masjids with this name, those near (lat, lng) first */
-    fun byName(q: String, lat: Double, lng: Double): List<Hit> {
-        fun ask(text: String): List<Hit> {
+    fun byName(q: String, lat: Double, lng: Double, myCity: String = "", myCc: String = ""): List<Hit> {
+        fun ask(text: String, near: Boolean = true): List<Hit> {
             val box = "%.3f,%.3f,%.3f,%.3f".format(java.util.Locale.US, lng - 0.8, lat + 0.6, lng + 0.8, lat - 0.6)
-            val u = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&extratags=1&limit=15&viewbox=$box&q=" + java.net.URLEncoder.encode(text, "UTF-8")
+            val u = "https://nominatim.openstreetmap.org/search?format=jsonv2&addressdetails=1&extratags=1&limit=15&" + (if (near) "viewbox=$box&" else "") + "q=" + java.net.URLEncoder.encode(text, "UTF-8")
             val body = httpGet(u) ?: return emptyList()
             val arr = runCatching { org.json.JSONArray(body) }.getOrNull() ?: return emptyList()
             val out = mutableListOf<Hit>()
@@ -249,12 +249,21 @@ object MosqueSearch {
                 val road = listOfNotNull(a?.optString("house_number")?.takeIf { it.isNotEmpty() }, a?.optString("road")?.takeIf { it.isNotEmpty() }).joinToString(" ")
                 val km = Cities.dist(lat, lng, o.optDouble("lat"), o.optDouble("lon"))
                 out += Hit(name, listOf(road, city).filter { it.isNotEmpty() }.joinToString(", "), city, km,
-                    (x?.optString("website") ?: "").ifEmpty { x?.optString("contact:website") ?: "" }.ifEmpty { x?.optString("url") ?: "" })
+                    (x?.optString("website") ?: "").ifEmpty { x?.optString("contact:website") ?: "" }.ifEmpty { x?.optString("url") ?: "" }, (a?.optString("country_code") ?: "").uppercase())
             }
             return out
         }
-        val first = ask(q).ifEmpty { if (Regex("masjid|mosque|islamic|centre|center|musall|jami", RegexOption.IGNORE_CASE).containsMatchIn(q)) emptyList() else ask("$q masjid") }
-        return first.distinctBy { it.name + it.address }.sortedBy { it.km }.take(8)
+        val word = Regex("masjid|mosque|islamic|centre|center|musall|jami", RegexOption.IGNORE_CASE).containsMatchIn(q)
+        fun both(near: Boolean) = ask(q, near).ifEmpty { if (word) emptyList() else ask("$q masjid", near) }
+        // the nearby results, and then the same name anywhere (other cities, provinces, countries)
+        val first = both(true) + both(false)
+        // the order: the masjids of the user's own city, then those of other cities and provinces of the country, then other countries; nearest first in each group
+        fun tier(h: Hit) = when {
+            myCity.isNotBlank() && h.city.equals(myCity, true) -> 0
+            myCc.isBlank() || h.cc.isBlank() || h.cc.equals(myCc, true) -> 1
+            else -> 2
+        }
+        return first.distinctBy { it.name + it.address }.sortedWith(compareBy({ tier(it) }, { it.km })).take(12)
     }
 
     /** the distinctive words of a masjid's name («Makki Masjid» → «makki»): not the common words such as masjid, islamic, centre */
