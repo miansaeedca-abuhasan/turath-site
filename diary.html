@@ -52,6 +52,11 @@ th{background:var(--paper)}
 .modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:14px;z-index:5}
 .modal>div{background:var(--card);border-radius:14px;padding:16px;width:100%;max-width:520px}
 .code{font-family:monospace;letter-spacing:.15em;font-weight:bold;direction:ltr;display:inline-block}
+@media (max-width:520px){table{font-size:.8rem}th,td{padding:3px 4px}}
+.tw{overflow-x:auto}
+input.badf,select.badf,textarea.badf{border:2px solid var(--bad)!important;background:rgba(179,38,30,.06)}
+.hint{font-size:.85rem;color:var(--muted);margin:-4px 0 8px;line-height:1.7}
+.hint.err{color:var(--bad);font-weight:600}
 @media print{header,.noprint,button{display:none!important}body{background:#fff;color:#000}.card{box-shadow:none;border:1px solid #999}}
 </style>
 </head>
@@ -59,6 +64,7 @@ th{background:var(--paper)}
 <header class="noprint"><h1 id="ttl"></h1><button class="sec sm" id="lang"></button><button class="sec sm hide" id="bell"></button><button class="sec sm hide" id="out"></button></header>
 <div id="app"></div>
 <p class="muted noprint" id="foot" style="text-align:center"></p>
+<p class="noprint" style="text-align:center"><a id="guide" href="diary-guide.html" style="color:var(--accent)"></a></p>
 </main>
 <script>
 const L={ur:{
@@ -109,6 +115,22 @@ remove:'Remove student',rmconf:'This student and all of his records will be dele
 nostu:'No students yet',noteach:'No teachers yet',children:'My children',parentacc:'Parent account',
 role_principal:'Principal',role_teacher:'Teacher',role_parent:'Parent',reset:'Change parent password',
 }};
+Object.assign(L.ur,{fixred:'سرخ خانوں کو ٹھیک کریں، نیچے لکھا ہے کیا لکھنا ہے',e_req:'یہ خانہ خالی ہے۔ اسے لکھنا ضروری ہے',
+e_email:'ای میل درست نہیں۔ ایسے لکھیں: name@gmail.com (@ اور نقطہ ہو، درمیان میں خالی جگہ نہ ہو)',
+e_uname:'صارف نام درست نہیں۔ صرف انگریزی حروف اور ہندسے لکھیں (۳ سے ۳۰ حروف)، خالی جگہ یا اردو نہ ہو۔ مثال: abuhasan',
+e_pw0:'پاس ورڈ میں یہ کمی ہے: ',e_pw1:'۔ مثال: Hifz#2026ab',pp_len:'کم از کم ۱۰ حروف',pp_let:'ایک انگریزی حرف',pp_dig:'ایک عدد',pp_sym:'ایک نشان (! @ # $ %)',
+e_code:'کوڈ ۶ ہندسوں کا ہوتا ہے۔ ای میل میں آیا ہوا کوڈ لکھیں',e_exists:'یہ صارف نام پہلے سے کسی نے رکھ لیا ہے۔ کوئی دوسرا لکھیں',
+e_par:'والد کا اکاؤنٹ بنانا ہے تو صارف نام اور پاس ورڈ دونوں لکھیں، ورنہ دونوں خالی چھوڑ دیں',h_pu:'اگر یہ والد پہلے سے کسی اور بچے کے ساتھ ہیں تو صرف وہی صارف نام لکھیں، پاس ورڈ نہیں',
+ph_inst:'مثال: محب خیرالقرون',ph_pname:'مثال: ابو حسن',ph_email:'مثال: name@gmail.com',ph_uname:'مثال: abuhasan',ph_sname:'مثال: محمد احمد',ph_tname:'مثال: قاری عبداللہ',
+h_email:'کوڈ اسی ای میل پر آئے گا، اس لیے وہی ای میل لکھیں جو آپ کے پاس کھلتی ہو',h_uname:'صرف چھوٹے انگریزی حروف، ہندسے اور . _ - ؛ خالی جگہ نہیں؛ کم از کم ۳ حروف'});
+Object.assign(L.en,{fixred:'Fix the red boxes — the hint below each one says what to write',e_req:'This box is empty. It must be filled',
+e_email:'The email is not valid. Write it like: name@gmail.com (with @ and a dot, no spaces)',
+e_uname:'The username is not valid. Use only English letters and digits (3 to 30 characters), no spaces and no Urdu. Example: abuhasan',
+e_pw0:'The password is missing: ',e_pw1:'. Example: Hifz#2026ab',pp_len:'at least 10 characters',pp_let:'a letter',pp_dig:'a digit',pp_sym:'a symbol (! @ # $ %)',
+e_code:'The code has 6 digits. Write the code that came to your email',e_exists:'This username is already taken. Write another one',
+e_par:'To create the parent account write both a username and a password, otherwise leave both empty',h_pu:'If this parent is already linked to another child, write only the same username — no password',
+ph_inst:'Example: Muhib Khair Al-Quroon',ph_pname:'Example: Abu Hasan',ph_email:'Example: name@gmail.com',ph_uname:'Example: abuhasan',ph_sname:'Example: Muhammad Ahmad',ph_tname:'Example: Qari Abdullah',
+h_email:'The code is sent to this email, so write an email that you can open',h_uname:'Only lowercase English letters, digits and . _ - ; no spaces; at least 3 characters'});
 let lg=(()=>{try{return localStorage.getItem('dlang')||'ur'}catch(e){return 'ur'}})(),tk=(()=>{try{return localStorage.getItem('dtk')||''}catch(e){return ''}})(),ME=null,today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 const T=k=>L[lg][k],$=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>String(n);
@@ -116,8 +138,23 @@ async function api(b){
   try{const r=await fetch('/api/diary',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+tk},body:JSON.stringify(b)});
     const j=await r.json().catch(()=>({error:'server'}));if(r.status===401&&j.error==='auth'){tk='';try{localStorage.removeItem('dtk')}catch(e){}ME=null;auth();return {error:'auth'}}return j;}catch(e){return {error:'server'}}
 }
+/* ---------- field checks: the wrong box turns red and says what to write ---------- */
+const V={req:v=>String(v).trim()?'':T('e_req'),
+  email:v=>{v=String(v).trim();return v&&/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(v)&&v.length<=254?'':T('e_email')},
+  uname:v=>/^[a-z0-9._-]{3,30}$/.test(String(v).trim().toLowerCase())?'':T('e_uname'),
+  code:v=>/^\d{6}$/.test(String(v).trim())?'':T('e_code'),
+  pw:v=>{v=String(v);const m=[];if(v.length<10)m.push(T('pp_len'));if(!/[A-Za-z\u0600-\u06FF]/.test(v))m.push(T('pp_let'));if(!/\d/.test(v))m.push(T('pp_dig'));if(!/[^A-Za-z0-9\u0600-\u06FF\s]/.test(v))m.push(T('pp_sym'));if(v.length>100)return T('e_pw0')+T('pp_len');
+    return m.length?T('e_pw0')+m.join(lg==='ur'?'، ':', ')+T('e_pw1'):''}};
+function flag(root,id,msg){const i=root.querySelector('#'+id);if(!i)return;const box=i.closest('.pwb')||i;
+  root.querySelectorAll('[data-eh="'+id+'"]').forEach(x=>x.remove());i.classList.toggle('badf',!!msg);
+  if(msg){const d=document.createElement('div');d.className='hint err';d.dataset.eh=id;d.textContent=msg;box.insertAdjacentElement('afterend',d)}}
+function checkAll(root,list){let first=null;list.forEach(([id,k])=>{const i=root.querySelector('#'+id);if(!i)return;i.dataset.k=k;const m=V[k](i.value);flag(root,id,m);if(m&&!first)first=i});
+  if(first){try{first.scrollIntoView({block:'center'});first.focus()}catch(e){}}return !first}
+function live(root){root.querySelectorAll('input[data-k]').forEach(()=>{});root.addEventListener('input',e=>{const i=e.target;if(i&&i.dataset&&i.dataset.k&&i.classList.contains('badf'))flag(root,i.id,V[i.dataset.k](i.value))})}
+function hintUnder(root,id,txt){const i=root.querySelector('#'+id);if(!i||!txt)return;const box=i.closest('.pwb')||i;const d=document.createElement('div');d.className='hint';d.textContent=txt;box.insertAdjacentElement('afterend',d)}
+function ph(root,m){Object.keys(m).forEach(id=>{const i=root.querySelector('#'+id);if(i)i.placeholder=T(m[id])})}
 function setTk(t){tk=t;try{localStorage.setItem('dtk',t)}catch(e){}}
-function shell(){document.documentElement.lang=lg;document.documentElement.dir=lg==='ur'?'rtl':'ltr';$('#ttl').textContent=T('title');$('#lang').textContent=T('lang');$('#out').textContent=T('out');$('#foot').textContent=T('foot');document.title=T('title')+' — Turath Khair al-Quroon'}
+function shell(){document.documentElement.lang=lg;document.documentElement.dir=lg==='ur'?'rtl':'ltr';$('#ttl').textContent=T('title');$('#lang').textContent=T('lang');$('#out').textContent=T('out');$('#foot').textContent=T('foot');$('#guide').textContent=lg==='ur'?'استعمال کا آسان طریقہ (تصویروں اور ویڈیو کے ساتھ)':'Easy guide with pictures and video';document.title=T('title')+' — Turath Khair al-Quroon'}
 $('#lang').onclick=()=>{lg=lg==='ur'?'en':'ur';try{localStorage.setItem('dlang',lg)}catch(e){}shell();ME?home():auth()};
 $('#out').onclick=async()=>{await api({a:'logout'});setTk('');ME=null;auth()};
 $('#bell').onclick=()=>notes();
@@ -135,20 +172,27 @@ function auth(mode){
   ${mode==='reg'?`<p class="muted">${T('regnote')}</p><label>${T('inst')}</label><input id="f_i" maxlength="80"><label>${T('pname')}</label><input id="f_n" maxlength="60"><label>${T('email')}</label><input id="f_e" type="email" dir="ltr" autocapitalize="none" maxlength="254">`:`<label>${T('code')}</label><input id="f_c" maxlength="10" dir="ltr" autocapitalize="characters">`}
   <label>${T('uname')}</label><input id="f_u" dir="ltr" autocapitalize="none" maxlength="30">${pwField('f_p',T('pw'),mode==='reg')}
   <div class="err" id="e"></div><button id="go">${T('go')}</button></div>`;
-  wirePw($('#app'));
+  wirePw($('#app'));live($('#app'));
+  if(mode==='reg'){ph($('#app'),{f_i:'ph_inst',f_n:'ph_pname',f_e:'ph_email',f_u:'ph_uname'});hintUnder($('#app'),'f_e',T('h_email'));hintUnder($('#app'),'f_u',T('h_uname'))}
   $('#t1').onclick=()=>auth('login');$('#t2').onclick=()=>auth('reg');
   $('#go').onclick=async()=>{
     $('#go').disabled=true;let r;
-    if(mode==='reg'){const d={a:'register',inst:$('#f_i').value,name:$('#f_n').value,email:$('#f_e').value.trim(),uname:$('#f_u').value,pw:$('#f_p').value};r=await api(d);if(r.ok)return verify(d)}
-    else{r=await api({a:'login',code:$('#f_c').value,uname:$('#f_u').value,pw:$('#f_p').value});if(r.ok){setTk(r.token);await load();return home()}}
+    if(mode==='reg'){const d={a:'register',inst:$('#f_i').value.trim(),name:$('#f_n').value.trim(),email:$('#f_e').value.trim(),uname:$('#f_u').value.trim().toLowerCase(),pw:$('#f_p').value};
+      if(!checkAll($('#app'),[['f_i','req'],['f_n','req'],['f_e','email'],['f_u','uname'],['f_p','pw']])){$('#go').disabled=false;$('#e').textContent=T('fixred');return}
+      r=await api(d);if(r.ok)return verify(d);
+      const FM={inst:['f_i','req'],name:['f_n','req'],email:['f_e','email'],uname:['f_u','uname'],pw:['f_p','pw']};
+      if(r.field&&FM[r.field]){flag($('#app'),FM[r.field][0],V[FM[r.field][1]]($(('#'+FM[r.field][0])).value)||T('e_'+(r.field==='uname'?'uname':'req')))}
+      if(r.error==='exists')flag($('#app'),'f_u',T('e_exists'))}
+    else{if(!checkAll($('#app'),[['f_c','req'],['f_u','req'],['f_p','req']])){$('#go').disabled=false;$('#e').textContent=T('fixred');return}
+      r=await api({a:'login',code:$('#f_c').value.trim(),uname:$('#f_u').value.trim().toLowerCase(),pw:$('#f_p').value});if(r.ok){setTk(r.token);await load();return home()}}
     $('#go').disabled=false;$('#e').textContent=msg(r.error==='login'?'bad':r.error);
   };
 }
 function verify(d){
   $('#app').innerHTML=`<div class="card"><h2>${T('vtitle')}</h2><p>${T('vsent')}<br><b dir="ltr">${esc(d.email)}</b></p><label>${T('vcode')}</label><input id="f_k" inputmode="numeric" maxlength="6" dir="ltr" autocomplete="one-time-code"><div class="err" id="e"></div><div class="row"><button id="vg">${T('vgo')}</button><button class="sec" id="rs">${T('resend')}</button><button class="sec" id="vb">${T('vback')}</button></div></div>`;
-  $('#vb').onclick=()=>auth('reg');
+  live($('#app'));$('#vb').onclick=()=>auth('reg');
   $('#rs').onclick=async()=>{$('#rs').disabled=true;const r=await api(d);$('#e').textContent=r.ok?'':msg(r.error);setTimeout(()=>{const b=$('#rs');if(b)b.disabled=false},45000)};
-  $('#vg').onclick=async()=>{$('#vg').disabled=true;const r=await api({a:'register_verify',email:d.email,code:$('#f_k').value.trim()});
+  $('#vg').onclick=async()=>{if(!checkAll($('#app'),[['f_k','code']]))return;$('#vg').disabled=true;const r=await api({a:'register_verify',email:d.email,code:$('#f_k').value.trim()});
     if(r.ok){setTk(r.token);await load();return home(true)}$('#vg').disabled=false;$('#e').textContent=msg(r.error)};
 }
 async function load(){const r=await api({a:'me'});if(r.user){ME=r;return true}return false}
@@ -170,7 +214,7 @@ function home(first){
   $('#app').innerHTML=h;wirePw($('#app'));
   if(t||p){$('#dt').onchange=e=>{sel=e.target.value||today;drawStu()};$('#addS').onclick=addStudent}
   if(p){$('#addT').onclick=addTeacher;document.querySelectorAll('[data-pw]').forEach(b=>b.onclick=()=>resetPw(+b.dataset.pw))}
-  $('#chp').onclick=async()=>{const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
+  $('#chp').onclick=async()=>{$('#pe').textContent='';if(!checkAll($('#app'),[['np','pw']])){$('#pe').textContent=T('fixred');return}const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
   if(p)$('#del').onclick=delInst;
   drawStu();
 }
@@ -218,8 +262,10 @@ function entry(s){
 /* ---------- add teacher / student / reset ---------- */
 function addTeacher(){
   const m=modal(`<h2>${T('addteacher')}</h2><label>${T('tname')}</label><input id="a" maxlength="60"><label>${T('uname')}</label><input id="b" dir="ltr" autocapitalize="none">${pwField('c',T('pw'),true)}<div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();
-  m.querySelector('#s').onclick=async()=>{const r=await api({a:'add_teacher',name:m.querySelector('#a').value,uname:m.querySelector('#b').value,pw:m.querySelector('#c').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}m.remove();await load();home()};
+  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_tname',b:'ph_uname'});hintUnder(m,'b',T('h_uname'));
+  m.querySelector('#s').onclick=async()=>{const E=m.querySelector('#e');E.textContent='';if(!checkAll(m,[['a','req'],['b','uname'],['c','pw']])){E.textContent=T('fixred');return}
+    const r=await api({a:'add_teacher',name:m.querySelector('#a').value.trim(),uname:m.querySelector('#b').value.trim().toLowerCase(),pw:m.querySelector('#c').value});
+    if(!r.ok){if(r.error==='exists')flag(m,'b',T('e_exists'));else if(r.field){const k={name:['a','req'],uname:['b','uname'],pw:['c','pw']}[r.field];if(k)flag(m,k[0],V[k[1]](m.querySelector('#'+k[0]).value)||T('e_req'))}E.textContent=msg(r.error);return}m.remove();await load();home()};
 }
 function addStudent(){
   const p=ME.user.role==='principal';
@@ -227,13 +273,18 @@ function addStudent(){
   ${p?`<label>${T('teacher')}</label><select id="t"><option value=""></option>${ME.teachers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`:''}
   <h2>${T('parentacc')}</h2><p class="muted">${T('noparent')}</p><label>${T('pn')}</label><input id="pn" maxlength="60"><label>${T('pu')}</label><input id="pu" dir="ltr" autocapitalize="none">${pwField('pp',T('ppw'),true)}
   <div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();
-  m.querySelector('#s').onclick=async()=>{const g=i=>m.querySelector('#'+i);const r=await api({a:'add_student',name:g('a').value,teacher:p?g('t').value:null,parent_name:g('pn').value,parent_uname:g('pu').value,parent_pw:g('pp').value});if(!r.ok){g('e').textContent=msg(r.error);return}m.remove();await load();home()};
+  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_sname',pn:'ph_pname',pu:'ph_uname'});hintUnder(m,'pu',T('h_pu'));
+  m.querySelector('#s').onclick=async()=>{const g=i=>m.querySelector('#'+i);g('e').textContent='';
+    const pu=g('pu').value.trim(),pp=g('pp').value,lst=[['a','req']];['pn','pu','pp'].forEach(i=>flag(m,i,''));
+    if(pu||pp){lst.push(['pu','uname']);if(pp||!pu)lst.push(['pp','pw'])}
+    if(!checkAll(m,lst)){g('e').textContent=(pu||pp)&&!g('a').classList.contains('badf')?T('e_par'):T('fixred');return}
+    const r=await api({a:'add_student',name:g('a').value.trim(),teacher:p?g('t').value:null,parent_name:g('pn').value.trim(),parent_uname:pu.toLowerCase(),parent_pw:pp});
+    if(!r.ok){if(r.error==='exists')flag(m,'pu',T('e_exists'));else if(r.field){const k={name:['a','req'],parent_uname:['pu','uname'],parent_pw:['pp','pw']}[r.field];if(k){g(k[0]).dataset.k=k[1];flag(m,k[0],V[k[1]](g(k[0]).value)||T('e_req'))}}g('e').textContent=msg(r.error);return}m.remove();await load();home()};
 }
 function resetPw(id){
   const m=modal(`<h2>${T('chpw')}</h2>${pwField('a',T('newpw'),true)}<div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();
-  m.querySelector('#s').onclick=async()=>{const r=await api({a:'passwd',user:id,pw:m.querySelector('#a').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}m.remove()};
+  m.querySelector('#x').onclick=()=>m.remove();live(m);
+  m.querySelector('#s').onclick=async()=>{if(!checkAll(m,[['a','pw']])){m.querySelector('#e').textContent=T('fixred');return}const r=await api({a:'passwd',user:id,pw:m.querySelector('#a').value});if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}m.remove()};
 }
 function delInst(){
   const m=modal(`<h2>${T('delinst')}</h2><p class="muted">${T('delwarn')}</p><label>${T('delconf')}</label><input id="a" dir="ltr"><div class="err" id="e"></div><div class="row"><button class="bad" id="s">${T('delinst')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
@@ -258,10 +309,10 @@ async function reportView(s,month){
   let g=null;if(aq!=null){const sc=(aq-1)/2*0.5+(1-Math.min(((as||0)+(am||0))/2,6)/6)*0.5;g=sc>=.75?3:sc>=.5?2:1}
   const qn=n=>n?T('q'+n):'—';
   const m=modal(`<div id="rc"><h2>${T('report')}</h2><p><b>${esc(s.name)}</b> — ${esc(ME.inst.name)}</p><div class="noprint"><label>${T('month')}</label><input type="month" id="mo" value="${month}" max="${today.slice(0,7)}"></div>
-  ${E.length?`<table><tr><th>${T('present')}</th><th>${T('absentd')}</th><th>${T('tl')}</th><th>${T('avgq')}</th><th>${T('avgs')}</th><th>${T('avgm')}</th></tr><tr><td>${pres.length}</td><td>${abs}</td><td>${sum('sabaq_lines')}</td><td>${aq==null?'—':qn(Math.round(aq))}</td><td>${f1(as)}</td><td>${f1(am)}</td></tr></table>
+  ${E.length?`<div class="tw"><table><tr><th>${T('present')}</th><th>${T('absentd')}</th><th>${T('tl')}</th><th>${T('avgq')}</th><th>${T('avgs')}</th><th>${T('avgm')}</th></tr><tr><td>${pres.length}</td><td>${abs}</td><td>${sum('sabaq_lines')}</td><td>${aq==null?'—':qn(Math.round(aq))}</td><td>${f1(as)}</td><td>${f1(am)}</td></tr></table></div>
   <p><b>${T('grade')}:</b> ${g?T('g'+g):'—'}</p>
-  <table><tr><th>${T('date')}</th><th>${T('sabaq')}</th><th>${T('q')}</th><th>${T('sabqi')}</th><th>${T('manzil')}</th></tr>
-  ${E.map(e=>e.absent?`<tr><td>${e.day.slice(8)}</td><td colspan="4">${T('absent')}</td></tr>`:`<tr><td>${e.day.slice(8)}</td><td>${e.sabaq_lines==null?'—':e.sabaq_lines}</td><td>${qn(e.sabaq_q)}</td><td>${e.sabqi_para||'—'}: ${e.sabqi_err==null?'—':e.sabqi_err}</td><td>${e.manzil_para||'—'}: ${e.manzil_err==null?'—':e.manzil_err}</td></tr>`).join('')}</table>`:`<p class="muted">${T('noent')}</p>`}
+  <div class="tw"><table><tr><th>${T('date')}</th><th>${T('sabaq')}</th><th>${T('q')}</th><th>${T('sabqi')}</th><th>${T('manzil')}</th></tr>
+  ${E.map(e=>e.absent?`<tr><td>${e.day.slice(8)}</td><td colspan="4">${T('absent')}</td></tr>`:`<tr><td>${e.day.slice(8)}</td><td>${e.sabaq_lines==null?'—':e.sabaq_lines}</td><td>${qn(e.sabaq_q)}</td><td>${e.sabqi_para||'—'}: ${e.sabqi_err==null?'—':e.sabqi_err}</td><td>${e.manzil_para||'—'}: ${e.manzil_err==null?'—':e.manzil_err}</td></tr>`).join('')}</table></div>`:`<p class="muted">${T('noent')}</p>`}
   <p class="row noprint"><button id="pr">${T('print')}</button><button class="sec" id="x">${T('cancel')}</button></p></div>`);
   m.querySelector('#x').onclick=()=>m.remove();m.querySelector('#pr').onclick=()=>window.print();
   m.querySelector('#mo').onchange=e=>{if(e.target.value){m.remove();reportView(s,e.target.value)}};
