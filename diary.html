@@ -8,8 +8,8 @@
 <style>
 @font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
 @font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
-:root{--ink:#16222c;--muted:#5d6b75;--paper:#f3f6fa;--card:#fff;--accent:#0c5c6e;--line:#d8e0e8;--good:#1b7a3d;--mid:#b7791f;--bad:#b3261e}
-@media (prefers-color-scheme:dark){:root{--ink:#e8eceb;--muted:#9aa8b0;--paper:#0f161b;--card:#18222a;--accent:#74b6e6;--line:#2c3a45;--good:#6fcf8f;--mid:#e0b25a;--bad:#f08a80}}
+:root{--ink:#1c2b25;--muted:#5d6f66;--paper:#f5f0e1;--card:#fffdf5;--accent:#0e5a45;--gold:#c39a3b;--soft:#e8f1ea;--line:#e4dbc0;--good:#1f7a4d;--mid:#b7791f;--bad:#b3261e}
+@media (prefers-color-scheme:dark){:root{--ink:#e9f1ec;--muted:#9db1a7;--paper:#0c1814;--card:#13251e;--accent:#5fc7a0;--gold:#d8b865;--soft:#173128;--line:#27403a;--good:#6fcf8f;--mid:#e0b25a;--bad:#f08a80}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 system-ui,sans-serif}
 html[lang=ur] body{font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;line-height:2.1}
@@ -58,10 +58,62 @@ input.badf,select.badf,textarea.badf{border:2px solid var(--bad)!important;backg
 .hint{font-size:.85rem;color:var(--muted);margin:-4px 0 8px;line-height:1.7}
 .hint.err{color:var(--bad);font-weight:600}
 @media print{header,.noprint,button{display:none!important}body{background:#fff;color:#000}.card{box-shadow:none;border:1px solid #999}}
+
+/* ---- the Islamic look: emerald, gold and cream ---- */
+body{background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 6l7 14 15-3-3 15 14 7-14 7 3 15-15-3-7 14-7-14-15 3 3-15-14-7 14-7-3-15 15 3z' fill='none' stroke='%23c39a3b' stroke-opacity='.10'/%3E%3C/svg%3E");}
+header{background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff;border-radius:0 0 22px 22px;padding:10px 16px 14px;margin:0 -14px 6px;border-bottom:3px solid var(--gold);position:relative}
+header h1{color:#fff;font-size:1.3rem}
+header button.sec{color:#fff;border-color:rgba(255,255,255,.55)}
+.bism{width:100%;text-align:center;color:#f0dca0;font-size:1rem;line-height:1.8}
+.hlogo{width:40px;height:40px;border-radius:50%;border:2px solid var(--gold);background:#fff}
+.card{border:1px solid var(--line);box-shadow:0 2px 10px rgba(14,90,69,.08)}
+h2{color:var(--accent)}
+.hero{background:linear-gradient(135deg,var(--soft),var(--card));border-inline-start:5px solid var(--gold)}
+.hname{font-size:1.25rem;font-weight:700;color:var(--accent)}.hsub{color:var(--muted)}
+.codebox{margin-top:8px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--card);border:1px dashed var(--gold);border-radius:12px;padding:6px 12px}
+.codebox small{flex-basis:100%;color:var(--muted)}
+.cnt{display:inline-block;background:var(--gold);color:#fff;border-radius:99px;padding:0 10px;font-size:.85rem;vertical-align:middle}
+.sq{border-radius:99px;padding:9px 16px;border:1.5px solid var(--gold);background:var(--card)}
+.stu{border:1px solid var(--line);border-radius:14px;padding:9px 12px;margin:8px 0;background:var(--card);transition:.15s}
+.stu:hover{border-color:var(--gold);box-shadow:0 2px 8px rgba(195,154,59,.25)}
+.stu:last-child{border:1px solid var(--line)}
+.av{flex:none;width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#2c8a6c);color:#fff;font-weight:700;font-size:1.2rem;line-height:44px;text-align:center;border:2px solid var(--gold)}
+.av.big{width:64px;height:64px;line-height:64px;font-size:1.7rem}
+.sbody{flex:1;min-width:0}.sbody b{display:block}
+.stat{font-size:.82rem;border-radius:99px;padding:0 10px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.stat.ok{background:rgba(31,122,77,.12);color:var(--good);border-color:transparent}.stat.ab{background:rgba(183,121,31,.15);color:var(--mid);border-color:transparent}
+.wm{position:relative;isolation:isolate}
+.wm::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url(icon-512.png) center 45%/min(62%,320px) no-repeat;opacity:.075;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.modal>div{border:1px solid var(--gold);position:relative;isolation:isolate}
+.modal>div::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:url(icon-512.png) center 50%/min(60%,300px) no-repeat;opacity:.07;border-radius:14px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.modal>div.wide{max-width:760px}
+.chead{display:flex;gap:12px;align-items:center;background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff;border-radius:14px;padding:12px 14px;border-bottom:3px solid var(--gold)}
+.chead h2{color:#fff;margin:0;font-size:1.3rem}.chead .muted{color:#d6e8de}
+.chead>div{flex:1}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:12px 0}
+.info>div{background:var(--soft);border-radius:12px;padding:6px 12px}.info small{display:block;color:var(--muted);font-size:.8rem;line-height:1.6}.info b{color:var(--accent)}
+.prog{height:12px;border-radius:99px;background:var(--line);overflow:hidden;margin:4px 0}.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--gold))}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.acts button{flex:1 1 130px}
+.rtabs{display:flex;gap:6px;margin:12px 0 6px}.rtabs button{flex:1;background:var(--card);color:var(--accent);border:1px solid var(--accent);padding:6px 4px}.rtabs button.on{background:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.rtabs button.on{color:#0c1814}}
+.pick{display:flex;gap:8px;flex-wrap:wrap}.pick>*{flex:1 1 110px;margin:2px 0}
+.rhead{display:flex;gap:10px;align-items:center;border-bottom:2px solid var(--gold);padding-bottom:6px;margin:8px 0}.rlogo{width:54px;height:54px;border-radius:50%}
+.rhead b{color:var(--accent)}
+.tiles2{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin:10px 0}
+.tl{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:6px 8px;text-align:center}.tl b{display:block;font-size:1.35rem;color:var(--accent);line-height:1.5}.tl small{color:var(--muted);line-height:1.5;display:block}
+.tl.g3 b{color:var(--good)}.tl.g1 b{color:var(--bad)}.tl.g2 b{color:var(--mid)}
+.chart{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:8px 10px;margin:10px 0}.chart h4{margin:0 0 4px;color:var(--accent);font-size:1rem}
+.chart svg{width:100%;height:auto;display:block}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.weak li,.strong li{margin:2px 0}.weak,.strong{margin:4px 0;padding-inline-start:20px}
+.kind{background:linear-gradient(135deg,var(--soft),var(--card));border:1px solid var(--gold);border-radius:14px;padding:10px 14px;margin:12px 0;line-height:2}
+.kind b{color:var(--accent)}
+@media (min-width:900px){main{max-width:980px}header{border-radius:0 0 28px 28px}}
+@media print{@page{margin:12mm}body{background:#fff!important;color:#000}body>*:not(.modal){display:none!important}.modal{position:static!important;display:block!important;background:none!important;padding:0!important;overflow:visible!important}.modal>div{max-width:none!important;box-shadow:none!important;border:0!important;padding:0!important}.noprint{display:none!important}.chead{-webkit-print-color-adjust:exact;print-color-adjust:exact}.chart,.tl,.kind,.info>div{break-inside:avoid}.tw{overflow:visible}}
 </style>
 </head>
 <body><main>
-<header class="noprint"><h1 id="ttl"></h1><button class="sec sm" id="lang"></button><button class="sec sm hide" id="bell"></button><button class="sec sm hide" id="out"></button></header>
+<header class="noprint"><div class="bism">بسم اللہ الرحمن الرحیم</div><img class="hlogo" src="icon-192.png" alt=""><h1 id="ttl"></h1><button class="sec sm" id="lang"></button><button class="sec sm hide" id="bell"></button><button class="sec sm hide" id="out"></button></header>
 <div id="app"></div>
 <p class="muted noprint" id="foot" style="text-align:center"></p>
 <p class="noprint" style="text-align:center"><a id="guide" href="diary-guide.html" style="color:var(--accent)"></a></p>
@@ -131,6 +183,35 @@ e_code:'The code has 6 digits. Write the code that came to your email',e_exists:
 e_par:'To create the parent account write both a username and a password, otherwise leave both empty',h_pu:'If this parent is already linked to another child, write only the same username — no password',
 ph_inst:'Example: Muhib Khair Al-Quroon',ph_pname:'Example: Abu Hasan',ph_email:'Example: name@gmail.com',ph_uname:'Example: abuhasan',ph_sname:'Example: Muhammad Ahmad',ph_tname:'Example: Qari Abdullah',
 h_email:'The code is sent to this email, so write an email that you can open',h_uname:'Only lowercase English letters, digits and . _ - ; no spaces; at least 3 characters'});
+
+Object.assign(L.ur,{father:'ولدیت',curpara:'موجودہ پارہ',donep:'حفظ شدہ پارے',of30:'۳۰ میں سے',searchph:'نام یا ولدیت سے تلاش کریں',nomatch:'اس نام کا کوئی طالب علم نہیں ملا',
+sfather:'ولدیت (والد کا نام)',scur:'موجودہ پارہ (جس پر سبق چل رہا ہے)',sdone:'کتنے پارے حفظ ہو چکے ہیں',edit:'ترمیم',editst:'طالب علم کی معلومات',entryb:'آج کا اندراج',
+p_m:'ماہانہ',p_q:'سہ ماہی',p_h:'ششماہی',p_y:'سالانہ',year:'سال',qn:'سہ ماہی',hn:'ششماہی',q1n:'پہلی (جنوری–مارچ)',q2n:'دوسری (اپریل–جون)',q3n:'تیسری (جولائی–ستمبر)',q4n:'چوتھی (اکتوبر–دسمبر)',h1n:'پہلی (جنوری–جون)',h2n:'دوسری (جولائی–دسمبر)',
+mons:['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'],
+t_pres:'حاضر دن',t_abs:'غیر حاضر دن',t_lines:'کل لائنیں',t_q:'سبق کی کیفیت',t_se:'سبقی کی غلطیاں',t_me:'منزل کی غلطیاں',t_grade:'مجموعی درجہ',
+c_lines:'لائنوں کی تعداد',c_err:'غلطیاں (سبقی اور منزل)',c_att:'حاضری',c_qual:'سبق کی کیفیت',ser_s:'سبقی',ser_m:'منزل',wk:'ہفتہ',
+weakh:'کمزوریاں',strongh:'اچھی کارکردگی',noweak:'کوئی نمایاں کمزوری نہیں، ماشاء اللہ',weakp:(a)=>`${a.k} میں پارہ ${a.p}: ${a.n} غلطیاں`,weakq:(n)=>`سبق کمزور رہا: ${n} دن`,weaka:(n)=>`غیر حاضری: ${n} دن`,
+strongc:(n)=>`${n} دن بغیر کسی غلطی کے`,strongq:(n)=>`${n} دن سبق بہت اچھا رہا`,strongl:(n)=>`کل ${n} لائنیں سنائیں`,nostrong:'ابھی اندراج کم ہیں',
+dailyt:'روزانہ کا اندراج',print:'چھاپیں / PDF',pdfnote:'PDF کے لیے چھاپنے کی کھڑکی میں «PDF کے طور پر محفوظ کریں» چنیں',share:'شیئر کریں',
+rpt:'تراث خیرالقرون — حفظ ڈائری',period:'مدت',copied:'خلاصہ نقل ہو گیا',
+k3:'ماشاء اللہ! اس مدت میں آپ نے بہت اچھی محنت کی۔ شاباش! قرآنِ مجید سے یہی محبت اور پابندی قائم رکھیں اور اس سے بھی بہتر کرنے کی کوشش کریں۔ اللہ تعالی آپ کو قرآن کا سچا خادم اور حافظ بنائے، آمین۔',
+k2:'الحمد للہ، کارکردگی اچھی رہی۔ تھوڑی اور محنت اور غلطیوں پر توجہ سے آپ مزید بہتر ہو سکتے ہیں۔ آپ کی کوشش قابلِ قدر ہے۔ اللہ تعالی آپ کے لیے قرآن کو آسان فرمائے، آمین۔',
+k1:'ہمت نہ ہاریں! ہر حافظ نے کمزوری ہی سے آغاز کیا۔ روز تھوڑا تھوڑا دہرانے اور استاد کی بات پر عمل کرنے سے ان شاء اللہ بہت بہتری آئے گی۔ ہم آپ کے لیے دعاگو ہیں۔ اللہ تعالی آپ کے لیے حفظ آسان فرمائے، آمین۔',
+kabs:'حاضری پر خاص توجہ دیں: روزانہ حاضری سے حفظ مضبوط ہوتا ہے۔',kdua:'اللہ تعالی بچے، والدین اور استاد سب کو اجرِ عظیم عطا فرمائے، آمین۔',kh:'استاد اور والدین کی طرف سے'});
+Object.assign(L.en,{father:'Father',curpara:'Current para',donep:'Paras memorised',of30:'out of 30',searchph:'Search by name or father’s name',nomatch:'No student with this name was found',
+sfather:'Father’s name',scur:'Current para (the lesson is on)',sdone:'Paras memorised so far',edit:'Edit',editst:'Student details',entryb:'Today’s entry',
+p_m:'Monthly',p_q:'Quarterly',p_h:'Half-yearly',p_y:'Yearly',year:'Year',qn:'Quarter',hn:'Half',q1n:'1st (Jan–Mar)',q2n:'2nd (Apr–Jun)',q3n:'3rd (Jul–Sep)',q4n:'4th (Oct–Dec)',h1n:'1st (Jan–Jun)',h2n:'2nd (Jul–Dec)',
+mons:['January','February','March','April','May','June','July','August','September','October','November','December'],
+t_pres:'Days present',t_abs:'Days absent',t_lines:'Total lines',t_q:'Sabaq quality',t_se:'Sabqi mistakes',t_me:'Manzil mistakes',t_grade:'Overall grade',
+c_lines:'Lines recited',c_err:'Mistakes (sabqi and manzil)',c_att:'Attendance',c_qual:'Sabaq quality',ser_s:'Sabqi',ser_m:'Manzil',wk:'Week',
+weakh:'Weak points',strongh:'Good performance',noweak:'No clear weakness, masha’Allah',weakp:(a)=>`${a.k}: para ${a.p} — ${a.n} mistakes`,weakq:(n)=>`Weak sabaq: ${n} days`,weaka:(n)=>`Absent: ${n} days`,
+strongc:(n)=>`${n} days without any mistake`,strongq:(n)=>`${n} days of excellent sabaq`,strongl:(n)=>`${n} lines recited in all`,nostrong:'There are few entries yet',
+dailyt:'Daily entries',print:'Print / PDF',pdfnote:'For a PDF choose “Save as PDF” in the print window',share:'Share',
+rpt:'Turath Khair Al-Quroon — Hifz Diary',period:'Period',copied:'Summary copied',
+k3:'Masha’Allah! You worked very well in this period. Shabash! Keep up this love and regularity with the Qur’an and try to do even better. May Allah make you a true servant of the Qur’an and a hafiz, Ameen.',
+k2:'Alhamdulillah, the performance was good. With a little more effort and attention to the mistakes you can do even better. Your effort is valued. May Allah make the Qur’an easy for you, Ameen.',
+k1:'Do not lose heart! Every hafiz began from weakness. By revising a little every day and following the teacher’s advice, in shaa Allah there will be great improvement. We pray for you. May Allah make hifz easy for you, Ameen.',
+kabs:'Give special attention to attendance: coming every day makes hifz strong.',kdua:'May Allah reward the child, the parents and the teacher with a great reward, Ameen.',kh:'From the teacher and the parents'});
 let lg=(()=>{try{return localStorage.getItem('dlang')||'ur'}catch(e){return 'ur'}})(),tk=(()=>{try{return localStorage.getItem('dtk')||''}catch(e){return ''}})(),ME=null,today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 const T=k=>L[lg][k],$=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>String(n);
@@ -200,38 +281,45 @@ async function load(){const r=await api({a:'me'});if(r.user){ME=r;return true}re
 /* ---------- home ---------- */
 function home(first){
   shell();chrome();const u=ME.user,p=u.role==='principal',t=u.role==='teacher',pa=u.role==='parent';
-  let h=`<div class="card"><b>${esc(ME.inst.name)}</b> — ${esc(u.name)} <span class="muted">(${T('role_'+u.role)})</span>`;
-  if(p)h+=`<div class="muted">${T('yourcode')}: <span class="code">${esc(ME.inst.code)}</span><br>${T('sharecode')}</div>`;
+  let h=`<div class="card hero"><div class="hname">${esc(ME.inst.name)}</div><div class="hsub">${esc(u.name)} · ${T('role_'+u.role)}</div>`;
+  if(p)h+=`<div class="codebox"><span>${T('yourcode')}:</span><b class="code">${esc(ME.inst.code)}</b><small>${T('sharecode')}</small></div>`;
   h+='</div>';
-  if(t||p){
-    h+=`<div class="card"><div class="row"><div><label>${T('date')}</label><input type="date" id="dt" value="${esc(sel||today)}" max="${today}"></div></div><div id="stu"></div><p><button id="addS">${T('addstudent')}</button></p></div>`;
-  }
-  if(pa)h+=`<div class="card"><h2>${T('children')}</h2><div id="stu"></div></div>`;
+  h+=`<div class="card"><h2>${pa?T('children'):T('students')} <span class="cnt">${ME.students.length}</span></h2>`;
+  if(!pa)h+=`<div class="row"><div><label>${T('date')}</label><input type="date" id="dt" value="${esc(sel||today)}" max="${today}"></div></div>`;
+  h+=`<input type="search" id="sq" class="sq" placeholder="${esc(T('searchph'))}" value="${esc(Q)}" autocomplete="off"><div id="stu"></div>${!pa?`<p><button id="addS">${T('addstudent')}</button></p>`:''}</div>`;
   if(p){
     h+=`<div class="card"><h2>${T('teachers')}</h2>${ME.teachers.length?ME.teachers.map(x=>`<div class="stu" style="cursor:default"><span style="flex:1">${esc(x.name)} <span class="muted" dir="ltr">${esc(x.uname)}</span></span><button class="sec sm" data-pw="${x.id}">${T('chpw')}</button></div>`).join(''):`<p class="muted">${T('noteach')}</p>`}<p><button id="addT">${T('addteacher')}</button></p></div>`;
   }
   h+=`<div class="card noprint"><h2>${T('settings')}</h2><div class="row"><div style="flex:1 1 220px">${pwField('np',T('newpw'),true)}</div><button class="sec" id="chp">${T('chpw')}</button></div><div class="err" id="pe"></div>${p?`<button class="bad sm" id="del">${T('delinst')}</button>`:''}</div>`;
-  $('#app').innerHTML=h;wirePw($('#app'));
+  $('#app').innerHTML=h;wirePw($('#app'));live($('#app'));
   if(t||p){$('#dt').onchange=e=>{sel=e.target.value||today;drawStu()};$('#addS').onclick=addStudent}
   if(p){$('#addT').onclick=addTeacher;document.querySelectorAll('[data-pw]').forEach(b=>b.onclick=()=>resetPw(+b.dataset.pw))}
   $('#chp').onclick=async()=>{$('#pe').textContent='';if(!checkAll($('#app'),[['np','pw']])){$('#pe').textContent=T('fixred');return}const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
   if(p)$('#del').onclick=delInst;
+  $('#sq').oninput=e=>{Q=e.target.value;drawStu()};
   drawStu();
 }
-let sel='',DAYS={};
+let sel='',DAYS={},Q='';
+const normQ=x=>String(x||'').toLowerCase().replace(/[ً-ٰٟ]/g,'').replace(/\s+/g,' ').trim();
+const first1=n=>Array.from(String(n||'?'))[0]||'?';
+const paraLine=s=>(s.cur_para?T('curpara')+' '+s.cur_para:'')+(s.cur_para&&s.done_paras!=null?' · ':'')+(s.done_paras!=null?T('donep')+' '+s.done_paras:'');
 async function drawStu(){
   const box=$('#stu');if(!box)return;const u=ME.user,pa=u.role==='parent';
   if(!ME.students.length){box.innerHTML=`<p class="muted">${T('nostu')}</p>`;return}
   if(!pa){const r=await api({a:'day',day:sel||today});DAYS=r.day||{}}
-  box.innerHTML=ME.students.map(s=>{const e=DAYS[s.id];return `<div class="stu" data-s="${s.id}"><span class="dot ${e?(e.absent?'ab':'on'):''}"></span><span style="flex:1">${esc(s.name)}${u.role==='principal'&&s.teacher_name?` <span class="muted">— ${esc(s.teacher_name)}</span>`:''}</span><span class="muted">${pa?T('report'):e?(e.absent?T('absent'):T('done')):T('todo')}</span></div>`}).join('');
-  box.querySelectorAll('.stu').forEach(d=>d.onclick=()=>{const s=ME.students.find(x=>x.id==d.dataset.s);pa?reportView(s):entry(s)});
+  const q=normQ(Q),L2=ME.students.filter(s=>!q||normQ(s.name).includes(q)||normQ(s.father).includes(q)||normQ(s.teacher_name).includes(q));
+  if(!L2.length){box.innerHTML=`<p class="muted">${T('nomatch')}</p>`;return}
+  box.innerHTML=L2.map(s=>{const e=DAYS[s.id],pl=paraLine(s),st=pa?'':e?(e.absent?`<span class="stat ab">${T('absent')}</span>`:`<span class="stat ok">${T('done')}</span>`):`<span class="stat">${T('todo')}</span>`;
+    return `<div class="stu" data-s="${s.id}"><span class="av">${esc(first1(s.name))}</span><span class="sbody"><b>${esc(s.name)}</b><span class="muted">${s.father?esc(T('father'))+': '+esc(s.father)+(pl||u.role==='principal'&&s.teacher_name?' · ':''):''}${pl?esc(pl):''}${u.role==='principal'&&s.teacher_name?(pl&&!s.father?' · ':'')+esc(s.teacher_name):''}</span></span>${st}</div>`}).join('');
+  box.querySelectorAll('.stu').forEach(d=>d.onclick=()=>studentCard(ME.students.find(x=>x.id==d.dataset.s)));
 }
 
 /* ---------- modal helper ---------- */
-function modal(html){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div>${html}</div>`;wirePw(m);m.addEventListener('click',e=>{if(e.target===m)m.remove()});document.body.appendChild(m);return m}
+function modal(html,cls){const m=document.createElement('div');m.className='modal';m.innerHTML=`<div class="${cls||''}">${html}</div>`;wirePw(m);m.addEventListener('click',e=>{if(e.target===m)m.remove()});document.body.appendChild(m);return m}
 
 /* ---------- daily entry ---------- */
 function stepper(id,v,max){return `<div class="step"><button type="button" data-d="-1" data-t="${id}">−</button><input id="${id}" type="number" inputmode="numeric" min="0" max="${max}" value="${v==null?'':v}"><button type="button" data-d="1" data-t="${id}">+</button></div>`}
+function paraSel0(id,v){return `<select id="${id}"><option value=""></option>${Array.from({length:31},(_,i)=>`<option value="${i}"${v!==''&&v!=null&&v==i?' selected':''}>${i}</option>`).join('')}</select>`}
 function paraSel(id,v){return `<select id="${id}"><option value=""></option>${Array.from({length:30},(_,i)=>`<option value="${i+1}"${v==i+1?' selected':''}>${i+1}</option>`).join('')}</select>`}
 function entry(s){
   const d=sel||today,e=DAYS[s.id]||{};let last={};try{last=JSON.parse(localStorage.getItem('dl'+s.id)||'{}')}catch(x){}
@@ -271,14 +359,15 @@ function addStudent(){
   const p=ME.user.role==='principal';
   const m=modal(`<h2>${T('addstudent')}</h2><label>${T('sname')}</label><input id="a" maxlength="60">
   ${p?`<label>${T('teacher')}</label><select id="t"><option value=""></option>${ME.teachers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`:''}
+  <label>${T('sfather')}</label><input id="fa" maxlength="60"><div class="row"><div><label>${T('scur')}</label>${paraSel('cp','')}</div><div><label>${T('sdone')}</label>${paraSel0('dp','')}</div></div>
   <h2>${T('parentacc')}</h2><p class="muted">${T('noparent')}</p><label>${T('pn')}</label><input id="pn" maxlength="60"><label>${T('pu')}</label><input id="pu" dir="ltr" autocapitalize="none">${pwField('pp',T('ppw'),true)}
   <div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_sname',pn:'ph_pname',pu:'ph_uname'});hintUnder(m,'pu',T('h_pu'));
+  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_sname',fa:'ph_pname',pn:'ph_pname',pu:'ph_uname'});hintUnder(m,'pu',T('h_pu'));
   m.querySelector('#s').onclick=async()=>{const g=i=>m.querySelector('#'+i);g('e').textContent='';
     const pu=g('pu').value.trim(),pp=g('pp').value,lst=[['a','req']];['pn','pu','pp'].forEach(i=>flag(m,i,''));
     if(pu||pp){lst.push(['pu','uname']);if(pp||!pu)lst.push(['pp','pw'])}
     if(!checkAll(m,lst)){g('e').textContent=(pu||pp)&&!g('a').classList.contains('badf')?T('e_par'):T('fixred');return}
-    const r=await api({a:'add_student',name:g('a').value.trim(),teacher:p?g('t').value:null,parent_name:g('pn').value.trim(),parent_uname:pu.toLowerCase(),parent_pw:pp});
+    const r=await api({a:'add_student',name:g('a').value.trim(),father:g('fa').value.trim(),cur_para:g('cp').value,done_paras:g('dp').value,teacher:p?g('t').value:null,parent_name:g('pn').value.trim(),parent_uname:pu.toLowerCase(),parent_pw:pp});
     if(!r.ok){if(r.error==='exists')flag(m,'pu',T('e_exists'));else if(r.field){const k={name:['a','req'],parent_uname:['pu','uname'],parent_pw:['pp','pw']}[r.field];if(k){g(k[0]).dataset.k=k[1];flag(m,k[0],V[k[1]](g(k[0]).value)||T('e_req'))}}g('e').textContent=msg(r.error);return}m.remove();await load();home()};
 }
 function resetPw(id){
@@ -300,22 +389,90 @@ async function notes(){
   const m=modal(`<h2>${T('notes')}</h2>${li||`<p class="muted">${T('nonotes')}</p>`}<p><button class="sec" id="x">${T('cancel')}</button></p>`);m.querySelector('#x').onclick=()=>m.remove();
 }
 
-/* ---------- report card ---------- */
-async function reportView(s,month){
-  month=month||today.slice(0,7);
-  const from=month+'-01',to=month+'-31',r=await api({a:'entries',student:s.id,from,to}),E=r.entries||[];
-  const pres=E.filter(e=>!e.absent),abs=E.length-pres.length,sum=k=>pres.reduce((a,e)=>a+(e[k]||0),0),avg=(k,f)=>{const v=pres.filter(e=>e[k]!=null);return v.length?(v.reduce((a,e)=>a+e[k],0)/v.length):null},f1=x=>x==null?'—':(Math.round(x*10)/10).toString();
-  const aq=avg('sabaq_q'),as=avg('sabqi_err'),am=avg('manzil_err');
-  let g=null;if(aq!=null){const sc=(aq-1)/2*0.5+(1-Math.min(((as||0)+(am||0))/2,6)/6)*0.5;g=sc>=.75?3:sc>=.5?2:1}
-  const qn=n=>n?T('q'+n):'—';
-  const m=modal(`<div id="rc"><h2>${T('report')}</h2><p><b>${esc(s.name)}</b> — ${esc(ME.inst.name)}</p><div class="noprint"><label>${T('month')}</label><input type="month" id="mo" value="${month}" max="${today.slice(0,7)}"></div>
-  ${E.length?`<div class="tw"><table><tr><th>${T('present')}</th><th>${T('absentd')}</th><th>${T('tl')}</th><th>${T('avgq')}</th><th>${T('avgs')}</th><th>${T('avgm')}</th></tr><tr><td>${pres.length}</td><td>${abs}</td><td>${sum('sabaq_lines')}</td><td>${aq==null?'—':qn(Math.round(aq))}</td><td>${f1(as)}</td><td>${f1(am)}</td></tr></table></div>
-  <p><b>${T('grade')}:</b> ${g?T('g'+g):'—'}</p>
-  <div class="tw"><table><tr><th>${T('date')}</th><th>${T('sabaq')}</th><th>${T('q')}</th><th>${T('sabqi')}</th><th>${T('manzil')}</th></tr>
-  ${E.map(e=>e.absent?`<tr><td>${e.day.slice(8)}</td><td colspan="4">${T('absent')}</td></tr>`:`<tr><td>${e.day.slice(8)}</td><td>${e.sabaq_lines==null?'—':e.sabaq_lines}</td><td>${qn(e.sabaq_q)}</td><td>${e.sabqi_para||'—'}: ${e.sabqi_err==null?'—':e.sabqi_err}</td><td>${e.manzil_para||'—'}: ${e.manzil_err==null?'—':e.manzil_err}</td></tr>`).join('')}</table></div>`:`<p class="muted">${T('noent')}</p>`}
-  <p class="row noprint"><button id="pr">${T('print')}</button><button class="sec" id="x">${T('cancel')}</button></p></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();m.querySelector('#pr').onclick=()=>window.print();
-  m.querySelector('#mo').onchange=e=>{if(e.target.value){m.remove();reportView(s,e.target.value)}};
+/* ---------- the student's card, the reports and the graphs ---------- */
+const reportView=s=>studentCard(s);
+function editStudent(s,after){
+  const p=ME.user.role==='principal';
+  const m=modal(`<h2>${T('editst')}</h2><label>${T('sname')}</label><input id="a" maxlength="60" value="${esc(s.name)}"><label>${T('sfather')}</label><input id="fa" maxlength="60" value="${esc(s.father||'')}">
+  <div class="row"><div><label>${T('scur')}</label>${paraSel('cp',s.cur_para)}</div><div><label>${T('sdone')}</label>${paraSel0('dp',s.done_paras)}</div></div>
+  ${p?`<label>${T('teacher')}</label><select id="t"><option value=""></option>${ME.teachers.map(x=>`<option value="${x.id}"${x.id==s.teacher?' selected':''}>${esc(x.name)}</option>`).join('')}</select>`:''}
+  <div class="err" id="e"></div><div class="row"><button id="sv">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
+  live(m);m.querySelector('#x').onclick=()=>m.remove();
+  m.querySelector('#sv').onclick=async()=>{const g=i=>m.querySelector('#'+i);g('e').textContent='';if(!checkAll(m,[['a','req']])){g('e').textContent=T('fixred');return}
+    const d={a:'update_student',student:s.id,name:g('a').value.trim(),father:g('fa').value.trim(),cur_para:g('cp').value,done_paras:g('dp').value};if(p)d.teacher=g('t').value;
+    const r=await api(d);if(!r.ok){g('e').textContent=msg(r.error);return}m.remove();await load();after&&after()};
+}
+const pad2=n=>String(n).padStart(2,'0');
+function perRange(k,y,i){let f,t,lab;const M=T('mons');
+  if(k==='m'){f=`${y}-${pad2(i)}-01`;t=`${y}-${pad2(i)}-31`;lab=M[i-1]+' '+y}
+  else if(k==='q'){const a=i*3-2;f=`${y}-${pad2(a)}-01`;t=`${y}-${pad2(a+2)}-31`;lab=T('q'+i+'n')+' '+T('qn')+' '+y}
+  else if(k==='h'){f=`${y}-${i===1?'01':'07'}-01`;t=`${y}-${i===1?'06':'12'}-31`;lab=T('h'+i+'n')+' '+T('hn')+' '+y}
+  else{f=`${y}-01-01`;t=`${y}-12-31`;lab=String(y)}
+  return {f,t,lab}}
+function bucketOf(k,day,from){ // the graphs: monthly by day, quarterly and half-yearly by week, yearly by month
+  if(k==='m')return {i:+day.slice(8),l:String(+day.slice(8))};
+  if(k==='y')return {i:+day.slice(5,7),l:T('mons')[+day.slice(5,7)-1].slice(0,3)};
+  const d0=new Date(from+'T00:00:00Z'),d1=new Date(day+'T00:00:00Z'),w=Math.floor((d1-d0)/864e5/7)+1;return {i:w,l:String(w)}}
+const svgBars=(vals,labs,title)=>{const W=320,H=130,mx=Math.max(1,...vals),n=vals.length||1,bw=Math.max(3,Math.min(22,(W-30)/n-3));let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><line x1="22" y1="108" x2="${W}" y2="108" style="stroke:var(--line)"/><text x="2" y="14" font-size="10" style="fill:var(--muted)">${mx}</text>`;
+  vals.forEach((v,i)=>{const x=24+i*((W-30)/n),h=Math.round(v/mx*92);o+=`<rect x="${x}" y="${108-h}" width="${bw}" height="${h}" rx="3" style="fill:var(--accent)"/>`;if(n<=16||i%Math.ceil(n/12)===0)o+=`<text x="${x+bw/2}" y="122" font-size="9" text-anchor="middle" style="fill:var(--muted)">${esc(labs[i])}</text>`});return o+'</svg>'};
+const svgLines=(ser,labs,title)=>{const W=320,H=130,all=ser.flatMap(x=>x.v),mx=Math.max(1,...all),n=labs.length||1,st=n>1?(W-34)/(n-1):0;let o=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(title)}"><line x1="22" y1="108" x2="${W}" y2="108" style="stroke:var(--line)"/><text x="2" y="14" font-size="10" style="fill:var(--muted)">${mx}</text>`;
+  ser.forEach(x=>{const pts=x.v.map((v,i)=>`${26+i*st},${108-Math.round(v/mx*92)}`);o+=`<polyline points="${pts.join(' ')}" fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke:${x.c}"/>`+x.v.map((v,i)=>`<circle cx="${26+i*st}" cy="${108-Math.round(v/mx*92)}" r="3" style="fill:${x.c}"/>`).join('')});
+  labs.forEach((l,i)=>{if(n<=16||i%Math.ceil(n/12)===0)o+=`<text x="${26+i*st}" y="122" font-size="9" text-anchor="middle" style="fill:var(--muted)">${esc(l)}</text>`});
+  o+=ser.map((x,i)=>`<rect x="${30+i*70}" y="2" width="10" height="10" rx="2" style="fill:${x.c}"/><text x="${44+i*70}" y="11" font-size="10" style="fill:var(--ink)">${esc(x.n)}</text>`).join('');return o+'</svg>'};
+const svgRing=(pr,ab,title)=>{const tot=pr+ab,pc=tot?pr/tot:0,r=34,c=2*Math.PI*r;return `<svg viewBox="0 0 120 90" role="img" aria-label="${esc(title)}"><circle cx="60" cy="45" r="${r}" fill="none" stroke-width="11" style="stroke:var(--line)"/><circle cx="60" cy="45" r="${r}" fill="none" stroke-width="11" stroke-dasharray="${(c*pc).toFixed(1)} ${c.toFixed(1)}" transform="rotate(-90 60 45)" stroke-linecap="round" style="stroke:var(--good)"/><text x="60" y="50" text-anchor="middle" font-size="16" font-weight="700" style="fill:var(--ink)">${Math.round(pc*100)}%</text></svg>`};
+const svgHB=(items,title)=>{const mx=Math.max(1,...items.map(x=>x.n));return `<svg viewBox="0 0 320 ${items.length*26+6}" role="img" aria-label="${esc(title)}">`+items.map((x,i)=>`<text x="2" y="${i*26+17}" font-size="11" style="fill:var(--ink)">${esc(x.l)}</text><rect x="86" y="${i*26+6}" width="${Math.round(x.n/mx*190)}" height="16" rx="4" style="fill:${x.c}"/><text x="${90+Math.round(x.n/mx*190)}" y="${i*26+18}" font-size="11" style="fill:var(--ink)">${x.n}</text>`).join('')+'</svg>'};
+function analyse(E,k,from){
+  const pres=E.filter(e=>!e.absent),abs=E.length-pres.length,sum=f=>pres.reduce((a,e)=>a+(e[f]||0),0),avg=f=>{const v=pres.filter(e=>e[f]!=null);return v.length?v.reduce((a,e)=>a+e[f],0)/v.length:null};
+  const aq=avg('sabaq_q'),as=avg('sabqi_err'),am=avg('manzil_err');let g=null;if(aq!=null){const sc=(aq-1)/2*0.5+(1-Math.min(((as||0)+(am||0))/2,6)/6)*0.5;g=sc>=.75?3:sc>=.5?2:1}
+  const B={};E.forEach(e=>{const b=bucketOf(k,e.day,from),o=B[b.i]||(B[b.i]={l:b.l,lines:0,se:0,me:0});if(!e.absent){o.lines+=e.sabaq_lines||0;o.se+=e.sabqi_err||0;o.me+=e.manzil_err||0}});
+  const ks=Object.keys(B).map(Number).sort((a,b)=>a-b);
+  const pe={s:{},m:{}};pres.forEach(e=>{if(e.sabqi_para&&e.sabqi_err)pe.s[e.sabqi_para]=(pe.s[e.sabqi_para]||0)+e.sabqi_err;if(e.manzil_para&&e.manzil_err)pe.m[e.manzil_para]=(pe.m[e.manzil_para]||0)+e.manzil_err});
+  const top=(o,k2)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([p,n])=>({k:T(k2),p,n}));
+  const q={3:0,2:0,1:0};pres.forEach(e=>{if(e.sabaq_q)q[e.sabaq_q]++});
+  const clean=pres.filter(e=>(e.sabqi_err||0)===0&&(e.manzil_err||0)===0&&(e.sabqi_para||e.manzil_para)).length;
+  return {n:E.length,pres:pres.length,abs,lines:sum('sabaq_lines'),aq,as,am,se:sum('sabqi_err'),me:sum('manzil_err'),g,labs:ks.map(i=>B[i].l),lv:ks.map(i=>B[i].lines),sv:ks.map(i=>B[i].se),mv:ks.map(i=>B[i].me),weak:[...top(pe.s,'sabqi'),...top(pe.m,'manzil')].sort((a,b)=>b.n-a.n).slice(0,4),q,clean}}
+const kindText=a=>{let t=T('k'+(a.g||2));if(a.n&&a.abs/a.n>=.2)t+=' '+T('kabs');return t+' '+T('kdua')};
+function shareText(s,lab,a){const qn=n=>n?T('q'+Math.round(n)):'—';return [T('rpt'),ME.inst.name,s.name+' — '+lab,`${T('t_pres')}: ${a.pres}، ${T('t_abs')}: ${a.abs}`,`${T('t_lines')}: ${a.lines}`,`${T('t_se')}: ${a.se}، ${T('t_me')}: ${a.me}`,a.g?T('t_grade')+': '+T('g'+a.g):'',kindText(a)].filter(Boolean).join('\n')}
+async function studentCard(s){
+  const can=ME.user.role!=='parent',yr=+today.slice(0,4),mo=+today.slice(5,7);let per={k:'m',y:yr,i:mo};
+  const done=s.done_paras!=null?s.done_paras:null;
+  const m=modal(`<div class="chead"><span class="av big">${esc(first1(s.name))}</span><div><h2>${esc(s.name)}</h2><div class="muted">${esc(ME.inst.name)}</div></div><button class="sec sm noprint" id="cx" style="color:#fff;border-color:#fff">✕</button></div>
+  <div class="info"><div><small>${T('father')}</small><b>${esc(s.father||'—')}</b></div><div><small>${T('teacher')}</small><b>${esc(s.teacher_name||'—')}</b></div><div><small>${T('curpara')}</small><b>${s.cur_para||'—'}</b></div><div><small>${T('donep')}</small><b>${done!=null?done+' / 30':'—'}</b></div></div>
+  ${done!=null?`<div class="prog" title="${done}/30"><i style="width:${Math.round(done/30*100)}%"></i></div>`:''}
+  <div class="acts noprint">${can?`<button id="ce">${T('entryb')}</button><button class="sec" id="ced">${T('edit')}</button>`:''}</div>
+  <div class="rtabs noprint" id="rt">${[['m','p_m'],['q','p_q'],['h','p_h'],['y','p_y']].map(([k,l])=>`<button type="button" data-k="${k}">${T(l)}</button>`).join('')}</div>
+  <div class="pick noprint" id="pk"></div><div id="rep"></div>
+  <div class="acts noprint"><button id="pr">${T('print')}</button><button class="sec" id="sh">${T('share')}</button><button class="sec" id="cl">${T('cancel')}</button></div><p class="muted noprint" style="font-size:.85rem">${T('pdfnote')}</p>`,'wide');
+  m.querySelector('#cx').onclick=m.querySelector('#cl').onclick=()=>m.remove();
+  if(can){m.querySelector('#ce').onclick=()=>{m.remove();entry(s)};m.querySelector('#ced').onclick=()=>{m.remove();editStudent(s,()=>{drawStu();studentCard(ME.students.find(x=>x.id===s.id)||s)})}}
+  let last=null;
+  const pickUI=()=>{const k=per.k,M=T('mons'),yrs=Array.from({length:6},(_,i)=>yr-i);
+    let h=`<select id="py">${yrs.map(y=>`<option value="${y}"${y===per.y?' selected':''}>${y}</option>`).join('')}</select>`;
+    if(k==='m')h+=`<select id="pi">${M.map((n,i)=>`<option value="${i+1}"${i+1===per.i?' selected':''}>${n}</option>`).join('')}</select>`;
+    if(k==='q')h+=`<select id="pi">${[1,2,3,4].map(i=>`<option value="${i}"${i===per.i?' selected':''}>${T('q'+i+'n')}</option>`).join('')}</select>`;
+    if(k==='h')h+=`<select id="pi">${[1,2].map(i=>`<option value="${i}"${i===per.i?' selected':''}>${T('h'+i+'n')}</option>`).join('')}</select>`;
+    m.querySelector('#pk').innerHTML=h;m.querySelector('#py').onchange=e=>{per.y=+e.target.value;draw()};const pi=m.querySelector('#pi');if(pi)pi.onchange=e=>{per.i=+e.target.value;draw()}};
+  const draw=async()=>{
+    m.querySelectorAll('#rt button').forEach(b=>b.classList.toggle('on',b.dataset.k===per.k));pickUI();
+    const R=perRange(per.k,per.y,per.i),r=await api({a:'entries',student:s.id,from:R.f,to:R.t}),E=r.entries||[],a=analyse(E,per.k,R.f);last={R,a};
+    const qn=n=>n?T('q'+Math.round(n)):'—',f1=x=>x==null?'—':(Math.round(x*10)/10).toString(),gk=a.g?' g'+a.g:'';
+    const rep=m.querySelector('#rep');
+    if(!E.length){rep.innerHTML=`<div class="rhead"><img class="rlogo" src="icon-192.png" alt=""><div><b>${T('rpt')}</b><br>${esc(ME.inst.name)} — ${esc(s.name)}<br><span class="muted">${T('period')}: ${esc(R.lab)}</span></div></div><p class="muted">${T('noent')}</p>`;return}
+    rep.innerHTML=`<div class="rhead"><img class="rlogo" src="icon-192.png" alt=""><div><b>${T('rpt')}</b><br>${esc(ME.inst.name)} — ${esc(s.name)}${s.father?' — '+esc(T('father'))+': '+esc(s.father):''}<br><span class="muted">${T('period')}: ${esc(R.lab)}</span></div></div>
+    <div class="tiles2"><div class="tl"><b>${a.pres}</b><small>${T('t_pres')}</small></div><div class="tl${a.abs?' g2':''}"><b>${a.abs}</b><small>${T('t_abs')}</small></div><div class="tl"><b>${a.lines}</b><small>${T('t_lines')}</small></div><div class="tl"><b>${qn(a.aq)}</b><small>${T('t_q')}</small></div><div class="tl"><b>${a.se}</b><small>${T('t_se')}</small></div><div class="tl"><b>${a.me}</b><small>${T('t_me')}</small></div><div class="tl${gk}"><b>${a.g?T('g'+a.g):'—'}</b><small>${T('t_grade')}</small></div></div>
+    <div class="two"><div class="chart"><h4>${T('c_lines')}</h4>${svgBars(a.lv,a.labs,T('c_lines'))}</div><div class="chart"><h4>${T('c_err')}</h4>${svgLines([{v:a.sv,c:'var(--gold)',n:T('ser_s')},{v:a.mv,c:'var(--bad)',n:T('ser_m')}],a.labs,T('c_err'))}</div></div>
+    <div class="two"><div class="chart"><h4>${T('c_att')}</h4>${svgRing(a.pres,a.abs,T('c_att'))}</div><div class="chart"><h4>${T('c_qual')}</h4>${svgHB([{l:T('q3'),n:a.q[3],c:'var(--good)'},{l:T('q2'),n:a.q[2],c:'var(--mid)'},{l:T('q1'),n:a.q[1],c:'var(--bad)'}],T('c_qual'))}</div></div>
+    <div class="two"><div class="chart"><h4>⚠ ${T('weakh')}</h4><ul class="weak">${a.weak.map(w=>`<li>${esc(T('weakp')(w))}</li>`).join('')}${a.q[1]?`<li>${esc(T('weakq')(a.q[1]))}</li>`:''}${a.abs?`<li>${esc(T('weaka')(a.abs))}</li>`:''}${!a.weak.length&&!a.q[1]&&!a.abs?`<li>${T('noweak')}</li>`:''}</ul></div>
+    <div class="chart"><h4>★ ${T('strongh')}</h4><ul class="strong">${a.clean?`<li>${esc(T('strongc')(a.clean))}</li>`:''}${a.q[3]?`<li>${esc(T('strongq')(a.q[3]))}</li>`:''}${a.lines?`<li>${esc(T('strongl')(a.lines))}</li>`:''}${!a.clean&&!a.q[3]&&!a.lines?`<li>${T('nostrong')}</li>`:''}</ul></div></div>
+    <div class="kind"><b>${T('kh')}:</b><br>${esc(kindText(a))}</div>
+    <details open><summary>${T('dailyt')}</summary><div class="tw"><table><tr><th>${T('date')}</th><th>${T('sabaq')}</th><th>${T('q')}</th><th>${T('sabqi')}</th><th>${T('manzil')}</th></tr>${E.map(e=>e.absent?`<tr><td>${e.day.slice(5)}</td><td colspan="4">${T('absent')}</td></tr>`:`<tr><td>${e.day.slice(5)}</td><td>${e.sabaq_lines==null?'—':e.sabaq_lines}</td><td>${qn(e.sabaq_q)}</td><td>${e.sabqi_para||'—'}: ${e.sabqi_err==null?'—':e.sabqi_err}</td><td>${e.manzil_para||'—'}: ${e.manzil_err==null?'—':e.manzil_err}</td></tr>`).join('')}</table></div></details>`;
+  };
+  m.querySelectorAll('#rt button').forEach(b=>b.onclick=()=>{per.k=b.dataset.k;per.i=per.k==='m'?mo:per.k==='q'?Math.ceil(mo/3):per.k==='h'?(mo<=6?1:2):1;draw()});
+  m.querySelector('#pr').onclick=()=>{m.querySelectorAll('details').forEach(d=>d.open=true);window.print()};
+  m.querySelector('#sh').onclick=async()=>{if(!last)return;const t=shareText(s,last.R.lab,last.a);
+    if(navigator.share){try{await navigator.share({title:T('rpt'),text:t});return}catch(e){if(e&&e.name==='AbortError')return}}
+    try{await navigator.clipboard.writeText(t);alert(T('copied'))}catch(e){window.open('https://wa.me/?text='+encodeURIComponent(t),'_blank','noopener')}};
+  draw();
 }
 
 shell();
