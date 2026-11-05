@@ -28,10 +28,24 @@ class Widget : AppWidgetProvider() {
 
         /** all the app's widgets */
         fun update(ctx: Context) {
-            runCatching { prayer(ctx, Widget::class.java, R.layout.widget, true) }
-            runCatching { prayer(ctx, WidgetSmall::class.java, R.layout.widget_small, false) }
-            runCatching { WidgetCal.draw(ctx) }
+            guard(ctx, Widget::class.java, R.layout.widget, R.id.city) { prayer(ctx, Widget::class.java, R.layout.widget, true) }
+            guard(ctx, WidgetSmall::class.java, R.layout.widget_small, R.id.city) { prayer(ctx, WidgetSmall::class.java, R.layout.widget_small, false) }
+            guard(ctx, WidgetCal::class.java, R.layout.widget_cal, R.id.month) { WidgetCal.draw(ctx) }
             runCatching { nextNote(ctx) }
+        }
+
+        /** runs one widget's drawing; when it fails the widget shows what failed (the kind of error and where) instead of staying empty without a word */
+        fun guard(ctx: Context, cls: Class<*>, layout: Int, textId: Int, draw: () -> Unit) {
+            val err = runCatching { draw() }.exceptionOrNull() ?: return
+            android.util.Log.e("SalatWidget", "drawing failed", err)
+            runCatching {
+                val mgr = AppWidgetManager.getInstance(ctx)
+                val ids = mgr.getAppWidgetIds(ComponentName(ctx, cls)); if (ids.isEmpty()) return
+                val v = RemoteViews(ctx.packageName, layout)
+                val at = err.stackTrace.firstOrNull { it.className.startsWith("org.turath") }?.let { it.fileName + ":" + it.lineNumber } ?: ""
+                v.setTextViewText(textId, "⚠ " + err.javaClass.simpleName + " " + at)
+                mgr.updateAppWidget(ids, v)
+            }
         }
 
         fun settingsIntent(ctx: Context, code: Int): PendingIntent = PendingIntent.getActivity(ctx, code, Intent(ctx, WidgetSettings::class.java),
