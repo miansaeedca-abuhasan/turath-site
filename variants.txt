@@ -1,0 +1,7 @@
+ls: cannot access '/tmp/camtest': No such file or directory
+/tmp/variants:
+total 109600
+drwxr-xr-x  2 runner runner     4096 Nov  5 15:40 .
+drwxrwxrwt 17 root   root       4096 Nov  5 15:53 ..
+-rw-r--r--  1 runner runner 52274450 Nov  5 15:38 main.apk
+-rw-r--r--  1 runner runner 59943374 Nov  5 15:40 nomin.apk
