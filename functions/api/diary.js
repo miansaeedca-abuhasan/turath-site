@@ -123,7 +123,8 @@ export async function onRequest({request, env}) {
 
     if (a === 'register') { // step 1: check the details, mail a 6-digit code to the principal's email
       const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase(), email = str(b.email, 254).toLowerCase();
-      if (!name || !pname || !unameOk(uname) || !pwOk(b.pw) || !emailOk(email)) return json({error: !pwOk(b.pw) ? 'weak' : 'invalid'}, 400);
+      const bad = !name ? 'inst' : !pname ? 'name' : !emailOk(email) ? 'email' : !unameOk(uname) ? 'uname' : !pwOk(b.pw) ? 'pw' : '';
+      if (bad) return json({error: bad === 'pw' ? 'weak' : 'invalid', field: bad}, 400); // «field» tells the screen which box to turn red
       const now = Date.now(), old = await db.prepare('SELECT sent_n, sent_ts FROM d_pending WHERE email=?').bind(email).first();
       if (old && now - old.sent_ts < 3600000 && old.sent_n >= 3) return json({error: 'toomany'}, 429);
       if (old && now - old.sent_ts < 45000) return json({error: 'wait'}, 429);
@@ -176,13 +177,13 @@ export async function onRequest({request, env}) {
     if (a === 'add_teacher') {
       if (u.role !== 'principal') return json({error: 'forbidden'}, 403);
       const name = str(b.name, 60), un = str(b.uname, 30).toLowerCase();
-      if (!name || !unameOk(un) || !pwOk(b.pw)) return json({error: 'invalid'}, 400);
+      if (!name || !unameOk(un) || !pwOk(b.pw)) return json({error: 'invalid', field: !name ? 'name' : !unameOk(un) ? 'uname' : 'pw'}, 400);
       try { await addUser(db, u.inst, 'teacher', name, un, b.pw); } catch (e) { return json({error: 'exists'}, 409); }
       return json({ok: 1});
     }
     if (a === 'add_student') {
       if (u.role === 'parent') return json({error: 'forbidden'}, 403);
-      const name = str(b.name, 60); if (!name) return json({error: 'invalid'}, 400);
+      const name = str(b.name, 60); if (!name) return json({error: 'invalid', field: 'name'}, 400);
       let teacher = u.role === 'teacher' ? u.id : int(b.teacher, 1, 1e12), parent = null;
       if (teacher && !(await db.prepare("SELECT 1 FROM d_user WHERE id=? AND inst=? AND role='teacher'").bind(teacher, u.inst).first())) teacher = null;
       const pun = str(b.parent_uname, 30).toLowerCase();
@@ -190,7 +191,7 @@ export async function onRequest({request, env}) {
         const p = await db.prepare("SELECT id FROM d_user WHERE inst=? AND uname=? AND role='parent'").bind(u.inst, pun).first();
         if (p) parent = p.id;
         else {
-          if (!unameOk(pun) || !pwOk(b.parent_pw)) return json({error: 'invalid'}, 400);
+          if (!unameOk(pun) || !pwOk(b.parent_pw)) return json({error: 'invalid', field: !unameOk(pun) ? 'parent_uname' : 'parent_pw'}, 400);
           try { parent = await addUser(db, u.inst, 'parent', str(b.parent_name, 60) || name, pun, b.parent_pw); } catch (e) { return json({error: 'exists'}, 409); }
         }
       }
