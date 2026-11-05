@@ -258,6 +258,13 @@ html[lang=ur] .moment .mh{font:600 1.2rem/1.9 var(--urdu)}
 body.withplayer .resume.float{display:none}
 .filterbox{display:flex;align-items:center;gap:.5rem;padding:.2rem .9rem;color:var(--accent)}
 .filter{flex:1;min-width:0;border:0;background:none;padding:.6rem 0;outline:none}
+.fcaps{display:flex;flex-wrap:nowrap;justify-content:center;gap:.4rem;margin:.9rem 0 .3rem}
+.fcap{flex:0 1 auto;white-space:nowrap;font-size:.82rem;padding:.3rem .8rem;border-radius:999px;border:1.2px solid #c39a3b;background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff!important;text-decoration:none!important;box-shadow:0 1px 4px rgba(14,90,69,.25)}
+.fcap:active{transform:scale(.97)}
+@media (max-width:380px){.fcap{font-size:.74rem;padding:.28rem .55rem}}
+.gpbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;direction:ltr;margin:0 0 .8rem}
+.gpb{flex:1 1 170px;display:flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:14px;background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff;border:1.5px solid #c39a3b;text-decoration:none;font:inherit;cursor:pointer;box-shadow:var(--shadow);min-height:48px}
+.gpb svg{width:28px;height:28px;flex:none}.gpb span{display:block;line-height:1.35;text-align:start}.gpb small{display:block;font-size:.72rem;opacity:.85}.gpb b{font-size:.92rem}.gpb:active{transform:scale(.98)}
 .hbanner{display:block;width:100%;height:auto;border-radius:14px;margin:0 0 .8rem;box-shadow:var(--shadow)}
 .tick{overflow:hidden;direction:ltr;white-space:nowrap;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:0 0 .5rem;padding:0;box-sizing:border-box;height:calc(1.9525rem + 2px);line-height:1.9525rem;font-size:.95rem;color:var(--accent);font-weight:600}
 .tick .tk{margin:0;display:inline-block;padding-inline-start:100%;animation:tkmove var(--tkd,60s) linear infinite}
@@ -1904,10 +1911,29 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   const h=location.hash;
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/hifz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
   else loadBooks().then(route);});
+
+/* the two install buttons under the home banner: Google Play, and iPhone (opens the steps for the Home Screen) */
+(function(){
+  const standalone=(window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone||/^android-app:/.test(document.referrer)||/; wv\)/.test(navigator.userAgent);
+  const GP={ur:['ایپ انسٹال کریں','دستیاب ہے'],ar:['ثبّت التطبيق','متوفّر على'],en:['Install the app','Get it on'],bn:['অ্যাপ ইনস্টল করুন','পাওয়া যাচ্ছে'],hi:['ऐप इंस्टॉल करें','उपलब्ध है'],gu:['એપ ઇન્સ્ટોલ કરો','ઉપલબ્ધ છે'],fr:['Installer l’application','Disponible sur']};
+  const IP={ur:['ہوم اسکرین میں شامل کریں','آئی فون'],ar:['أضف إلى الشاشة الرئيسية','آيفون'],en:['Add to Home Screen','iPhone'],bn:['হোম স্ক্রিনে যোগ করুন','আইফোন'],hi:['होम स्क्रीन में जोड़ें','आईफ़ोन'],gu:['હોમ સ્ક્રીન પર ઉમેરો','આઇફોન'],fr:['Sur l’écran d’accueil','iPhone']};
+  window.getBadges=function(){
+    if(standalone)return null;
+    const g=GP[ui]||GP.en,i=IP[ui]||IP.en,rtl=ui==='ur'||ui==='ar',NS='http://www.w3.org/2000/svg';
+    const svg=(inner)=>{const s=document.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('aria-hidden','true');s.innerHTML=inner;return s};
+    const play=svg('<path d="M4 2.5L13 12 4 21.5z" fill="#00a0ff"/><path d="M4 2.5L16 9l-3 3z" fill="#00e676"/><path d="M4 21.5L16 15l-3-3z" fill="#ff3d57"/><path d="M16 9l5 3-5 3-3-3z" fill="#ffd400"/>');
+    const phone=svg('<path fill="#fff" d="'+'M17 1H7a2 2 0 00-2 2v18a2 2 0 002 2h10a2 2 0 002-2V3a2 2 0 00-2-2zm0 18H7V5h10v14zm-4-9h-2v2H9v2h2v2h2v-2h2v-2h-2v-2z'+'"/>');
+    const a=document.createElement('a');a.className='gpb';a.href='https://play.google.com/store/apps/details?id=com.turathkhairalquroon.app';a.target='_blank';a.rel='noopener';a.lang=ui;a.dir=rtl?'rtl':'ltr';
+    const t1=document.createElement('span');t1.innerHTML='<small></small><b></b>';t1.querySelector('small').textContent=g[1]+' Google Play';t1.querySelector('b').textContent=g[0];a.append(play,t1);
+    const b=document.createElement('button');b.type='button';b.className='gpb';b.lang=ui;b.dir=rtl?'rtl':'ltr';
+    const t2=document.createElement('span');t2.innerHTML='<small></small><b></b>';t2.querySelector('small').textContent=i[1];t2.querySelector('b').textContent=i[0];b.append(phone,t2);
+    b.onclick=()=>window.addHomeHelp&&window.addHomeHelp();
+    const row=document.createElement('div');row.className='gpbar';row.append(a,b);return row;};
+})();
 /* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
 (function(){
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-  const b=document.getElementById('addhome');if(!b||!ios||navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches))return;
+  const b=document.getElementById('addhome');
   ICON.addhome='M17 1H7a2 2 0 00-2 2v18a2 2 0 002 2h10a2 2 0 002-2V3a2 2 0 00-2-2zm0 18H7V5h10v14zm-4-9h-2v2H9v2h2v2h2v-2h2v-2h-2v-2z';
   ICON.iosshare='M12 2l4 4-1.4 1.4L13 5.8V15h-2V5.8L9.4 7.4 8 6l4-4zM5 10h3v2H6v8h12v-8h-2v-2h3a1 1 0 011 1v10a1 1 0 01-1 1H5a1 1 0 01-1-1V11a1 1 0 011-1z';
   const TX={ur:{t:'ہوم اسکرین میں محفوظ کریں',s:['سفاری میں یہ صفحہ کھولیں۔','نیچے شیئر کا نشان دبائیں۔','فہرست میں سے «ہوم اسکرین میں شامل کریں» منتخب کریں۔','اوپر «شامل کریں» دبائیں۔ اب آئیکون ہوم اسکرین پر آ جائے گا اور ایپ کی طرح کھلے گا۔']},
@@ -1918,10 +1944,13 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
     gu:{t:'હોમ સ્ક્રીન પર સાચવો',s:['આ પાનું સફારીમાં ખોલો.','નીચે શેર બટન દબાવો.','યાદીમાંથી «હોમ સ્ક્રીન પર ઉમેરો» પસંદ કરો.','ઉપર «ઉમેરો» દબાવો. આઇકન હોમ સ્ક્રીન પર આવી જશે અને એપની જેમ ખુલશે.']},
     fr:{t:'Enregistrer sur l’écran d’accueil',s:['Ouvrez cette page dans Safari.','Appuyez sur le bouton Partager, en bas.','Choisissez « Sur l’écran d’accueil » dans la liste.','Appuyez sur « Ajouter » en haut. L’icône apparaît sur votre écran d’accueil et s’ouvre comme une application.']}};
   const tx=()=>TX[ui]||TX.en;
+  const openHelp=()=>{const x=tx(),rtl=ui==='ur'||ui==='ar';
+    window.sheet(x.t,[el('ol',{dir:rtl?'rtl':'ltr',lang:ui,style:'line-height:2;padding-inline-start:1.4rem;margin:.2rem 0'},...x.s.map((t,i)=>el('li',{},t,i===1?el('span',{style:'display:inline-block;vertical-align:middle;margin:0 .4rem'},icon('iosshare')):null)))]);};
+  window.addHomeHelp=openHelp;
+  if(!b||!ios||navigator.standalone||(window.matchMedia&&matchMedia('(display-mode: standalone)').matches))return;
   b.hidden=false;b.replaceChildren(icon('addhome'));
   const upd=()=>{const t=tx().t;b.title=t;b.setAttribute('aria-label',t);};upd();
-  b.addEventListener('click',()=>{upd();const x=tx(),rtl=ui==='ur'||ui==='ar';
-    window.sheet(x.t,[el('ol',{dir:rtl?'rtl':'ltr',lang:ui,style:'line-height:2;padding-inline-start:1.4rem;margin:.2rem 0'},...x.s.map((t,i)=>el('li',{},t,i===1?el('span',{style:'display:inline-block;vertical-align:middle;margin:0 .4rem'},icon('iosshare')):null)))]);});
+  b.addEventListener('click',()=>{upd();openHelp();});
 })();
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').then(reg=>{const upd=()=>{if(document.getElementById('updbar'))return;try{const dd=new Date().toDateString();if(localStorage.updDay===dd)return;localStorage.updDay=dd;}catch(e){}const M={ur:['اپڈیٹ آگئی ہے: نئی کتب اور بہتریاں دیکھنے کے لیے ریفریش کریں','ریفریش کریں'],en:['An update is available: refresh to get the new books and improvements','Refresh'],ar:['يوجد تحديث جديد: حدّث الصفحة لترى الكتب والتحسينات','تحديث'],bn:['আপডেট এসেছে: নতুন গ্রন্থ ও উন্নতিগুলো পেতে রিফ্রেশ করুন','রিফ্রেশ করুন'],hi:['अपडेट उपलब्ध है: नई किताबें और सुधार पाने के लिए रिफ्रेश करें','रिफ्रेश करें'],gu:['અપડેટ ઉપલબ્ધ છે: નવાં પુસ્તકો અને સુધારા મેળવવા રિફ્રેશ કરો','રિફ્રેશ કરો'],fr:['Une mise à jour est disponible : actualisez pour obtenir les nouveaux livres et améliorations','Actualiser']}[ui]||['Update available','Refresh'];const b=document.createElement('div');b.id='updbar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:74px;z-index:9999;background:#0b5d4b;color:#fff;border-radius:12px;padding:.6rem .9rem;display:flex;gap:.7rem;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,.3);font:15px/1.6 system-ui';b.append(document.createTextNode(M[0]));const x=document.createElement('button');x.textContent=M[1];x.style.cssText='background:#fff;color:#0b5d4b;border:0;border-radius:8px;padding:.35rem .8rem;font:600 14px system-ui;cursor:pointer';x.onclick=()=>location.reload();b.append(x);document.body.append(b);};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)upd();});});try{reg.update();}catch(e){}}).catch(()=>{});
 </script>
@@ -3083,6 +3112,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const out = []; ord.forEach(k => { const c = by[k.replace('|', '')]; if (c) { out.push(c); delete by[k.replace('|', '')]; } else if (k.includes('|')) out.push(gap()); });
       Object.values(by).forEach(c => out.push(c)); g.replaceChildren(...out); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
+    if (window.getBadges) { const bd = getBadges(); if (bd) v.append(bd); }
     if (window.mkDateBar) v.append(mkDateBar());
     tickerBar(v);
     if (window.OWNER) OWNER.banner(v);
@@ -3093,14 +3123,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(el('div', {id: 'today'}));
     const vis = el('span', {class: 'visits'});
     if (window.OFFLINE) v.append(el('button', {type: 'button', class: 'resume', on: {click: () => OFFLINE.open()}}, OFFLINE.label()));
-    v.append(el('p', {class: 'note foot'}, {ur: 'آفیشل ایپ ان شاء اللہ پلے سٹور پر دستیاب ہوگی۔ دوسری جگہوں سے آنے والی APK فائلوں سے ایپ انسٹال نہ کریں، تاکہ آپ اصل ڈیٹا اور تازہ اپڈیٹس سے پورا فائدہ اٹھا سکیں۔',
-      ar: 'سيتوفّر التطبيق الرسمي — إن شاء الله — على متجر Google Play. لا تثبّتوا التطبيق من ملفات APK الواردة من مصادر أخرى، لتستفيدوا من البيانات الأصلية والتحديثات الحديثة.',
-      en: 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.',
-      bn: 'অফিসিয়াল অ্যাপটি ইনশাআল্লাহ গুগল প্লে স্টোরে পাওয়া যাবে। অন্য কোনো উৎস থেকে আসা APK ফাইল দিয়ে অ্যাপ ইনস্টল করবেন না, যাতে আপনি আসল ডেটা ও সর্বশেষ আপডেটের পূর্ণ সুবিধা পান।',
-      hi: 'आधिकारिक ऐप इन शा अल्लाह गूगल प्ले स्टोर पर उपलब्ध होगा। दूसरी जगहों से आने वाली APK फ़ाइलों से ऐप इंस्टॉल न करें, ताकि आपको असली डेटा और ताज़ा अपडेट का पूरा लाभ मिल सके।',
-      gu: 'સત્તાવાર એપ ઇન શાઅલ્લાહ ગૂગલ પ્લે સ્ટોર પર ઉપલબ્ધ થશે. બીજી જગ્યાએથી આવેલી APK ફાઇલોથી એપ ઇન્સ્ટોલ ન કરશો, જેથી તમને અસલ ડેટા અને તાજા અપડેટનો પૂરો લાભ મળે.',
-      fr: 'L’application officielle sera disponible sur Google Play, in shā’ Allāh. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app will be available on Google Play, in shā’ Allāh. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
-    v.append(el('p', {class: 'note foot'}, el('a', {href: 'privacy.html'}, T('privacy')), ' · ', el('a', {href: 'thanks.html'}, {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), ' · ', el('a', {href: 'updates.html'}, {ur: 'نئی اپڈیٹس', ar: 'آخر التحديثات', en: 'What\u2019s new'}[ui] || 'What\u2019s new'), ' · ', T('free'), vis, ));
+    v.append(el('p', {class: 'note foot'}, {ur: 'آفیشل ایپ پلے سٹور پر دستیاب ہے۔ دوسری جگہوں سے آنے والی APK فائلوں سے ایپ انسٹال نہ کریں، تاکہ آپ اصل ڈیٹا اور تازہ اپڈیٹس سے پورا فائدہ اٹھا سکیں۔',
+      ar: 'التطبيق الرسمي متوفّر على متجر Google Play. لا تثبّتوا التطبيق من ملفات APK الواردة من مصادر أخرى، لتستفيدوا من البيانات الأصلية والتحديثات الحديثة.',
+      en: 'The official app is available on Google Play. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.',
+      bn: 'অফিসিয়াল অ্যাপটি গুগল প্লে স্টোরে পাওয়া যাচ্ছে। অন্য কোনো উৎস থেকে আসা APK ফাইল দিয়ে অ্যাপ ইনস্টল করবেন না, যাতে আপনি আসল ডেটা ও সর্বশেষ আপডেটের পূর্ণ সুবিধা পান।',
+      hi: 'आधिकारिक ऐप गूगल प्ले स्टोर पर उपलब्ध है। दूसरी जगहों से आने वाली APK फ़ाइलों से ऐप इंस्टॉल न करें, ताकि आपको असली डेटा और ताज़ा अपडेट का पूरा लाभ मिल सके।',
+      gu: 'સત્તાવાર એપ ગૂગલ પ્લે સ્ટોર પર ઉપલબ્ધ છે. બીજી જગ્યાએથી આવેલી APK ફાઇલોથી એપ ઇન્સ્ટોલ ન કરશો, જેથી તમને અસલ ડેટા અને તાજા અપડેટનો પૂરો લાભ મળે.',
+      fr: 'L’application officielle est disponible sur Google Play. N’installez pas l’application à partir de fichiers APK provenant d’ailleurs, afin de profiter des données d’origine et des dernières mises à jour.'}[ui] || 'The official app is available on Google Play. Please do not install the app from APK files shared elsewhere, so that you get the original data and the latest updates.'));
+    { const cap = (h, t) => el('a', {class: 'fcap', href: h}, t);
+      v.append(el('div', {class: 'fcaps'}, cap('privacy.html', T('privacy')), cap('thanks.html', {ur: 'شکر و ماخذ', ar: 'شكر ومصادر', en: 'Credits', bn: 'কৃতজ্ঞতা ও সূত্র', hi: 'आभार और स्रोत', gu: 'આભાર અને સ્રોત', fr: 'Remerciements et sources'}[ui] || 'Credits'), cap('updates.html', {ur: 'نئی اپڈیٹس', ar: 'آخر التحديثات', en: 'What\u2019s new'}[ui] || 'What\u2019s new')));
+      v.append(el('p', {class: 'note foot'}, T('free'), ' · ', vis)); }
     // legal line: copyright and founder
     const LG = {ur: ['© ۲۰۲۶ء / ۱۴۴۸ھ تراث خیرالقرون — جملہ حقوق محفوظ ہیں۔', 'بانی: ابو حسن میاں سعید عفی اللہ عنہ'], ar: ['© ٢٠٢٦م / ١٤٤٨هـ تراث خير القرون — جميع الحقوق محفوظة.', 'المؤسس: أبو حسن ميان سعيد'],
       en: ['© 2026 CE / 1448 AH Turath Khair Al-Quroon. All rights reserved.', 'Founder: Abu Hasan Mian Saeed'], bn: ['© 2026 / 1448 হিজরি Turath Khair Al-Quroon। সর্বস্বত্ব সংরক্ষিত।', 'প্রতিষ্ঠাতা: Abu Hasan Mian Saeed'],
