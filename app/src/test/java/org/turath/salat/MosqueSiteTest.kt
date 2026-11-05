@@ -98,4 +98,20 @@ class MosqueSiteTest {
         assertEquals(6 * 60 + 50, t.iq["FAJR"]); assertEquals(13 * 60 + 45, t.iq["DHUHR"]); assertEquals(20 * 60, t.iq["ISHA"])
         assertEquals(6 * 60 + 50, MosqueSite.parse("<p>Fajr 6:27 AM 6:40 AM 6:50 AM Sunrise 7:47 AM</p><p>Dhuhr 1:06 PM 1:45 PM</p><p>Asr 4:32 PM 5:00 PM</p>").iq["FAJR"])
     }
+
+    @Test fun threeColumnsBeginAdhanIqama() {
+        fun r(n: String, a: String, b: String, c: String) = "<tr><td>$n</td><td>$a</td><td>$b</td><td>$c</td></tr>"
+        val html = "<table><tr><th>Salah</th><th>Begins</th><th>Adhan</th><th>Iqama</th></tr>" + r("Fajr", "5:39AM", "6:20AM", "6:30AM") +
+            "<tr><td>Sunrise</td><td colspan=3>7:00AM</td></tr><tr><td>Zawal</td><td colspan=3>11:56AM - 12:01PM</td></tr>" +
+            r("Zuhr", "12:01PM", "12:50PM", "1:00PM") + r("Asr", "3:18PM", "3:30PM", "3:40PM") + r("Maghrib", "5:04PM", "5:04PM", "5:07PM") + r("Isha", "6:24PM", "7:00PM", "7:10PM") +
+            r("Jumah 1", "12:01PM", "12:15PM", "12:30PM") + r("Jumah 2", "12:01PM", "1:15PM", "1:30PM") + "</table><p>From Tomorrow (Fri. Nov 6) Fajr is at 6:30AM</p>"
+        val t = MosqueSite.parse(html)
+        assertEquals(6 * 60 + 30, t.iq["FAJR"]); assertEquals(13 * 60, t.iq["DHUHR"]); assertEquals(15 * 60 + 40, t.iq["ASR"]); assertEquals(17 * 60 + 7, t.iq["MAGHRIB"]); assertEquals(19 * 60 + 10, t.iq["ISHA"])
+        assertEquals(listOf(12 * 60 + 30, 13 * 60 + 30), t.jumuah)
+    }
+
+    @Test fun framesOfThePageAreFollowed() {
+        val l = MosqueSite.prayerLinks("<p>Prayer Times</p><iframe src=\"https://x.example/times\"></iframe><iframe src=\"https://www.youtube.com/embed/1\"></iframe>", "https://site.example/")
+        assertEquals(listOf("https://x.example/times"), l)
+    }
 }
