@@ -1280,7 +1280,8 @@ const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||nu
 function hTiles(){
   const g=el('div',{class:'tiles'});
   g.append(hTile('img:find_ayah',T('hFind'),findHadith),hTile('img:search',T('hSearch'),null,'#/search'),hTile('img:hadith_search',T('hsTile'),null,'#/hs'),
-    hTile('img:qa',T('qaTile'),null,'#/qa'),
+    // «Islam Question & Answer» is hidden for now (his request): the code stays, the tile is not shown (set SHOW_QA to true to bring it back)
+    ...(window.SHOW_QA?[hTile('img:qa',T('qaTile'),null,'#/qa')]:[]),
     hTile('img:saved_hadith',T('bm'),null,'#/bm'),hTile('img:hadith_books',T('hBooks'),pickBook),
     hTile('img:narrators',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
     hTile('img:surahs',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
@@ -1872,7 +1873,7 @@ function route(){
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
-  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa',hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
+  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa'&&!!window.SHOW_QA,hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(ow)OWNER.route();
@@ -4914,7 +4915,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const dsec = el('div');
       out.append(el('h3', {class: 'grp'}, T('hsDorar')), dsec);
       const more = el('div', {class: 'gsbar'});
-      [[T('hsTurath'), 'https://app.turath.io/search?q=' + encodeURIComponent(v)], [T('hsShamela'), 'https://shamela.ws/search?query=' + encodeURIComponent(v)], [T('hsQa'), qaUrl(ui, v)]].forEach(x => more.append(el('a', {class: 'btn lbtn', href: x[1], target: '_blank', rel: 'noopener'}, x[0]), ' '));
+      [[T('hsTurath'), 'https://app.turath.io/search?q=' + encodeURIComponent(v)], [T('hsShamela'), 'https://shamela.ws/search?query=' + encodeURIComponent(v)]].concat(window.SHOW_QA ? [[T('hsQa'), qaUrl(ui, v)]] : []).forEach(x => more.append(el('a', {class: 'btn lbtn', href: x[1], target: '_blank', rel: 'noopener'}, x[0]), ' '));
       out.append(el('h3', {class: 'grp'}, T('hsMore')), more);
       siteSearch({v, words, md, sel: null, cur: () => tk === run, site, sum}).catch(() => {});
       // 2. Dorar, with the grades
