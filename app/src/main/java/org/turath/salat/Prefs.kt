@@ -127,7 +127,7 @@ class Prefs(ctx: Context) {
     var theme: String get() = sp.getString("theme", "time") ?: "time"; set(v) = sp.edit().putString("theme", v).apply()
     /** widgets: transparency of the background in percent (0 = solid, 100 = none), light or dark */
     var widgetAlpha: Int get() = sp.getInt("wAlpha", 20); set(v) = sp.edit().putInt("wAlpha", v.coerceIn(0, 100)).apply()
-    var widgetLight: Boolean get() = sp.getBoolean("wLight", false); set(v) = sp.edit().putBoolean("wLight", v).apply()
+    var widgetLight: Boolean get() = sp.getBoolean("wLight", true); set(v) = sp.edit().putBoolean("wLight", v).apply()
     /** widgets: the colour of the border round the current prayer (an index of Pal.COLORS), the text colour (-1 = by the background; 0–7 Pal.COLORS; 8 black),
      *  the colour of the moving line (-1 = by the background), and the size of the texts in percent */
     var widgetAccent: Int get() = sp.getInt("wAccent", 0).coerceIn(0, Pal.COLORS.size - 1); set(v) = sp.edit().putInt("wAccent", v).apply()
