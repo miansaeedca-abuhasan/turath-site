@@ -31,6 +31,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     KHAYR_MULLA("short_khayr_mulla", Mu.MULLA, "khayr"), KHAYR_BUKHARI("short_khayr_bukhari", Mu.BUKHARI, "khayr"),
     SHORT_HAYYA("short_hayya", Mu.MULLA, "hayya"), HAYYA_DAGHRIRI("short_hayya_daghriri", Mu.DAGHRIRI, "hayya"), HAYYA_BUKHARI("short_hayya_bukhari", Mu.BUKHARI, "hayya"),
     HAYYA_NABET("short_hayya_nabet", Mu.NABET, "hayya"), HAYYA_MAGHRIBI("short_hayya_maghribi", Mu.MAGHRIBI, "hayya"), HAYYA_BASIT("short_hayya_basit", Mu.BASIT, "hayya"),
+    HAYYA_SAAD("short_hayya_saad", Mu.SAAD, "hayya"), MUHAMMAD_SAAD("short_muhammad_saad", Mu.SAAD, "muhammad"),
     SHORT_SHAHADA("short_shahada", Mu.MULLA, "shahada"), SHAHADA_DAGHRIRI("short_shahada_daghriri", Mu.DAGHRIRI, "shahada"), SHAHADA_BUKHARI("short_shahada_bukhari", Mu.BUKHARI, "shahada"),
     SHAHADA_NABET("short_shahada_nabet", Mu.NABET, "shahada"), SHAHADA_MAGHRIBI("short_shahada_maghribi", Mu.MAGHRIBI, "shahada"), SHAHADA_BASIT("short_shahada_basit", Mu.BASIT, "shahada"),
     SHORT_TAKBIR("short_takbir", Mu.MULLA, "takbir"), TAKBIRAT("takbirat_makkah", Mu.MULLA, "takbirat"),
