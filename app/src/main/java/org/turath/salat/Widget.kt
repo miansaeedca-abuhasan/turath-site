@@ -96,11 +96,21 @@ class Widget : AppWidgetProvider() {
             v.setImageViewResource(R.id.bg, WidgetBg.res(pr.widgetLight, pr.widgetAlpha)); v.setInt(R.id.bg, "setImageAlpha", 255)
         }
 
+        /** no city chosen yet: the widget says so (and opens the app) instead of staying empty */
+        fun needCity(ctx: Context, mgr: AppWidgetManager, ids: IntArray, layout: Int, textId: Int) {
+            val pr = Prefs(ctx); Tr.lang = pr.lang.ifEmpty { "en" }
+            val v = RemoteViews(ctx.packageName, layout)
+            background(v, pr)
+            v.setTextViewText(textId, Tr["needCity"]); v.setTextColor(textId, ink(pr))
+            v.setOnClickPendingIntent(R.id.root, PendingIntent.getActivity(ctx, 48, Intent(ctx, MainActivity::class.java), PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE))
+            runCatching { mgr.updateAppWidget(ids, v) }
+        }
+
         private fun prayer(ctx: Context, cls: Class<*>, layout: Int, full: Boolean) {
             val mgr = AppWidgetManager.getInstance(ctx)
             val ids = mgr.getAppWidgetIds(ComponentName(ctx, cls))
             if (ids.isEmpty()) return
-            val pr = Prefs(ctx); val place = pr.place ?: return
+            val pr = Prefs(ctx); val place = pr.place ?: run { needCity(ctx, mgr, ids, layout, R.id.city); return }
             Tr.lang = pr.lang.ifEmpty { "en" }
             val now = ZonedDateTime.now(Schedule.zone(place))
             val t = Schedule.day(pr, place, now.toLocalDate())
@@ -222,7 +232,9 @@ class WidgetCal : AppWidgetProvider() {
             val mgr = AppWidgetManager.getInstance(ctx)
             val ids = mgr.getAppWidgetIds(ComponentName(ctx, WidgetCal::class.java))
             if (ids.isEmpty()) return
-            val pr = Prefs(ctx); val place = pr.place ?: return
+            val pr = Prefs(ctx)
+            val calIds = AppWidgetManager.getInstance(ctx).getAppWidgetIds(ComponentName(ctx, WidgetCal::class.java))
+            val place = pr.place ?: run { if (calIds.isNotEmpty()) Widget.needCity(ctx, AppWidgetManager.getInstance(ctx), calIds, R.layout.widget_cal, R.id.month); return }
             Tr.lang = pr.lang.ifEmpty { "en" }
             // the calendar's «today» is the phone's date (the prayer widget's Hijri date alone changes at Maghrib)
             val nowH = Schedule.hijriOf(pr, LocalDate.now())
