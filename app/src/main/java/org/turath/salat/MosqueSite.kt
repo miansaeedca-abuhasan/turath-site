@@ -196,11 +196,16 @@ object MosqueSite {
     /** the pages of the same site that a page links to as «prayer times» / «iqamah» / «timetable» */
     fun prayerLinks(html: String, start: String): List<String> {
         val host = runCatching { URI(start).host }.getOrNull()
-        return Regex("href\\s*=\\s*[\"']([^\"'#]+)[\"']", RegexOption.IGNORE_CASE).findAll(html).map { it.groupValues[1] }
+        // a timetable is often an embedded frame of another address (a spreadsheet, a timetable service): those frames are read too
+        val frames = Regex("<iframe[^>]+src\\s*=\\s*[\"']([^\"']+)[\"']", RegexOption.IGNORE_CASE).findAll(html).map { it.groupValues[1].replace("&amp;", "&") }
+            .filter { !Regex("youtube|youtu\\.be|vimeo|google\\.com/maps|maps\\.google|facebook|emasjidlive|recaptcha|twitter|instagram", RegexOption.IGNORE_CASE).containsMatchIn(it) }
+            .mapNotNull { runCatching { URI(start).resolve(it.replace(" ", "%20")).toString() }.getOrNull() }.filter { it.startsWith("http") }.distinct().take(3).toList()
+        val own = Regex("href\\s*=\\s*[\"']([^\"'#]+)[\"']", RegexOption.IGNORE_CASE).findAll(html).map { it.groupValues[1] }
             .filter { Regex("prayer|salah|salat|namaz|timing|timetable|iqamah|iqama|schedule", RegexOption.IGNORE_CASE).containsMatchIn(it) }
             .mapNotNull { runCatching { URI(start).resolve(it.replace(" ", "%20")).toString() }.getOrNull() }
             .filter { runCatching { URI(it).host }.getOrNull() == host && !it.endsWith(".pdf", true) && !it.contains(Regex("\\.(jpg|png|css|js)$", RegexOption.IGNORE_CASE)) }
             .distinct().take(3).toList()
+        return (frames + own).distinct().take(5)
     }
 
     /** the times from a masjid's page; if its first page has none, the pages it links to as «prayer times» / «iqamah» / «timetable» */
