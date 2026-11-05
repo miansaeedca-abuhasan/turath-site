@@ -43,6 +43,7 @@ class AppState(val act: MainActivity) {
     // kept here so that a redraw after a change does not leave the screen the user is on
     var tab by mutableIntStateOf(0)
     var page by mutableStateOf("")        // a page opened from the menu ("settings", "widgets" …), "" = the tabs
+    var from by mutableStateOf("")        // the page to return to on back (e.g. Settings, when a page was opened from it)
     var sub by mutableStateOf("")         // a sub-page of a page ("city" …)
     val folds = mutableStateMapOf<String, Boolean>()     // which heading bars are open (kept while the app runs)
     fun changed() { version++; Thread { runCatching { Weather.refresh(act); Alarms.schedule(act) } }.start() }
@@ -151,8 +152,9 @@ fun Main(s: AppState) {
     val tabs = listOf(NavTab("tHome", Icons.Outlined.Home), NavTab("tTimes", Icons.Outlined.FormatListBulleted),
         NavTab("tRem", Icons.Outlined.Alarm), NavTab("tCal", Icons.Outlined.CalendarMonth), NavTab("tQibla", Icons.Outlined.Explore), NavTab("tMosques", Icons.Outlined.LocationOn), NavTab("tMyMasjid", Icons.Outlined.Mosque))
     if (s.page.isNotEmpty()) {
-        BackHandler { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
-        Page(s) { if (s.sub.isNotEmpty()) s.sub = "" else s.page = "" }
+        val goBack = { if (s.sub.isNotEmpty()) s.sub = "" else { s.page = s.from; s.from = "" } }
+        BackHandler { goBack() }
+        Page(s) { goBack() }
         return
     }
     val drawer = rememberDrawerState(DrawerValue.Closed)
@@ -165,7 +167,7 @@ fun Main(s: AppState) {
         ModalDrawerSheet(Modifier.width(300.dp)) {
             Menu(s) { key ->
                 scope.launch { drawer.close() }
-                if (key == "volume") volume = true else { s.page = key; s.sub = if (key == "city") "city" else "" }
+                if (key == "volume") volume = true else { s.from = ""; s.page = key; s.sub = if (key == "city") "city" else "" }
             }
         }
     }) {

@@ -49,6 +49,26 @@ private fun Perm(label: String, need: Boolean, ask: () -> Unit) {
     }
 }
 
+private val ADJ_KEYS = listOf(P.FAJR, P.SUNRISE, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA, P.TAHAJJUD).map { "adj_" + it.name }
+private val K_SOUND = listOf("vol", "adhanSilent", "persist")
+private val K_ALL = K_SOUND + listOf("school", "method", "ishraq", "chasht", "zawal", "hadj", "dst", "dfmt", "h24", "tempF", "wstart") + ADJ_KEYS
+
+/** "back to default" for one section: asks whether to reset only this section or all of the settings */
+@Composable
+private fun ResetRow(s: AppState, keys: List<String>) {
+    var ask by remember { mutableStateOf(false) }
+    Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp), horizontalArrangement = Arrangement.End) {
+        TextButton(onClick = { ask = true }) { Icon(Icons.Outlined.RestartAlt, null); Spacer(Modifier.width(6.dp)); Text(Tr["resetDefault"]) }
+    }
+    if (ask) AlertDialog(onDismissRequest = { ask = false },
+        title = { Text(Tr["resetDefault"]) },
+        text = { Text(Tr["resetAsk"]) },
+        confirmButton = { Column { 
+            TextButton(onClick = { s.prefs.resetKeys(keys); ask = false; Widget.update(s.act); s.changed() }) { Text(Tr["resetThis"]) }
+            TextButton(onClick = { s.prefs.resetKeys(K_ALL); ask = false; Widget.update(s.act); s.changed() }) { Text(Tr["resetAll"]) } } },
+        dismissButton = { TextButton(onClick = { ask = false }) { Text(Tr["cancel"]) } })
+}
+
 @Composable
 fun SettingsScreen(s: AppState, back: () -> Unit) {
     val pr = s.prefs; val act = s.act
@@ -79,6 +99,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 HorizontalDivider()
                 SwitchRow(Tr["persistent"], pr.persistent, Tr["persistentNote"]) { pr.persistent = it; Widget.update(s.act); s.changed() }
             }
+            ResetRow(s, K_SOUND)
         }
         Fold(s, Tr["school"]) {
             Card0 {
@@ -86,12 +107,14 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 Choice(Tr["hanafi"], pr.school == "hanafi") { pr.school = "hanafi"; s.changed() }
                 if (pr.school == "hanafi") Text(Tr["hanafiVibNote"], Modifier.padding(horizontal = 4.dp, vertical = 6.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.primary)
             }
+            ResetRow(s, listOf("school"))
         }
         Fold(s, Tr["method"]) {
             Card0 {
                 Choice(Tr["mAuto"] + " — " + Tr[PrayerCalc.defaultMethod(pr.place?.country ?: "")], pr.method.isEmpty()) { pr.method = ""; s.changed() }
                 for (m in PrayerCalc.METHODS) Choice(Tr[m.key], pr.method == m.key) { pr.method = m.key; s.changed() }
             }
+            ResetRow(s, listOf("method"))
         }
         Fold(s, Tr["adjust"]) {
             ZebraCard {
@@ -99,6 +122,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 // Tahajjud (the last third of the night): the calculated time, moved earlier or later by up to 200 minutes
                 Stepper(Tr.p(P.TAHAJJUD).substringBefore(" (") + tm(P.TAHAJJUD), pr.adjust(P.TAHAJJUD), -200, 200, 5, 6) { pr.setAdjust(P.TAHAJJUD, it); s.changed() }
             }
+            ResetRow(s, ADJ_KEYS)
         }
         Fold(s, Tr["naflTimes"]) {
             ZebraCard {
@@ -106,10 +130,12 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 Stepper(Tr["chashtAfter"] + tm(P.CHASHT), pr.chashtAfter, 20, 240, 5, 1) { pr.chashtAfter = it; s.changed() }
                 Stepper(Tr["zawalBefore"] + tm(P.ZAWAL), pr.zawalBefore, 0, 30, 1, 2) { pr.zawalBefore = it; s.changed() }
             }
+            ResetRow(s, listOf("ishraq","chasht","zawal"))
         }
-        FoldLink(Tr["vibPage"]) { s.page = "vibration"; s.sub = "" }
+        FoldLink(Tr["vibPage"]) { s.from = "settings"; s.page = "vibration"; s.sub = "" }
         Fold(s, Tr["hijriAdj"]) {
             Card0 { Stepper(Tr.hijri(Schedule.hijriNow(pr, pr.place!!, s.now)), pr.hijriAdjust, -3, 3, 1) { pr.hijriAdjust = it; s.changed() } }
+            ResetRow(s, listOf("hadj"))
         }
         Fold(s, Tr["dst"]) {
             Card0 {
@@ -117,6 +143,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 Choice(Tr["dstOn"], pr.dst == "on") { pr.dst = "on"; s.changed() }
                 Choice(Tr["dstOff"], pr.dst == "off") { pr.dst = "off"; s.changed() }
             }
+            ResetRow(s, listOf("dst"))
         }
         Fold(s, Tr["formatT"]) {
             Card0 {
@@ -140,6 +167,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                 }
                 Text(Tr["weatherNote"], Modifier.padding(top = 8.dp), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .65f))
             }
+            ResetRow(s, listOf("dfmt","h24","tempF"))
         }
         Fold(s, Tr["weekStart"]) {
             Card0 {
@@ -147,6 +175,7 @@ fun SettingsScreen(s: AppState, back: () -> Unit) {
                     for (v in listOf(1, 6, 7)) ChoiceChip(pr.weekStart == v, { pr.weekStart = v; s.changed() }, { Text(Tr.dayName(v)) }, Modifier.padding(end = 8.dp))
                 }
             }
+            ResetRow(s, listOf("wstart"))
         }
         Spacer(Modifier.height(30.dp))
     }

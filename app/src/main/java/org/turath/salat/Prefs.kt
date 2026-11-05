@@ -122,7 +122,7 @@ class Prefs(ctx: Context) {
     /** which phone volume the adhan and the other sounds follow: "media", "ring" or "alarm" */
     var volStream: String get() = sp.getString("vol", "media") ?: "media"; set(v) = sp.edit().putString("vol", v).apply()
     /** the adhan also when the phone is on silent / vibrate (then at the alarm volume) */
-    var adhanInSilent: Boolean get() = sp.getBoolean("adhanSilent", false); set(v) = sp.edit().putBoolean("adhanSilent", v).apply()
+    var adhanInSilent: Boolean get() = sp.getBoolean("adhanSilent", true); set(v) = sp.edit().putBoolean("adhanSilent", v).apply()
     /** "time" (light by day, dark from Maghrib to sunrise), "dark", "light" or "phone" (as the phone) */
     var theme: String get() = sp.getString("theme", "time") ?: "time"; set(v) = sp.edit().putString("theme", v).apply()
     /** widgets: transparency of the background in percent (0 = solid, 100 = none), light or dark */
@@ -145,6 +145,8 @@ class Prefs(ctx: Context) {
     var tempF: Boolean get() = sp.getBoolean("tempF", false); set(v) = sp.edit().putBoolean("tempF", v).apply()
     var h24: Boolean get() = sp.getBoolean("h24", false); set(v) = sp.edit().putBoolean("h24", v).apply()
 
+    /** forget the stored value of these settings, so each goes back to its default */
+    fun resetKeys(keys: List<String>) { val e = sp.edit(); for (k in keys) e.remove(k); e.apply() }
     fun adjust(p: P): Int = sp.getInt("adj_" + p.name, 0)
     fun setAdjust(p: P, v: Int) = sp.edit().putInt("adj_" + p.name, v.coerceIn(if (p == P.TAHAJJUD) -200 else -30, if (p == P.TAHAJJUD) 200 else 30)).apply()
 
@@ -191,7 +193,7 @@ class Prefs(ctx: Context) {
     var azkarMorning: Boolean get() = sp.getBoolean("azkarM", true); set(v) = sp.edit().putBoolean("azkarM", v).apply()
     var azkarEvening: Boolean get() = sp.getBoolean("azkarE", true); set(v) = sp.edit().putBoolean("azkarE", v).apply()
     /** a notification always showing the next prayer and its count */
-    var persistent: Boolean get() = sp.getBoolean("persist", false); set(v) = sp.edit().putBoolean("persist", v).apply()
+    var persistent: Boolean get() = sp.getBoolean("persist", true); set(v) = sp.edit().putBoolean("persist", v).apply()
     var monThu: Boolean get() = sp.getBoolean("monthu", false); set(v) = sp.edit().putBoolean("monthu", v).apply()
     var hilalDua: Boolean get() = sp.getBoolean("hilalDua", true); set(v) = sp.edit().putBoolean("hilalDua", v).apply()
     var salJumuah: Boolean get() = sp.getBoolean("salJumuah", true); set(v) = sp.edit().putBoolean("salJumuah", v).apply()
