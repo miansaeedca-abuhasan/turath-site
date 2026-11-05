@@ -188,7 +188,7 @@ object MosqueSite {
             val code = c.responseCode
             if (code in 300..399) { url = URI(url).resolve(c.getHeaderField("Location") ?: return null).toString(); return@repeat }
             if (code != 200) return null
-            return c.inputStream.use { it.readNBytes(1_500_000) }.toString(Charsets.UTF_8)
+            return c.inputStream.use { it.readBytes() }.toString(Charsets.UTF_8)
         }
         return null
     }
@@ -235,7 +235,7 @@ object MosqueSearch {
         c.connectTimeout = ms; c.readTimeout = ms
         c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0 (https://turathkhairalquroon.com)")
         c.setRequestProperty("Accept-Language", "en")
-        if (c.responseCode == 200) c.inputStream.use { it.readNBytes(2_000_000) }.toString(Charsets.UTF_8) else null
+        if (c.responseCode == 200) c.inputStream.use { it.readBytes() }.toString(Charsets.UTF_8) else null
     }.getOrNull()
 
     /** masjids with this name, those near (lat, lng) first */
