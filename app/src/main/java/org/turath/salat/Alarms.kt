@@ -488,7 +488,7 @@ class SoundService : Service() {
         val n = Notification.Builder(this, if (alarm) Alarms.CH_ALARM else Alarms.CH_ADHAN).setSmallIcon(R.drawable.ic_stat).setLargeIcon(Logo.big(this))
             .setContentTitle(i.getStringExtra("title")).setContentText(i.getStringExtra("body"))
             .setContentIntent(if (alarm) open else stop).setOngoing(true).setDeleteIntent(stop)
-            .setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE)
+            .apply { if (Build.VERSION.SDK_INT >= 31) setForegroundServiceBehavior(Notification.FOREGROUND_SERVICE_IMMEDIATE) }
             .addAction(Notification.Action.Builder(null, Tr["stop"], stop).build())
             .apply { if (alarm) setFullScreenIntent(open, true).setCategory(Notification.CATEGORY_ALARM) }
             .build()

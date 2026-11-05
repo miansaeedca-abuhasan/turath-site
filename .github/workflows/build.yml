@@ -38,6 +38,18 @@ jobs:
           mkdir -p /tmp/variants && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/main.apk
           gradle --no-daemon assembleRelease -Pnomin=1 -x lint -x lintVitalRelease > /tmp/v2.log 2>&1 && cp app/build/outputs/apk/release/app-release.apk /tmp/variants/nomin.apk || true
           cp /tmp/variants/main.apk app/build/outputs/apk/release/app-release.apk
+      - name: lint for calls that old Android versions do not have (NewApi)
+        continue-on-error: true
+        run: |
+          gradle --no-daemon lintDebug > /tmp/lint.log 2>&1 || true
+          python3 - <<'PY' > /tmp/lint-newapi.txt
+          import re,glob
+          for f in glob.glob("app/build/reports/lint-results-debug.xml"):
+              t=open(f,encoding="utf8",errors="replace").read()
+              for m in re.finditer(r'<issue\s+id="(NewApi|InlinedApi|Override)"[^>]*message="([^"]*)"[^>]*>.*?<location\s+file="([^"]*)"\s+line="(\d+)"',t,re.S):
+                  print(m.group(1),m.group(3).split("/")[-1]+":"+m.group(4),m.group(2))
+          PY
+          echo "lint done"; wc -l /tmp/lint-newapi.txt; tail -5 /tmp/lint.log
       - name: enable KVM
         run: |
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
@@ -63,6 +75,8 @@ jobs:
           cp /tmp/variants/nomin.apk /tmp/out/salat-test-unshrunk.apk 2>/dev/null || true
           cp app/build/outputs/bundle/release/app-release.aab /tmp/out/salat-khairalquroon.aab 2>/dev/null || true
           cp -r shots /tmp/out/ 2>/dev/null || true
+          cp /tmp/lint-newapi.txt /tmp/out/lint-newapi.txt 2>/dev/null || true
+          tail -c 4000 /tmp/lint.log > /tmp/out/lint-log.txt 2>/dev/null || true
           ls -la /tmp/camtest /tmp/variants > /tmp/out/variants.txt 2>&1 || true
           for n in 1 2 3 4; do tail -c 6000 /tmp/v$n.log > /tmp/out/v$n.log 2>/dev/null || true; done
           tail -c 60000 /tmp/build.log > /tmp/out/build-log.txt 2>/dev/null || true
