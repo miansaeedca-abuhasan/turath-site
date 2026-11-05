@@ -116,24 +116,35 @@ object Mosques {
                 } finally { pool.shutdownNow() }
                 return ""
             }
+            var incomplete = false
             var ra = ""; var rb = ""
             val ta = Thread { ra = race(qa, 45_000) }; val tb = Thread { rb = race(qb, 65_000) }
             ta.start(); tb.start(); ta.join(); tb.join()
             val na = count(ra); val nb = count(rb)
             var s = merge(ra, rb)
             var src = "OpenStreetMap A$na B$nb"
-            // the site's copy, then the map search of Photon and Nominatim (only when the servers gave nothing)
-            if (!good(s)) { s = runCatching {
+            fun siteCopy(): String = runCatching {
                 val c = URL("https://turathkhairalquroon.com/api/mosques?v=4&bb=$bb").openConnection() as HttpURLConnection
                 c.connectTimeout = 8_000; c.readTimeout = 15_000
                 c.setRequestProperty("User-Agent", "SalatKhairAlQuroon/1.0")
                 if (c.responseCode == 200) c.inputStream.bufferedReader().readText() else ""
-            }.getOrDefault(""); src = "site" }
+            }.getOrDefault("")
+            // one of the two questions got no answer (a busy server): the list would be shorter on this phone than on another, so
+            // the site's copy of the same box fills the gap, and such a list is kept for ten minutes only (then asked again)
+            if (good(s) && (nb == 0 || na == 0)) {
+                val sc = siteCopy()
+                if (good(sc)) { s = merge(s, sc); src += " + site" }
+                else { incomplete = true; src += " (incomplete)" }
+            }
+            // the site's copy, then the map search of Photon and Nominatim (only when the servers gave nothing)
+            if (!good(s)) { s = siteCopy(); src = "site" }
             if (!good(s)) { s = photon(lat, lng); src = "Photon" }
             if (!good(s)) { s = nominatim(cLat - dLat, cLng - dLng, cLat + dLat, cLng + dLng); src = "Nominatim" }
             if (!s.contains("\"elements\"")) throw java.io.IOException("no answer")
             info = src
-            pr.sp.edit().putString(key, s).putString(key + "_i", src).putLong(key + "_t", System.currentTimeMillis()).apply()
+            val fromPhoton = src == "Photon" || src == "Nominatim"
+            val short = incomplete || fromPhoton
+            pr.sp.edit().putString(key, s).putString(key + "_i", src).putLong(key + "_t", if (short) System.currentTimeMillis() - 86_400_000 + 10 * 60_000 else System.currentTimeMillis()).apply()
             s
         }
         if (cached != null) info = pr.sp.getString(key + "_i", "") ?: ""
