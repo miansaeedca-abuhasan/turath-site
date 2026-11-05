@@ -132,8 +132,10 @@ class Widget : AppWidgetProvider() {
                 v.setChronometerCountDown(R.id.count, true)
             }
             if (full) {
+                // from sunrise until its time is over (the end of the forbidden time, Ishraq) the border stays on Sunrise; then it goes to Dhuhr / Jumu'ah
+                val hl = if (t.forbiddenAt(now)?.first == t[P.SUNRISE]) P.SUNRISE else shown
                 SIX.forEachIndexed { i, p ->
-                    val on = p == shown
+                    val on = p == hl
                     v.setTextViewText(NAMES[i], pname(p, now))
                     v.setTextViewText(IDS[i], Alarms.fmt(pr, t[p]).replace(" صبح", "").replace(" شام", "").replace(" am", "").replace(" pm", ""))
                     v.setTextColor(NAMES[i], if (on) accent(pr) else dim)
