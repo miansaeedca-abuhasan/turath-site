@@ -128,6 +128,15 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
             pr.sp.edit().putString("lm_name", n).putString("lm_city", c).putString("lm_site", w).apply()
             resolve(n, c, w)
         }
+        /** a masjid that has no website (or is not found): only its name is kept, and its congregation times are written by hand */
+        fun manual(n: String) {
+            if (n != name) for (k in listOf("FAJR", "DHUHR", "ASR", "MAGHRIB", "ISHA")) pr.sp.edit().remove("lm_iq_$k").apply()
+            if (n != name) LocalMasjid.setJumuah(pr, emptyList())
+            name = n; q = ""; asked = ""; site = ""; status = ""
+            pr.sp.edit().putString("lm_name", n).putString("lm_city", city).putString("lm_site", "").apply()
+            ver++; s.changed()
+        }
+        var editName by remember { mutableStateOf(false) }
         Card0 {
             OutlinedTextField(q, { q = it }, Modifier.fillMaxWidth(), label = { Text(Tr["lmSearch"]) }, leadingIcon = { Icon(Icons.Outlined.Search, null) }, singleLine = true,
                 keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(imeAction = androidx.compose.ui.text.input.ImeAction.Search),
@@ -144,6 +153,21 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                 // not in the list: the name as typed, its website looked for on the web
                 TextButton(onClick = { choose(asked, place?.name ?: "", "") }) { Icon(Icons.Outlined.Language, null); Text("  " + Tr["lmWeb"] + " «" + asked + "»") }
             }
+            // for countries where masjids have no websites, or a masjid the search does not find
+            TextButton(onClick = { manual(asked.ifEmpty { q.trim() }.ifEmpty { Tr["lmDefName"] }); editName = true }, Modifier.fillMaxWidth()) { Icon(Icons.Outlined.Edit, null); Text("  " + Tr["lmManual"]) }
+        }
+        if (editName) {
+            var en by remember { mutableStateOf(name) }; var ec by remember { mutableStateOf(city) }
+            AlertDialog(onDismissRequest = { editName = false }, title = { Text(Tr["lmEditName"]) },
+                text = { Column {
+                    OutlinedTextField(en, { en = it }, Modifier.fillMaxWidth(), singleLine = true, label = { Text(Tr["lmNameLbl"]) })
+                    OutlinedTextField(ec, { ec = it }, Modifier.fillMaxWidth().padding(top = 8.dp), singleLine = true, label = { Text(Tr["lmCityLbl"]) })
+                } },
+                confirmButton = { TextButton(onClick = {
+                    name = en.trim().ifEmpty { name }; city = ec.trim()
+                    pr.sp.edit().putString("lm_name", name).putString("lm_city", city).apply(); editName = false; ver++; s.changed()
+                }) { Text(Tr["save"]) } },
+                dismissButton = { TextButton(onClick = { editName = false }) { Text(Tr["cancel"]) } })
         }
         when (status) {
             "busy" -> Row(Modifier.padding(horizontal = 20.dp, vertical = 6.dp), verticalAlignment = Alignment.CenterVertically) { CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp); Text("  " + Tr["lmReading"], fontSize = 13.sp) }
@@ -170,6 +194,9 @@ fun LocalMasjidPage(s: AppState, back: () -> Unit) {
                         Column(Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 48.dp), horizontalAlignment = Alignment.CenterHorizontally) {
                             Text(name, color = Color.White, fontSize = 26.sp, fontWeight = FontWeight.Bold, textAlign = TextAlign.Center)
                             if (city.isNotBlank()) Text(city, color = Color.White.copy(alpha = .9f), fontSize = 15.sp)
+                        }
+                        Box(Modifier.align(Alignment.TopStart).size(48.dp), contentAlignment = Alignment.Center) {
+                            IconButton(onClick = { editName = true }) { Icon(Icons.Outlined.Edit, Tr["lmEditName"], tint = Color.White) }
                         }
                         // refresh: the masjid's committee changes the times from time to time
                         Box(Modifier.align(Alignment.TopEnd).size(48.dp), contentAlignment = Alignment.Center) {
