@@ -12,7 +12,7 @@ val FIVE = listOf(P.FAJR, P.DHUHR, P.ASR, P.MAGHRIB, P.ISHA)
 
 /** sound for an alarm or reminder; a sound file missing from the app falls back to the phone's alarm tone */
 /** muezzins whose recordings the app has */
-enum class Mu(val city: String) { MULLA("makkah"), DAGHRIRI("makkah"), BUKHARI("madinah"), NABET("other"), MAGHRIBI("other"), BASIT("other"), HARAM("makkah"), SARHI("madinah"), MAJID("madinah") }
+enum class Mu(val city: String) { MULLA("makkah"), DAGHRIRI("makkah"), BUKHARI("madinah"), NABET("other"), MAGHRIBI("other"), BASIT("other"), HARAM("makkah"), SARHI("madinah"), MAJID("madinah"), SAAD("other") }
 
 enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null) {
     // adhans (a «_fajr» file of the same name is used for Fajr when the app has one)
@@ -26,7 +26,7 @@ enum class Snd(val raw: String?, val mu: Mu? = null, val phrase: String? = null)
     IQAMA_MADINAH("iqama_madinah", Mu.BUKHARI, "iqama"), IQAMA_MADINAH_S("iqama_madinah_short", Mu.BUKHARI, "iqama"),
     IQAMA_AQSA("iqama_aqsa", null, "iqama"), IQAMA_1("iqama_1", null, "iqama"), IQAMA_2("iqama_2", null, "iqama"),
     IQAMA_3("iqama_3", null, "iqama"), IQAMA_4("iqama_4", null, "iqama"),
-    ADHAN_BASIT("adhan_basit", Mu.BASIT), ADHAN_NABET("adhan_nabet", Mu.NABET), ADHAN_MAGHRIBI("adhan_maghribi", Mu.MAGHRIBI),
+    ADHAN_SAAD("adhan_saad", Mu.SAAD), ADHAN_BASIT("adhan_basit", Mu.BASIT), ADHAN_NABET("adhan_nabet", Mu.NABET), ADHAN_MAGHRIBI("adhan_maghribi", Mu.MAGHRIBI),
     // short calls for alarms and reminders, cut from the adhans: «الصلاة خير من النوم», «حي على الصلاة», «أشهد أن لا إله إلا الله», «الله أكبر»
     KHAYR_MULLA("short_khayr_mulla", Mu.MULLA, "khayr"), KHAYR_BUKHARI("short_khayr_bukhari", Mu.BUKHARI, "khayr"),
     SHORT_HAYYA("short_hayya", Mu.MULLA, "hayya"), HAYYA_DAGHRIRI("short_hayya_daghriri", Mu.DAGHRIRI, "hayya"), HAYYA_BUKHARI("short_hayya_bukhari", Mu.BUKHARI, "hayya"),

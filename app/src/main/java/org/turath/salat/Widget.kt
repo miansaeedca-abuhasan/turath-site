@@ -181,7 +181,9 @@ class Widget : AppWidgetProvider() {
                 v.setOnClickPendingIntent(R.id.gear, settingsIntent(ctx, 46))
                 setTicker(v, ticker(pr, place, now, t), pr)
                 // in the forbidden time the red message lies over the line; the line itself stays in place (hiding it would stop it) but is made clear
-                if (fb) v.setViewVisibility(R.id.ticker, android.view.View.INVISIBLE) else v.setViewVisibility(R.id.ticker, android.view.View.VISIBLE)
+                // (the line is never hidden: a marquee that was hidden does not start moving again; it is only made clear, so it keeps moving all the time)
+                v.setViewVisibility(R.id.ticker, android.view.View.VISIBLE)
+                if (fb) v.setTextColor(R.id.ticker, 0x00000000)
             }
             mgr.updateAppWidget(ids, v)
         }
