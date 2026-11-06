@@ -124,6 +124,7 @@ title:'حفظ ڈائری',foot:'مفت سہولت — فی سبیل اللہ۔ �
 login:'لاگ ان',reg:'نیا ادارہ بنائیں',code:'ادارے کا کوڈ',uname:'صارف نام (چھوٹے انگریزی حروف اور ہندسے)',pw:'پاس ورڈ',pwrule:'کم از کم 10 حروف، جن میں حرف، عدد اور کوئی خاص نشان (جیسے ! @ # $ %) ضرور ہو',showpw:'دکھائیں',hidepw:'چھپائیں',st:'مضبوطی',s0:'بہت کمزور',s1:'کمزور',s2:'درمیانی',s3:'مضبوط',s4:'بہت مضبوط',email:'ای میل (تصدیقی کوڈ اس پر آئے گا)',vtitle:'ای میل کی تصدیق',vsent:'ہم نے 6 ہندسوں کا کوڈ اس ای میل پر بھیجا ہے:',vcode:'تصدیقی کوڈ',vgo:'تصدیق کریں',resend:'کوڈ دوبارہ بھیجیں',vback:'پیچھے',weak:'پاس ورڈ مضبوط نہیں۔ شرط اوپر لکھی ہے',wait:'تھوڑی دیر بعد دوبارہ کوشش کریں',toomany:'بہت زیادہ کوششیں۔ ایک گھنٹے بعد دوبارہ کوشش کریں',nomail:'ای میل بھیجنے کی سہولت ابھی فعال نہیں۔ منتظم سے رابطہ کریں',mailfail:'ای میل نہیں جا سکی۔ ای میل درست دیکھ کر دوبارہ کوشش کریں',expired:'کوڈ کی مدت ختم یا کوڈ موجود نہیں۔ دوبارہ کوڈ منگوائیں',badcode:'کوڈ غلط ہے',
 inst:'ادارے کا نام',pname:'پرنسپل کا نام',go:'آگے بڑھیں',bad:'کوڈ، صارف نام یا پاس ورڈ غلط ہے',locked:'بہت زیادہ غلط کوششیں۔ 15 منٹ بعد دوبارہ کوشش کریں',
 invalid:'معلومات درست نہیں',exists:'یہ صارف نام پہلے سے موجود ہے',server:'سرور میں خرابی، دوبارہ کوشش کریں',
+kidsq:'آپ کے ادارے میں حفظ کے لیے کتنے بچے ہیں؟',kidsgo:'آگے',kidsstop:'یہ سہولت فی الحال ایسے اداروں کے لیے ہے جن میں حفظ کے کم از کم 10 بچے ہوں۔ آپ کے ادارے میں بچوں کی تعداد 10 سے کم ہے، اس لیے ابھی نیا ادارہ نہیں بنایا جا سکتا۔',minkids:'حفظ کے بچوں کی تعداد کم از کم 10 ہونی چاہیے',kidsnum:'بچوں کی تعداد (عدد میں لکھیں)',
 regnote:'ای میل پر آنے والے کوڈ کی تصدیق کے بعد ادارہ بنے گا اور ادارے کا کوڈ ملے گا۔ استاد اور والدین اسی کوڈ سے لاگ ان کریں گے۔ اگر ادارہ ایک ماہ تک استعمال نہ ہوا تو پرنسپل کو اطلاع دی جائے گی، اور 5 دن میں بھی استعمال نہ ہوا تو ادارے کا ڈیٹا مٹا دیا جائے گا۔',
 yourcode:'آپ کے ادارے کا کوڈ',sharecode:'یہ کوڈ استادوں اور والدین کو دیں',
 teachers:'استاد',students:'طلبہ',addteacher:'استاد شامل کریں',addstudent:'طالب علم شامل کریں',sname:'طالب علم کا نام',
@@ -148,6 +149,7 @@ title:'Hifz Diary',foot:'A free service. Children\'s data stays with your instit
 login:'Log in',reg:'Create institution',code:'Institution code',uname:'Username (lowercase letters and digits)',pw:'Password',pwrule:'At least 10 characters, including a letter, a digit and a special symbol (such as ! @ # $ %)',showpw:'Show',hidepw:'Hide',st:'Strength',s0:'Very weak',s1:'Weak',s2:'Medium',s3:'Strong',s4:'Very strong',email:'Email (the verification code will be sent here)',vtitle:'Verify your email',vsent:'We sent a 6-digit code to this email:',vcode:'Verification code',vgo:'Verify',resend:'Send the code again',vback:'Back',weak:'The password is not strong enough. The rule is written above',wait:'Please wait a little and try again',toomany:'Too many attempts. Try again in an hour',nomail:'Email sending is not active yet. Contact the administrator',mailfail:'The email could not be sent. Check the address and try again',expired:'The code has expired or does not exist. Request a new code',badcode:'Wrong code',
 inst:'Institution name',pname:'Principal\'s name',go:'Continue',bad:'Wrong code, username or password',locked:'Too many wrong attempts. Try again in 15 minutes',
 invalid:'Invalid information',exists:'This username already exists',server:'Server error, please try again',
+kidsq:'How many students are memorising the Quran in your institution?',kidsgo:'Next',kidsstop:'For now this service is for institutions with at least 10 Quran-memorisation students. Your institution has fewer than 10, so a new institution cannot be created yet.',minkids:'There must be at least 10 memorisation students',kidsnum:'Number of students (digits)',
 regnote:'After you verify the code sent to your email, the institution is created and you get its code. Teachers and parents log in with that code. If the institution is unused for one month the principal is notified, and if it stays unused for 5 more days its data is deleted.',
 yourcode:'Your institution code',sharecode:'Give this code to teachers and parents',
 teachers:'Teachers',students:'Students',addteacher:'Add teacher',addstudent:'Add student',sname:'Student name',
@@ -254,8 +256,20 @@ function wirePw(root){root.querySelectorAll('[data-eye]').forEach(b=>b.onclick=(
   root.querySelectorAll('.meter i').forEach(m=>{const id=m.id.slice(0,-2),i=root.querySelector('#'+id),t=root.querySelector('#'+id+'_t'),C=['#b3261e','#b3261e','#b7791f','#4c9a2a','#1b7a3d'];const f=()=>{const sc=pwScore(i.value);m.style.width=sc<0?'0':((sc+1)*20)+'%';m.style.background=C[Math.max(sc,0)];t.textContent=sc<0?'':T('st')+': '+T('s'+sc)};i.addEventListener('input',f);f()})}
 
 /* ---------- login / register ---------- */
+let KIDS=0;
+// the first thing a new institution is asked: how many students memorise the Quran there; fewer than 10 stops everything (no form, no code, no account)
+function kidsGate(stop){
+  $('#app').innerHTML=`<div class="card"><div class="row tabs"><button class="sec" id="t1">${T('login')}</button><button id="t2">${T('reg')}</button></div>`+
+  (stop?`<p class="err" id="kstop" style="display:block">${T('kidsstop')}</p>`:`<label>${T('kidsq')}</label><input id="f_kids" inputmode="numeric" maxlength="5" dir="ltr" placeholder="${T('kidsnum')}"><div class="err" id="e"></div><button id="kgo">${T('kidsgo')}</button>`)+`</div>`;
+  $('#t1').onclick=()=>auth('login');$('#t2').onclick=()=>{KIDS=0;kidsGate()};
+  if(stop)return;
+  $('#kgo').onclick=()=>{const n=parseInt(String($('#f_kids').value).replace(/[^0-9۰-۹٠-٩]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c)>=0?'۰۱۲۳۴۵۶۷۸۹'.indexOf(c):'٠١٢٣٤٥٦٧٨٩'.indexOf(c)),10);
+    if(!(n>=0)){$('#e').textContent=T('kidsq');return}
+    if(n<10)return kidsGate(true);KIDS=n;auth('reg')};
+}
 function auth(mode){
   mode=mode||'login';shell();chrome();
+  if(mode==='reg'&&!(KIDS>=10))return kidsGate();
   $('#app').innerHTML=`<div class="card"><div class="row tabs"><button class="${mode==='login'?'':'sec'}" id="t1">${T('login')}</button><button class="${mode==='reg'?'':'sec'}" id="t2">${T('reg')}</button></div>
   ${mode==='reg'?`<p class="muted">${T('regnote')}</p><label>${T('inst')}</label><input id="f_i" maxlength="80"><label>${T('pname')}</label><input id="f_n" maxlength="60"><label>${T('email')}</label><input id="f_e" type="email" dir="ltr" autocapitalize="none" maxlength="254">`:`<label>${T('code')}</label><input id="f_c" maxlength="10" dir="ltr" autocapitalize="characters">`}
   <label>${T('uname')}</label><input id="f_u" dir="ltr" autocapitalize="none" maxlength="30">${pwField('f_p',T('pw'),mode==='reg')}
@@ -265,7 +279,7 @@ function auth(mode){
   $('#t1').onclick=()=>auth('login');$('#t2').onclick=()=>auth('reg');
   $('#go').onclick=async()=>{
     $('#go').disabled=true;let r;
-    if(mode==='reg'){const d={a:'register',inst:$('#f_i').value.trim(),name:$('#f_n').value.trim(),email:$('#f_e').value.trim(),uname:$('#f_u').value.trim().toLowerCase(),pw:$('#f_p').value};
+    if(mode==='reg'){const d={a:'register',kids:KIDS,inst:$('#f_i').value.trim(),name:$('#f_n').value.trim(),email:$('#f_e').value.trim(),uname:$('#f_u').value.trim().toLowerCase(),pw:$('#f_p').value};
       if(!checkAll($('#app'),[['f_i','req'],['f_n','req'],['f_e','email'],['f_u','uname'],['f_p','pw']])){$('#go').disabled=false;$('#e').textContent=T('fixred');return}
       r=await api(d);if(r.ok)return verify(d);
       const FM={inst:['f_i','req'],name:['f_n','req'],email:['f_e','email'],uname:['f_u','uname'],pw:['f_p','pw']};

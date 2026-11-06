@@ -148,6 +148,7 @@ export async function onRequest(ctx) {
     const a = b.a;
 
     if (a === 'register') { // step 1: check the details, mail a 6-digit code to the principal's email
+      if (!(parseInt(b.kids, 10) >= 10)) return json({error: 'minkids'}, 400); // a new institution needs at least 10 memorisation students
       const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase(), email = str(b.email, 254).toLowerCase();
       const bad = !name ? 'inst' : !pname ? 'name' : !emailOk(email) ? 'email' : !unameOk(uname) ? 'uname' : !pwOk(b.pw) ? 'pw' : '';
       if (bad) return json({error: bad === 'pw' ? 'weak' : 'invalid', field: bad}, 400); // «field» tells the screen which box to turn red
