@@ -174,8 +174,8 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .nav{display:flex;justify-content:space-between;margin-top:2rem}
 .secnav{margin:1.2rem 0 .5rem}.secnext{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;border-inline-start:4px solid var(--accent)}.secnext .ct{font-weight:700;color:var(--accent)}.secprev{display:block;text-align:center;margin-top:.6rem;color:var(--muted);font-size:.9em}.readstart{display:inline-flex;align-items:center;margin:.3rem 0 .6rem}
 .nav a{color:var(--accent)}
-.hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:.7rem 1rem;color:var(--accent);text-decoration:none;box-shadow:var(--shadow)}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
-.chead{background:var(--card);border:1px solid var(--line);border-inline-start:5px solid var(--accent);border-radius:14px;padding:.8rem 1rem;box-shadow:var(--shadow)}.chead .ct{display:block;font:700 1.25rem/1.8 var(--serif)}
+.refbox.fullbox{background:none;border:0;border-radius:0;padding:.2rem 0 .4rem;margin:.2rem 0}.refbox.fullbox>b{display:block;font:600 .95rem/1.6 var(--serif);color:var(--accent);margin-bottom:.2rem}.fullh{margin:.2rem 0}.hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .9rem;color:var(--accent);text-decoration:none}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
+.chead{padding:.2rem .2rem .7rem;border-bottom:1px solid var(--line)}.chead .ct{display:block;font:700 1.25rem/1.8 var(--serif)}
 .secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}
 .hstrip{display:flex;margin:-.2rem -.2rem .8rem;background:var(--bar,var(--accent));border-radius:12px;overflow:hidden}.hstrip .hs{flex:1;min-width:0;padding:.7rem .3rem;text-align:center;color:#ffffffb8;text-decoration:none;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:3px solid transparent}.hstrip .hs.on{color:#fff;font-weight:700;border-bottom-color:#fff}
 .hpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(5.1rem + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:.9rem;padding:.35rem .9rem;background:var(--card,#fff);border-radius:2rem;box-shadow:0 2px 14px #0003;direction:ltr}.hpill b{color:var(--accent);font-size:1.15rem;min-width:5.2rem;display:flex;justify-content:center;gap:.35rem;direction:ltr}.hpill b i{font-style:normal;unicode-bidi:isolate}.hpill .hpb{border:0;background:none;color:var(--accent);font-size:1.15rem;padding:.3rem .4rem;cursor:pointer}.hpill .hpb:disabled{opacity:.3}
@@ -1217,10 +1217,12 @@ async function fullHadith(d,box){
   const p=el('p',{class:'ar fullh',lang:'ar'});
   let sn=[];try{sn=(COLL.sanad&&COLL.sanad(best.it.text))||[]}catch(e){}
   let pos=0,cur=null;const snNames=[],snEls=[];
+  let hon=false;   // the honorific after a narrator's name stays outside his link
   let inBr=false;   // the editor's own words (in square brackets) are not part of the hadith
   best.raw.forEach((w,i)=>{const st=best.it.text.indexOf(w,pos);pos=st<0?pos:st+w.length;
     if(w.includes('['))inBr=true;const skip=inBr;if(w.includes(']'))inBr=false;if(skip){cur=null;return;}
-    const x=sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
+    const pl=w.replace(/[\u064b-\u0652\u0670\u0640]/g,'');if(/^ر(?:ضي|ضى)$/.test(pl))hon=true;const isHon=hon;if(hon&&/^عن(?:ه|ها|هم|هما)$/.test(pl))hon=false;
+    const x=isHon?null:sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
     if(x){if(!cur||cur.x!==x){const a=el('a',{class:'snlink',href:x.href});
         a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
         cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}cur.a.append(sp,' ');}
