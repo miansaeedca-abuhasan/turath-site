@@ -263,6 +263,10 @@ body.withplayer .resume.float{display:none}
 .fcap:active{transform:scale(.97)}
 @media (max-width:380px){.fcap{font-size:.74rem;padding:.28rem .55rem}}
 .gpbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;direction:ltr;margin:0 0 .8rem}
+@media (min-width:1320px){.gpbar.side{position:fixed;top:23rem;width:17.6rem;flex-direction:column;flex-wrap:nowrap;margin:0;z-index:5}.gpbar.side .gpb{flex:none;width:100%;box-sizing:border-box}.gpbar.side.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.gpbar.side.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}}
+#ipop{position:fixed;z-index:99980;left:50%;bottom:4.8rem;transform:translateX(-50%);width:min(94vw,26rem);box-sizing:border-box;background:var(--card,#fff);color:var(--ink,#222);border:1.5px solid #c39a3b;border-radius:18px;box-shadow:0 10px 34px rgba(0,0,0,.28);padding:.8rem .9rem}
+#ipop .it{display:flex;gap:.7rem;align-items:center}#ipop img{width:3.2rem;height:3.2rem;border-radius:12px;flex:none}#ipop .it b{display:block;font-size:1rem;line-height:1.5}#ipop .it small{display:block;color:var(--muted,#667);line-height:1.5}#ipop .ia{display:flex;gap:.5rem;margin-top:.6rem}#ipop button{flex:1 1 0;font:inherit;font-size:.9rem;border-radius:11px;padding:.45rem .6rem;cursor:pointer;border:1.5px solid #0e6b53}#ipop .go{background:#0e6b53;color:#fff}#ipop .no{background:transparent;color:inherit}
+
 .gpb{flex:1 1 170px;display:flex;align-items:center;gap:.5rem;padding:.4rem .7rem;border-radius:14px;background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff;border:1.5px solid #c39a3b;text-decoration:none;font:inherit;cursor:pointer;box-shadow:var(--shadow);min-height:48px}
 .gpb svg{width:28px;height:28px;flex:none}.gpb span{display:block;line-height:1.35;text-align:start}.gpb small{display:block;font-size:.72rem;opacity:.85}.gpb b{font-size:.92rem}.gpb:active{transform:scale(.98)}
 .hbanner{display:block;width:100%;height:auto;border-radius:14px;margin:0 0 .8rem;box-shadow:var(--shadow)}
@@ -1930,7 +1934,7 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
     const b=document.createElement('button');b.type='button';b.className='gpb';b.lang=ui;b.dir=rtl?'rtl':'ltr';
     const t2=document.createElement('span');t2.innerHTML='<small></small><b></b>';t2.querySelector('small').textContent=i[1];t2.querySelector('b').textContent=i[0];b.append(phone,t2);
     b.onclick=()=>window.addHomeHelp&&window.addHomeHelp();
-    const row=document.createElement('div');row.className='gpbar';row.append(a,b);
+    const row=document.createElement('div');row.className='gpbar side '+(rtl?'Lf':'R');row.append(a,b);
     if(!/android|iphone|ipad|ipod|mobile/i.test(navigator.userAgent)){   // the computer: Chrome / Edge install the site as an app in its own window
       const d=DP[ui]||DP.en,c=document.createElement('button');c.type='button';c.className='gpb gpd';c.lang=ui;c.dir=rtl?'rtl':'ltr';
       const t3=document.createElement('span');t3.innerHTML='<small></small><b></b>';t3.querySelector('small').textContent=d[1];t3.querySelector('b').textContent=d[0];
@@ -1948,6 +1952,24 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
     gu:['ક્રોમ કે એજમાં: એડ્રેસ બારની જમણી બાજુ ઇન્સ્ટોલ આઇકન દબાવી «ઇન્સ્ટોલ» પસંદ કરો.','સફારી (મેક)માં: ફાઇલ મેનૂમાંથી «ડોકમાં ઉમેરો» પસંદ કરો.','ફાયરફોક્સમાં આ સુવિધા નથી; ક્રોમ કે એજમાં ખોલો.'],
     fr:['Dans Chrome ou Edge : cliquez sur l’icône d’installation à droite de la barre d’adresse, puis « Installer ».','Dans Safari (Mac) : menu Fichier, « Ajouter au Dock ».','Firefox ne le permet pas ; ouvrez le site dans Chrome ou Edge.']};
   const openDeskHelp=()=>{const rtl=ui==='ur'||ui==='ar';window.sheet((DP[ui]||DP.en)[0],[el('ol',{dir:rtl?'rtl':'ltr',lang:ui,style:'line-height:2;padding-inline-start:1.4rem;margin:.2rem 0'},...(DH[ui]||DH.en).map(t=>el('li',{},t)))]);};
+  /* one install pop-up per device (Android -> Google Play, iPhone -> Add to Home Screen, computer -> install the desktop app); closing it hides it for 7 days */
+  const PM={ur:['ایپ کی طرح استعمال کریں: جلدی کھلتی ہے اور آسانی رہتی ہے۔','بعد میں'],ar:['استخدمه كتطبيق: يفتح بسرعة وأسهل في الاستخدام.','لاحقًا'],en:['Use it as an app: it opens faster and is easier to use.','Not now'],bn:['অ্যাপের মতো ব্যবহার করুন: দ্রুত খোলে, ব্যবহারও সহজ।','পরে'],hi:['ऐप की तरह इस्तेमाल करें: तेज़ खुलता है और आसान रहता है।','बाद में'],gu:['એપની જેમ વાપરો: ઝડપથી ખૂલે છે અને સરળ રહે છે.','પછી'],fr:['Utilisez-le comme une application : plus rapide et plus pratique.','Plus tard']};
+  window.showInstallPopup=function(){
+    try{
+      if(standalone||document.getElementById('ipop'))return;
+      try{if(+localStorage.ipopUntil>Date.now())return;}catch(e){}
+      const ua=navigator.userAgent,ios=/iphone|ipad|ipod/i.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),and=/android/i.test(ua);
+      if(!ios&&!and&&/firefox/i.test(ua))return;
+      const rtl=ui==='ur'||ui==='ar',m=PM[ui]||PM.en,lab=(ios?IP:and?GP:DP)[ui]||(ios?IP:and?GP:DP).en;
+      const go=()=>{if(ios)window.addHomeHelp&&window.addHomeHelp();else if(and)window.open('https://play.google.com/store/apps/details?id=com.turathkhairalquroon.app','_blank','noopener');else{const e=window.__deskPrompt;if(e){e.prompt();e.userChoice.finally(()=>{window.__deskPrompt=null;});}else openDeskHelp();}};
+      const hide=d=>{try{localStorage.ipopUntil=Date.now()+d*864e5;}catch(e){}const x=document.getElementById('ipop');if(x)x.remove();};
+      const box=el('div',{id:'ipop',dir:rtl?'rtl':'ltr',lang:ui,role:'dialog'},el('div',{class:'it'},el('img',{src:'icon-192.png',alt:''}),el('div',{},el('b',{},T('brand')),el('small',{},m[0]))),
+        el('div',{class:'ia'},el('button',{type:'button',class:'go',on:{click:()=>{hide(30);go();}}},lab[0]),el('button',{type:'button',class:'no',on:{click:()=>hide(7)}},m[1])));
+      document.body.append(box);
+    }catch(e){}
+  };
+  { let n=0;const t=setInterval(()=>{n++;const sp=document.getElementById('splash'),busy=(sp&&!sp.hidden&&!sp.classList.contains('out'))||document.querySelector('.sheetbg');   // wait until the opening video is over, then 2.5 s
+    if(busy&&n<120)return;clearInterval(t);setTimeout(window.showInstallPopup,2500);},1000); }
 })();
 /* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
 (function(){
