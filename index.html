@@ -262,6 +262,8 @@ body.withplayer .resume.float{display:none}
 .fcap{flex:0 1 auto;white-space:nowrap;font-size:.82rem;padding:.3rem .8rem;border-radius:999px;border:1.2px solid #c39a3b;background:linear-gradient(135deg,#0a4636,#0e6b53);color:#fff!important;text-decoration:none!important;box-shadow:0 1px 4px rgba(14,90,69,.25)}
 .fcap:active{transform:scale(.97)}
 @media (max-width:380px){.fcap{font-size:.74rem;padding:.28rem .55rem}}
+.qzlv.lock{opacity:.45;filter:grayscale(1)}.qzhon{font-size:.72em;opacity:.8;font-weight:400}
+.qzgate{border:1.5px solid #c39a3b;background:rgba(195,154,59,.1)}.qzgate p{margin:.2rem 0 .6rem;line-height:1.9}
 .gpbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;direction:ltr;margin:0 0 .8rem}
 @media (min-width:1320px){.gpbar.side{position:fixed;top:23rem;width:17.6rem;flex-direction:column;flex-wrap:nowrap;margin:0;z-index:5}.gpbar.side .gpb{flex:none;width:100%;box-sizing:border-box}.gpbar.side.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.gpbar.side.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}}
 #ipop{position:fixed;z-index:99980;left:50%;bottom:4.8rem;transform:translateX(-50%);width:min(94vw,26rem);box-sizing:border-box;background:var(--card,#fff);color:var(--ink,#222);border:1.5px solid #c39a3b;border-radius:18px;box-shadow:0 10px 34px rgba(0,0,0,.28);padding:.8rem .9rem}
@@ -548,6 +550,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .qzbig .i{width:3.2rem;height:3.2rem;color:var(--accent)}
 .qzwho,.qzcat{display:flex;align-items:center;gap:.9rem;text-decoration:none;color:var(--ink)}
 .qzwi{font-size:2.4rem}.qzwho .ct,.qzcat .ct{font-size:1.25rem;font-family:var(--urduhead);color:var(--accent)}
+.qzwho.qzwm{border-inline-start:6px solid #2a9d8f}
 .qzwho.qzwk{border-inline-start:6px solid #e0a526}.qzwho.qzwa{border-inline-start:6px solid var(--accent)}
 .qzlevels{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
 .qzlv{display:flex;flex-direction:column;align-items:center;gap:.1rem;padding:.6rem .3rem;border-radius:14px;background:var(--card);border:1px solid var(--line,#ddd);text-decoration:none;color:var(--ink);text-align:center}
@@ -7544,7 +7547,8 @@ Object.assign(I.fr, {
   const S = {
     ur: {title: 'کوئز', sub: 'اپنے علم کو آزمائیں', hero: 'کوئز — اپنے علم کو آزمائیں',
       intro: (L, P) => 'ہر زمرے میں ' + L + ' مرحلے ہیں اور ہر مرحلے میں ' + P + ' سوالات۔ ہر سوال کے چار جوابات میں سے درست جواب چنیں؛ مرحلے کے آخر میں تمام جوابات اور ان کے حوالے دکھائے جائیں گے۔',
-      who: {a: ['بڑوں کے لیے', 'سیرت، صحابہ کرام اور اذکار پر علمی سوالات'], k: ['بچوں کے لیے', 'آسان سوالات، ستارے اور خوبصورت سرٹیفکیٹ']},
+      who: {a: ['بڑوں کے لیے', 'سیرت، صحابہ کرام اور اذکار پر علمی سوالات'], k: ['بچوں کے لیے', 'آسان سوالات، ستارے اور خوبصورت سرٹیفکیٹ'], m: ['درمیانے درجے کے لیے', 'بچوں کے بعد اور بڑوں سے پہلے — درمیانے مشکل سوالات']},
+      mGate: 'یہ درمیانہ درجہ ہے۔ آگے بڑھنے کے لیے اس کے پہلے دو مرحلوں میں سے ہر ایک میں کم از کم 8 نمبر لینا ضروری ہے، ورنہ پہلے بچوں والے سوالات مکمل کریں۔', mBtn: 'بچوں کے سوالات',
       cats: {seerah: 'سیرتِ مصطفی صلی اللہ علیہ وسلم', sahaba: 'فضائلِ صحابہ رضی اللہ عنہم', adhkar: 'اذکار اور دعائیں'},
       catInfo: (L, n) => L + ' مرحلے، ' + n + ' سوالات', catDone: (d, s) => ' — مکمل مرحلے: ' + d + '، درست جوابات: ' + s,
       sumDone: (d, t, s) => 'آپ ' + d + ' مرحلے مکمل کر چکے ہیں اور ' + t + ' میں سے ' + s + ' جوابات درست دیے ہیں۔',
@@ -7564,12 +7568,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'سندِ امتیاز', cFrom: 'تراث خیرالقرون کی جانب سے', cGive: 'یہ سرٹیفکیٹ بڑی خوشی کے ساتھ پیش کیا جاتا ہے',
       cBody: (c, lv, nm, n, s) => 'جنہوں نے «' + c + '» کے کوئز کا مرحلہ ' + lv + ' «' + nm + '» کامیابی سے مکمل کیا اور ' + n + ' میں سے ' + s + ' جوابات درست دیے۔',
       cDua: 'اللہ تعالی آپ کے علمِ نافع میں برکتیں عطا فرمائے اور آپ کے والدین کو جزائے خیر عطا فرمائے، آمین یا رب', cDate: 'تاریخ: ', cBrand: 'تراث خیرالقرون',
-      kn: ['ننھا طالبِ علم', 'شوقین طالبِ علم', 'محنتی طالبِ علم', 'روشن ستارہ', 'چمکتا ستارہ', 'علم کا متلاشی', 'ذہین طالبِ علم', 'سنہری قلم', 'علم کا موتی', 'چمکتا ہیرا', 'علم کا چراغ', 'روشن چراغ', 'علم کا شاہین', 'علم کا سفیر', 'علم کا تاج'],
+      kn: ['ننھا طالبِ علم (حسن رضی اللہ عنہ)', 'شوقین طالبِ علم (حسین رضی اللہ عنہ)', 'محنتی طالبِ علم (انس بن مالک رضی اللہ عنہ)', 'روشن ستارہ (امامہ رضی اللہ عنہا)', 'چمکتا ستارہ (اسامہ بن زید رضی اللہ عنہما)', 'علم کا متلاشی (عبداللہ بن عمر رضی اللہ عنہما)', 'ذہین طالبِ علم (عبداللہ بن عباس رضی اللہ عنہما)', 'سنہری قلم (زید بن ثابت رضی اللہ عنہ)', 'علم کا موتی (عائشہ رضی اللہ عنہا)', 'چمکتا ہیرا (علی بن ابی طالب رضی اللہ عنہ)', 'علم کا چراغ (عبداللہ بن زبیر رضی اللہ عنہما)', 'روشن چراغ (عبداللہ بن جعفر رضی اللہ عنہما)', 'علم کا شاہین (براء بن عازب رضی اللہ عنہما)', 'علم کا سفیر (مصعب بن عمیر رضی اللہ عنہ)', 'علم کا تاج (عبداللہ بن مسعود رضی اللہ عنہ)'],
       an: ['ابتدا', 'تعارف', 'بنیاد', 'پیش قدمی', 'استقامت', 'گہرائی', 'وسعت', 'مہارت', 'بصیرت', 'تحقیق', 'رسوخ', 'فہم', 'کمال', 'امتیاز', 'تکمیل'],
       refs: {seerah: 'صحیح سیرت مصطفی، باب ', fazail: 'صحیح فضائل صحابہ، باب ', jami: 'تلخیص الجامع الکامل، حدیث ', q: 'قرآن مجید '}},
     en: {title: 'Quiz', sub: 'Test your knowledge', hero: 'Quiz — test your knowledge',
       intro: (L, P) => 'Each category has ' + L + ' levels of ' + P + ' questions. Pick the right answer of four; at the end of a level all the answers and their sources are shown.',
-      who: {a: ['For adults', 'Questions on the Seerah, the Companions and the adhkar'], k: ['For children', 'Easy questions, stars and a beautiful certificate']},
+      who: {a: ['For adults', 'Questions on the Seerah, the Companions and the adhkar'], k: ['For children', 'Easy questions, stars and a beautiful certificate'], m: ['Intermediate', 'After the children, before the adults — medium-level questions']},
+      mGate: 'This is the intermediate level. To go further, score at least 8 in each of its first two levels, or first complete the children\'s questions.', mBtn: 'Children\'s questions',
       cats: {seerah: 'The Seerah of the Prophet ﷺ', sahaba: 'The Companions (may Allah be pleased with them)', adhkar: 'Adhkar and du’as'},
       catInfo: (L, n) => L + ' levels, ' + n + ' questions', catDone: (d, s) => ' — levels done: ' + d + ', right answers: ' + s,
       sumDone: (d, t, s) => 'You have finished ' + d + ' levels and answered ' + s + ' of ' + t + ' questions correctly.',
@@ -7589,12 +7594,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'Certificate of Merit', cFrom: 'from Turath Khair Al-Quroon', cGive: 'This certificate is proudly presented to',
       cBody: (c, lv, nm, n, s) => 'for completing level ' + lv + ' “' + nm + '” of the quiz “' + c + '” with ' + s + ' of ' + n + ' right answers.',
       cDua: 'May Allah bless your beneficial knowledge and reward your parents with good. Ameen!', cDate: 'Date: ', cBrand: 'Turath Khair Al-Quroon',
-      kn: ['Little Learner', 'Keen Learner', 'Hard Worker', 'Bright Star', 'Shining Star', 'Seeker of Knowledge', 'Clever Student', 'Golden Pen', 'Pearl of Knowledge', 'Sparkling Diamond', 'Lamp of Knowledge', 'Bright Lamp', 'Falcon of Knowledge', 'Ambassador of Knowledge', 'Crown of Knowledge'],
+      kn: ['Little Learner (Al-Hasan may Allah be pleased with him)', 'Keen Learner (Al-Husayn may Allah be pleased with him)', 'Hard Worker (Anas ibn Malik may Allah be pleased with him)', 'Bright Star (Umamah may Allah be pleased with her)', 'Shining Star (Usamah ibn Zayd may Allah be pleased with them both)', 'Seeker of Knowledge (Abdullah ibn Umar may Allah be pleased with them both)', 'Clever Student (Abdullah ibn Abbas may Allah be pleased with them both)', 'Golden Pen (Zayd ibn Thabit may Allah be pleased with him)', 'Pearl of Knowledge (Aishah may Allah be pleased with her)', 'Sparkling Diamond (Ali ibn Abi Talib may Allah be pleased with him)', 'Lamp of Knowledge (Abdullah ibn az-Zubayr may Allah be pleased with them both)', 'Bright Lamp (Abdullah ibn Jafar may Allah be pleased with them both)', 'Falcon of Knowledge (Al-Bara ibn Azib may Allah be pleased with them both)', 'Ambassador of Knowledge (Musab ibn Umayr may Allah be pleased with him)', 'Crown of Knowledge (Abdullah ibn Masud may Allah be pleased with him)'],
       an: ['Beginning', 'Introduction', 'Foundation', 'Progress', 'Steadfastness', 'Depth', 'Breadth', 'Skill', 'Insight', 'Research', 'Firmness', 'Understanding', 'Excellence', 'Distinction', 'Completion'],
       refs: {seerah: 'Sahih Seerah, chapter ', fazail: 'Sahih Fada’il as-Sahabah, chapter ', jami: 'Talkhis Al-Jami al-Kamil, hadith ', q: 'The Qur’an '}},
     ar: {title: 'المسابقة', sub: 'اختبر معلوماتك', hero: 'المسابقة — اختبر معلوماتك',
       intro: (L, P) => 'في كل قسم ' + L + ' مرحلة، في كل مرحلة ' + P + ' أسئلة. اختر الجواب الصحيح من أربعة؛ وفي آخر المرحلة تُعرض الأجوبة كلها مع مصادرها.',
-      who: {a: ['للكبار', 'أسئلة في السيرة والصحابة والأذكار'], k: ['للصغار', 'أسئلة سهلة ونجوم وشهادة جميلة']},
+      who: {a: ['للكبار', 'أسئلة في السيرة والصحابة والأذكار'], k: ['للصغار', 'أسئلة سهلة ونجوم وشهادة جميلة'], m: ['للمتوسطين', 'بعد الصغار وقبل الكبار — أسئلة متوسطة الصعوبة']},
+      mGate: 'هذا المستوى المتوسط. للمتابعة اجتز المرحلتين الأوليين بما لا يقل عن 8 درجات في كل منهما، أو أكمل أولًا أسئلة الصغار.', mBtn: 'أسئلة الصغار',
       cats: {seerah: 'سيرة المصطفى صلى الله عليه وسلم', sahaba: 'فضائل الصحابة رضي الله عنهم', adhkar: 'الأذكار والأدعية'},
       catInfo: (L, n) => L + ' مرحلة، ' + n + ' سؤالًا', catDone: (d, s) => ' — المراحل المنجزة: ' + d + '، الأجوبة الصحيحة: ' + s,
       sumDone: (d, t, s) => 'أنجزت ' + d + ' مراحل وأجبت إجابة صحيحة عن ' + s + ' من ' + t + ' سؤالًا.',
@@ -7614,12 +7620,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'شهادة تقدير', cFrom: 'من تراث خير القرون', cGive: 'تُمنح هذه الشهادة بكل سرور إلى',
       cBody: (c, lv, nm, n, s) => 'لإتمامه المرحلة ' + lv + ' «' + nm + '» من مسابقة «' + c + '» بنجاح، وإجابته إجابة صحيحة عن ' + s + ' من ' + n + '.',
       cDua: 'بارك الله في علمك النافع، وجزى والديك خيرًا، آمين يا رب', cDate: 'التاريخ: ', cBrand: 'تراث خير القرون',
-      kn: ['الطالب الصغير', 'الطالب المشتاق', 'الطالب المجتهد', 'النجم المضيء', 'النجم اللامع', 'طالب العلم', 'الطالب الذكي', 'القلم الذهبي', 'لؤلؤة العلم', 'الماسة اللامعة', 'سراج العلم', 'السراج المنير', 'صقر العلم', 'سفير العلم', 'تاج العلم'],
+      kn: ['الطالب الصغير (الحسن رضي الله عنه)', 'الطالب المشتاق (الحسين رضي الله عنه)', 'الطالب المجتهد (أنس بن مالك رضي الله عنه)', 'النجم المضيء (أمامة رضي الله عنها)', 'النجم اللامع (أسامة بن زيد رضي الله عنهما)', 'طالب العلم (عبد الله بن عمر رضي الله عنهما)', 'الطالب الذكي (عبد الله بن عباس رضي الله عنهما)', 'القلم الذهبي (زيد بن ثابت رضي الله عنه)', 'لؤلؤة العلم (عائشة رضي الله عنها)', 'الماسة اللامعة (علي بن أبي طالب رضي الله عنه)', 'سراج العلم (عبد الله بن الزبير رضي الله عنهما)', 'السراج المنير (عبد الله بن جعفر رضي الله عنهما)', 'صقر العلم (البراء بن عازب رضي الله عنهما)', 'سفير العلم (مصعب بن عمير رضي الله عنه)', 'تاج العلم (عبد الله بن مسعود رضي الله عنه)'],
       an: ['البداية', 'التعريف', 'الأساس', 'التقدم', 'الثبات', 'العمق', 'السعة', 'المهارة', 'البصيرة', 'التحقيق', 'الرسوخ', 'الفهم', 'الكمال', 'التميز', 'الختام'],
       refs: {seerah: 'صحيح السيرة النبوية، باب ', fazail: 'صحيح فضائل الصحابة، باب ', jami: 'تلخيص الجامع الكامل، حديث ', q: 'القرآن الكريم '}},
     bn: {title: 'কুইজ', sub: 'নিজের জ্ঞান যাচাই করুন', hero: 'কুইজ — নিজের জ্ঞান যাচাই করুন',
       intro: (L, P) => 'প্রতিটি বিভাগে ' + L + 'টি ধাপ, প্রতিটি ধাপে ' + P + 'টি প্রশ্ন। চারটি উত্তরের মধ্যে সঠিকটি বেছে নিন; ধাপের শেষে সব উত্তর ও তার সূত্র দেখানো হবে।',
-      who: {a: ['বড়দের জন্য', 'সীরাত, সাহাবা ও যিকির বিষয়ে প্রশ্ন'], k: ['ছোটদের জন্য', 'সহজ প্রশ্ন, তারা আর সুন্দর সনদ']},
+      who: {a: ['বড়দের জন্য', 'সীরাত, সাহাবা ও যিকির বিষয়ে প্রশ্ন'], k: ['ছোটদের জন্য', 'সহজ প্রশ্ন, তারা আর সুন্দর সনদ'], m: ['মধ্যম স্তরের জন্য', 'ছোটদের পরে, বড়দের আগে — মাঝারি মানের প্রশ্ন']},
+      mGate: 'এটি মধ্যম স্তর। এগিয়ে যেতে এর প্রথম দুই ধাপের প্রতিটিতে কমপক্ষে 8 পেতে হবে, অথবা আগে ছোটদের প্রশ্নগুলো শেষ করুন।', mBtn: 'ছোটদের প্রশ্ন',
       cats: {seerah: 'নবী ﷺ-এর সীরাত', sahaba: 'সাহাবায়ে কেরামের ফযীলত', adhkar: 'যিকির ও দোয়া'},
       catInfo: (L, n) => L + 'টি ধাপ, ' + n + 'টি প্রশ্ন', catDone: (d, s) => ' — শেষ হয়েছে: ' + d + ' ধাপ, সঠিক উত্তর: ' + s,
       sumDone: (d, t, s) => 'আপনি ' + d + 'টি ধাপ শেষ করেছেন এবং ' + t + 'টির মধ্যে ' + s + 'টি সঠিক উত্তর দিয়েছেন।',
@@ -7639,12 +7646,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'সম্মাননা সনদ', cFrom: 'তুরাস খাইরুল কুরূনের পক্ষ থেকে', cGive: 'আনন্দের সাথে এই সনদ প্রদান করা হচ্ছে',
       cBody: (c, lv, nm, n, s) => '“' + c + '” কুইজের ধাপ ' + lv + ' “' + nm + '” সফলভাবে শেষ করে ' + n + 'টির মধ্যে ' + s + 'টি সঠিক উত্তর দেওয়ার জন্য।',
       cDua: 'আল্লাহ তোমার উপকারী জ্ঞানে বরকত দিন এবং তোমার বাবা-মাকে উত্তম প্রতিদান দিন। আমীন', cDate: 'তারিখ: ', cBrand: 'তুরাস খাইরুল কুরূন',
-      kn: ['ছোট্ট শিক্ষার্থী', 'আগ্রহী শিক্ষার্থী', 'পরিশ্রমী শিক্ষার্থী', 'উজ্জ্বল তারা', 'ঝলমলে তারা', 'জ্ঞানের সন্ধানী', 'মেধাবী শিক্ষার্থী', 'সোনালি কলম', 'জ্ঞানের মুক্তা', 'ঝকঝকে হীরা', 'জ্ঞানের প্রদীপ', 'উজ্জ্বল প্রদীপ', 'জ্ঞানের ঈগল', 'জ্ঞানের দূত', 'জ্ঞানের মুকুট'],
+      kn: ['ছোট্ট শিক্ষার্থী (হাসান রাদিয়াল্লাহু আনহু)', 'আগ্রহী শিক্ষার্থী (হুসাইন রাদিয়াল্লাহু আনহু)', 'পরিশ্রমী শিক্ষার্থী (আনাস ইবনে মালিক রাদিয়াল্লাহু আনহু)', 'উজ্জ্বল তারা (উমামা রাদিয়াল্লাহু আনহা)', 'ঝলমলে তারা (উসামা ইবনে যায়েদ রাদিয়াল্লাহু আনহুমা)', 'জ্ঞানের সন্ধানী (আবদুল্লাহ ইবনে উমর রাদিয়াল্লাহু আনহুমা)', 'মেধাবী শিক্ষার্থী (আবদুল্লাহ ইবনে আব্বাস রাদিয়াল্লাহু আনহুমা)', 'সোনালি কলম (যায়েদ ইবনে সাবিত রাদিয়াল্লাহু আনহু)', 'জ্ঞানের মুক্তা (আয়েশা রাদিয়াল্লাহু আনহা)', 'ঝকঝকে হীরা (আলী ইবনে আবি তালিব রাদিয়াল্লাহু আনহু)', 'জ্ঞানের প্রদীপ (আবদুল্লাহ ইবনে যুবায়ের রাদিয়াল্লাহু আনহুমা)', 'উজ্জ্বল প্রদীপ (আবদুল্লাহ ইবনে জাফর রাদিয়াল্লাহু আনহুমা)', 'জ্ঞানের ঈগল (বারা ইবনে আযিব রাদিয়াল্লাহু আনহুমা)', 'জ্ঞানের দূত (মুসআব ইবনে উমায়ের রাদিয়াল্লাহু আনহু)', 'জ্ঞানের মুকুট (আবদুল্লাহ ইবনে মাসউদ রাদিয়াল্লাহু আনহু)'],
       an: ['সূচনা', 'পরিচিতি', 'ভিত্তি', 'অগ্রগতি', 'দৃঢ়তা', 'গভীরতা', 'বিস্তৃতি', 'দক্ষতা', 'অন্তর্দৃষ্টি', 'গবেষণা', 'পরিপক্বতা', 'উপলব্ধি', 'পূর্ণতা', 'শ্রেষ্ঠত্ব', 'সমাপ্তি'],
       refs: {seerah: 'সহীহ সীরাত, অধ্যায় ', fazail: 'সহীহ ফাযায়েলে সাহাবা, অধ্যায় ', jami: 'তালখীস আল-জামি আল-কামিল, হাদীস ', q: 'আল-কুরআন '}},
     hi: {title: 'क्विज़', sub: 'अपना ज्ञान परखें', hero: 'क्विज़ — अपना ज्ञान परखें',
       intro: (L, P) => 'हर श्रेणी में ' + L + ' स्तर हैं, हर स्तर में ' + P + ' प्रश्न। चार उत्तरों में से सही उत्तर चुनें; स्तर के अंत में सभी उत्तर और उनके स्रोत दिखाए जाएँगे।',
-      who: {a: ['बड़ों के लिए', 'सीरत, सहाबा और अज़कार पर प्रश्न'], k: ['बच्चों के लिए', 'आसान प्रश्न, सितारे और सुंदर प्रमाणपत्र']},
+      who: {a: ['बड़ों के लिए', 'सीरत, सहाबा और अज़कार पर प्रश्न'], k: ['बच्चों के लिए', 'आसान प्रश्न, सितारे और सुंदर प्रमाणपत्र'], m: ['मध्यम स्तर के लिए', 'बच्चों के बाद, बड़ों से पहले — मध्यम कठिनाई के प्रश्न']},
+      mGate: 'यह मध्यम स्तर है। आगे बढ़ने के लिए इसके पहले दो चरणों में से प्रत्येक में कम से कम 8 अंक लाएँ, या पहले बच्चों के प्रश्न पूरे करें।', mBtn: 'बच्चों के प्रश्न',
       cats: {seerah: 'नबी ﷺ की सीरत', sahaba: 'सहाबा किराम की फ़ज़ीलत', adhkar: 'अज़कार और दुआएँ'},
       catInfo: (L, n) => L + ' स्तर, ' + n + ' प्रश्न', catDone: (d, s) => ' — पूरे स्तर: ' + d + ', सही उत्तर: ' + s,
       sumDone: (d, t, s) => 'आप ' + d + ' स्तर पूरे कर चुके हैं और ' + t + ' में से ' + s + ' उत्तर सही दिए हैं।',
@@ -7664,12 +7672,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'सम्मान पत्र', cFrom: 'तुरास ख़ैरुल क़ुरून की ओर से', cGive: 'यह प्रमाणपत्र बड़ी ख़ुशी के साथ दिया जाता है',
       cBody: (c, lv, nm, n, s) => '“' + c + '” क्विज़ का स्तर ' + lv + ' “' + nm + '” सफलता से पूरा करने और ' + n + ' में से ' + s + ' सही उत्तर देने पर।',
       cDua: 'अल्लाह तुम्हारे लाभदायक ज्ञान में बरकत दे और तुम्हारे माता-पिता को अच्छा बदला दे। आमीन', cDate: 'तारीख़: ', cBrand: 'तुरास ख़ैरुल क़ुरून',
-      kn: ['नन्हा विद्यार्थी', 'उत्साही विद्यार्थी', 'मेहनती विद्यार्थी', 'चमकता तारा', 'जगमगाता तारा', 'ज्ञान का खोजी', 'होशियार विद्यार्थी', 'सुनहरी क़लम', 'ज्ञान का मोती', 'चमकता हीरा', 'ज्ञान का दीपक', 'रोशन दीपक', 'ज्ञान का बाज़', 'ज्ञान का दूत', 'ज्ञान का ताज'],
+      kn: ['नन्हा विद्यार्थी (हसन रज़ियल्लाहु अन्हु)', 'उत्साही विद्यार्थी (हुसैन रज़ियल्लाहु अन्हु)', 'मेहनती विद्यार्थी (अनस बिन मालिक रज़ियल्लाहु अन्हु)', 'चमकता तारा (उमामा रज़ियल्लाहु अन्हा)', 'जगमगाता तारा (उसामा बिन ज़ैद रज़ियल्लाहु अन्हुमा)', 'ज्ञान का खोजी (अब्दुल्लाह बिन उमर रज़ियल्लाहु अन्हुमा)', 'होशियार विद्यार्थी (अब्दुल्लाह बिन अब्बास रज़ियल्लाहु अन्हुमा)', 'सुनहरी क़लम (ज़ैद बिन साबित रज़ियल्लाहु अन्हु)', 'ज्ञान का मोती (आइशा रज़ियल्लाहु अन्हा)', 'चमकता हीरा (अली बिन अबी तालिब रज़ियल्लाहु अन्हु)', 'ज्ञान का दीपक (अब्दुल्लाह बिन ज़ुबैर रज़ियल्लाहु अन्हुमा)', 'रोशन दीपक (अब्दुल्लाह बिन जाफ़र रज़ियल्लाहु अन्हुमा)', 'ज्ञान का बाज़ (बरा बिन आज़िब रज़ियल्लाहु अन्हुमा)', 'ज्ञान का दूत (मुसअब बिन उमैर रज़ियल्लाहु अन्हु)', 'ज्ञान का ताज (अब्दुल्लाह बिन मसऊद रज़ियल्लाहु अन्हु)'],
       an: ['आरंभ', 'परिचय', 'नींव', 'प्रगति', 'दृढ़ता', 'गहराई', 'विस्तार', 'कुशलता', 'अंतर्दृष्टि', 'शोध', 'मज़बूती', 'समझ', 'पूर्णता', 'विशिष्टता', 'समापन'],
       refs: {seerah: 'सहीह सीरत, अध्याय ', fazail: 'सहीह फ़ज़ाइल-ए-सहाबा, अध्याय ', jami: 'तल्ख़ीस अल-जामि अल-कामिल, हदीस ', q: 'क़ुरआन '}},
     gu: {title: 'ક્વિઝ', sub: 'તમારું જ્ઞાન ચકાસો', hero: 'ક્વિઝ — તમારું જ્ઞાન ચકાસો',
       intro: (L, P) => 'દરેક વિભાગમાં ' + L + ' તબક્કા છે, દરેકમાં ' + P + ' પ્રશ્નો. ચાર જવાબોમાંથી સાચો જવાબ પસંદ કરો; તબક્કાના અંતે બધા જવાબો અને તેમના સ્રોત બતાવવામાં આવશે.',
-      who: {a: ['મોટાઓ માટે', 'સીરત, સહાબા અને અઝકાર પર પ્રશ્નો'], k: ['બાળકો માટે', 'સરળ પ્રશ્નો, તારા અને સુંદર પ્રમાણપત્ર']},
+      who: {a: ['મોટાઓ માટે', 'સીરત, સહાબા અને અઝકાર પર પ્રશ્નો'], k: ['બાળકો માટે', 'સરળ પ્રશ્નો, તારા અને સુંદર પ્રમાણપત્ર'], m: ['મધ્યમ સ્તર માટે', 'બાળકો પછી, મોટાઓ પહેલાં — મધ્યમ મુશ્કેલીના પ્રશ્નો']},
+      mGate: 'આ મધ્યમ સ્તર છે. આગળ વધવા માટે તેના પહેલા બે તબક્કામાંથી દરેકમાં ઓછામાં ઓછા 8 ગુણ મેળવો, અથવા પહેલા બાળકોના પ્રશ્નો પૂરા કરો.', mBtn: 'બાળકોના પ્રશ્નો',
       cats: {seerah: 'નબી ﷺ ની સીરત', sahaba: 'સહાબા કિરામની ફઝીલત', adhkar: 'અઝકાર અને દુઆઓ'},
       catInfo: (L, n) => L + ' તબક્કા, ' + n + ' પ્રશ્નો', catDone: (d, s) => ' — પૂરા તબક્કા: ' + d + ', સાચા જવાબ: ' + s,
       sumDone: (d, t, s) => 'તમે ' + d + ' તબક્કા પૂરા કર્યા છે અને ' + t + ' માંથી ' + s + ' જવાબ સાચા આપ્યા છે.',
@@ -7689,12 +7698,13 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'સન્માન પત્ર', cFrom: 'તુરાસ ખૈરુલ કુરૂન તરફથી', cGive: 'આ પ્રમાણપત્ર ખૂબ આનંદ સાથે આપવામાં આવે છે',
       cBody: (c, lv, nm, n, s) => '“' + c + '” ક્વિઝનો તબક્કો ' + lv + ' “' + nm + '” સફળતાથી પૂરો કરીને ' + n + ' માંથી ' + s + ' સાચા જવાબ આપવા બદલ.',
       cDua: 'અલ્લાહ તમારા ફાયદાકારક જ્ઞાનમાં બરકત આપે અને તમારા માતા-પિતાને સારો બદલો આપે. આમીન', cDate: 'તારીખ: ', cBrand: 'તુરાસ ખૈરુલ કુરૂન',
-      kn: ['નાનો વિદ્યાર્થી', 'ઉત્સાહી વિદ્યાર્થી', 'મહેનતુ વિદ્યાર્થી', 'ચમકતો તારો', 'ઝળહળતો તારો', 'જ્ઞાનનો શોધક', 'હોશિયાર વિદ્યાર્થી', 'સોનેરી કલમ', 'જ્ઞાનનું મોતી', 'ચમકતો હીરો', 'જ્ઞાનનો દીવો', 'ઝળહળતો દીવો', 'જ્ઞાનનું બાજ', 'જ્ઞાનનો દૂત', 'જ્ઞાનનો તાજ'],
+      kn: ['નાનો વિદ્યાર્થી (હસન રઝિયલ્લાહુ અન્હુ)', 'ઉત્સાહી વિદ્યાર્થી (હુસૈન રઝિયલ્લાહુ અન્હુ)', 'મહેનતુ વિદ્યાર્થી (અનસ બિન માલિક રઝિયલ્લાહુ અન્હુ)', 'ચમકતો તારો (ઉમામા રઝિયલ્લાહુ અન્હા)', 'ઝળહળતો તારો (ઉસામા બિન ઝૈદ રઝિયલ્લાહુ અન્હુમા)', 'જ્ઞાનનો શોધક (અબ્દુલ્લાહ બિન ઉમર રઝિયલ્લાહુ અન્હુમા)', 'હોશિયાર વિદ્યાર્થી (અબ્દુલ્લાહ બિન અબ્બાસ રઝિયલ્લાહુ અન્હુમા)', 'સોનેરી કલમ (ઝૈદ બિન સાબિત રઝિયલ્લાહુ અન્હુ)', 'જ્ઞાનનું મોતી (આયશા રઝિયલ્લાહુ અન્હા)', 'ચમકતો હીરો (અલી બિન અબી તાલિબ રઝિયલ્લાહુ અન્હુ)', 'જ્ઞાનનો દીવો (અબ્દુલ્લાહ બિન ઝુબૈર રઝિયલ્લાહુ અન્હુમા)', 'ઝળહળતો દીવો (અબ્દુલ્લાહ બિન જાફર રઝિયલ્લાહુ અન્હુમા)', 'જ્ઞાનનું બાજ (બરા બિન આઝિબ રઝિયલ્લાહુ અન્હુમા)', 'જ્ઞાનનો દૂત (મુસઅબ બિન ઉમૈર રઝિયલ્લાહુ અન્હુ)', 'જ્ઞાનનો તાજ (અબ્દુલ્લાહ બિન મસઊદ રઝિયલ્લાહુ અન્હુ)'],
       an: ['શરૂઆત', 'પરિચય', 'પાયો', 'પ્રગતિ', 'દ્રઢતા', 'ઊંડાણ', 'વિસ્તાર', 'કુશળતા', 'સૂઝ', 'સંશોધન', 'મજબૂતી', 'સમજ', 'પૂર્ણતા', 'વિશેષતા', 'સમાપ્તિ'],
       refs: {seerah: 'સહીહ સીરત, પ્રકરણ ', fazail: 'સહીહ ફઝાઇલે સહાબા, પ્રકરણ ', jami: 'તલ્ખીસ અલ-જામિ અલ-કામિલ, હદીસ ', q: 'કુરઆન '}},
     fr: {title: 'Quiz', sub: 'Testez vos connaissances', hero: 'Quiz — testez vos connaissances',
       intro: (L, P) => 'Chaque catégorie compte ' + L + ' niveaux de ' + P + ' questions. Choisissez la bonne réponse parmi quatre ; à la fin du niveau, toutes les réponses et leurs sources sont affichées.',
-      who: {a: ['Pour les adultes', 'Questions sur la Sîra, les Compagnons et les invocations'], k: ['Pour les enfants', 'Questions faciles, étoiles et un beau certificat']},
+      who: {a: ['Pour les adultes', 'Questions sur la Sîra, les Compagnons et les invocations'], k: ['Pour les enfants', 'Questions faciles, étoiles et un beau certificat'], m: ['Niveau intermédiaire', 'Après les enfants, avant les adultes — questions de difficulté moyenne']},
+      mGate: 'Ceci est le niveau intermédiaire. Pour continuer, obtenez au moins 8 à chacun des deux premiers niveaux, ou terminez d’abord les questions pour enfants.', mBtn: 'Questions pour enfants',
       cats: {seerah: 'La Sîra du Prophète ﷺ', sahaba: 'Les mérites des Compagnons', adhkar: 'Invocations et rappels'},
       catInfo: (L, n) => L + ' niveaux, ' + n + ' questions', catDone: (d, s) => ' — niveaux terminés : ' + d + ', bonnes réponses : ' + s,
       sumDone: (d, t, s) => 'Vous avez terminé ' + d + ' niveaux et donné ' + s + ' bonnes réponses sur ' + t + '.',
@@ -7714,7 +7724,7 @@ Object.assign(I.fr, {
       cBis: 'بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ', cHead: 'Certificat de mérite', cFrom: 'de la part de Turath Khair Al-Quroon', cGive: 'Ce certificat est décerné avec joie à',
       cBody: (c, lv, nm, n, s) => 'pour avoir réussi le niveau ' + lv + ' « ' + nm + ' » du quiz « ' + c + ' » avec ' + s + ' bonnes réponses sur ' + n + '.',
       cDua: 'Qu’Allah bénisse ta science utile et récompense tes parents. Âmîn !', cDate: 'Date : ', cBrand: 'Turath Khair Al-Quroon',
-      kn: ['Petit élève', 'Élève curieux', 'Élève travailleur', 'Étoile brillante', 'Étoile scintillante', 'Chercheur de savoir', 'Élève brillant', 'Plume d’or', 'Perle du savoir', 'Diamant étincelant', 'Lampe du savoir', 'Lampe lumineuse', 'Faucon du savoir', 'Ambassadeur du savoir', 'Couronne du savoir'],
+      kn: ['Petit élève (Al-Hasan qu’Allah l’agrée)', 'Élève curieux (Al-Husayn qu’Allah l’agrée)', 'Élève travailleur (Anas ibn Mâlik qu’Allah l’agrée)', 'Étoile brillante (Umâma qu’Allah l’agrée)', 'Étoile scintillante (Usâma ibn Zayd qu’Allah les agrée tous deux)', 'Chercheur de savoir (Abdullah ibn Umar qu’Allah les agrée tous deux)', 'Élève brillant (Abdullah ibn Abbâs qu’Allah les agrée tous deux)', 'Plume d’or (Zayd ibn Thâbit qu’Allah l’agrée)', 'Perle du savoir (Âïcha qu’Allah l’agrée)', 'Diamant étincelant (Ali ibn Abî Tâlib qu’Allah l’agrée)', 'Lampe du savoir (Abdullah ibn az-Zubayr qu’Allah les agrée tous deux)', 'Lampe lumineuse (Abdullah ibn Ja‘far qu’Allah les agrée tous deux)', 'Faucon du savoir (Al-Barâ’ ibn Âzib qu’Allah les agrée tous deux)', 'Ambassadeur du savoir (Mus‘ab ibn Umayr qu’Allah l’agrée)', 'Couronne du savoir (Abdullah ibn Mas‘ûd qu’Allah l’agrée)'],
       an: ['Début', 'Découverte', 'Fondation', 'Progrès', 'Constance', 'Profondeur', 'Ampleur', 'Maîtrise', 'Clairvoyance', 'Recherche', 'Solidité', 'Compréhension', 'Perfection', 'Distinction', 'Achèvement'],
       refs: {seerah: 'Sîra authentique, chapitre ', fazail: 'Mérites des Compagnons, chapitre ', jami: 'Talkhis Al-Jami al-Kamil, hadith ', q: 'Coran '}},
   };
@@ -7722,6 +7732,12 @@ Object.assign(I.fr, {
   const RTL = () => ui === 'ur' || ui === 'ar';
   const UD = n => ui === 'ur' ? String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]) : ui === 'ar' ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : ui === 'bn' ? String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]) : String(n);
   const lvName = (w, i) => (w === 'k' ? L().kn : L().an)[i - 1] || '';
+  const lvNodes = (w, i) => { const n = lvName(w, i), m = n.match(/^(.*?)(\s*\()(.+)\)$/); if (!m) return [n]; const k = m[3].match(/^(.*?)\s+(رضی اللہ عنہ(?:ما|ا)?|رضي الله عنه(?:ما|ا)?|may Allah.*|qu’Allah.*|রাদিয়াল্লাহু.*|रज़ियल्लाहु.*|રઝિયલ્લાહુ.*)$/); if (!k) return [n]; return [m[1] + m[2] + k[1] + ' ', el('span', {class: 'qzhon'}, k[2]), ')']; };
+  /* intermediate level (m): its first two levels must be passed with at least 8 each (per category) unless all the children's levels are finished */
+  const MIN_PASS = 8;
+  async function kidsDone() { for (const [c] of CATS) { const {qs} = await bank('k', c), st = store('k', c); for (let i = 1; i <= Math.ceil(qs.length / PER); i++) if (!st[i]) return false; } return true; }
+  async function mOpen(c) { if (await kidsDone()) return true; const st = store('m', c); return !!(st[1] && st[1].best >= MIN_PASS && st[2] && st[2].best >= MIN_PASS); }
+  const gateBox = () => el('div', {class: 'card qzgate'}, el('p', {}, '🔒 ' + L().mGate), el('a', {class: 'btn lbtn', href: '#/quiz/k'}, L().mBtn));
   // questions: Urdu always (sources and the fallback), the interface language when it has a translation of that audience
   const DATA = {}, loading = {};
   window.QUIZDATA = (lang, d) => { DATA[lang] = d; };
@@ -7758,7 +7774,7 @@ Object.assign(I.fr, {
   function showStart() {
     bar(L().title, L().sub, true);
     page(el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('quiz')), el('h2', {}, L().hero), el('p', {class: 'cs'}, L().intro(UD(15), UD(PER)))),
-      ...['k', 'a'].map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, el('span', {class: 'qzwi'}, w === 'k' ? '🧒' : '📖'),
+      ...(window.QUIZ_MID ? ['k', 'm', 'a'] : ['k', 'a']).map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, el('span', {class: 'qzwi'}, w === 'k' ? '🧒' : w === 'm' ? '🎓' : '📖'),
         el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, L().who[w][0]), el('span', {class: 'cs'}, L().who[w][1])))));
   }
   /* ---------- 2: the categories ---------- */
@@ -7777,15 +7793,17 @@ Object.assign(I.fr, {
     const {qs} = await bank(w, c), N = Math.ceil(qs.length / PER), st = store(w, c);
     bar(L().cats[c], L().who[w][0], true);
     const grid = el('div', {class: 'qzlevels'});
+    const free = w !== 'm' || await mOpen(c);
     let open = 1; for (let i = 1; i <= N; i++) if (st[i]) open = Math.max(open, i + 1);
+    if (!free) open = Math.min(open, 3);
     for (let i = 1; i <= N; i++) {
-      const s = st[i];
-      grid.append(el('a', {class: 'qzlv' + (s ? ' done' : '') + (i === open ? ' next' : ''), href: '#/quiz/' + w + '/' + c + '/' + i},
-        el('span', {class: 'qzln'}, UD(i)), el('span', {class: 'qzlname'}, lvName(w, i)), s ? starEl(stars(s.best, PER)) : el('span', {class: 'qzstars off'}, '☆☆☆'),
+      const s = st[i], lock = !free && i > 2;
+      grid.append(el('a', {class: 'qzlv' + (s ? ' done' : '') + (i === open && !lock ? ' next' : '') + (lock ? ' lock' : ''), href: lock ? '#/quiz/m/' + c : '#/quiz/' + w + '/' + c + '/' + i},
+        el('span', {class: 'qzln'}, UD(i)), el('span', {class: 'qzlname'}, ...lvNodes(w, i)), s ? starEl(stars(s.best, PER)) : el('span', {class: 'qzstars off'}, '☆☆☆'),
         s ? el('span', {class: 'cs'}, UD(s.best) + '/' + UD(PER)) : ''));
     }
     const tot = Object.values(st).reduce((a, x) => a + (x.best || 0), 0), done = Object.keys(st).length;
-    page(el('div', {class: 'card qzsum'}, el('p', {}, done ? L().sumDone(UD(done), UD(done * PER), UD(tot)) : L().sumNew), done ? graph(st, N) : ''), grid,
+    page(!free ? gateBox() : '', el('div', {class: 'card qzsum'}, el('p', {}, done ? L().sumDone(UD(done), UD(done * PER), UD(tot)) : L().sumNew), done ? graph(st, N) : ''), grid,
       done ? el('button', {class: 'btn qzreset', type: 'button', on: {click: () => { if (confirm(L().resetQ)) { save(w, c, {}); showLevels(w, c); } }}}, L().reset) : '');
   }
   function graph(st, N) {
@@ -7801,6 +7819,7 @@ Object.assign(I.fr, {
   async function play(w, c, lv) {
     const {qs: all, lang} = await bank(w, c), qs = all.slice((lv - 1) * PER, lv * PER);
     if (!qs.length) return showLevels(w, c);
+    if (w === 'm' && lv > 2 && !(await mOpen(c))) return showLevels(w, c);   // the gate is also checked here, not only on the levels page
     const items = qs.map(q => ({q: q[0], right: q[1], opts: shuffle(q.slice(1, 5)), ref: q[5]})), ans = new Array(items.length).fill(null);
     let i = 0;
     const draw = () => {
@@ -7847,7 +7866,7 @@ Object.assign(I.fr, {
       el('a', {class: 'btn', href: '#/quiz/' + w + '/' + c}, T.allLv),
       w === 'k' && score >= n * .5 ? el('button', {class: 'btn lbtn qzcert', type: 'button', on: {click: () => certDialog(c, lv, score, n)}}, T.cert) : '');
     page(el('div', {class: 'card qzres'}, el('div', {class: 'qzscore'}, UD(score), el('small', {}, ' / ' + UD(n))), starEl(k),
-      el('p', {class: 'qzlvn'}, T.level + ' ' + UD(lv) + ' — ' + lvName(w, lv)), ...msgs.map(m => el('p', {class: 'qzmsg'}, m)), graph(st, N)), btns(),
+      el('p', {class: 'qzlvn'}, T.level + ' ' + UD(lv) + ' — ', ...lvNodes(w, lv)), ...msgs.map(m => el('p', {class: 'qzmsg'}, m)), graph(st, N)), btns(),
       el('h3', {class: 'grp'}, T.answers), review, btns());
     scrollTo(0, 0);
   }
@@ -8060,7 +8079,7 @@ Object.assign(I.fr, {
   /* ---------- routes: #/quiz, #/quiz/k, #/quiz/k/seerah, #/quiz/k/seerah/3 ---------- */
   function route(h) {
     document.querySelectorAll('.sheetbg').forEach(x => x.remove());
-    const m = h.match(/^#\/quiz(?:\/([ak]))?(?:\/([a-z]+))?(?:\/(\d+))?/) || [];
+    const m = h.match(/^#\/quiz(?:\/([akm]))?(?:\/([a-z]+))?(?:\/(\d+))?/) || [];
     const [, w, c, lv] = m;
     const fail = () => page(el('p', {class: 'note'}, L().fail));
     if (!w) return showStart();
