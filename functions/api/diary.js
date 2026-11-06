@@ -4,6 +4,7 @@
 // read counts (api/diary?stats with the owner session), never names, children or entries.
 import {isOwner} from '../_lib/owner_auth.js';
 import {sendPush} from '../_lib/webpush.js';
+import {pledgeDoc, pledgeMailHtml, serialOf} from '../_lib/pledge.js';
 
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 const DAY = 86400000, WARN_AFTER = 30 * DAY, GRACE = 5 * DAY, SESS = 30 * DAY;
@@ -40,6 +41,7 @@ async function init(db) {
   if (ready) return;
   await db.batch(SCHEMA.map(s => db.prepare(s)));
   try { await db.prepare('ALTER TABLE d_inst ADD COLUMN email TEXT').run(); } catch (e) {} // already there
+  try { await db.prepare('ALTER TABLE d_terms ADD COLUMN serial TEXT').run(); } catch (e) {} // the pledge's serial number
   try { await db.prepare('ALTER TABLE d_user ADD COLUMN email TEXT').run(); } catch (e) {} // the parent's e-mail for absence notices
   for (const c of ['father TEXT', 'cur_para INTEGER', 'done_paras INTEGER']) { try { await db.prepare('ALTER TABLE d_student ADD COLUMN ' + c).run(); } catch (e) {} } // the student card: father, the para he is on, paras memorised
   ready = true;
@@ -102,6 +104,17 @@ async function sendMail(env, to, code) {
   } catch (e) { return false; }
 }
 
+// the signed pledge as a document, mailed right after the e-mail is verified (the e-mail body is the document; it also opens on the site)
+async function sendPledgeMail(env, to, p, base) {
+  if (!env.RESEND_API_KEY) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {method: 'POST', headers: {Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'اقرار نامہ ' + p.serial + ' — حفظ ڈائری / Hifz Diary pledge', html: pledgeMailHtml(p, base),
+        text: 'Hifz Diary - Terms and pledge, serial ' + p.serial + '. Please open this e-mail in a mail app that shows HTML, or log in to the diary and open the pledge page.'})});
+    return r.ok;
+  } catch (e) { return false; }
+}
+
 // absence notice to the parent: a note inside the diary (always), a web push to every device that allowed it, and an e-mail when an address was given
 async function sendAbsentMail(env, to, inst, child, day) {
   if (!env.RESEND_API_KEY) return false;
@@ -143,6 +156,10 @@ export async function onRequest(ctx) {
       const c = async q => (await db.prepare(q).first()).n, now = Date.now();
       return json({institutions: await c('SELECT COUNT(*) n FROM d_inst'), active30: await c('SELECT COUNT(*) n FROM d_inst WHERE last_active>' + (now - WARN_AFTER)), warned: await c('SELECT COUNT(*) n FROM d_inst WHERE warned_at IS NOT NULL'), teachers: await c("SELECT COUNT(*) n FROM d_user WHERE role='teacher'"), parents: await c("SELECT COUNT(*) n FROM d_user WHERE role='parent'"), students: await c('SELECT COUNT(*) n FROM d_student'), entries: await c('SELECT COUNT(*) n FROM d_entry')});
     }
+    if (url.searchParams.has('pledges')) { // owner's proof list: who signed, serial, date (no children, no entries)
+      if (!(await isOwner(request, env))) return json({error: 'forbidden'}, 403);
+      return json({list: (await db.prepare('SELECT t.serial, t.ts, t.signer, t.inst_name, t.email, t.kids, t.ver, i.code FROM d_terms t LEFT JOIN d_inst i ON i.id=t.inst ORDER BY t.ts DESC').all()).results});
+    }
     if (request.method !== 'POST') return json({error: 'method'}, 405);
     let b; try { b = await request.json(); } catch (e) { return json({error: 'bad'}, 400); }
     await sweep(db);
@@ -177,7 +194,11 @@ export async function onRequest(ctx) {
       const r = await db.prepare('INSERT INTO d_inst (code,name,created,last_active,email) VALUES (?,?,?,?,?)').bind(code, d.inst, now, now, email).run();
       const iid = r.meta.last_row_id;
       const ur = await db.prepare('INSERT INTO d_user (inst,role,name,uname,salt,pw,created) VALUES (?,?,?,?,?,?,?)').bind(iid, 'principal', d.name, d.uname, d.pws, d.pwh, now).run();
-      if (d.ag) await db.prepare('INSERT INTO d_terms (inst,signer,inst_name,email,kids,ver,ts) VALUES (?,?,?,?,?,?,?)').bind(iid, d.ag.n, d.ag.i, email, d.ag.k, d.ag.v, now).run(); // pledge kept with the institution
+      if (d.ag) { // pledge kept with the institution, with a serial number, and mailed as a document
+        const serial = serialOf(iid, now);
+        await db.prepare('INSERT INTO d_terms (inst,signer,inst_name,email,kids,ver,ts,serial) VALUES (?,?,?,?,?,?,?,?)').bind(iid, d.ag.n, d.ag.i, email, d.ag.k, d.ag.v, now, serial).run();
+        ctx.waitUntil(sendPledgeMail(env, email, {serial, ts: now, signer: d.ag.n, inst_name: d.ag.i, email, kids: d.ag.k}, new URL(request.url).origin));
+      }
       await db.prepare('DELETE FROM d_pending WHERE email=?').bind(email).run();
       return json({ok: 1, code, token: await newSession(db, ur.meta.last_row_id)});
     }
@@ -205,6 +226,11 @@ export async function onRequest(ctx) {
       const em = await db.prepare('SELECT email FROM d_user WHERE id=?').bind(u.id).first();
       return json({user: {id: u.id, role: u.role, name: u.name, uname: u.uname, email: (em && em.email) || ''}, push: !!(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY), inst: {name: u.inst_name, code: u.code}, unseen: n.n, students: await myStudents(db, u),
         teachers: u.role === 'principal' ? (await db.prepare("SELECT id, name, uname FROM d_user WHERE inst=? AND role='teacher' ORDER BY name").bind(u.inst).all()).results : []});
+    }
+    if (a === 'pledge') { // the principal sees his institution's signed pledge on screen (print / save as PDF from the browser)
+      if (u.role !== 'principal') return json({error: 'auth'}, 403);
+      const p = await db.prepare('SELECT * FROM d_terms WHERE inst=?').bind(u.inst).first();
+      return p ? json({ok: 1, serial: p.serial, html: pledgeDoc(p, new URL(request.url).origin)}) : json({error: 'nopledge'}, 404);
     }
     if (a === 'set_email') { // the parent's own address for absence notices ('' removes it)
       const em = str(b.email, 254).toLowerCase(); if (em && !emailOk(em)) return json({error: 'invalid', field: 'email'}, 400);

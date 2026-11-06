@@ -314,6 +314,11 @@ function verify(d){
   $('#vg').onclick=async()=>{if(!checkAll($('#app'),[['f_k','code']]))return;$('#vg').disabled=true;const r=await api({a:'register_verify',email:d.email,code:$('#f_k').value.trim()});
     if(r.ok){setTk(r.token);await load();return home(true)}$('#vg').disabled=false;$('#e').textContent=msg(r.error)};
 }
+async function pledgeView(){
+  shell();chrome();$('#app').innerHTML=`<div class="card noprint"><div class="row"><button class="sec" id="pb">${T('vback')}</button><button id="pp">چھاپیں / PDF بنائیں</button></div></div><div id="pd" class="card">…</div>`;
+  $('#pb').onclick=()=>home();$('#pp').onclick=()=>window.print();
+  const r=await api({a:'pledge'});$('#pd').innerHTML=r.ok?r.html:'<p class="err" style="display:block">اقرار نامہ نہیں ملا</p>';
+}
 async function load(){const r=await api({a:'me'});if(r.user){ME=r;return true}return false}
 
 /* ---------- home ---------- */
@@ -329,10 +334,12 @@ function home(first){
     h+=`<div class="card"><h2>${T('teachers')}</h2>${ME.teachers.length?ME.teachers.map(x=>`<div class="stu" style="cursor:default"><span style="flex:1">${esc(x.name)} <span class="muted" dir="ltr">${esc(x.uname)}</span></span><button class="sec sm" data-pw="${x.id}">${T('chpw')}</button></div>`).join(''):`<p class="muted">${T('noteach')}</p>`}<p><button id="addT">${T('addteacher')}</button></p></div>`;
   }
   if(pa)h+=`<div class="card noprint" id="alc"><h2>🔔 ${T('pn_title')}</h2><p class="muted">${T('pn_sub')}</p><label>${T('pn_email')}</label><div class="row" style="align-items:center"><input id="pem" type="email" dir="ltr" autocapitalize="none" value="${esc(u.email||'')}" placeholder="name@gmail.com" style="flex:1 1 170px;min-width:0"><button class="sec" id="pes" style="flex:0 0 auto">${T('save')}</button></div><div class="err" id="pee"></div>${ME.push?'<p><button id="pbtn" class="sec"></button></p><p class="muted" id="pst"></p>':''}</div>`;
+  if(p)h+=`<div class="card noprint"><h2>اقرار نامہ</h2><p class="muted">آپ کا دستخط شدہ اقرار نامہ اور شرائط، سیریل نمبر کے ساتھ۔</p><button class="sec" id="pld">اقرار نامہ دیکھیں</button></div>`;
   h+=`<div class="card noprint"><h2>${T('settings')}</h2><div class="row"><div style="flex:1 1 220px">${pwField('np',T('newpw'),true)}</div><button class="sec" id="chp">${T('chpw')}</button></div><div class="err" id="pe"></div>${p?`<button class="bad sm" id="del">${T('delinst')}</button>`:''}</div>`;
   $('#app').innerHTML=h;wirePw($('#app'));live($('#app'));
   if(t||p){$('#dt').onchange=e=>{sel=e.target.value||today;drawStu()};$('#addS').onclick=addStudent}
   if(p){$('#addT').onclick=addTeacher;document.querySelectorAll('[data-pw]').forEach(b=>b.onclick=()=>resetPw(+b.dataset.pw))}
+  if($('#pld'))$('#pld').onclick=pledgeView;
   $('#chp').onclick=async()=>{$('#pe').textContent='';if(!checkAll($('#app'),[['np','pw']])){$('#pe').textContent=T('fixred');return}const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
   if(p)$('#del').onclick=delInst;
   $('#sq').oninput=e=>{Q=e.target.value;drawStu()};

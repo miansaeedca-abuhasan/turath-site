@@ -9274,6 +9274,17 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return wrap;
   }
 
+  function tabPledges() {
+    const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
+    fetch('api/diary?pledges', {cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(r => {
+      if (!r) { wrap.replaceChildren(el('p', {class: 'note'}, 'فہرست نہیں مل سکی۔')); return; }
+      const d = ts => new Date(ts).toISOString().slice(0, 10);
+      wrap.replaceChildren(el('p', {class: 'note'}, 'حفظ ڈائری کے دستخط شدہ اقرار نامے (ثبوت)۔ کل: ' + r.list.length),
+        ...r.list.map(x => el('div', {class: 'card', style: 'padding:.4rem;margin:.25rem 0'}, el('b', {dir: 'ltr'}, x.serial + ' · ' + d(x.ts)), el('div', {}, x.signer + ' — ' + x.inst_name), el('div', {dir: 'ltr'}, x.email + ' · ' + x.kids + ' · v' + x.ver + ' · ' + (x.code || '')))));
+    }).catch(() => { wrap.replaceChildren(el('p', {class: 'note'}, 'فہرست نہیں مل سکی۔')); });
+    return wrap;
+  }
+
   function tabFix() {
     const wrap = el('div', {}), fx = Object.assign({}, CFG.fixes || {});
     const bs = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}), ls = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}, ...['ar', 'ur', 'en', 'bn', 'hi', 'gu', 'fr'].map(l => el('option', {value: l}, l)));
@@ -9304,7 +9315,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return wrap;
   }
 
-  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
   function panel(v) {
     v.replaceChildren();
     const body = el('div', {}), tabs = el('div', {style: 'display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;margin:.4rem 0'});

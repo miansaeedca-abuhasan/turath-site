@@ -17,4 +17,11 @@ ok(/diary-terms\.js/.test(h)&&/diary-terms\.js/.test(th),'single source for both
 const files=['diary.html','diary-guide.html','functions/api/diary.js'].filter(f=>fs.existsSync(f));
 for(const f of files){const t=fs.readFileSync(f,'utf8');
  ok(!/فیس|ادائیگی|لین دین|\b(fee|fees|payment|invoice|price|billing|transaction)\b/i.test(t),'no fee wording in '+f)}
+// pledge document: one source of terms for server + browser; serial, bismillah, signature block, owner proof list
+const lt=fs.readFileSync('functions/_lib/terms.js','utf8').replace(/^export /gm,'');
+ok(lt===tj,"diary-terms.js must equal functions/_lib/terms.js without export");
+const pj=fs.readFileSync('functions/_lib/pledge.js','utf8'),ix=fs.readFileSync('index.html','utf8');
+ok(/بسم اللہ الرحمن الرحیم/.test(pj)&&/سیریل نمبر/.test(pj)&&/منجانب: انتظامیہ تراث خیرالقرون/.test(pj)&&/بانی: ابو حسن میاں سعید عفی اللہ عنہ/.test(pj)&&/icon-192/.test(pj),'pledge document parts');
+ok(/sendPledgeMail/.test(j)&&/a === 'pledge'/.test(j)&&/has\('pledges'\)/.test(j),'server mails/serves/lists pledge');
+ok(/pledgeView/.test(h)&&/tabPledges/.test(ix),'principal view and owner list');
 console.log(bad?'FAILED':'PASS');process.exit(bad?1:0);
