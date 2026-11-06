@@ -22,6 +22,6 @@ const lt=fs.readFileSync('functions/_lib/terms.js','utf8').replace(/^export /gm,
 ok(lt===tj,"diary-terms.js must equal functions/_lib/terms.js without export");
 const pj=fs.readFileSync('functions/_lib/pledge.js','utf8'),ix=fs.readFileSync('index.html','utf8');
 ok(/بسم اللہ الرحمن الرحیم/.test(pj)&&/سیریل نمبر/.test(pj)&&/منجانب: انتظامیہ تراث خیرالقرون/.test(pj)&&/بانی: ابو حسن میاں سعید عفی اللہ عنہ/.test(pj)&&/icon-192/.test(pj),'pledge document parts');
-ok(/sendPledgeMail/.test(j)&&/a === 'pledge'/.test(j)&&/has\('pledges'\)/.test(j),'server mails/serves/lists pledge');
+ok(/sendMail\(env, email, code, \{serial/.test(j)&&!/sendPledgeMail/.test(j)&&/a === 'pledge'/.test(j)&&/has\('pledges'\)/.test(j),'server mails/serves/lists pledge');
 ok(/pledgeView/.test(h)&&/tabPledges/.test(ix),'principal view and owner list');
 console.log(bad?'FAILED':'PASS');process.exit(bad?1:0);

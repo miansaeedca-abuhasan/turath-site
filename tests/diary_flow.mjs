@@ -1,0 +1,25 @@
+// End-to-end (fake D1 + fake mail): register -> ONE mail with code+pledge+serial -> verify -> pledge kept; <10 and missing pledge refused
+import {DatabaseSync} from 'node:sqlite';
+import {onRequest} from '../functions/api/diary.js';
+const sq=new DatabaseSync(':memory:');
+const mk=s=>{let a=[];const o={bind:(...x)=>{a=x;return o},run:async()=>{const r=sq.prepare(s).run(...a);return {meta:{last_row_id:Number(r.lastInsertRowid)}}},first:async()=>sq.prepare(s).get(...a)||null,all:async()=>({results:sq.prepare(s).all(...a)})};return o};
+const DB={prepare:mk,batch:async l=>{for(const x of l)await x.run()}};
+const mails=[];globalThis.fetch=async(u,o)=>{mails.push(JSON.parse(o.body));return {ok:true}};
+let bad=0;const ok=(c,m)=>{if(!c){console.log('FAIL',m);bad++}};
+const env={DB,RESEND_API_KEY:'x'};
+const call=async b=>{const r=await onRequest({request:new Request('https://t.example/api/diary',{method:'POST',body:JSON.stringify(b)}),env,waitUntil(){}});return {s:r.status,j:await r.json()}};
+const base={a:'register',kids:12,agree:{n:'مہتمم',i:'ادارہ',v:'1'},inst:'ادارہ',name:'مہتمم',email:'p@x.com',uname:'principal1',pw:'Str0ng!Pass#9'};
+let r=await call({...base,kids:9});ok(r.s===400&&r.j.error==='minkids','<10 refused');
+r=await call({...base,agree:undefined});ok(r.s===400&&r.j.error==='noagree','no pledge refused');
+ok(mails.length===0,'no mail for refused');
+r=await call(base);ok(r.j.ok===1,'register ok '+JSON.stringify(r.j));
+ok(mails.length===1,'exactly ONE mail');
+const m=mails[0],code=(m.html.match(/letter-spacing:8px[^>]*>(\d{6})</)||[])[1];
+ok(code&&/HD-\d{4}-00001/.test(m.html)&&m.html.includes('بسم اللہ')&&m.html.includes('منجانب: انتظامیہ تراث خیرالقرون'),'mail has code + serial + pledge');
+const ser=(m.html.match(/HD-\d{4}-\d{5}/)||[])[0];
+r=await call({a:'register_verify',email:'p@x.com',code});ok(r.j.ok===1&&r.j.token,'verify ok');
+ok(mails.length===1,'no second mail');
+const t=sq.prepare('SELECT * FROM d_terms').get();ok(t&&t.serial===ser&&t.kids===12&&t.signer==='مہتمم','pledge stored with same serial');
+const pr=await onRequest({request:new Request('https://t.example/api/diary',{method:'POST',headers:{Authorization:'Bearer '+r.j.token},body:JSON.stringify({a:'pledge'})}),env,waitUntil(){}});
+const pj=await pr.json();ok(pj.ok&&pj.html.includes(ser),'principal can open pledge');
+console.log(bad?'FAILED':'PASS');process.exit(bad?1:0);

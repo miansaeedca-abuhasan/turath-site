@@ -4,7 +4,6 @@ const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&': '&am
 const UD = n => String(n).replace(/[0-9]/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
 const MONTHS = ['جنوری', 'فروری', 'مارچ', 'اپریل', 'مئی', 'جون', 'جولائی', 'اگست', 'ستمبر', 'اکتوبر', 'نومبر', 'دسمبر'];
 export const dateUr = ts => { const d = new Date(ts); return UD(d.getUTCDate()) + ' ' + MONTHS[d.getUTCMonth()] + ' ' + UD(d.getUTCFullYear()); };
-export const serialOf = (iid, ts) => 'HD-' + new Date(ts).getUTCFullYear() + '-' + String(iid).padStart(5, '0');
 const FONT = "font-family:'Noto Nastaliq Urdu','Jameel Noori Nastaleeq','Noto Naskh Arabic',Tahoma,serif";
 export function pledgeDoc(p, base) {
   const logo = (base || 'https://turathkhairalquroon.com') + '/icon-192.png';
@@ -19,5 +18,4 @@ export function pledgeDoc(p, base) {
     '<br><span style="font-size:14px">تصدیق شدہ ای میل: <b dir="ltr" style="font-family:Arial,sans-serif">' + esc(p.email) + '</b> — حفظ کے بچوں کی تعداد: <b>' + UD(p.kids) + '</b></span></div>' +
     '<div style="text-align:center;line-height:2.1;margin-top:14px;border-top:1px solid #cfd8d4;padding-top:10px"><b>منجانب: انتظامیہ تراث خیرالقرون</b><br>بانی: ابو حسن میاں سعید عفی اللہ عنہ</div></div>';
 }
-export const pledgeMailHtml = (p, base) => '<!doctype html><html lang="ur" dir="rtl"><body style="margin:0;padding:14px;background:#eef2f1">' + pledgeDoc(p, base) + '<p dir="rtl" style="text-align:center;color:#667;font-size:13px;font-family:Tahoma,sans-serif">یہ اقرار نامہ آپ کے ادارے کے ریکارڈ کے ساتھ محفوظ ہے۔ اسے ڈائری کے اندر «اقرار نامہ» سے بھی دیکھا اور چھاپا جا سکتا ہے۔</p></body></html>';
 export {TERMS_V};

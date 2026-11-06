@@ -4,7 +4,7 @@
 // read counts (api/diary?stats with the owner session), never names, children or entries.
 import {isOwner} from '../_lib/owner_auth.js';
 import {sendPush} from '../_lib/webpush.js';
-import {pledgeDoc, pledgeMailHtml, serialOf} from '../_lib/pledge.js';
+import {pledgeDoc} from '../_lib/pledge.js';
 
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 const DAY = 86400000, WARN_AFTER = 30 * DAY, GRACE = 5 * DAY, SESS = 30 * DAY;
@@ -94,23 +94,14 @@ const unameOk = u => /^[a-z0-9._-]{3,30}$/.test(u);
 // strong password: at least 10 characters with a letter, a digit and a symbol
 const pwOk = p => typeof p === 'string' && p.length >= 10 && p.length <= 100 && /[A-Za-z\u0600-\u06FF]/.test(p) && /\d/.test(p) && /[^A-Za-z0-9\u0600-\u06FF\s]/.test(p);
 const emailOk = e => /^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(e) && e.length <= 254;
-async function sendMail(env, to, code) {
+async function sendMail(env, to, code, p, base) { // ONE e-mail: the 6-digit code on top, the pledge document (with its serial) below
   if (!env.RESEND_API_KEY) return false;
   try {
+    const box = '<div dir="rtl" style="max-width:680px;margin:0 auto 14px;background:#fff;border:2px solid #0a5c4b;border-radius:10px;padding:16px;text-align:center;font-family:Tahoma,Arial,sans-serif"><div style="font-size:15px">آپ کا تصدیقی کوڈ / Your verification code</div><div dir="ltr" style="font-size:34px;letter-spacing:8px;font-weight:bold;color:#0a5c4b;margin:6px 0">' + code + '</div><div style="font-size:13px;color:#556">یہ 10 منٹ تک چلے گا۔ نیچے اقرار نامہ اسی کوڈ کی تصدیق کے بعد مؤثر ہو گا۔ اگر آپ نے نہیں مانگا تو اس پیغام کو نظر انداز کریں۔<br>Valid for 10 minutes. The pledge below takes effect once you enter this code. If you did not ask for it, ignore this message.</div></div>';
+    const html = '<!doctype html><html lang="ur" dir="rtl"><body style="margin:0;padding:14px;background:#eef2f1">' + box + pledgeDoc(p, base) + '<p dir="rtl" style="text-align:center;color:#667;font-size:13px;font-family:Tahoma,sans-serif">تصدیق کے بعد یہ اقرار نامہ آپ کے ادارے کے ریکارڈ کے ساتھ محفوظ ہو جائے گا اور ڈائری کے اندر «اقرار نامہ» سے بھی دیکھا اور چھاپا جا سکتا ہے۔</p></body></html>';
     const r = await fetch('https://api.resend.com/emails', {method: 'POST', headers: {Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json'},
-      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'Hifz Diary verification code / حفظ ڈائری تصدیقی کوڈ',
-        text: 'Your verification code: ' + code + '\nIt is valid for 10 minutes. If you did not ask for it, ignore this message.\n\nآپ کا تصدیقی کوڈ: ' + code + '\nیہ 10 منٹ تک چلے گا۔ اگر آپ نے نہیں مانگا تو اس پیغام کو نظر انداز کریں۔'})});
-    return r.ok;
-  } catch (e) { return false; }
-}
-
-// the signed pledge as a document, mailed right after the e-mail is verified (the e-mail body is the document; it also opens on the site)
-async function sendPledgeMail(env, to, p, base) {
-  if (!env.RESEND_API_KEY) return false;
-  try {
-    const r = await fetch('https://api.resend.com/emails', {method: 'POST', headers: {Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json'},
-      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'اقرار نامہ ' + p.serial + ' — حفظ ڈائری / Hifz Diary pledge', html: pledgeMailHtml(p, base),
-        text: 'Hifz Diary - Terms and pledge, serial ' + p.serial + '. Please open this e-mail in a mail app that shows HTML, or log in to the diary and open the pledge page.'})});
+      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'Hifz Diary verification code ' + code + ' / حفظ ڈائری تصدیقی کوڈ اور اقرار نامہ ' + p.serial, html,
+        text: 'Your verification code: ' + code + '\nIt is valid for 10 minutes. If you did not ask for it, ignore this message.\nPledge serial: ' + p.serial + ' (open this e-mail in a mail app that shows HTML to see the full pledge).\n\nآپ کا تصدیقی کوڈ: ' + code + '\nیہ 10 منٹ تک چلے گا۔'})});
     return r.ok;
   } catch (e) { return false; }
 }
@@ -172,15 +163,19 @@ export async function onRequest(ctx) {
       const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase(), email = str(b.email, 254).toLowerCase();
       const bad = !name ? 'inst' : !pname ? 'name' : !emailOk(email) ? 'email' : !unameOk(uname) ? 'uname' : !pwOk(b.pw) ? 'pw' : '';
       if (bad) return json({error: bad === 'pw' ? 'weak' : 'invalid', field: bad}, 400); // «field» tells the screen which box to turn red
-      const now = Date.now(), old = await db.prepare('SELECT sent_n, sent_ts FROM d_pending WHERE email=?').bind(email).first();
+      const now = Date.now(), old = await db.prepare('SELECT sent_n, sent_ts, data FROM d_pending WHERE email=?').bind(email).first();
       if (old && now - old.sent_ts < 3600000 && old.sent_n >= 3) return json({error: 'toomany'}, 429);
       if (old && now - old.sent_ts < 45000) return json({error: 'wait'}, 429);
       const code = String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000)), salt = rnd(8), pw = {s: rnd(8)};
       pw.h = await hashPw(b.pw, pw.s);
-      if (!(await sendMail(env, email, code))) return json({error: env.RESEND_API_KEY ? 'mailfail' : 'nomail'}, 503);
+      let oldAg = null; try { oldAg = old && JSON.parse(old.data).ag; } catch (e) {}
+      let seq = oldAg && oldAg.s; // a resend keeps the same serial number
+      if (!seq) { await db.prepare("INSERT INTO d_meta (k,v) VALUES ('pledge_seq',1) ON CONFLICT(k) DO UPDATE SET v=v+1").run(); seq = (await db.prepare("SELECT v FROM d_meta WHERE k='pledge_seq'").first()).v; }
+      const serial = 'HD-' + new Date(now).getUTCFullYear() + '-' + String(seq).padStart(5, '0'), agT = oldAg && oldAg.t ? oldAg.t : now;
+      if (!(await sendMail(env, email, code, {serial, ts: agT, signer: agN, inst_name: agI, email, kids: parseInt(b.kids, 10)}, new URL(request.url).origin))) return json({error: env.RESEND_API_KEY ? 'mailfail' : 'nomail'}, 503);
       const n = old && now - old.sent_ts < 3600000 ? old.sent_n + 1 : 1;
       await db.prepare('INSERT INTO d_pending (email,data,salt,hash,exp,tries,sent_n,sent_ts) VALUES (?,?,?,?,?,0,?,?) ON CONFLICT(email) DO UPDATE SET data=excluded.data, salt=excluded.salt, hash=excluded.hash, exp=excluded.exp, tries=0, sent_n=excluded.sent_n, sent_ts=excluded.sent_ts')
-        .bind(email, JSON.stringify({inst: name, name: pname, uname, pws: pw.s, pwh: pw.h, ag: {n: agN, i: agI, v: str(ag.v, 10), k: parseInt(b.kids, 10)}}), salt, await hashPw(code, salt), now + 600000, n, now).run();
+        .bind(email, JSON.stringify({inst: name, name: pname, uname, pws: pw.s, pwh: pw.h, ag: {n: agN, i: agI, v: str(ag.v, 10), k: parseInt(b.kids, 10), s: seq, t: agT, sr: serial}}), salt, await hashPw(code, salt), now + 600000, n, now).run();
       return json({ok: 1, step: 'verify'});
     }
     if (a === 'register_verify') { // step 2: the code from the email creates the institution
@@ -194,11 +189,7 @@ export async function onRequest(ctx) {
       const r = await db.prepare('INSERT INTO d_inst (code,name,created,last_active,email) VALUES (?,?,?,?,?)').bind(code, d.inst, now, now, email).run();
       const iid = r.meta.last_row_id;
       const ur = await db.prepare('INSERT INTO d_user (inst,role,name,uname,salt,pw,created) VALUES (?,?,?,?,?,?,?)').bind(iid, 'principal', d.name, d.uname, d.pws, d.pwh, now).run();
-      if (d.ag) { // pledge kept with the institution, with a serial number, and mailed as a document
-        const serial = serialOf(iid, now);
-        await db.prepare('INSERT INTO d_terms (inst,signer,inst_name,email,kids,ver,ts,serial) VALUES (?,?,?,?,?,?,?,?)').bind(iid, d.ag.n, d.ag.i, email, d.ag.k, d.ag.v, now, serial).run();
-        ctx.waitUntil(sendPledgeMail(env, email, {serial, ts: now, signer: d.ag.n, inst_name: d.ag.i, email, kids: d.ag.k}, new URL(request.url).origin));
-      }
+      if (d.ag) await db.prepare('INSERT INTO d_terms (inst,signer,inst_name,email,kids,ver,ts,serial) VALUES (?,?,?,?,?,?,?,?)').bind(iid, d.ag.n, d.ag.i, email, d.ag.k, d.ag.v, d.ag.t || now, d.ag.sr).run(); // the pledge mailed with the code is kept with the institution
       await db.prepare('DELETE FROM d_pending WHERE email=?').bind(email).run();
       return json({ok: 1, code, token: await newSession(db, ur.meta.last_row_id)});
     }
