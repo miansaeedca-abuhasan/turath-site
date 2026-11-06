@@ -683,7 +683,7 @@ body.vfpage .appbar{position:static}
   var d=document.getElementById('splash'),v=document.getElementById('splv'),b=null;
   try{
     var h=location.hash;
-    var nw=Date.now(),lt=+(localStorage.splT||0);if(nw-lt<20000||localStorage.nosplash==='1'||(h&&h!=='#'&&h!=='#/'&&h!=='#/home')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+    var nw=Date.now(),lt=+(localStorage.splT||0);if((nw-lt<10800000&&lt<=nw)||localStorage.nosplash==='1'||(h&&h!=='#'&&h!=='#/'&&h!=='#/home')||(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches))return;
     localStorage.splT=nw;
   }catch(e){}
   var ui='en';try{ui=localStorage.ui||'en'}catch(e){}
