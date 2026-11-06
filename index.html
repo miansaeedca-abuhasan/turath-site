@@ -91,7 +91,7 @@ html[lang=ur] #t1,html[lang=ur] .grpbox .gt,html[lang=ur] .srow2 .ct,html[lang=u
 html[dir=rtl] #back svg{transform:scaleX(-1)}
 .lb{background:rgba(255,255,255,.18);border:0;color:#fff;border-radius:999px;padding:.1rem .8rem;cursor:pointer;flex:none}
 svg.i{width:1.4rem;height:1.4rem;fill:currentColor}
-main{max-width:46rem;margin:0 auto;padding:.8rem 1rem 5rem}
+main{max-width:var(--mw,46rem);margin:0 auto;padding:.8rem 1rem 5rem}
 #searchrow{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.4rem}
 #book{display:none}
 select,#q{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:.5rem .8rem;box-shadow:var(--shadow)}
@@ -264,8 +264,9 @@ body.withplayer .resume.float{display:none}
 @media (max-width:380px){.fcap{font-size:.74rem;padding:.28rem .55rem}}
 .qzlv.lock{opacity:.45;filter:grayscale(1)}.qzhon{font-size:.72em;opacity:.8;font-weight:400}
 .qzgate{border:1.5px solid #c39a3b;background:rgba(195,154,59,.1)}.qzgate p{margin:.2rem 0 .6rem;line-height:1.9}
+:root{--mw:46rem}@media (min-width:1320px){:root{--mw:clamp(46rem,calc(100vw - 41rem),74rem)}}
 .gpbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;direction:ltr;margin:0 0 .8rem}
-@media (min-width:1320px){.gpbar.side{position:fixed;top:23rem;width:17.6rem;flex-direction:column;flex-wrap:nowrap;margin:0;z-index:5}.gpbar.side .gpb{flex:none;width:100%;box-sizing:border-box}.gpbar.side.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.gpbar.side.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}}
+@media (min-width:1320px){.gpbar.side{position:fixed;top:23rem;width:17.6rem;flex-direction:column;flex-wrap:nowrap;margin:0;z-index:5}.gpbar.side .gpb{flex:none;width:100%;box-sizing:border-box}.gpbar.side.R{right:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}.gpbar.side.Lf{left:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}}
 #ipop{position:fixed;z-index:99980;left:50%;bottom:4.8rem;transform:translateX(-50%);width:min(94vw,26rem);box-sizing:border-box;background:var(--card,#fff);color:var(--ink,#222);border:1.5px solid #c39a3b;border-radius:18px;box-shadow:0 10px 34px rgba(0,0,0,.28);padding:.8rem .9rem}
 #ipop .it{display:flex;gap:.7rem;align-items:center}#ipop img{width:3.2rem;height:3.2rem;border-radius:12px;flex:none}#ipop .it b{display:block;font-size:1rem;line-height:1.5}#ipop .it small{display:block;color:var(--muted,#667);line-height:1.5}#ipop .ia{display:flex;gap:.5rem;margin-top:.6rem}#ipop button{flex:1 1 0;font:inherit;font-size:.9rem;border-radius:11px;padding:.45rem .6rem;cursor:pointer;border:1.5px solid #0e6b53}#ipop .go{background:#0e6b53;color:#fff}#ipop .no{background:transparent;color:inherit}
 
@@ -6485,7 +6486,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 .slt.hasHk .hd{margin-bottom:2.4rem}.harakat-btn.inpanel{border:1.5px solid #0e7490!important;z-index:40}.slt .harakat-btn.inpanel{border:0!important;border-radius:0 14px 14px 0!important;background:#127a6b!important;color:#fff!important;padding:.15rem .8rem .15rem .5rem!important;box-shadow:0 2px 6px rgba(0,0,0,.2)!important;font-size:.95rem!important;opacity:1!important}.slt .harakat-btn.inpanel .hm{color:#ffd27a!important}.slt .harakat-btn.inpanel.on{background:#0d4f48!important}.slt{display:none}@media (min-width:1320px){.slt{display:block}}.slt[hidden]{display:none!important}
 .slt{position:fixed;top:6.1rem;z-index:5;width:17.6rem;max-height:calc(100vh - 7rem);overflow:auto;border-radius:20px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ddd);box-shadow:0 8px 28px rgba(8,60,52,.16);font-size:.92rem;line-height:1.5;scrollbar-width:none}
 .slt::-webkit-scrollbar{display:none}
-.slt.R{right:max(1rem,calc(50vw - 23rem - 19rem))}.slt.Lf{left:max(1rem,calc(50vw - 23rem - 19rem))}
+.slt.R{right:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}.slt.Lf{left:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}
 .slt .hd{padding:.5rem .8rem .5rem;background:linear-gradient(160deg,#0d4f48,#127a6b);color:#fff;border-radius:20px 20px 0 0;text-align:center}
 .slt .hd h3{margin:0 0 .3rem;font-size:1rem;font-weight:700;color:#fff}
 .slt .hd input{width:100%;box-sizing:border-box;padding:.28rem .5rem;border:1px solid rgba(255,255,255,.35);border-radius:10px;background:rgba(255,255,255,.16);color:#fff;font:inherit;font-size:.95rem}.slt .hd input::placeholder{color:rgba(255,255,255,.7)}
