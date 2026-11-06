@@ -14,7 +14,7 @@ async function gem(env, model, parts, ms) {
 }
 const DAILY = 300;                                   // pictures per day for the whole site (override with OCR_DAILY)
 const PER_USER = 1000;                               // per person per day - set to 5 later (testing now); override with OCR_USER
-const PROMPT = 'Extract ALL the text visible in this image exactly as written, in its original language (Arabic, Urdu, English …). Keep Arabic diacritics (tashkeel) and the line breaks. Do not translate, explain, correct or add anything. If there is no readable text, answer with an empty string.';
+const PROMPT = 'You are an OCR engine for posters of hadith and Qur\'an verses shared on WhatsApp and Facebook (Arabic, Urdu, English). Transcribe ALL visible text in reading order, one line per printed line, exactly as it is printed. Rules: (1) Copy the letters you SEE. Never complete, correct, normalise or repair a verse or hadith from memory: if a word looks different from the Qur\'an or the hadith, write it as shown. (2) Keep Arabic diacritics (tashkeel), the brackets ﴿ ﴾ « » ( ) and the numbers. (3) Write Arabic text with Arabic letters (ك ي ه) and Urdu text with Urdu letters (ک ی ہ ے). (4) Do not translate, summarise, explain or add anything. (5) Ignore pure decoration and background patterns. If there is no readable text, answer with an empty string.';
 const err = (s, m) => new Response(JSON.stringify({error: m}), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 
 export async function onRequest(ctx) {
@@ -74,7 +74,8 @@ async function handle({request, env}) {
   }
   let r, lastErr = '';
   const t0 = Date.now();
-  for (const m of [env.GEMINI_MODEL || MODELS[0], MODELS[1]]) {
+  const order = b.strong ? [MODELS[1], MODELS[0]] : [env.GEMINI_MODEL || MODELS[0], MODELS[1]];   // «strong»: the second reading, with the better model first
+  for (const m of order) {
     const left = 88000 - (Date.now() - t0); if (left < 8000) break;
     try {
       r = await gem(env, m, [{text: PROMPT}, {inline_data: {mime_type: mime, data: img}}], Math.min(TIMEOUT, left));

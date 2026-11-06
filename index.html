@@ -4440,7 +4440,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
-      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, (() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
+      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
     else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade); c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
@@ -8785,6 +8785,25 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return null;
   }
   const plain = s => nrm(s).split(/[^ء-ي]+/).filter(Boolean);
+  /* A picture of a post holds more than the hadith: the Urdu translation, the reference («رواه البخاري (١٢٣)»), the name of the page. They are taken out before comparing,
+     otherwise their words are counted as «not found» and a correct hadith looks wrong. */
+  const STRONG = /[ٹپچڈڑژگںھہےۓۂ]/, UFW = new Set('کی کا کو اور تو جو مگر اگر کر کرو دو دی ہو'.split(' '));
+  function arabicOnly(raw) {
+    const t = String(raw || '').replace(/[\[(][^\])\n]{0,30}[0-9٠-٩۰-۹][^\])\n]{0,30}[\])]/g, ' '), keep = [];
+    for (const l of t.split(/\n+/)) {
+      const tk = l.split(/\s+/).filter(w => /[\u0600-\u06FF]/.test(w));
+      if (!tk.length) continue;
+      const u = tk.filter(w => STRONG.test(w) || UFW.has(w)).length;
+      if (u && (u / tk.length >= .2 || tk.length <= 3)) continue;               // an Urdu line
+      const pl = nrm(l).replace(/[^ء-ي ]/g, ' ').replace(/\s+/g, ' ').trim(), n = pl.split(' ').length;
+      if (n <= 9 && /^(رواه|اخرجه|متفق عليه|المصدر|الراوي|صحيح البخاري|صحيح مسلم|سنن |مسند |حديث شريف|حديث صحيح|حديث حسن)/.test(pl)) continue;   // a reference line
+      if (n <= 4 && /^(سوره|ايه|اية)/.test(pl)) continue;                       // «سورة البقرة»
+      if (n <= 7 && /(تراث خير القرون|موقع|قناه|مجموعه|انشر|شارك|صدقه جاريه|اشترك|رابط)/.test(pl)) continue;   // the name of the page / «share this»
+      keep.push(tk.filter(w => !STRONG.test(w) && !UFW.has(w)).join(' '));
+    }
+    return keep.join('\n').trim();
+  }
+  const STOPW = new Set('قال رسول الله صلي عليه وسلم عن رضي عنه عنها عنهما ان انه ما من في علي الي لا ولا هو هي كان يا ثم او اذا ذلك هذا التي الذي الذين قد كل به له لم لن عند بن ابن ابي ابو النبي'.split(' '));
   /* ---- labels (all 7 interface languages) ---- */
   const LB = {
     ur: {shTitle: "کیا شیئر کریں؟", shQuote: "متن (اقتباس)", shPct: "مطابقت کا فیصد", shTr: "حکم اور محدث کا اردو ترجمہ", shAr: "ماخذ کی عربی عبارت", shLink: "لنک", shShort: "مختصر", shLong: "تفصیلی", shWa: "واٹس ایپ", shTg: "ٹیلیگرام", shPrev: "پیش منظر", shClose: "بند کریں", shSrcs: "ماخذ (جو چاہیں چنیں)", shSave: "تصویر محفوظ کریں", shSaveHint: "تصویر کو دبا کر رکھیں تو بھی محفوظ ہو جاتی ہے۔", shImg: "تصویر بنائیں", nomatch: "مکمل مطابقت نہیں ملی (ملتی جلتی روایات نیچے ہیں)", ok: 'مقبول (صحیح یا حسن)', weak: 'ضعیف', bad: 'شدید ضعیف یا بے اصل', mix: 'علماء کا اختلاف ہے', unk: 'حکم نہیں ملا', full: 'پوری عبارت مطابق ہے', most: 'زیادہ تر مطابق، کچھ الفاظ مختلف', part: 'عبارت کا کچھ حصہ مطابق ہے', none: 'اس عبارت کی مطابقت ہماری کتابوں اور الدرر السنیۃ میں نہیں ملی۔ یہ اس بات کا ثبوت نہیں کہ یہ بے اصل ہے۔',
@@ -8804,7 +8823,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   LB.hi = {shTitle: "क्या शेयर करना है?", shQuote: "पाठ (उद्धरण)", shPct: "मेल का प्रतिशत", shTr: "हुक्म और मुहद्दिस का अनुवाद", shAr: "स्रोत का अरबी पाठ", shLink: "लिंक", shShort: "संक्षिप्त", shLong: "विस्तृत", shWa: "व्हाट्सऐप", shTg: "टेलीग्राम", shPrev: "पूर्वावलोकन", shClose: "बंद करें", shSrcs: "स्रोत (चुनें)", shSave: "तस्वीर सहेजें", shSaveHint: "या तस्वीर को दबाए रखकर सहेजें।", shImg: "तस्वीर बनाएँ", nomatch: "पूरा मेल नहीं मिला (मिलती-जुलती रिवायतें नीचे हैं)", ok: "स्वीकार्य (सहीह या हसन)", weak: "ज़ईफ़", bad: "बहुत ज़ईफ़ या बे-बुनियाद", mix: "उलमा में मतभेद है", unk: "हुक्म नहीं मिला", full: "पूरा पाठ मेल खाता है", most: "ज़्यादातर मेल खाता है; कुछ शब्द अलग", part: "पाठ का कुछ हिस्सा मेल खाता है", none: "हमारी किताबों और अद-दुरर में इस पाठ का मेल नहीं मिला। इससे यह साबित नहीं होता कि इसकी कोई बुनियाद नहीं।", match: "मेल", took: "समय", secs: "से", src: "स्रोत", book: "किताब", muh: "मुहद्दिस", rawi: "रावी", gr: "हुक्म", summ: "सारांश", open: "हदीस खोलें", share: "शेयर", copy: "कॉपी", copied: "कॉपी हो गया", another: "कोई और पाठ जाँचें", yours: "आपका पाठ (लाल: जो शब्द नहीं मिले)", diff: "अलग शब्द: ", others: "अन्य मिलते-जुलते नतीजे", steps: ["पाठ पढ़ना","क़ुरआन से मिलाना","स्रोतों में खोज","नतीजे तैयार करना"], working: "जाँच हो रही है…", ocrQ: "क्या यही सही पाठ है?", ocrSub: "तस्वीर से पढ़ा गया पाठ; ग़लती हो तो सुधार लें।", go: "पुष्टि करके आगे बढ़ें", edit: "पाठ बदलें", brand: "तुरास ख़ैरुल क़ुरून — जाँच", more: "और जानने के लिए", jami: "तल्ख़ीस अल-जामिउल कामिल", pg: "पृष्ठ/नंबर", dorar: "अद-दुरर अस-सनिय्या", jamiGr: "तल्ख़ीस अल-जामिउल कामिल में दर्ज हुक्म", note: "हुक्म वही है जो उलमा ने अपनी किताबों में लिखा; यहाँ सिर्फ़ नक़ल किया गया है।"};
   LB.gu = {shTitle: "શું શેર કરવું છે?", shQuote: "લખાણ (અવતરણ)", shPct: "મેળની ટકાવારી", shTr: "હુકમ અને મુહદ્દિસનો અનુવાદ", shAr: "સ્રોતનું અરબી લખાણ", shLink: "લિંક", shShort: "ટૂંકું", shLong: "વિગતવાર", shWa: "વોટ્સએપ", shTg: "ટેલિગ્રામ", shPrev: "પૂર્વાવલોકન", shClose: "બંધ કરો", shSrcs: "સ્રોત (પસંદ કરો)", shSave: "ફોટો સાચવો", shSaveHint: "અથવા ફોટા પર દબાવી રાખીને સાચવો.", shImg: "ફોટો બનાવો", nomatch: "પૂરો મેળ મળ્યો નથી (મળતી રિવાયતો નીચે છે)", ok: "સ્વીકાર્ય (સહીહ કે હસન)", weak: "ઝઈફ", bad: "ખૂબ ઝઈફ કે પાયા વગરની", mix: "વિદ્વાનોમાં મતભેદ છે", unk: "હુકમ મળ્યો નથી", full: "આખું લખાણ મેળ ખાય છે", most: "મોટે ભાગે મેળ ખાય છે; કેટલાક શબ્દો જુદા", part: "લખાણનો થોડો ભાગ મેળ ખાય છે", none: "અમારા પુસ્તકો અને અદ-દુરરમાં આ લખાણનો મેળ મળ્યો નથી. આનાથી સાબિત થતું નથી કે તેનો કોઈ આધાર નથી.", match: "મેળ", took: "સમય", secs: "સે", src: "સ્રોત", book: "પુસ્તક", muh: "મુહદ્દિસ", rawi: "રાવી", gr: "હુકમ", summ: "સારાંશ", open: "હદીસ ખોલો", share: "શેર", copy: "કૉપિ", copied: "કૉપિ થઈ ગયું", another: "બીજું લખાણ ચકાસો", yours: "તમારું લખાણ (લાલ: જે શબ્દો ન મળ્યા)", diff: "જુદા શબ્દો: ", others: "અન્ય મળતાં પરિણામો", steps: ["લખાણ વાંચવું","કુરઆન સાથે મેળવવું","સ્રોતોમાં શોધ","પરિણામ તૈયાર કરવું"], working: "ચકાસણી ચાલી રહી છે…", ocrQ: "શું આ જ સાચું લખાણ છે?", ocrSub: "ફોટામાંથી વાંચેલું લખાણ; ભૂલ હોય તો સુધારી લો.", go: "ખાતરી કરીને આગળ વધો", edit: "લખાણ બદલો", brand: "તુરાસ ખૈરુલ કુરૂન — ચકાસણી", more: "વધુ જાણવા માટે", jami: "તલ્ખીસ અલ-જામિઉલ કામિલ", pg: "પાનું/નંબર", dorar: "અદ-દુરર અસ-સનિય્યહ", jamiGr: "તલ્ખીસ અલ-જામિઉલ કામિલમાં નોંધાયેલો હુકમ", note: "હુકમ તે જ છે જે વિદ્વાનોએ પોતાના પુસ્તકોમાં લખ્યો છે; અહીં ફક્ત ઉતાર્યો છે."};
   LB.fr = {shTitle: "Que partager ?", shQuote: "Le texte (citation)", shPct: "Pourcentage de correspondance", shTr: "Statut et muhaddith traduits", shAr: "Texte arabe de la source", shLink: "Lien", shShort: "Court", shLong: "Détaillé", shWa: "WhatsApp", shTg: "Telegram", shPrev: "Aperçu", shClose: "Fermer", shSrcs: "Sources (à choisir)", shSave: "Enregistrer l’image", shSaveHint: "Ou appuyez longuement sur l’image pour l’enregistrer.", shImg: "Créer une image", nomatch: "Pas de correspondance complète (récits proches ci-dessous)", ok: "Accepté (sahih ou hasan)", weak: "Faible", bad: "Très faible ou sans fondement", mix: "Les savants divergent", unk: "Aucun statut trouvé", full: "Le texte entier correspond", most: "Correspond en grande partie ; quelques mots diffèrent", part: "Une partie du texte correspond", none: "Aucune correspondance pour ce texte dans nos livres ni dans Dorar. Cela ne prouve pas qu’il n’a aucun fondement.", match: "Correspondance", took: "Durée", secs: "s", src: "Sources", book: "Livre", muh: "Muhaddith", rawi: "Narrateur", gr: "Statut", summ: "Résumé", open: "Ouvrir le hadith", share: "Partager", copy: "Copier", copied: "Copié", another: "Vérifier un autre texte", yours: "Votre texte (en rouge : mots introuvables)", diff: "Mots différents : ", others: "Autres résultats proches", steps: ["Lecture du texte","Comparaison avec le Coran","Recherche dans les sources","Préparation des résultats"], working: "Vérification…", ocrQ: "Est-ce le bon texte ?", ocrSub: "Texte lu sur l’image ; corrigez-le en cas d’erreur.", go: "Confirmer et continuer", edit: "Modifier le texte", brand: "Turath Khair Al-Quroon — Vérification", more: "Pour en savoir plus", jami: "Talkhis Al-Jami al-Kamil", pg: "Page/N°", dorar: "Dorar as-Saniyyah", jamiGr: "Statut indiqué dans Talkhis al-Jami al-Kamil", note: "Le statut est celui que les savants ont écrit dans leurs livres ; il est seulement cité ici."};
-  const N = k => (LB[ui] || LB.en)[k];
+  const OC2 = {ur: 'تصویر دوبارہ زیادہ باریکی سے پڑھی گئی۔', ar: 'أُعيدت قراءة الصورة بدقّة أكبر.', en: 'The picture was read a second time more carefully.', bn: 'ছবিটি আরও যত্ন সহকারে দ্বিতীয়বার পড়া হয়েছে।', hi: 'तस्वीर दोबारा ज़्यादा ध्यान से पढ़ी गई।', gu: 'ફોટો બીજી વાર વધુ ધ્યાનથી વંચાયો.', fr: 'L’image a été relue une seconde fois avec plus de soin.'};
+  const N = k => k === 'ocr2' ? OC2[ui] || OC2.en : (LB[ui] || LB.en)[k];
   /* ---- rulings: category + translation of the common words (for readers who do not know Arabic) ---- */
   function gcat(g) {
     const t = nrm(g);
@@ -8834,10 +8854,14 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   async function hadithMatch(raw) {
     const iw = plain(raw), sk = iw.map(skel), n = iw.length;
     if (n < 3) return null;
-    const K = Math.min(4, n), wins = [...new Set([0, .33, .66, 1].map(f => { const st = Math.min(n - K, Math.floor((n - K) * f)); return iw.slice(st, st + K).join(' '); }))];
+    // search windows of the less common words (not «قال رسول الله صلى الله عليه وسلم»), spread over the whole text; a word lost by the picture only spoils its own window
+    let cw = iw.filter(w => !STOPW.has(w) && w.length > 2); if (cw.length < 3) cw = iw;
+    const windows = K => { const k = Math.min(K, cw.length), cnt = Math.min(7, Math.max(1, cw.length - k + 1)); return [...new Set(Array.from({length: cnt}, (_, i) => { const st = cnt === 1 ? 0 : Math.round(i * (cw.length - k) / (cnt - 1)); return cw.slice(st, st + k).join(' '); }))]; };
     const votes = new Map(), cands = [];
-    await Promise.all(wins.map(async w => { try { const d = await api('search?q=' + encodeURIComponent(w) + '&book=jami&mode=all'); (d.results || []).slice(0, 8).forEach(r => votes.set(r.num, (votes.get(r.num) || 0) + 1)); } catch (e) {} }));
-    const top = [...votes].sort((a, b) => b[1] - a[1]).slice(0, 5).map(x => x[0]);
+    const poll = async wins => { await Promise.all(wins.map(async w => { try { const d = await api('search?q=' + encodeURIComponent(w) + '&book=jami&mode=all'); (d.results || []).slice(0, 15).forEach(r => votes.set(r.num, (votes.get(r.num) || 0) + 1)); } catch (e) {} })); };
+    await poll(windows(3));
+    if (votes.size < 2) await poll(windows(2));
+    const top = [...votes].sort((a, b) => b[1] - a[1]).slice(0, 8).map(x => x[0]);
     await Promise.all([
       ...top.map(async num => { try { const d = await api('hadith/' + num + '?book=jami'); cands.push({src: 'jami', num, txt: [d.sanad || '', ...(d.matn || [])].join(' '), grade: typeof d.grade === 'string' ? d.grade : ''}); } catch (e) {} }),
       (async () => { const dl = window.COLL && COLL.dorarList ? await COLL.dorarList(iw.slice(0, 10).join(' ')) : null; (dl || []).slice(0, 12).forEach(x => cands.push({src: 'dorar', txt: x.text, grade: x.f['خلاصة حكم المحدث'] || x.f['الحكم'] || '', muh: x.f['المحدث'], book: x.f['المصدر'], rawi: x.f['الراوي'], no: x.f['الصفحة أو الرقم'], links: x.links || []})); })()
@@ -8989,14 +9013,19 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); run(); } });
     for (const ev of ['copy', 'cut', 'contextmenu', 'dragstart']) ta.addEventListener(ev, e => { if (ta.dataset.ocr) e.preventDefault(); });   // text read from a picture cannot be copied out
     const note = (m, cls) => { out.replaceChildren(el('p', {class: cls || 'note'}, m)); out.scrollIntoView({block: 'nearest', behavior: 'smooth'}); };
+    let lastImg = null, strongTried = false;
+    async function ocrCall(strong) {
+      const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: lastImg, mime: 'image/jpeg', strong: strong ? 1 : 0})});
+      let j = {}, raw = ''; try { raw = await r.text(); j = JSON.parse(raw); } catch (e) {}
+      return {r, j, raw};
+    }
     async function readImage(f) {
       note(T.reading, 'cs');
       try {
-        const bm = await createImageBitmap(f), k = Math.min(1, 1400 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
+        const bm = await createImageBitmap(f), k = Math.min(1, 1800 / Math.max(bm.width, bm.height)), c = document.createElement('canvas');
         c.width = Math.round(bm.width * k); c.height = Math.round(bm.height * k); c.getContext('2d').drawImage(bm, 0, 0, c.width, c.height);
-        const data = c.toDataURL('image/jpeg', .72).split(',')[1];
-        const r = await fetch('api/ocr', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({image: data, mime: 'image/jpeg'})});
-        let j = {}, raw = ''; try { raw = await r.text(); j = JSON.parse(raw); } catch (e) {}
+        const data = c.toDataURL('image/jpeg', .85).split(',')[1]; lastImg = data; strongTried = false;
+        const {r, j, raw} = await ocrCall(false);
         if (r.status === 429 && j.error === 'user limit') { note(T.ocrUser); return; }
         if (r.status === 429 || r.status === 503) { note(T.ocrBusy); return; }
         if (!r.ok) { note(T.ocrFail + ' (' + r.status + (j.error ? ' ' + j.error : '') + (j.detail ? ': ' + j.detail : '') + (!j.error && raw ? ' ' + raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').slice(0, 100) : '') + ')'); return; }
@@ -9036,19 +9065,37 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       return el('div', {class: 'card pad'}, ...parts);
     }
     async function run0(extra) {
-      const raw = ta.value.trim(); if (!raw) return;
+      const raw0 = ta.value.trim(); if (!raw0) return;
+      const clean = t => { const a = arabicOnly(t); return plain(a).length >= 3 ? a : STRONG.test(t) ? '' : t; };   // a picture with only an Urdu text has nothing to compare   // only the Arabic part is compared (see arabicOnly)
+      let raw = clean(raw0);
       const my = ++tk, t0 = Date.now(), pg = progress();
       out.replaceChildren(pg.el); out.scrollIntoView({block: 'start', behavior: 'smooth'});
-      const inW = words(raw), pw = plain(raw);
+      let inW = words(raw), pw = plain(raw);
       if (pw.length < 3) { pg.stop(); out.replaceChildren(el('p', {class: 'note'}, T.short)); return; }
       pg.set(1);
-      const q = inW.length >= 3 ? await quranCheck(inW).catch(() => null) : null;
+      let q = inW.length >= 3 ? await quranCheck(inW).catch(() => null) : null;
       if (my !== tk) { pg.stop(); return; }
       pg.set(2);
-      const h = await hadithMatch(raw).catch(() => null);
+      let h = await hadithMatch(raw).catch(() => null);
+      const score = () => Math.max(h && h.best ? h.best.cov : 0, q ? q.sc : 0);
+      // a picture read once may have a wrong word: when the match is not good, read the picture a second time with the stronger model and keep the better reading
+      let again2 = '';
+      if (ta.dataset.ocr && lastImg && !strongTried && score() < .85) {
+        strongTried = true;
+        try {
+          const {r: r2, j: j2} = await ocrCall(true), t2 = r2.ok ? String(j2.text || '').trim() : '';
+          if (t2 && t2 !== raw0) {
+            const raw2 = clean(t2), inW2 = words(raw2), q2 = inW2.length >= 3 ? await quranCheck(inW2).catch(() => null) : null, h2 = await hadithMatch(raw2).catch(() => null);
+            const s0 = score(), s2 = Math.max(h2 && h2.best ? h2.best.cov : 0, q2 ? q2.sc : 0);
+            if (s2 > s0 + .03) { raw = raw2; inW = inW2; pw = plain(raw2); q = q2; h = h2; ta.value = t2.slice(0, 5000); upd(); again2 = N('ocr2'); }
+          }
+        } catch (e) {}
+        if (my !== tk) { pg.stop(); return; }
+      }
       pg.set(3); pg.stop();
       if (my !== tk) return;
       const secs = ((Date.now() - t0) / 1000).toFixed(1), hc = h && h.best ? h.best.cov : 0, hq = pw.slice(0, 7).join(' ');
+      if (again2) extra = extra ? extra + ' · ' + again2 : again2;
       const main = (q && q.sc >= .75 && q.sc >= hc) ? quranCard(q, T, secs, raw) : hadithResult(h, raw, secs, !ta.dataset.ocr);
       const hout = el('div'), hd = el('details', {class: 'card gsres'}, el('summary', {}, N('others')), hout);
       const again = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => { ta.value = ''; ta.dataset.ocr = ''; upd(); out.replaceChildren(); window.scrollTo({top: 0, behavior: 'smooth'}); ta.focus(); }}}, N('another'));
@@ -9059,7 +9106,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     let pre = ''; try { pre = sessionStorage.vtext || ''; sessionStorage.removeItem('vtext'); } catch (e) {}
     if (pre) { ta.value = pre; run(); }
   }
-  window.VERIFY = {route: show, title: () => (S[ui] || S.en).title};
+  window.VERIFY = {_t: {hadithMatch: (r) => hadithMatch(r), quranCheck: (w) => quranCheck(w), words, plain, arabicOnly}, route: show, title: () => (S[ui] || S.en).title};
 })();
 
 </script>
