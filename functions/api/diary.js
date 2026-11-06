@@ -30,6 +30,7 @@ const SCHEMA = [
   'CREATE TABLE IF NOT EXISTS d_meta (k TEXT PRIMARY KEY, v INTEGER)',
   'CREATE TABLE IF NOT EXISTS d_pending (email TEXT PRIMARY KEY, data TEXT NOT NULL, salt TEXT NOT NULL, hash TEXT NOT NULL, exp INTEGER NOT NULL, tries INTEGER DEFAULT 0, sent_n INTEGER DEFAULT 1, sent_ts INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS d_push (id INTEGER PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, endpoint TEXT UNIQUE NOT NULL, p256dh TEXT NOT NULL, auth TEXT NOT NULL, ts INTEGER NOT NULL)',
+  'CREATE TABLE IF NOT EXISTS d_terms (inst INTEGER PRIMARY KEY, signer TEXT NOT NULL, inst_name TEXT NOT NULL, email TEXT NOT NULL, kids INTEGER NOT NULL, ver TEXT NOT NULL, ts INTEGER NOT NULL)',
   'CREATE INDEX IF NOT EXISTS d_push_user ON d_push (user)',
   'CREATE INDEX IF NOT EXISTS d_student_inst ON d_student (inst)',
   'CREATE INDEX IF NOT EXISTS d_note_user ON d_note (user, seen)',
@@ -149,6 +150,8 @@ export async function onRequest(ctx) {
 
     if (a === 'register') { // step 1: check the details, mail a 6-digit code to the principal's email
       if (!(parseInt(b.kids, 10) >= 10)) return json({error: 'minkids'}, 400); // a new institution needs at least 10 memorisation students
+      const ag = b.agree || {}, agN = str(ag.n, 60), agI = str(ag.i, 80); // the principal's signed pledge
+      if (!agN || !agI || !str(ag.v, 10)) return json({error: 'noagree'}, 400);
       const name = str(b.inst, 80), pname = str(b.name, 60), uname = str(b.uname, 30).toLowerCase(), email = str(b.email, 254).toLowerCase();
       const bad = !name ? 'inst' : !pname ? 'name' : !emailOk(email) ? 'email' : !unameOk(uname) ? 'uname' : !pwOk(b.pw) ? 'pw' : '';
       if (bad) return json({error: bad === 'pw' ? 'weak' : 'invalid', field: bad}, 400); // «field» tells the screen which box to turn red
@@ -160,7 +163,7 @@ export async function onRequest(ctx) {
       if (!(await sendMail(env, email, code))) return json({error: env.RESEND_API_KEY ? 'mailfail' : 'nomail'}, 503);
       const n = old && now - old.sent_ts < 3600000 ? old.sent_n + 1 : 1;
       await db.prepare('INSERT INTO d_pending (email,data,salt,hash,exp,tries,sent_n,sent_ts) VALUES (?,?,?,?,?,0,?,?) ON CONFLICT(email) DO UPDATE SET data=excluded.data, salt=excluded.salt, hash=excluded.hash, exp=excluded.exp, tries=0, sent_n=excluded.sent_n, sent_ts=excluded.sent_ts')
-        .bind(email, JSON.stringify({inst: name, name: pname, uname, pws: pw.s, pwh: pw.h}), salt, await hashPw(code, salt), now + 600000, n, now).run();
+        .bind(email, JSON.stringify({inst: name, name: pname, uname, pws: pw.s, pwh: pw.h, ag: {n: agN, i: agI, v: str(ag.v, 10), k: parseInt(b.kids, 10)}}), salt, await hashPw(code, salt), now + 600000, n, now).run();
       return json({ok: 1, step: 'verify'});
     }
     if (a === 'register_verify') { // step 2: the code from the email creates the institution
@@ -174,6 +177,7 @@ export async function onRequest(ctx) {
       const r = await db.prepare('INSERT INTO d_inst (code,name,created,last_active,email) VALUES (?,?,?,?,?)').bind(code, d.inst, now, now, email).run();
       const iid = r.meta.last_row_id;
       const ur = await db.prepare('INSERT INTO d_user (inst,role,name,uname,salt,pw,created) VALUES (?,?,?,?,?,?,?)').bind(iid, 'principal', d.name, d.uname, d.pws, d.pwh, now).run();
+      if (d.ag) await db.prepare('INSERT INTO d_terms (inst,signer,inst_name,email,kids,ver,ts) VALUES (?,?,?,?,?,?,?)').bind(iid, d.ag.n, d.ag.i, email, d.ag.k, d.ag.v, now).run(); // pledge kept with the institution
       await db.prepare('DELETE FROM d_pending WHERE email=?').bind(email).run();
       return json({ok: 1, code, token: await newSession(db, ur.meta.last_row_id)});
     }
