@@ -3,6 +3,7 @@
 // Privacy: every query is limited to the caller's institution (and, for a parent, to his own children). The site owner can only
 // read counts (api/diary?stats with the owner session), never names, children or entries.
 import {isOwner} from '../_lib/owner_auth.js';
+import {sendPush} from '../_lib/webpush.js';
 
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 const DAY = 86400000, WARN_AFTER = 30 * DAY, GRACE = 5 * DAY, SESS = 30 * DAY;
@@ -28,6 +29,8 @@ const SCHEMA = [
   'CREATE TABLE IF NOT EXISTS d_fail (k TEXT PRIMARY KEY, n INTEGER NOT NULL, ts INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS d_meta (k TEXT PRIMARY KEY, v INTEGER)',
   'CREATE TABLE IF NOT EXISTS d_pending (email TEXT PRIMARY KEY, data TEXT NOT NULL, salt TEXT NOT NULL, hash TEXT NOT NULL, exp INTEGER NOT NULL, tries INTEGER DEFAULT 0, sent_n INTEGER DEFAULT 1, sent_ts INTEGER NOT NULL)',
+  'CREATE TABLE IF NOT EXISTS d_push (id INTEGER PRIMARY KEY AUTOINCREMENT, user INTEGER NOT NULL, endpoint TEXT UNIQUE NOT NULL, p256dh TEXT NOT NULL, auth TEXT NOT NULL, ts INTEGER NOT NULL)',
+  'CREATE INDEX IF NOT EXISTS d_push_user ON d_push (user)',
   'CREATE INDEX IF NOT EXISTS d_student_inst ON d_student (inst)',
   'CREATE INDEX IF NOT EXISTS d_note_user ON d_note (user, seen)',
 ];
@@ -36,6 +39,8 @@ async function init(db) {
   if (ready) return;
   await db.batch(SCHEMA.map(s => db.prepare(s)));
   try { await db.prepare('ALTER TABLE d_inst ADD COLUMN email TEXT').run(); } catch (e) {} // already there
+  try { await db.prepare('ALTER TABLE d_user ADD COLUMN email TEXT').run(); } catch (e) {} // the parent's e-mail for absence notices
+  for (const c of ['father TEXT', 'cur_para INTEGER', 'done_paras INTEGER']) { try { await db.prepare('ALTER TABLE d_student ADD COLUMN ' + c).run(); } catch (e) {} } // the student card: father, the para he is on, paras memorised
   ready = true;
 }
 
@@ -63,6 +68,7 @@ async function wipe(db, id) {
     db.prepare('DELETE FROM d_student WHERE inst=?').bind(id),
     db.prepare('DELETE FROM d_note WHERE inst=?').bind(id),
     db.prepare('DELETE FROM d_sess WHERE user IN (SELECT id FROM d_user WHERE inst=?)').bind(id),
+    db.prepare('DELETE FROM d_push WHERE user IN (SELECT id FROM d_user WHERE inst=?)').bind(id),
     db.prepare('DELETE FROM d_user WHERE inst=?').bind(id),
     db.prepare('DELETE FROM d_inst WHERE id=?').bind(id),
   ]);
@@ -95,9 +101,28 @@ async function sendMail(env, to, code) {
   } catch (e) { return false; }
 }
 
+// absence notice to the parent: a note inside the diary (always), a web push to every device that allowed it, and an e-mail when an address was given
+async function sendAbsentMail(env, to, inst, child, day) {
+  if (!env.RESEND_API_KEY) return false;
+  try {
+    const r = await fetch('https://api.resend.com/emails', {method: 'POST', headers: {Authorization: 'Bearer ' + env.RESEND_API_KEY, 'Content-Type': 'application/json'},
+      body: JSON.stringify({from: env.MAIL_FROM || 'Hifz Diary <diary@turathkhairalquroon.com>', to: [to], subject: 'Absence notice / غیر حاضری کی اطلاع — ' + child,
+        text: inst + '\n\n' + child + ' was absent on ' + day + '.\nPlease contact the teacher if needed.\n\n' + inst + '\n\n' + child + ' ' + day + ' کو غیر حاضر رہا۔\nضرورت ہو تو استاد سے رابطہ کریں۔'})});
+    return r.ok;
+  } catch (e) { return false; }
+}
+async function absentNotice(db, env, u, st, day) {
+  if (!st.parent) return;
+  const par = await db.prepare('SELECT id, email FROM d_user WHERE id=?').bind(st.parent).first(); if (!par) return;
+  await notify(db, u.inst, par.id, 'absent', JSON.stringify({s: st.name, d: day, by: u.name}));
+  const subs = (await db.prepare('SELECT id, endpoint, p256dh, auth FROM d_push WHERE user=?').bind(par.id).all()).results || [];
+  for (const sb of subs) { const r = await sendPush(env, sb, {title: 'حفظ ڈائری · Hifz Diary', body: st.name + ' ' + day + ' کو غیر حاضر رہا · was absent on ' + day, url: 'diary.html'}); if (r === 'gone') await db.prepare('DELETE FROM d_push WHERE id=?').bind(sb.id).run(); }
+  if (par.email) await sendAbsentMail(env, par.email, u.inst_name, st.name, day);
+}
+
 // students the caller may see
 async function myStudents(db, u) {
-  let q = 'SELECT s.id, s.name, s.teacher, s.parent, t.name AS teacher_name, p.name AS parent_name, p.uname AS parent_uname FROM d_student s LEFT JOIN d_user t ON t.id=s.teacher LEFT JOIN d_user p ON p.id=s.parent WHERE s.inst=?';
+  let q = 'SELECT s.id, s.name, s.father, s.cur_para, s.done_paras, s.teacher, s.parent, t.name AS teacher_name, p.name AS parent_name, p.uname AS parent_uname FROM d_student s LEFT JOIN d_user t ON t.id=s.teacher LEFT JOIN d_user p ON p.id=s.parent WHERE s.inst=?';
   const b = [u.inst];
   if (u.role === 'teacher') { q += ' AND s.teacher=?'; b.push(u.id); }
   if (u.role === 'parent') { q += ' AND s.parent=?'; b.push(u.id); }
@@ -105,7 +130,8 @@ async function myStudents(db, u) {
 }
 const canSee = async (db, u, sid) => (await myStudents(db, u)).find(s => s.id === sid) || null;
 
-export async function onRequest({request, env}) {
+export async function onRequest(ctx) {
+  const {request, env} = ctx;
   const db = env.DB;
   if (!db) return json({error: 'not set up'}, 503);
   try {
@@ -171,9 +197,23 @@ export async function onRequest({request, env}) {
 
     if (a === 'me') {
       const n = await db.prepare('SELECT COUNT(*) n FROM d_note WHERE user=? AND seen=0').bind(u.id).first();
-      return json({user: {id: u.id, role: u.role, name: u.name, uname: u.uname}, inst: {name: u.inst_name, code: u.code}, unseen: n.n, students: await myStudents(db, u),
+      const em = await db.prepare('SELECT email FROM d_user WHERE id=?').bind(u.id).first();
+      return json({user: {id: u.id, role: u.role, name: u.name, uname: u.uname, email: (em && em.email) || ''}, push: !!(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY), inst: {name: u.inst_name, code: u.code}, unseen: n.n, students: await myStudents(db, u),
         teachers: u.role === 'principal' ? (await db.prepare("SELECT id, name, uname FROM d_user WHERE inst=? AND role='teacher' ORDER BY name").bind(u.inst).all()).results : []});
     }
+    if (a === 'set_email') { // the parent's own address for absence notices ('' removes it)
+      const em = str(b.email, 254).toLowerCase(); if (em && !emailOk(em)) return json({error: 'invalid', field: 'email'}, 400);
+      await db.prepare('UPDATE d_user SET email=? WHERE id=?').bind(em || null, u.id).run(); return json({ok: 1});
+    }
+    if (a === 'push_key') return json({key: env.VAPID_PUBLIC_KEY || ''});
+    if (a === 'push_sub') {
+      const e = str(b.endpoint, 700), k = str(b.p256dh, 200), au = str(b.auth, 100);
+      if (!/^https:\/\//.test(e) || !k || !au) return json({error: 'invalid'}, 400);
+      await db.prepare('INSERT INTO d_push (user,endpoint,p256dh,auth,ts) VALUES (?,?,?,?,?) ON CONFLICT(endpoint) DO UPDATE SET user=excluded.user, p256dh=excluded.p256dh, auth=excluded.auth, ts=excluded.ts').bind(u.id, e, k, au, Date.now()).run();
+      await db.prepare('DELETE FROM d_push WHERE user=? AND id NOT IN (SELECT id FROM d_push WHERE user=? ORDER BY ts DESC LIMIT 5)').bind(u.id, u.id).run();
+      return json({ok: 1});
+    }
+    if (a === 'push_unsub') { await db.prepare('DELETE FROM d_push WHERE user=? AND endpoint=?').bind(u.id, str(b.endpoint, 700)).run(); return json({ok: 1}); }
     if (a === 'add_teacher') {
       if (u.role !== 'principal') return json({error: 'forbidden'}, 403);
       const name = str(b.name, 60), un = str(b.uname, 30).toLowerCase();
@@ -186,17 +226,27 @@ export async function onRequest({request, env}) {
       const name = str(b.name, 60); if (!name) return json({error: 'invalid', field: 'name'}, 400);
       let teacher = u.role === 'teacher' ? u.id : int(b.teacher, 1, 1e12), parent = null;
       if (teacher && !(await db.prepare("SELECT 1 FROM d_user WHERE id=? AND inst=? AND role='teacher'").bind(teacher, u.inst).first())) teacher = null;
-      const pun = str(b.parent_uname, 30).toLowerCase();
+      const pun = str(b.parent_uname, 30).toLowerCase(), pem = str(b.parent_email, 254).toLowerCase();
+      if (pem && !emailOk(pem)) return json({error: 'invalid', field: 'parent_email'}, 400);
       if (pun) {
         const p = await db.prepare("SELECT id FROM d_user WHERE inst=? AND uname=? AND role='parent'").bind(u.inst, pun).first();
-        if (p) parent = p.id;
+        if (p) { parent = p.id; if (pem) await db.prepare('UPDATE d_user SET email=? WHERE id=? AND email IS NULL').bind(pem, p.id).run(); }
         else {
           if (!unameOk(pun) || !pwOk(b.parent_pw)) return json({error: 'invalid', field: !unameOk(pun) ? 'parent_uname' : 'parent_pw'}, 400);
-          try { parent = await addUser(db, u.inst, 'parent', str(b.parent_name, 60) || name, pun, b.parent_pw); } catch (e) { return json({error: 'exists'}, 409); }
+          try { parent = await addUser(db, u.inst, 'parent', str(b.parent_name, 60) || name, pun, b.parent_pw); if (pem) await db.prepare('UPDATE d_user SET email=? WHERE id=?').bind(pem, parent).run(); } catch (e) { return json({error: 'exists'}, 409); }
         }
       }
-      const r = await db.prepare('INSERT INTO d_student (inst,name,teacher,parent,created) VALUES (?,?,?,?,?)').bind(u.inst, name, teacher, parent, Date.now()).run();
+      const r = await db.prepare('INSERT INTO d_student (inst,name,teacher,parent,created,father,cur_para,done_paras) VALUES (?,?,?,?,?,?,?,?)').bind(u.inst, name, teacher, parent, Date.now(), str(b.father, 60) || null, int(b.cur_para, 1, 30), int(b.done_paras, 0, 30)).run();
       return json({ok: 1, id: r.meta.last_row_id});
+    }
+    if (a === 'update_student') { // the student card: name, father, the para he is on, paras memorised (principal: also the teacher)
+      if (u.role === 'parent') return json({error: 'forbidden'}, 403);
+      const sid = int(b.student, 1, 1e12), st = sid && await canSee(db, u, sid), name = str(b.name, 60);
+      if (!st || !name) return json({error: 'invalid', field: 'name'}, 400);
+      let teacher = st.teacher;
+      if (u.role === 'principal' && b.teacher !== undefined) { const t = int(b.teacher, 1, 1e12); teacher = t && (await db.prepare("SELECT 1 FROM d_user WHERE id=? AND inst=? AND role='teacher'").bind(t, u.inst).first()) ? t : null; }
+      await db.prepare('UPDATE d_student SET name=?, father=?, cur_para=?, done_paras=?, teacher=? WHERE id=? AND inst=?').bind(name, str(b.father, 60) || null, int(b.cur_para, 1, 30), int(b.done_paras, 0, 30), teacher, sid, u.inst).run();
+      return json({ok: 1});
     }
     if (a === 'assign') { // principal: move a student to another teacher
       if (u.role !== 'principal') return json({error: 'forbidden'}, 403);
@@ -218,12 +268,14 @@ export async function onRequest({request, env}) {
       if (!st || !dayOk(b.day)) return json({error: 'invalid'}, 400);
       const absent = b.absent ? 1 : 0;
       const e = absent ? [null, null, null, null, null, null] : [int(b.sabaq_lines, 0, 999), int(b.sabaq_q, 1, 3), int(b.sabqi_para, 1, 30), int(b.sabqi_err, 0, 999), int(b.manzil_para, 1, 30), int(b.manzil_err, 0, 999)];
-      const had = await db.prepare('SELECT 1 FROM d_entry WHERE student=? AND day=?').bind(sid, b.day).first();
+      const had = await db.prepare('SELECT absent FROM d_entry WHERE student=? AND day=?').bind(sid, b.day).first();
       await db.prepare('INSERT INTO d_entry (student,day,absent,sabaq_lines,sabaq_q,sabqi_para,sabqi_err,manzil_para,manzil_err,note,by_user,updated) VALUES (?,?,?,?,?,?,?,?,?,?,?,?) ON CONFLICT(student,day) DO UPDATE SET absent=excluded.absent, sabaq_lines=excluded.sabaq_lines, sabaq_q=excluded.sabaq_q, sabqi_para=excluded.sabqi_para, sabqi_err=excluded.sabqi_err, manzil_para=excluded.manzil_para, manzil_err=excluded.manzil_err, note=excluded.note, by_user=excluded.by_user, updated=excluded.updated')
         .bind(sid, b.day, absent, ...e, str(b.note, 200), u.id, Date.now()).run();
       const payload = JSON.stringify({s: st.name, d: b.day, by: u.name, edit: had ? 1 : 0});
       if (u.role === 'teacher') for (const p of await principals(db, u.inst)) await notify(db, u.inst, p, 'entry', payload);
-      return json({ok: 1});
+      const fresh = absent && !(had && had.absent); // only the first time it is marked absent
+      if (fresh && st.parent) { const job = absentNotice(db, env, u, st, b.day); if (ctx.waitUntil) ctx.waitUntil(job); else await job; }
+      return json({ok: 1, notified: fresh && st.parent ? 1 : 0});
     }
     if (a === 'entries') {
       const sid = int(b.student, 1, 1e12);

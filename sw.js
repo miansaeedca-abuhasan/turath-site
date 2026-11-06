@@ -1,4 +1,4 @@
-const C='turath-202611051900';
+const C='turath-202611051941';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon-192.png'])))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='turath-daily'&&k!=='turath-off').map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
@@ -17,5 +17,6 @@ for(const it of day[slot]||[])await self.registration.showNotification(it.title,
 shown[key]=1;await c.put('shown',new Response(JSON.stringify(shown)));}
 self.addEventListener('periodicsync',e=>{if(e.tag===DQ)e.waitUntil(dailyNotify(false));});
 self.addEventListener('message',e=>{if(e.data==='daily-test')e.waitUntil(dailyNotify(true));});
+self.addEventListener('push',e=>{let d={};try{d=e.data.json()}catch(x){d={body:e.data?e.data.text():''}}e.waitUntil(self.registration.showNotification(d.title||'Hifz Diary',{body:d.body||'',icon:'icon-192.png',badge:'icon-192.png',tag:'diary-notice',data:{url:d.url||'diary.html'}}))});
 self.addEventListener('notificationclick',e=>{e.notification.close();const u=new URL('./'+((e.notification.data&&e.notification.data.url)||''),self.registration.scope).href;
 e.waitUntil(clients.matchAll({type:'window',includeUncontrolled:true}).then(ws=>{for(const w of ws){if('navigate' in w){return w.navigate(u).then(x=>(x||w).focus());}}return clients.openWindow(u);}));});

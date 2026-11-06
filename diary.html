@@ -212,6 +212,11 @@ k3:'Masha’Allah! You worked very well in this period. Shabash! Keep up this lo
 k2:'Alhamdulillah, the performance was good. With a little more effort and attention to the mistakes you can do even better. Your effort is valued. May Allah make the Qur’an easy for you, Ameen.',
 k1:'Do not lose heart! Every hafiz began from weakness. By revising a little every day and following the teacher’s advice, in shaa Allah there will be great improvement. We pray for you. May Allah make hifz easy for you, Ameen.',
 kabs:'Give special attention to attendance: coming every day makes hifz strong.',kdua:'May Allah reward the child, the parents and the teacher with a great reward, Ameen.',kh:'From the teacher and the parents'});
+
+Object.assign(L.ur,{pn_title:'غیر حاضری کی اطلاع',pn_sub:'بچہ غیر حاضر ہو تو آپ کو ڈائری میں، اس ڈیوائس پر اور ای میل پر اطلاع ملے گی۔',pn_email:'ای میل (اختیاری)',pn_saved:'ای میل محفوظ ہو گئی',pn_en:'اس ڈیوائس پر اطلاع فعال کریں',pn_dis:'اس ڈیوائس پر اطلاع بند کریں',pn_on:'اس ڈیوائس پر اطلاعات فعال ہیں ✓',pn_off:'اس ڈیوائس پر اطلاعات بند ہیں',pn_denied:'اجازت نہیں ملی۔ براؤزر کی ترتیب میں اس سائٹ کو اطلاع کی اجازت دیں۔',pn_unsup:'یہ براؤزر ویب اطلاعات کی سہولت نہیں دیتا۔',pn_ios:'آئی فون پر اطلاعات کے لیے پہلے سائٹ کو ہوم اسکرین میں شامل کریں (شیئر کا بٹن، پھر ہوم اسکرین میں شامل کریں) اور وہاں سے کھولیں۔',pn_fail:'اطلاع فعال نہ ہو سکی، دوبارہ کوشش کریں۔',
+n_absent:(a)=>`${a.s} ${a.d} کو غیر حاضر رہا`,pe:'والد کی ای میل (غیر حاضری کی اطلاع کے لیے، اختیاری)',h_pe:'اگر لکھیں تو بچے کی غیر حاضری پر والد کو ای میل بھی جائے گی',sentpar:'والدین کو اطلاع بھیج دی گئی'});
+Object.assign(L.en,{pn_title:'Absence notices',pn_sub:'When the child is absent you get a note in the diary, a notification on this device and an e-mail.',pn_email:'E-mail (optional)',pn_saved:'E-mail saved',pn_en:'Turn on notifications on this device',pn_dis:'Turn off notifications on this device',pn_on:'Notifications are on for this device ✓',pn_off:'Notifications are off for this device',pn_denied:'Permission was not given. Allow notifications for this site in the browser settings.',pn_unsup:'This browser does not support web notifications.',pn_ios:'On iPhone, first add this site to the Home Screen (Share button, then Add to Home Screen) and open it from there.',pn_fail:'Could not turn notifications on, please try again.',
+n_absent:(a)=>`${a.s} was absent on ${a.d}`,pe:'Father’s e-mail (for absence notices, optional)',h_pe:'If written, the father also gets an e-mail when the child is absent',sentpar:'The parents were notified'});
 let lg=(()=>{try{return localStorage.getItem('dlang')||'ur'}catch(e){return 'ur'}})(),tk=(()=>{try{return localStorage.getItem('dtk')||''}catch(e){return ''}})(),ME=null,today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
 const T=k=>L[lg][k],$=s=>document.querySelector(s),esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const num=n=>String(n);
@@ -222,6 +227,7 @@ async function api(b){
 /* ---------- field checks: the wrong box turns red and says what to write ---------- */
 const V={req:v=>String(v).trim()?'':T('e_req'),
   email:v=>{v=String(v).trim();return v&&/^[^\s@]{1,64}@[^\s@]{1,190}\.[^\s@]{2,}$/.test(v)&&v.length<=254?'':T('e_email')},
+  emailopt:v=>String(v).trim()?V.email(v):'',
   uname:v=>/^[a-z0-9._-]{3,30}$/.test(String(v).trim().toLowerCase())?'':T('e_uname'),
   code:v=>/^\d{6}$/.test(String(v).trim())?'':T('e_code'),
   pw:v=>{v=String(v);const m=[];if(v.length<10)m.push(T('pp_len'));if(!/[A-Za-z\u0600-\u06FF]/.test(v))m.push(T('pp_let'));if(!/\d/.test(v))m.push(T('pp_dig'));if(!/[^A-Za-z0-9\u0600-\u06FF\s]/.test(v))m.push(T('pp_sym'));if(v.length>100)return T('e_pw0')+T('pp_len');
@@ -229,6 +235,7 @@ const V={req:v=>String(v).trim()?'':T('e_req'),
 function flag(root,id,msg){const i=root.querySelector('#'+id);if(!i)return;const box=i.closest('.pwb')||i;
   root.querySelectorAll('[data-eh="'+id+'"]').forEach(x=>x.remove());i.classList.toggle('badf',!!msg);
   if(msg){const d=document.createElement('div');d.className='hint err';d.dataset.eh=id;d.textContent=msg;box.insertAdjacentElement('afterend',d)}}
+function toast(t){const d=document.createElement('div');d.textContent=t;d.style.cssText='position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#0e6b53;color:#fff;border:1.5px solid #c39a3b;border-radius:99px;padding:8px 18px;z-index:99999;max-width:90vw;text-align:center';document.body.appendChild(d);setTimeout(()=>d.remove(),3500)}
 function checkAll(root,list){let first=null;list.forEach(([id,k])=>{const i=root.querySelector('#'+id);if(!i)return;i.dataset.k=k;const m=V[k](i.value);flag(root,id,m);if(m&&!first)first=i});
   if(first){try{first.scrollIntoView({block:'center'});first.focus()}catch(e){}}return !first}
 function live(root){root.querySelectorAll('input[data-k]').forEach(()=>{});root.addEventListener('input',e=>{const i=e.target;if(i&&i.dataset&&i.dataset.k&&i.classList.contains('badf'))flag(root,i.id,V[i.dataset.k](i.value))})}
@@ -290,6 +297,7 @@ function home(first){
   if(p){
     h+=`<div class="card"><h2>${T('teachers')}</h2>${ME.teachers.length?ME.teachers.map(x=>`<div class="stu" style="cursor:default"><span style="flex:1">${esc(x.name)} <span class="muted" dir="ltr">${esc(x.uname)}</span></span><button class="sec sm" data-pw="${x.id}">${T('chpw')}</button></div>`).join(''):`<p class="muted">${T('noteach')}</p>`}<p><button id="addT">${T('addteacher')}</button></p></div>`;
   }
+  if(pa)h+=`<div class="card noprint" id="alc"><h2>🔔 ${T('pn_title')}</h2><p class="muted">${T('pn_sub')}</p><label>${T('pn_email')}</label><div class="row" style="align-items:center"><input id="pem" type="email" dir="ltr" autocapitalize="none" value="${esc(u.email||'')}" placeholder="name@gmail.com" style="flex:1 1 170px;min-width:0"><button class="sec" id="pes" style="flex:0 0 auto">${T('save')}</button></div><div class="err" id="pee"></div>${ME.push?'<p><button id="pbtn" class="sec"></button></p><p class="muted" id="pst"></p>':''}</div>`;
   h+=`<div class="card noprint"><h2>${T('settings')}</h2><div class="row"><div style="flex:1 1 220px">${pwField('np',T('newpw'),true)}</div><button class="sec" id="chp">${T('chpw')}</button></div><div class="err" id="pe"></div>${p?`<button class="bad sm" id="del">${T('delinst')}</button>`:''}</div>`;
   $('#app').innerHTML=h;wirePw($('#app'));live($('#app'));
   if(t||p){$('#dt').onchange=e=>{sel=e.target.value||today;drawStu()};$('#addS').onclick=addStudent}
@@ -297,6 +305,7 @@ function home(first){
   $('#chp').onclick=async()=>{$('#pe').textContent='';if(!checkAll($('#app'),[['np','pw']])){$('#pe').textContent=T('fixred');return}const r=await api({a:'passwd',pw:$('#np').value});$('#pe').textContent=r.ok?T('pwdone'):msg(r.error);if(r.ok)$('#np').value=''};
   if(p)$('#del').onclick=delInst;
   $('#sq').oninput=e=>{Q=e.target.value;drawStu()};
+  if(pa)wireAlerts();
   drawStu();
 }
 let sel='',DAYS={},Q='';
@@ -312,6 +321,28 @@ async function drawStu(){
   box.innerHTML=L2.map(s=>{const e=DAYS[s.id],pl=paraLine(s),st=pa?'':e?(e.absent?`<span class="stat ab">${T('absent')}</span>`:`<span class="stat ok">${T('done')}</span>`):`<span class="stat">${T('todo')}</span>`;
     return `<div class="stu" data-s="${s.id}"><span class="av">${esc(first1(s.name))}</span><span class="sbody"><b>${esc(s.name)}</b><span class="muted">${s.father?esc(T('father'))+': '+esc(s.father)+(pl||u.role==='principal'&&s.teacher_name?' · ':''):''}${pl?esc(pl):''}${u.role==='principal'&&s.teacher_name?(pl&&!s.father?' · ':'')+esc(s.teacher_name):''}</span></span>${st}</div>`}).join('');
   box.querySelectorAll('.stu').forEach(d=>d.onclick=()=>studentCard(ME.students.find(x=>x.id==d.dataset.s)));
+}
+
+
+/* ---------- the parent's absence notices: e-mail address and web push on this device ---------- */
+const unb64=k=>{k=k.replace(/-/g,'+').replace(/_/g,'/');while(k.length%4)k+='=';const r=atob(k),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
+function wireAlerts(){
+  const root=$('#alc');if(!root)return;
+  root.querySelector('#pes').onclick=async()=>{const e=root.querySelector('#pee');e.textContent='';e.style.color='';const v=root.querySelector('#pem'),bad=V.emailopt(v.value);flag(root,'pem',bad);if(bad){v.dataset.k='emailopt';return}
+    const r=await api({a:'set_email',email:v.value.trim()});if(r.ok){ME.user.email=v.value.trim().toLowerCase();e.style.color='var(--good)';e.textContent=T('pn_saved')}else e.textContent=msg(r.error)};
+  const b=root.querySelector('#pbtn'),st=root.querySelector('#pst');if(!b)return;
+  const sup='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+  if(!sup){b.hidden=true;st.textContent=/iPhone|iPad|iPod/.test(navigator.userAgent)?T('pn_ios'):T('pn_unsup');return}
+  let reg=null;const cur=async()=>{try{reg=reg||await navigator.serviceWorker.register('sw.js').then(()=>navigator.serviceWorker.ready);return await reg.pushManager.getSubscription()}catch(e){return null}};
+  const paint=async()=>{const s=await cur();b.textContent=s?T('pn_dis'):T('pn_en');st.textContent=s?T('pn_on'):(Notification.permission==='denied'?T('pn_denied'):T('pn_off'))};
+  b.onclick=async()=>{b.disabled=true;try{const s=await cur();
+    if(s){await api({a:'push_unsub',endpoint:s.endpoint});await s.unsubscribe()}
+    else{const p=await Notification.requestPermission();if(p!=='granted'){st.textContent=T('pn_denied');b.disabled=false;return}
+      const k=(await api({a:'push_key'})).key;if(!k)throw 0;const sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:unb64(k)}),j=sub.toJSON();
+      const r=await api({a:'push_sub',endpoint:j.endpoint,p256dh:j.keys.p256dh,auth:j.keys.auth});if(!r.ok)throw 0}
+    }catch(e){st.textContent=T('pn_fail');b.disabled=false;return}
+    b.disabled=false;paint()};
+  paint();
 }
 
 /* ---------- modal helper ---------- */
@@ -343,7 +374,7 @@ function entry(s){
     const r=await api({a:'save',student:s.id,day:d,absent:ab,sabaq_lines:v('sl'),sabaq_q:q,sabqi_para:v('sp'),sabqi_err:v('sp')?(v('se')||0):v('se'),manzil_para:v('mp'),manzil_err:v('mp')?(v('me')||0):v('me'),note:v('nt')});
     if(!r.ok){m.querySelector('#e').textContent=msg(r.error);return}
     try{localStorage.setItem('dl'+s.id,JSON.stringify({sp:v('sp'),mp:v('mp')}))}catch(x){}
-    m.remove();drawStu();
+    m.remove();drawStu();if(r.notified)toast(T('sentpar'));
   };
 }
 
@@ -361,14 +392,15 @@ function addStudent(){
   ${p?`<label>${T('teacher')}</label><select id="t"><option value=""></option>${ME.teachers.map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join('')}</select>`:''}
   <label>${T('sfather')}</label><input id="fa" maxlength="60"><div class="row"><div><label>${T('scur')}</label>${paraSel('cp','')}</div><div><label>${T('sdone')}</label>${paraSel0('dp','')}</div></div>
   <h2>${T('parentacc')}</h2><p class="muted">${T('noparent')}</p><label>${T('pn')}</label><input id="pn" maxlength="60"><label>${T('pu')}</label><input id="pu" dir="ltr" autocapitalize="none">${pwField('pp',T('ppw'),true)}
+  <label>${T('pe')}</label><input id="pmail" type="email" dir="ltr" autocapitalize="none" placeholder="name@gmail.com">
   <div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
-  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_sname',fa:'ph_pname',pn:'ph_pname',pu:'ph_uname'});hintUnder(m,'pu',T('h_pu'));
+  m.querySelector('#x').onclick=()=>m.remove();live(m);ph(m,{a:'ph_sname',fa:'ph_pname',pn:'ph_pname',pu:'ph_uname'});hintUnder(m,'pu',T('h_pu'));hintUnder(m,'pmail',T('h_pe'));
   m.querySelector('#s').onclick=async()=>{const g=i=>m.querySelector('#'+i);g('e').textContent='';
-    const pu=g('pu').value.trim(),pp=g('pp').value,lst=[['a','req']];['pn','pu','pp'].forEach(i=>flag(m,i,''));
+    const pu=g('pu').value.trim(),pp=g('pp').value,lst=[['a','req']];['pn','pu','pp','pmail'].forEach(i=>flag(m,i,''));lst.push(['pmail','emailopt']);
     if(pu||pp){lst.push(['pu','uname']);if(pp||!pu)lst.push(['pp','pw'])}
     if(!checkAll(m,lst)){g('e').textContent=(pu||pp)&&!g('a').classList.contains('badf')?T('e_par'):T('fixred');return}
-    const r=await api({a:'add_student',name:g('a').value.trim(),father:g('fa').value.trim(),cur_para:g('cp').value,done_paras:g('dp').value,teacher:p?g('t').value:null,parent_name:g('pn').value.trim(),parent_uname:pu.toLowerCase(),parent_pw:pp});
-    if(!r.ok){if(r.error==='exists')flag(m,'pu',T('e_exists'));else if(r.field){const k={name:['a','req'],parent_uname:['pu','uname'],parent_pw:['pp','pw']}[r.field];if(k){g(k[0]).dataset.k=k[1];flag(m,k[0],V[k[1]](g(k[0]).value)||T('e_req'))}}g('e').textContent=msg(r.error);return}m.remove();await load();home()};
+    const r=await api({a:'add_student',name:g('a').value.trim(),father:g('fa').value.trim(),cur_para:g('cp').value,done_paras:g('dp').value,teacher:p?g('t').value:null,parent_name:g('pn').value.trim(),parent_uname:pu.toLowerCase(),parent_pw:pp,parent_email:g('pmail').value.trim()});
+    if(!r.ok){if(r.error==='exists')flag(m,'pu',T('e_exists'));else if(r.field){const k={name:['a','req'],parent_uname:['pu','uname'],parent_pw:['pp','pw'],parent_email:['pmail','emailopt']}[r.field];if(k){g(k[0]).dataset.k=k[1];flag(m,k[0],V[k[1]](g(k[0]).value)||T('e_req'))}}g('e').textContent=msg(r.error);return}m.remove();await load();home()};
 }
 function resetPw(id){
   const m=modal(`<h2>${T('chpw')}</h2>${pwField('a',T('newpw'),true)}<div class="err" id="e"></div><div class="row"><button id="s">${T('save')}</button><button class="sec" id="x">${T('cancel')}</button></div>`);
@@ -384,7 +416,7 @@ function delInst(){
 /* ---------- notifications ---------- */
 async function notes(){
   const r=await api({a:'notes'});ME.unseen=0;chrome();
-  const li=(r.notes||[]).map(n=>{let t='';try{if(n.kind==='warn')t=T('n_warn');else{const a=JSON.parse(n.text);t=T(a.edit?'n_edit':'n_new')(a)}}catch(e){}
+  const li=(r.notes||[]).map(n=>{let t='';try{if(n.kind==='warn')t=T('n_warn');else if(n.kind==='absent'){t='⚠ '+T('n_absent')(JSON.parse(n.text))}else{const a=JSON.parse(n.text);t=T(a.edit?'n_edit':'n_new')(a)}}catch(e){}
     return `<div class="stu" style="cursor:default${n.seen?'':';font-weight:bold'}"><span style="flex:1">${esc(t)}<div class="muted">${new Date(n.ts).toLocaleString(lg==='ur'?'ur-PK':'en-GB')}</div></span></div>`}).join('');
   const m=modal(`<h2>${T('notes')}</h2>${li||`<p class="muted">${T('nonotes')}</p>`}<p><button class="sec" id="x">${T('cancel')}</button></p>`);m.querySelector('#x').onclick=()=>m.remove();
 }
