@@ -2,7 +2,7 @@
 const {chromium}=require('playwright');const fs=require('fs');
 (async()=>{let bad=[];const b=await chromium.launch(),p=await b.newPage({viewport:{width:420,height:900}});
 p.on('pageerror',e=>bad.push('pageerror '+e.message));await p.addInitScript(()=>{localStorage.ui='ur'});
-const keys=['sh10805','sh96956','sh5836','sh5848','sh5827','sh96228','sh9170','sh2331','sh6044','sh10272','sh642','sh13131'];
+const keys=['sh10805','sh96956','sh5836','sh5848','sh5827','sh96228','sh9170','sh2331','sh6044','sh10272','sh642','sh13131','sh96955','sh6418','sh20881','sh20868','sh20859','sh5885','sh6601','sh6004','sh25868','sh2171','sh127715','sh1893','sh4092','sh5861','sh6023','sh13055'];
 const idx=JSON.parse(fs.readFileSync('coll/index.js','utf8').replace(/^COLLS\(/,'').replace(/\);?\s*$/,''));
 for(const k of keys){const c=idx.find(x=>x.key===k);if(!c){bad.push('missing in index '+k);continue}
   if(!fs.existsSync('coll/'+c.files.ar[0][2]))bad.push('file missing '+k);
