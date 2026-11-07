@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>تربیت — تراث خيرالقرون</title>
+<style>
+@font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
+@font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
+:root{--ink:#1c2b25;--muted:#5d6f66;--paper:#f5f0e1;--card:#fffdf5;--accent:#0e5a45;--gold:#c39a3b;--soft:#e8f1ea;--line:#e4dbc0;--good:#1f7a4d;--bad:#b3261e;--c0:#2b7bb9;--c1:#c0762c;--c2:#6a4fb3;--c3:#17786e;--c4:#c0392b;--c5:#8a6d1d;--c6:#3b6e2f;--c7:#7a3b6e}
+@media (prefers-color-scheme:dark){:root{--ink:#e9f1ec;--muted:#9db1a7;--paper:#0c1814;--card:#13251e;--accent:#5fc7a0;--gold:#d8b865;--soft:#173128;--line:#27403a;--good:#6fcf8f;--bad:#f08a80;--c0:#6bb4ea;--c1:#e0a05a;--c2:#a58cf0;--c3:#5fd1c0;--c4:#f08a80;--c5:#d8b865;--c6:#8bd07c;--c7:#d696c8}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.7 system-ui,sans-serif}
+html[lang=ur] body{font-family:"Jameel Noori Nastaleeq","Noto Nastaliq Urdu",serif;line-height:2.1}
+main{max-width:900px;margin:0 auto;padding:10px 14px 60px}
+header.top{display:flex;align-items:center;gap:10px;padding:8px 0}
+header.top img{width:44px;height:44px}
+header.top h1{font-size:1.3rem;margin:0;flex:1;color:var(--accent)}
+header.top small{display:block;color:var(--muted);font-size:.8em;line-height:1.6}
+.card{background:var(--card);border-radius:16px;padding:14px 16px;margin:12px 0;box-shadow:0 1px 8px rgba(20,40,70,.08)}
+h2{font-size:1.08rem;color:var(--accent);margin:.2rem 0 .5rem}
+button,input,select{font:inherit;color:inherit}
+button{background:var(--accent);color:#fff;border:0;border-radius:12px;padding:8px 16px;cursor:pointer}
+@media (prefers-color-scheme:dark){button{color:#0f161b}}
+button.sec{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+button.bad{background:var(--bad);color:#fff}
+button.sm{padding:2px 10px;font-size:.9rem}
+button:disabled{opacity:.45;cursor:default}
+input,select{width:100%;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:8px 12px;margin:4px 0 8px}
+label{display:block;font-size:.92rem;color:var(--muted)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.row>*{flex:1 1 140px}
+.muted{color:var(--muted);font-size:.9rem}
+.hero{background:linear-gradient(135deg,var(--accent),#1c8a68);color:#fff;border-radius:18px;padding:18px;margin:10px 0}
+.hero h2{color:#fff;font-size:1.25rem}.hero p{margin:.3rem 0;opacity:.95}
+.tabs{display:flex;gap:6px;overflow-x:auto;margin:8px 0;padding-bottom:2px}
+.tabs button{flex:1 0 auto;background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+@media (prefers-color-scheme:dark){.tabs button.on{color:#0f161b}}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+.chips button{background:var(--card);color:var(--ink);border:1px solid var(--line);padding:3px 12px}
+.chips button.on{background:var(--gold);color:#1c2b25;border-color:var(--gold)}
+.nav{display:flex;align-items:center;gap:8px;justify-content:center;margin:6px 0}.nav b{min-width:12em;text-align:center}
+/* the chart (like the poster on the wall): activities in rows, children in columns */
+.grid{overflow-x:auto;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+table.ch{border-collapse:separate;border-spacing:0;width:100%;min-width:100%}
+table.ch th,table.ch td{padding:6px 8px;text-align:center;border-bottom:1px solid var(--line);vertical-align:middle}
+table.ch th.act,table.ch td.act{text-align:start;position:sticky;inset-inline-start:0;background:var(--card);min-width:9.5em;max-width:13em;z-index:1;font-size:.98rem}
+table.ch thead th{font-size:1.02rem;border-bottom:2px solid var(--line)}
+table.ch thead th .kid{display:inline-block;padding:2px 12px;border-radius:999px;color:#fff;background:var(--kc)}
+@media (prefers-color-scheme:dark){table.ch thead th .kid{color:#0f161b}}
+table.ch tr.neg td,table.ch tr.neg th{background:color-mix(in srgb,var(--bad) 8%,var(--card))}
+table.ch tr.sum td,table.ch tr.sum th{font-weight:700;border-bottom:0;background:var(--soft)}
+.cell{display:inline-flex;align-items:center;gap:4px}
+.cell button{width:34px;height:34px;padding:0;border-radius:50%;font-size:1.2rem;line-height:1}
+.cell button.m{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.ch tr.secr th{text-align:start;background:var(--soft);color:var(--accent);font-size:.95rem;padding:4px 10px}
+.wk th,.wk td{padding:5px 2px!important;font-size:.85rem}.wk th.act,.wk td.act{min-width:6.2em!important;max-width:7.5em!important;padding:5px 8px!important;font-size:.88rem;line-height:1.7}.wk thead th small{display:block;font-size:.72rem;line-height:1.3}.wk thead th .kid{padding:0 8px;font-size:.85rem}
+.cell .v{min-width:2.2em;font-weight:700;font-size:1.1rem}
+.cell .v.on{color:var(--good)}.neg .cell .v.on{color:var(--bad)}
+.lock{color:var(--muted);font-size:.8rem}
+.legend{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}.legend i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-inline-end:5px;background:var(--kc)}
+.kpi{display:flex;gap:10px;flex-wrap:wrap}.kpi>div{flex:1 1 130px;background:var(--soft);border-radius:14px;padding:8px 12px;text-align:center}.kpi b{display:block;font-size:1.5rem}
+svg.gr{width:100%;height:auto;display:block}
+svg.gr text{font-family:inherit;fill:var(--muted);font-size:11px}
+.word{border-radius:14px;background:var(--soft);padding:10px 14px;margin:8px 0}
+.codebox{font:700 1.5rem/1.4 ui-monospace,Menlo,monospace;letter-spacing:.2em;direction:ltr;background:var(--paper);border:2px dashed var(--gold);border-radius:12px;padding:6px 14px;display:inline-block}
+.err{color:var(--bad);margin:4px 0}
+.set .li{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border-bottom:1px solid var(--line);padding:6px 0}.set .li input{flex:1 1 160px;margin:0}
+.tag{font-size:.75rem;padding:0 8px;border-radius:999px;background:var(--soft);color:var(--accent)}.tag.n{background:color-mix(in srgb,var(--bad) 15%,var(--paper));color:var(--bad)}
+/* the certificate */
+.cert{background:#fffdf3;color:#1c2b25;border:3px double #b88a2a;border-radius:6px;padding:26px 20px;text-align:center;position:relative;margin:10px 0}
+.cert:before{content:"";position:absolute;inset:8px;border:1.5px solid #d9b45a;pointer-events:none}
+.cert .bis{font-size:1.1rem;color:#0e5a45}.cert h2{color:#8a6410;font-size:1.7rem;margin:.3rem 0}
+.cert .nm{font-size:2rem;color:#0e5a45;margin:.2rem 0;border-bottom:2px dotted #d9b45a;display:inline-block;padding:0 24px}
+.cert .stars{font-size:2.2rem;color:#d19a1c;letter-spacing:.2em;margin:.2rem 0}
+.cert .big{font-size:1.15rem}.cert .sg{display:flex;justify-content:space-around;margin-top:18px;font-size:.95rem;color:#5d6f66}.cert .sg span{border-top:1px solid #b88a2a;padding:2px 24px;min-width:9em}
+.cert .by{font-size:.78rem;color:#7a8a82;margin-top:10px}
+@media print{body{background:#fff}header.top,.tabs,.noprint,.chips,.nav,.card:not(.printme){display:none!important}main{padding:0;max-width:none}.cert{margin:0;page-break-inside:avoid}@page{size:A4 landscape;margin:12mm}}
+</style>
+</head>
+<body>
+<main>
+<header class="top"><img src="icons/tarbiyat.png" alt="" width="44" height="44"><h1 id="ttl">تربیت<small id="sub">بچوں کی اچھی عادتوں کا چارٹ</small></h1><button class="sec sm" id="lang">English</button><button class="sec sm" id="home">ہوم</button><button class="sec sm" id="out" hidden>باہر نکلیں</button></header>
+<div id="app"></div>
+</main>
+<script>
+(()=>{
+const $=s=>document.querySelector(s);
+const E=(t,a,...k)=>{const e=document.createElement(t);for(let [n,v] of Object.entries(a||{})){if(v==null||v===false)continue;if(typeof v==='string'&&(n==='placeholder'||n==='aria-label'))v=tr(v);if(n==='on')for(const [ev,f] of Object.entries(v))e.addEventListener(ev,f);else if(n==='class')e.className=v;else if(n==='html')e.innerHTML=v;else if(n==='style')e.style.cssText=v;else if(v===true)e.setAttribute(n,'');else e.setAttribute(n,v)}for(const c of k.flat())if(c!=null&&c!==false)e.append(c.nodeType?c:document.createTextNode(typeof c==='string'?tr(c):c));return e};
+let LG=(()=>{try{return localStorage.tb_lang==='en'?'en':'ur'}catch(e){return 'ur'}})();
+const EN=()=>LG==='en';
+const XEN={'تربیت':'Tarbiyah','بچوں کی اچھی عادتوں کا چارٹ':'Children\'s good habits chart','ہوم':'Home','باہر نکلیں':'Sign out','کوڈ لکھیں':'Enter code',
+'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔':'A chart of good daily habits. Children mark their own progress, parents watch over it, and there are graphs and certificates from the week up to the year.',
+'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔':'This is free. Parents have one code and each child has a separate code, with which the child can fill in only his or her own boxes.',
+'کوڈ سے داخل ہوں':'Enter with a code','والدین کا کوڈ یا بچے کا اپنا کوڈ':'Parents\' code or the child\'s own code','داخل ہوں':'Enter','نیا چارٹ بنائیں':'Create a new chart',
+'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔':'Parents create it once. Write the children\'s names and each one gets a code.','نیا خاندان بنائیں':'Create a family',
+'نیا خاندان':'New family','خاندان یا گھر کا نام (اختیاری)':'Family or home name (optional)','مثلاً: ہمارا گھر':'e.g. Our home','بچوں کے نام':'Children\'s names','بچے کا نام':'Child\'s name','+ ایک اور بچہ':'+ Add another child','چارٹ بنائیں':'Create chart','واپس':'Back',
+'آپ کے کوڈ':'Your codes','والدین کا کوڈ (سب کچھ دیکھنے اور بدلنے کے لیے)':'Parents\' code (to see and change everything)','بچے کا کوڈ: ':'Child\'s code: ',
+'ان کوڈز کو ابھی کہیں لکھ کر محفوظ کر لیں۔ سیکیورٹی کے لیے والدین کا کوڈ دوبارہ نہیں دکھایا جاتا۔ بچے کا کوڈ بھول جائے تو ترتیبات میں نیا بنا سکتے ہیں۔':'Write these codes down somewhere safe now. For security the parents\' code is not shown again. If a child forgets the code, make a new one in Settings.',
+'کوڈ چھاپیں':'Print codes','میں نے کوڈ محفوظ کر لیے، آگے چلیں':'I have saved the codes, continue','چارٹ':'Chart','کارکردگی':'Performance','سرٹیفکیٹ':'Certificate','ترتیبات':'Settings',
+'ہفتہ وار':'Weekly','ماہانہ':'Monthly','سہ ماہی':'Quarterly','ششماہی':'Half-yearly','سالانہ':'Yearly',
+'آج — ':'Today — ','(والدین نے لکھا)':'(written by parent)','والدین لکھتے ہیں':'parent writes','آج کے پوائنٹ':'Points today','کم کریں':'Decrease','نشان لگائیں':'Mark',
+'اپنے ہر کام کے آگے + دبائیں۔ غلطی ہو جائے تو − سے کم کریں۔ آپ آج اور کل کے خانے بھر سکتے ہیں۔':'Press + next to each good deed. If you make a mistake, reduce it with −. You can fill in today and yesterday.',
+'بچے اپنے کوڈ سے اپنے خانے خود بھرتے ہیں۔ والدین کسی بھی دن کا خانہ ٹھیک کر سکتے ہیں اور منفی پوائنٹ لکھ سکتے ہیں۔':'Children fill in their own boxes with their own code. Parents can correct any day and write minus points.',
+'کس نے کتنا اچھا کام کیا':'Who did how well','گہرا رنگ: مثبت پوائنٹ':'Dark colour: positive points','سرخ: منفی پوائنٹ':'Red: minus points','ہر بچے کی تفصیل':'Each child\'s details','کل پوائنٹ':'Total points','فعال دن':'Active days','منفی پوائنٹ':'Minus points',
+'مدت کے دوران رجحان':'Trend during the period','پوائنٹ':'points',
+'پچھلی مدت کا ریکارڈ نہیں ہے۔':'There is no record for the previous period.','پچھلی مدت کے برابر۔':'Same as the previous period.',
+'اس مدت میں سب سے زیادہ پوائنٹ: ':'Most points in this period: ',')۔ ماشاءاللہ! باقی سب بھی کوشش جاری رکھیں۔':'). MashaAllah! Everyone else, keep trying.',
+'پہلے ترتیبات میں کوئی بچہ شامل کریں۔':'First add a child in Settings.','یہ مدت ابھی جاری ہے۔ سرٹیفکیٹ میں اب تک کے پوائنٹ ہیں۔':'This period is still running. The certificate shows the points so far.',
+'بسم اللہ الرحمن الرحیم':'In the name of Allah, the Most Gracious, the Most Merciful','یہ سرٹیفکیٹ':'This certificate is awarded to','والدین':'Parents','سرٹیفکیٹ چھاپیں یا PDF بنائیں':'Print the certificate or save as PDF',
+'خاندان کا نام':'Family name','محفوظ کریں':'Save','بچے اور ان کے کوڈ':'Children and their codes','نام بدلیں':'Rename','نیا کوڈ':'New code','مٹائیں':'Delete','نئے بچے کا نام':'New child\'s name','بچہ شامل کریں':'Add child',
+'چارٹ کے کام':'Chart activities','اپنی مرضی سے کام بڑھائیں یا نام بدلیں۔ کام ہٹانے پر پرانا ریکارڈ گراف میں رہتا ہے۔':'Add activities or rename them. When an activity is removed, its old record stays in the graphs.','منفی':'Minus','مثبت':'Positive','ہٹائیں':'Remove','نیا کام':'New activity','شامل کریں':'Add',
+'مثبت (پوائنٹ ملیں)':'Positive (earn points)','منفی (پوائنٹ کٹیں)':'Minus (lose points)','والدین کا کوڈ اور حفاظت':'Parents\' code and safety','والدین کا نیا کوڈ بنائیں':'Make a new parents\' code',
+'ایک سو بیس دن تک کوئی استعمال نہ ہو تو چارٹ خود بخود مٹ جاتا ہے۔':'If nothing is used for 120 days the chart is deleted automatically.','پورا چارٹ مٹائیں':'Delete the whole chart',
+'ہفتہ وار عبادات چارٹ':'Weekly worship chart','روزانہ تربیتی چارٹ':'Daily conduct chart','عبادات کے کام':'Worship activities','تربیتی کام':'Conduct activities','ہفتے کے دن':'Days of the week','مجموعہ':'Total','دن کا مجموعہ':'Day total','صرف جمعہ':'Friday only',
+'ہر کام کے آگے اس دن کے خانے میں نشان لگائیں۔ آپ آج اور کل کے خانے بھر سکتے ہیں۔ تربیتی کام کے آخر میں سرخ خانہ والدین بھرتے ہیں۔':'Tick the box of the day next to each activity. You can fill in today and yesterday. The red minus box at the end is filled in by parents.','والدین کسی بھی دن کا خانہ ٹھیک کر سکتے ہیں۔ سرخ خانے (منفی پوائنٹ) کو دبانے سے ایک، دو، تین گنتی بنتی ہے۔ بچے اپنے کوڈ سے اپنے خانے خود بھرتے ہیں۔':'Parents can correct any day. Pressing a red box (minus points) counts one, two, three. Children fill in their own boxes with their own code.','عبادات':'Worship',
+'یہ کوڈ درست نہیں۔ دوبارہ دیکھ کر لکھیں۔':'This code is not correct. Check it and write it again.','بہت زیادہ کوششیں ہوئیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔':'Too many attempts. Try again after a while.','کم از کم ایک بچے کا نام لکھیں۔':'Write at least one child\'s name.','دوبارہ داخل ہوں۔':'Please enter again.','اس سے زیادہ کی گنجائش نہیں۔':'There is no room for more.','بچے صرف آج اور کل کے خانے بھر سکتے ہیں۔':'Children can fill in only today and yesterday.','یہ خانہ والدین بھرتے ہیں۔':'Parents fill in this box.','یہ سہولت ابھی تیار ہو رہی ہے۔':'This feature is still being prepared.','کچھ خرابی ہوئی۔ دوبارہ کوشش کریں۔':'Something went wrong. Please try again.','یہ عبادت صرف جمعہ کے دن ہے۔':'This is for Friday only.'};
+const tr=x=>EN()&&XEN[x]!=null?XEN[x]:x;
+const UD=n=>EN()?String(n):String(n).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
+const A_NAMES={am_adhkar:['صبح کے ذکر و اذکار اور دعائیں','Morning adhkar and duas'],tidy_toys:['کھیل کے بعد صفائی','Tidy up after play'],extra_clean:['اضافی صفائی','Extra cleaning'],pm_adhkar:['شام کے ذکر و اذکار اور دعائیں','Evening adhkar and duas'],obey_mother:['ماں کی بات ماننا','Obeying mother'],arrange_things:['اپنی چیزیں اور کتابیں ترتیب سے رکھنا','Keeping own things and books in order'],sleep_time:['وقت پر سونا','Sleeping on time'],pray_unasked:['نماز بغیر کہے پڑھنا','Praying without being told'],complaint:['بلاوجہ شکایت اور لڑائی جھگڑا (منفی پوائنٹ)','Needless complaining and quarrelling (minus point)'],
+fajr:['فجر','Fajr'],zuhr:['ظہر','Zuhr'],asr:['عصر','Asr'],maghrib:['مغرب','Maghrib'],isha:['عشاء','Isha'],w_am:['صبح کی دعائیں و اذکار','Morning duas and adhkar'],w_pm:['شام کی دعائیں و اذکار','Evening duas and adhkar'],w_sleep:['سوتے وقت کی دعائیں و اذکار','Duas and adhkar before sleeping'],w_quran:['قرآن کی تلاوت','Quran recitation'],w_kahf:['جمعہ کے دن سورۃ کہف','Surah Al-Kahf on Friday']};
+const aName=a=>a.name||(A_NAMES[a.key]?A_NAMES[a.key][EN()?1:0]:'');
+const MON_UR=['جنوری','فروری','مارچ','اپریل','مئی','جون','جولائی','اگست','ستمبر','اکتوبر','نومبر','دسمبر'],MON_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD_UR=['اتوار','پیر','منگل','بدھ','جمعرات','جمعہ','ہفتہ'],WD_EN=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS=new Proxy([],{get:(_,i)=>(EN()?MON_EN:MON_UR)[i]}),WDAYS=new Proxy([],{get:(_,i)=>(EN()?WD_EN:WD_UR)[i]});
+const KC=['var(--c0)','var(--c1)','var(--c2)','var(--c3)','var(--c4)','var(--c5)','var(--c6)','var(--c7)'];
+let S=null,tab='chart',busy=false;
+const tok=()=>{try{return localStorage.tb_tok||''}catch(e){return ''}};
+const setTok=t=>{try{t?localStorage.tb_tok=t:localStorage.removeItem('tb_tok')}catch(e){}};
+async function api(a,d){const r=await fetch('api/tarbiyat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.assign({a,token:tok()},d||{}))});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw Object.assign(new Error(j.error||'x'),{code:j.error,status:r.status});return j}
+const ERR={login:'یہ کوڈ درست نہیں۔ دوبارہ دیکھ کر لکھیں۔',slow:'بہت زیادہ کوششیں ہوئیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔',kids:'کم از کم ایک بچے کا نام لکھیں۔',auth:'دوبارہ داخل ہوں۔',max:'اس سے زیادہ کی گنجائش نہیں۔',old:'بچے صرف آج اور کل کے خانے بھر سکتے ہیں۔',notfri:'یہ عبادت صرف جمعہ کے دن ہے۔',parentonly:'یہ خانہ والدین بھرتے ہیں۔','not set up':'یہ سہولت ابھی تیار ہو رہی ہے۔',server:'کچھ خرابی ہوئی۔ دوبارہ کوشش کریں۔'};
+const errText=e=>tr(ERR[e.code]||ERR.server);
+// ---------- dates ----------
+const pad=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse=s=>{const [y,m,d]=s.split('-').map(Number);return new Date(y,m-1,d)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const today=()=>{const d=new Date();return new Date(d.getFullYear(),d.getMonth(),d.getDate())};
+const dayName=d=>WDAYS[d.getDay()]+' - '+UD(d.getDate())+' '+MONTHS[d.getMonth()]+' '+UD(d.getFullYear());
+const PERN={week:['ہفتہ وار','Weekly'],month:['ماہانہ','Monthly'],quarter:['سہ ماہی','Quarterly'],half:['ششماہی','Half-yearly'],year:['سالانہ','Yearly']};
+const PER=new Proxy({},{get:(_,k)=>PERN[k]&&PERN[k][EN()?1:0],ownKeys:()=>Object.keys(PERN),getOwnPropertyDescriptor:(_,k)=>PERN[k]?{enumerable:true,configurable:true,value:PERN[k][EN()?1:0]}:undefined});
+function range(kind,anchor){const a=new Date(anchor);let s,e,label;
+  if(kind==='week'){const k=(a.getDay()+6)%7;s=addDays(a,-k);e=addDays(s,6);label=UD(s.getDate())+' '+MONTHS[s.getMonth()]+(EN()?' to ':' سے ')+UD(e.getDate())+' '+MONTHS[e.getMonth()]+' '+UD(e.getFullYear())}
+  else if(kind==='month'){s=new Date(a.getFullYear(),a.getMonth(),1);e=new Date(a.getFullYear(),a.getMonth()+1,0);label=MONTHS[s.getMonth()]+' '+UD(s.getFullYear())}
+  else if(kind==='quarter'){const q=Math.floor(a.getMonth()/3);s=new Date(a.getFullYear(),q*3,1);e=new Date(a.getFullYear(),q*3+3,0);label=MONTHS[s.getMonth()]+(EN()?' to ':' تا ')+MONTHS[e.getMonth()]+' '+UD(s.getFullYear())}
+  else if(kind==='half'){const h=a.getMonth()<6?0:1;s=new Date(a.getFullYear(),h*6,1);e=new Date(a.getFullYear(),h*6+6,0);label=MONTHS[s.getMonth()]+(EN()?' to ':' تا ')+MONTHS[e.getMonth()]+' '+UD(s.getFullYear())}
+  else{s=new Date(a.getFullYear(),0,1);e=new Date(a.getFullYear(),12,0);label=(EN()?'Year ':'سال ')+UD(a.getFullYear())}
+  return {s,e,label,days:Math.round((e-s)/864e5)+1}}
+function shift(kind,anchor,dir){const a=new Date(anchor);if(kind==='week')return addDays(a,7*dir);if(kind==='month')return new Date(a.getFullYear(),a.getMonth()+dir,1);if(kind==='quarter')return new Date(a.getFullYear(),a.getMonth()+3*dir,1);if(kind==='half')return new Date(a.getFullYear(),a.getMonth()+6*dir,1);return new Date(a.getFullYear()+dir,0,1)}
+// ---------- marks ----------
+const MK=new Map(); // key kid|act|day -> n
+const key=(k,a,d)=>k+'|'+a+'|'+d;
+async function loadMarks(s,e){const r=await api('marks',{from:iso(s),to:iso(e)});for(let d=new Date(s);d<=e;d=addDays(d,1))for(const k of S.kids)for(const a of S.acts)MK.delete(key(k.id,a.id,iso(d)));r.marks.forEach(([k,a,d,n])=>MK.set(key(k,a,d),n))}
+const get=(k,a,d)=>MK.get(key(k,a,d))||0;
+function totals(kid,s,e,grp){let pos=0,neg=0,days=new Set();const byAct={};const kind=Object.fromEntries(S.acts.filter(a=>!grp||a.grp===grp).map(a=>[a.id,a.kind]));
+  for(const [k,n] of MK){const [kk,aa,dd]=k.split('|');if(+kk!==kid||dd<iso(s)||dd>iso(e))continue;if(!(aa in kind))continue;byAct[aa]=(byAct[aa]||0)+n;if(kind[aa]==='n')neg+=n;else{pos+=n;days.add(dd)}}
+  return {pos,neg,net:pos-neg,days:days.size,byAct}}
+// ---------- views ----------
+const app=$('#app');
+const put=(b,...k)=>b.append(...k.flat().filter(x=>x!=null&&x!==false));
+function show(...k){app.replaceChildren(...k.flat().filter(Boolean))}
+function landing(msg){
+  $('#out').hidden=true;
+  const code=E('input',{placeholder:'کوڈ لکھیں',autocomplete:'off',autocapitalize:'characters',style:'direction:ltr;text-align:center;letter-spacing:.25em;font-size:1.2rem',maxlength:12,id:'code'});
+  const err=E('div',{class:'err'},msg||'');
+  const go=async()=>{err.textContent='';try{const r=await api('login',{code:code.value});setTok(r.token);S=r;MK.clear();tab='chart';dash()}catch(e){err.textContent=errText(e)}};
+  code.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
+  show(E('div',{class:'hero'},E('h2',{},'تربیت'),E('p',{},'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔'),E('p',{class:'muted',style:'color:#fff;opacity:.85'},'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔')),
+    E('div',{class:'card'},E('h2',{},'کوڈ سے داخل ہوں'),E('label',{},'والدین کا کوڈ یا بچے کا اپنا کوڈ'),code,E('button',{on:{click:go}},'داخل ہوں'),err),
+    E('div',{class:'card'},E('h2',{},'نیا چارٹ بنائیں'),E('p',{class:'muted'},'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔'),E('button',{class:'sec',on:{click:create}},'نیا خاندان بنائیں')));
+}
+function create(){
+  const fam=E('input',{placeholder:'مثلاً: ہمارا گھر',maxlength:40,value:''}),box=E('div'),err=E('div',{class:'err'});
+  const add=(v)=>{if(box.children.length>=8)return;const i=E('input',{placeholder:'بچے کا نام',maxlength:30,value:v||''});const r=E('div',{class:'row'},i);box.append(r)};
+  add();add();
+  const go=async b=>{err.textContent='';const kids=[...box.querySelectorAll('input')].map(i=>i.value.trim()).filter(Boolean);b.disabled=true;
+    try{const r=await api('create',{family:fam.value,kids});setTok(r.token);S=r;MK.clear();codesSheet(r)}catch(e){err.textContent=errText(e);b.disabled=false}};
+  const b=E('button',{on:{click:()=>go(b)}},'چارٹ بنائیں');
+  show(E('div',{class:'card'},E('h2',{},'نیا خاندان'),E('label',{},'خاندان یا گھر کا نام (اختیاری)'),fam,E('label',{},'بچوں کے نام'),box,E('button',{class:'sec sm',on:{click:()=>add()}},'+ ایک اور بچہ'),E('div',{class:'row',style:'margin-top:10px'},b,E('button',{class:'sec',on:{click:()=>landing()}},'واپس')),err));
+}
+function codesSheet(r){
+  const rows=[['والدین کا کوڈ (سب کچھ دیکھنے اور بدلنے کے لیے)',r.parentCode,'']].concat(r.kids.map(k=>['بچے کا کوڈ: '+k.name,k.code,'']));
+  show(E('div',{class:'card printme'},E('h2',{},'آپ کے کوڈ'),E('p',{class:'muted'},'ان کوڈز کو ابھی کہیں لکھ کر محفوظ کر لیں۔ سیکیورٹی کے لیے والدین کا کوڈ دوبارہ نہیں دکھایا جاتا۔ بچے کا کوڈ بھول جائے تو ترتیبات میں نیا بنا سکتے ہیں۔'),...rows.map(([t,c])=>E('div',{style:'margin:10px 0'},E('div',{},t),E('span',{class:'codebox'},c))),E('div',{class:'row noprint',style:'margin-top:12px'},E('button',{class:'sec',on:{click:()=>window.print()}},'کوڈ چھاپیں'),E('button',{on:{click:()=>dash()}},'میں نے کوڈ محفوظ کر لیے، آگے چلیں'))));
+}
+function dash(){
+  $('#out').hidden=false;$('#sub').textContent=S.family+(S.role==='child'?' — '+(S.kids[0]?S.kids[0].name:''):' — '+tr('والدین'));
+  const tabs=[['chart','چارٹ'],['stats','کارکردگی'],['cert','سرٹیفکیٹ']].concat(S.role==='parent'?[['set','ترتیبات']]:[]);
+  const bar=E('div',{class:'tabs'},...tabs.map(([k,t])=>E('button',{class:tab===k?'on':'',on:{click:()=>{tab=k;dash()}}},t)));
+  const body=E('div');show(bar,body);
+  ({chart:vChart,stats:vStats,cert:vCert,set:vSet})[tab](body).catch(e=>{if(e.status===401){setTok('');landing(ERR.auth)}else put(body,E('div',{class:'err'},errText(e)))});
+}
+const kidColor=id=>KC[S.kids.findIndex(k=>k.id===id)%KC.length];
+let dayAnchor=today();
+let wk=null,wAnchor=today();
+async function vChart(body){return vWeek(body)}
+async function vWeek(body){
+  const kids=S.kids;if(!wk||!kids.find(k=>k.id===wk))wk=kids[0]&&kids[0].id;const k=kids.find(x=>x.id===wk);if(!k){put(body,E('p',{},'پہلے ترتیبات میں کوئی بچہ شامل کریں۔'));return}
+  const r=range('week',wAnchor),child=S.role==='child',todayS=iso(today()),yest=iso(addDays(today(),-1));
+  await loadMarks(r.s,r.e);
+  const days=[...Array(7)].map((_,i)=>addDays(r.s,i)),acts=S.acts.filter(a=>a.grp==='w').concat(S.acts.filter(a=>a.grp!=='w'));
+  const kidSel=!child&&kids.length>1?E('div',{class:'chips'},...kids.map(x=>E('button',{class:x.id===wk?'on':'',on:{click:()=>{wk=x.id;dash()}}},x.name))):null;
+  const nav=E('div',{class:'nav'},E('button',{class:'sec sm',on:{click:()=>{wAnchor=addDays(wAnchor,-7);dash()}}},'›'),E('b',{},r.label),E('button',{class:'sec sm',disabled:r.e>=today(),on:{click:()=>{wAnchor=addDays(wAnchor,7);dash()}}},'‹'));
+  const head=E('tr',{},E('th',{class:'act'},E('span',{class:'kid',style:'--kc:'+kidColor(k.id)},k.name)),...days.map(d=>E('th',{style:iso(d)===todayS?'color:var(--accent)':''},E('div',{},WDAYS[d.getDay()]),E('small',{class:'muted'},UD(d.getDate())+'/'+UD(d.getMonth()+1)))),E('th',{},'مجموعہ'));
+  const rows=[];acts.forEach((a,ix)=>{if(ix===0||(a.grp==='w')!==(acts[ix-1].grp==='w'))rows.push(E('tr',{class:'secr'},E('th',{colspan:9},a.grp==='w'?'عبادات':'تربیتی کام')));let sum=0;const cells=days.map(d=>{const ds=iso(d),n=get(k.id,a.id,ds);sum+=n?1:0;
+    if(a.fri&&d.getDay()!==5)return E('td',{},E('span',{class:'lock'},'—'));
+    const ok=ds<=todayS&&(!child||ds===todayS||ds===yest),neg=a.kind==='n';
+    if(neg)return E('td',{},E('button',{class:n?'':'m',style:'width:30px;height:30px;padding:0;border-radius:50%;font-size:1rem'+(n?';background:var(--bad);color:#fff':';background:transparent;border:1px solid var(--line);color:var(--muted)'),disabled:child||!ok,'aria-label':'نشان لگائیں',on:{click:async()=>{if(busy)return;busy=true;try{const nn=n>=3?0:n+1;await api('mark',{kid:k.id,act:a.id,day:ds,n:nn});if(nn)MK.set(key(k.id,a.id,ds),nn);else MK.delete(key(k.id,a.id,ds));dash()}catch(e){alert(errText(e))}busy=false}}},n?UD(n):''));
+    return E('td',{},E('button',{class:n?'':'m',style:'width:30px;height:30px;padding:0;border-radius:50%;font-size:1rem'+(n?'':';background:transparent;border:1px solid var(--line);color:var(--muted)'),disabled:!ok,'aria-label':'نشان لگائیں',on:{click:async()=>{if(busy)return;busy=true;try{await api('mark',{kid:k.id,act:a.id,day:ds,n:n?0:1});if(n)MK.delete(key(k.id,a.id,ds));else MK.set(key(k.id,a.id,ds),1);dash()}catch(e){alert(errText(e))}busy=false}}},n?'✓':''))});
+    rows.push(E('tr',{class:a.kind==='n'?'neg':''},E('th',{class:'act'},(a.kind==='n'?'⚠ ':'')+aName(a)+(a.fri?' ':''),a.fri?E('span',{class:'tag'},'صرف جمعہ'):null),...cells,E('td',{},E('b',{},UD(sum)))))});
+  const val=(a,d)=>{const n=get(k.id,a.id,iso(d));return a.kind==='n'?-n:(n?1:0)};const tot=E('tr',{class:'sum'},E('th',{class:'act'},'پوائنٹ'),...days.map(d=>E('td',{},UD(acts.reduce((q,a)=>q+val(a,d),0)))),E('td',{},UD(acts.reduce((q,a)=>q+days.reduce((z,d)=>z+val(a,d),0),0))));
+  put(body,kidSel,nav,E('div',{class:'grid'},E('table',{class:'ch wk'},E('thead',{},head),E('tbody',{},...rows,tot))),E('p',{class:'muted'},child?'ہر کام کے آگے اس دن کے خانے میں نشان لگائیں۔ آپ آج اور کل کے خانے بھر سکتے ہیں۔ تربیتی کام کے آخر میں سرخ خانہ والدین بھرتے ہیں۔':'والدین کسی بھی دن کا خانہ ٹھیک کر سکتے ہیں۔ سرخ خانے (منفی پوائنٹ) کو دبانے سے ایک، دو، تین گنتی بنتی ہے۔ بچے اپنے کوڈ سے اپنے خانے خود بھرتے ہیں۔'));
+}
+// ---------- performance ----------
+let pk='week',pa=today(),ps=null;
+async function vStats(body){
+  const kids=S.kids,r=range(pk,pa);
+  const sel=E('div',{class:'chips'},...Object.entries(PER).map(([k,t])=>E('button',{class:pk===k?'on':'',on:{click:()=>{pk=k;dash()}}},t)));
+  const nav=E('div',{class:'nav'},E('button',{class:'sec sm',on:{click:()=>{pa=shift(pk,pa,-1);dash()}}},'›'),E('b',{},r.label),E('button',{class:'sec sm',disabled:r.e>=today(),on:{click:()=>{pa=shift(pk,pa,1);dash()}}},'‹'));
+  const pr=range(pk,shift(pk,pa,-1));
+  await loadMarks(pr.s<r.s?pr.s:r.s,r.e);
+  const T=kids.map(k=>({k,...totals(k.id,r.s,r.e),prev:totals(k.id,pr.s,pr.e)}));
+  const max=Math.max(1,...T.map(t=>Math.max(t.pos,t.neg)));
+  const W=520,H=200,bw=Math.min(70,W/(T.length*2)),gap=(W-T.length*bw*2)/(T.length+1);
+  let svg='<svg class="gr" viewBox="0 0 '+W+' '+(H+40)+'" role="img" aria-label="کارکردگی کا گراف">';
+  for(let i=0;i<=4;i++){const y=10+(H-10)*(1-i/4);svg+='<line x1="0" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="4" y="'+(y-3)+'">'+UD(Math.round(max*i/4))+'</text>'}
+  T.forEach((t,i)=>{const x=gap+i*(2*bw+gap),hp=(H-10)*t.pos/max,hn=(H-10)*t.neg/max,c=kidColor(t.k.id).replace('var(','').replace(')','');
+    svg+='<rect x="'+x+'" y="'+(H-hp)+'" width="'+bw+'" height="'+hp+'" rx="6" style="fill:var('+c+')"/><rect x="'+(x+bw)+'" y="'+(H-hn)+'" width="'+bw+'" height="'+hn+'" rx="6" fill="var(--bad)" opacity=".75"/>';
+    svg+='<text x="'+(x+bw/2)+'" y="'+(H-hp-4)+'" text-anchor="middle" style="fill:var(--ink)">'+UD(t.pos)+'</text><text x="'+(x+bw*1.5)+'" y="'+(H-hn-4)+'" text-anchor="middle" style="fill:var(--bad)">'+UD(t.neg)+'</text>';
+    svg+='<text x="'+(x+bw)+'" y="'+(H+16)+'" text-anchor="middle" style="fill:var(--ink);font-size:13px">'+t.k.name+'</text><text x="'+(x+bw)+'" y="'+(H+32)+'" text-anchor="middle" style="font-size:12px">'+UD(t.net)+' '+tr('پوائنٹ')+'</text>'});
+  svg+='</svg>';
+  const best=[...T].sort((a,b)=>b.net-a.net)[0];
+  const line=lineChart(kids,r);
+  const per=S.acts.filter(a=>a.kind==='p');const pk2=EN()?' points':' پوائنٹ';
+  put(body,sel,nav,
+    E('div',{class:'card'},E('h2',{},'کس نے کتنا اچھا کام کیا'),E('div',{html:svg}),E('div',{class:'legend'},E('span',{},'گہرا رنگ: مثبت پوائنٹ'),E('span',{style:'color:var(--bad)'},'سرخ: منفی پوائنٹ')),
+      kids.length>1&&best&&best.net>0?E('div',{class:'word'},'اس مدت میں سب سے زیادہ پوائنٹ: ',E('b',{},best.k.name),' (',UD(best.net),')۔ ماشاءاللہ! باقی سب بھی کوشش جاری رکھیں۔'):null),
+    E('div',{class:'card'},E('h2',{},'ہر بچے کی تفصیل'),...T.map(t=>{const d=t.net-t.prev.net;return E('div',{style:'margin:10px 0 14px'},E('b',{style:'color:'+kidColor(t.k.id)},t.k.name),E('div',{class:'kpi'},E('div',{},E('b',{},UD(t.net)),'کل پوائنٹ'),E('div',{},E('b',{},UD(t.days)+' / '+UD(r.days)),'فعال دن'),E('div',{},E('b',{},UD(t.neg)),'منفی پوائنٹ')),
+      E('div',{class:'muted'},t.prev.net||t.prev.pos?(d>0?(EN()?d+' points better than the previous period. Well done!':'پچھلی مدت سے '+UD(d)+' پوائنٹ بہتر۔ شاباش!'):d<0?(EN()?-d+' points fewer than the previous period. In shaa Allah it will be better next time.':'پچھلی مدت سے '+UD(-d)+' پوائنٹ کم۔ ان شاء اللہ اگلی بار بہتر ہوگا۔'):tr('پچھلی مدت کے برابر۔')):'پچھلی مدت کا ریکارڈ نہیں ہے۔'),
+      E('div',{class:'muted'},per.map(a=>aName(a)+': '+UD(t.byAct[a.id]||0)).join('  ·  ')))})),
+    line?E('div',{class:'card'},E('h2',{},'مدت کے دوران رجحان'),line):null);
+}
+function lineChart(kids,r){
+  // buckets: days for week/month, weeks for quarter, months for half-year/year
+  const B=[];if(r.days<=31){for(let d=new Date(r.s);d<=r.e;d=addDays(d,1))B.push([new Date(d),new Date(d),String(d.getDate())])}
+  else if(pk==='quarter'){for(let d=new Date(r.s);d<=r.e;d=addDays(d,7)){const e=addDays(d,6);B.push([new Date(d),e>r.e?r.e:e,UD(d.getDate())+'/'+UD(d.getMonth()+1)])}}
+  else{for(let m=new Date(r.s);m<=r.e;m=new Date(m.getFullYear(),m.getMonth()+1,1))B.push([new Date(m),new Date(m.getFullYear(),m.getMonth()+1,0),MONTHS[m.getMonth()].slice(0,3)])}
+  if(B.length<2)return null;
+  const series=kids.map(k=>B.map(([s,e])=>totals(k.id,s,e).net)),mx=Math.max(1,...series.flat()),mn=Math.min(0,...series.flat()),W=520,H=170,L=26;
+  const X=i=>L+(W-L-10)*i/(B.length-1),Y=v=>10+(H-10)*(1-(v-mn)/(mx-mn||1));
+  let s='<svg class="gr" viewBox="0 0 '+W+' '+(H+26)+'">';
+  for(let i=0;i<=3;i++){const v=mn+(mx-mn)*i/3,y=Y(v);s+='<line x1="'+L+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="currentColor" opacity=".12"/><text x="0" y="'+(y+4)+'">'+UD(Math.round(v))+'</text>'}
+  const step=Math.ceil(B.length/10);B.forEach((b,i)=>{if(i%step===0)s+='<text x="'+X(i)+'" y="'+(H+16)+'" text-anchor="middle">'+(r.days<=31?UD(b[2]):b[2])+'</text>'});
+  kids.forEach((k,j)=>{const c=kidColor(k.id).replace('var(','').replace(')','');s+='<polyline fill="none" stroke-width="2.5" stroke-linejoin="round" style="stroke:var('+c+')" points="'+series[j].map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')+'"/>'});
+  s+='</svg>';
+  return E('div',{},E('div',{html:s}),E('div',{class:'legend'},...kids.map(k=>E('span',{style:'--kc:'+kidColor(k.id)},E('i',{}),k.name))));
+}
+// ---------- certificate ----------
+let ck=null,cpk='week',cpa=addDays(today(),-7);
+const LEV=[[.8,['سنہری ستارہ','Golden star'],'★★★★★',[['ماشاءاللہ! آپ نے بہت ہی عمدہ کارکردگی دکھائی۔','اللہ تعالی آپ کو نیکی پر قائم رکھے اور والدین کی آنکھوں کی ٹھنڈک بنائے۔ آمین'],['MashaAllah! You showed outstanding performance.','May Allah keep you steadfast on goodness and make you a joy to your parents. Ameen']]],[.6,['چاندی کا ستارہ','Silver star'],'★★★★☆',[['ماشاءاللہ! آپ نے بہت اچھی محنت کی۔','اسی طرح اچھی عادتوں پر چلتے رہیں۔ اللہ تعالی آپ کو کامیاب کرے۔ آمین'],['MashaAllah! You worked very well.','Keep going on good habits. May Allah grant you success. Ameen']]],[.35,['کانسی کا ستارہ','Bronze star'],'★★★☆☆',[['شاباش! آپ نے اچھی کوشش کی۔','تھوڑی اور ہمت کریں، اگلی بار ان شاء اللہ اور بہتر ہوگا۔'],['Well done! You made a good effort.','A little more courage, and in shaa Allah it will be even better next time.']]],[0,['حوصلہ افزائی کا ستارہ','Star of encouragement'],'★★☆☆☆',[['شاباش! کوشش کرتے رہنا ہی کامیابی کا راستہ ہے۔','ہر دن ایک نئی شروعات ہے۔ ان شاء اللہ آپ ضرور آگے بڑھیں گے۔'],['Well done! Keep trying, that is the road to success.','Every day is a new beginning. In shaa Allah you will surely move forward.']]]];
+const nFri=(s,e)=>{let n=0;for(let d=new Date(s);d<=e;d=addDays(d,1))if(d.getDay()===5)n++;return n};
+async function vCert(body){
+  const kids=S.kids;if(!ck||!kids.find(k=>k.id===ck))ck=kids[0]&&kids[0].id;const k=kids.find(x=>x.id===ck);if(!k){put(body,E('p',{},'پہلے ترتیبات میں کوئی بچہ شامل کریں۔'));return}
+  const r=range(cpk,cpa),pr=range(cpk,shift(cpk,cpa,-1));await loadMarks(pr.s<r.s?pr.s:r.s,r.e);
+  const t=totals(k.id,r.s,r.e),pv=totals(k.id,pr.s,pr.e),target=S.acts.filter(a=>a.kind==='p').reduce((q,a)=>q+(a.fri?nFri(r.s,r.e):r.days),0)||1,ratio=Math.max(0,t.net)/target,lev=LEV.find(l=>ratio>=l[0]);
+  const sel=E('div',{class:'chips'},...Object.entries(PER).map(([x,tt])=>E('button',{class:cpk===x?'on':'',on:{click:()=>{cpk=x;cpa=shift(x,today(),-1);dash()}}},tt)));
+  const kidSel=S.role==='parent'&&kids.length>1?E('div',{class:'chips'},...kids.map(x=>E('button',{class:x.id===ck?'on':'',on:{click:()=>{ck=x.id;dash()}}},x.name))):null;
+  const nav=E('div',{class:'nav noprint'},E('button',{class:'sec sm',on:{click:()=>{cpa=shift(cpk,cpa,-1);dash()}}},'›'),E('b',{},r.label),E('button',{class:'sec sm',disabled:range(cpk,shift(cpk,cpa,1)).s>today(),on:{click:()=>{cpa=shift(cpk,cpa,1);dash()}}},'‹'));
+  const imp=(pv.net||pv.pos)?(t.net>pv.net?(EN()?'Compared with the previous period you moved ahead by '+(t.net-pv.net)+' points. ':'پچھلی مدت کے مقابلے میں آپ '+UD(t.net-pv.net)+' پوائنٹ آگے بڑھے۔ '):''):'';
+  const open=r.e>=today();
+  put(body,sel,kidSel,nav,open?E('p',{class:'muted noprint'},'یہ مدت ابھی جاری ہے۔ سرٹیفکیٹ میں اب تک کے پوائنٹ ہیں۔'):null,
+    E('div',{class:'cert printme'},E('div',{class:'bis'},'بسم اللہ الرحمن الرحیم'),E('h2',{},EN()?'Certificate — '+PER[cpk]+' performance':'سرٹیفکیٹ — '+PER[cpk]+' کارکردگی'),E('div',{},'یہ سرٹیفکیٹ'),E('div',{class:'nm'},k.name),E('div',{class:'stars'},lev[2]),
+      E('div',{class:'big'},E('b',{},lev[1][EN()?1:0]),' — '+r.label),E('div',{class:'big'},EN()?t.net+' points, good deeds on '+t.days+' days'+(t.neg?' (minus points: '+t.neg+')':''):UD(t.net)+' پوائنٹ، '+UD(t.days)+' دن اچھے کام کیے'+(t.neg?' (منفی پوائنٹ: '+UD(t.neg)+')':'')),
+      E('p',{class:'big'},imp+lev[3][EN()?1:0][0]),E('p',{class:'big'},lev[3][EN()?1:0][1]),
+      E('div',{class:'sg'},E('span',{},'والدین'),E('span',{},UD(today().getDate())+' '+MONTHS[today().getMonth()]+' '+UD(today().getFullYear()))),E('div',{class:'by'},S.family+(EN()?' — Tarbiyah, Turath Khair Al-Quroon':' — تربیت، تراث خيرالقرون'))),
+    E('div',{class:'row noprint'},E('button',{on:{click:()=>window.print()}},'سرٹیفکیٹ چھاپیں یا PDF بنائیں')));
+}
+// ---------- settings (parent) ----------
+async function vSet(body){
+  const flash=E('div',{class:'word',hidden:true});const say=(t)=>{flash.hidden=false;flash.replaceChildren(...[].concat(t))};
+  const fam=E('input',{value:S.family,maxlength:40});
+  const refresh=async()=>{S={...S,...(await api('state'))};dash()};
+  const actsCard=(g)=>[E('div',{class:'card set'},E('h2',{},g==='w'?'عبادات کے کام':'تربیتی کام'),E('p',{class:'muted'},'اپنی مرضی سے کام بڑھائیں یا نام بدلیں۔ کام ہٹانے پر پرانا ریکارڈ گراف میں رہتا ہے۔'),...S.acts.filter(a=>(a.grp||'a')===g).map(a=>{const nm=E('input',{value:aName(a),maxlength:60});return E('div',{class:'li'},E('span',{class:'tag'+(a.kind==='n'?' n':'')},a.kind==='n'?'منفی':'مثبت'),a.fri?E('span',{class:'tag'},'صرف جمعہ'):null,nm,E('button',{class:'sec sm',on:{click:act(async()=>{await api('actname',{act:a.id,name:nm.value});await refresh()})}},'نام بدلیں'),E('button',{class:'bad sm',on:{click:act(async()=>{if(!confirm(EN()?'Remove this activity from the chart?':'یہ کام چارٹ سے ہٹا دیں؟'))return;await api('actdel',{act:a.id});await refresh()})}},'ہٹائیں'))}),
+      (()=>{const n=E('input',{placeholder:'نیا کام',maxlength:60}),kd=g==='a'?E('select',{},E('option',{value:'p'},'مثبت (پوائنٹ ملیں)'),E('option',{value:'n'},'منفی (پوائنٹ کٹیں)')):{value:'p'};return E('div',{class:'row',style:'margin-top:8px'},n,g==='a'?kd:null,E('button',{on:{click:act(async()=>{if(!n.value.trim())return;await api('actadd',{name:n.value,kind:kd.value,grp:g});await refresh()})}},'شامل کریں'))})())];
+  const act=(fn)=>async()=>{try{await fn()}catch(e){alert(errText(e))}};
+  put(body,flash,
+    E('div',{class:'card set'},E('h2',{},'خاندان کا نام'),E('div',{class:'row'},fam,E('button',{on:{click:act(async()=>{await api('fname',{name:fam.value});await refresh()})}},'محفوظ کریں'))),
+    E('div',{class:'card set'},E('h2',{},'بچے اور ان کے کوڈ'),...S.kids.map(k=>{const nm=E('input',{value:k.name,maxlength:30});return E('div',{class:'li'},nm,E('button',{class:'sec sm',on:{click:act(async()=>{await api('kidname',{kid:k.id,name:nm.value});await refresh()})}},'نام بدلیں'),E('button',{class:'sec sm',on:{click:act(async()=>{if(!confirm(EN()?'A new code will be made for '+k.name+' and the old code will stop working. OK?':k.name+' کے لیے نیا کوڈ بنے گا اور پرانا کوڈ بند ہو جائے گا۔ ٹھیک ہے؟'))return;const r=await api('kidcode',{kid:k.id});say([EN()?'New code for '+k.name+' (write it down): ':k.name+' کا نیا کوڈ (اسے لکھ لیں): ',E('span',{class:'codebox'},r.code)])})}},'نیا کوڈ'),E('button',{class:'bad sm',on:{click:act(async()=>{if(!confirm(EN()?k.name+' and all the record will be erased. Delete?':k.name+' اور اس کا سارا ریکارڈ مٹ جائے گا۔ مٹا دیں؟'))return;await api('kiddel',{kid:k.id});await refresh()})}},'مٹائیں'))}),
+      S.kids.length<8?(()=>{const n=E('input',{placeholder:'نئے بچے کا نام',maxlength:30});return E('div',{class:'row',style:'margin-top:8px'},n,E('button',{on:{click:act(async()=>{if(!n.value.trim())return;const r=await api('addkid',{name:n.value});say([EN()?'Code for '+r.name+' (write it down): ':r.name+' کا کوڈ (اسے لکھ لیں): ',E('span',{class:'codebox'},r.code)]);await refresh2()})}},'بچہ شامل کریں'))})():null),
+    ...actsCard('w'),...actsCard('a'),
+    E('div',{class:'card set'},E('h2',{},'والدین کا کوڈ اور حفاظت'),E('button',{class:'sec',on:{click:act(async()=>{if(!confirm(EN()?'A new parents\' code will be made, the old one will stop working and you will be signed out on other phones. OK?':'نیا والدین کوڈ بنے گا، پرانا بند ہو جائے گا اور دوسرے فون سے آپ باہر ہو جائیں گے۔ ٹھیک ہے؟'))return;const r=await api('parentcode');say([EN()?'New parents\' code (write it down): ':'نیا والدین کوڈ (اسے لکھ لیں): ',E('span',{class:'codebox'},r.code)])})}},'والدین کا نیا کوڈ بنائیں'),
+      E('p',{class:'muted'},'ایک سو بیس دن تک کوئی استعمال نہ ہو تو چارٹ خود بخود مٹ جاتا ہے۔'),
+      E('button',{class:'bad',on:{click:act(async()=>{if(!confirm(EN()?'The whole family, the children and all records will be erased for ever. Delete for sure?':'پورا خاندان، بچے اور سارا ریکارڈ ہمیشہ کے لیے مٹ جائے گا۔ پکا مٹانا ہے؟'))return;await api('famdel',{sure:'yes'});setTok('');S=null;landing()})}},'پورا چارٹ مٹائیں')));
+  async function refresh2(){S={...S,...(await api('state'))}}
+}
+function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیت');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیت — تراث خيرالقرون'}
+$('#lang').addEventListener('click',()=>{LG=EN()?'ur':'en';try{localStorage.tb_lang=LG}catch(e){}applyLang();if(S)dash();else landing()});
+$('#out').addEventListener('click',async()=>{try{await api('logout')}catch(e){}setTok('');S=null;MK.clear();landing()});
+$('#home').addEventListener('click',()=>{location.href='./'});
+applyLang();
+(async()=>{if(tok()){try{S=await api('state');dash();return}catch(e){setTok('')}}landing()})();
+window.__TB={api,dash,get S(){return S}};
+})();
+</script>
+</body>
+</html>

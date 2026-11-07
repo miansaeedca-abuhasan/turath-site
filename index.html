@@ -3244,12 +3244,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('img:seerah', T('seerahT'), '#/s/seerah'), tile('img:sahaba', T('navFazail'), '#/s/fazail'),
       tile('img:siyar_salaf', T('navSalaf'), '#/s/siyar'), tile('img:shadharat', T('navShFull'), '#/s/shadharat'),
       tile('img:rijal_search', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'));
+      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:tarbiyat', ({ur: 'تربیت', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('img:audiobooks', ABK.title(), '#/ab')); }
     // fixed order of the home tiles, row by row (4 per row; rows of 3 get an empty slot at the end)
     { const key = c => { const i = c.querySelector('img'); return i ? i.getAttribute('src').replace(/^.*\//, '').replace(/\.png$/, '') : ''; }, by = {}; [...g.children].forEach(c => { by[key(c)] = c; });
       const gap = () => el('span', {class: 'tile', 'aria-hidden': 'true', style: 'visibility:hidden'});
-      const ord = ['quran', 'tilawat_audio', 'tafsir', 'saved_ayat', 'hadith_books', 'jami_full', 'talkhis', 'saved_hadith', 'seerah', 'sahaba', 'tuhfa_sharh', 'audiobooks|', 'siyar_salaf', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify'];
+      const ord = ['quran', 'tilawat_audio', 'tafsir', 'saved_ayat', 'hadith_books', 'jami_full', 'talkhis', 'saved_hadith', 'seerah', 'sahaba', 'tuhfa_sharh', 'audiobooks|', 'siyar_salaf', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify', 'tarbiyat'];
       const out = []; ord.forEach(k => { const c = by[k.replace('|', '')]; if (c) { out.push(c); delete by[k.replace('|', '')]; } else if (k.includes('|')) out.push(gap()); });
       Object.values(by).forEach(c => out.push(c)); g.replaceChildren(...out); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خيرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
