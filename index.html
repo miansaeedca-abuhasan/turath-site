@@ -682,6 +682,10 @@ body.vfpage .appbar{position:static}
 
 .nbar{display:block;width:100%;text-align:start;font:inherit;font-weight:600;color:#fff;background:var(--accent);border:0;border-radius:10px;padding:.8rem 1rem;margin:.55rem 0 0;cursor:pointer}
 .nbar.on{filter:brightness(.88)}.npanel{margin:.2rem 0 .4rem;border-top-left-radius:0;border-top-right-radius:0}
+/* narrator page: open headings instead of heavy blue bars; light keys, regular values */
+.nbar{background:none;color:var(--accent);border-bottom:2px solid var(--accent);border-radius:0;padding:.55rem .15rem;margin-top:1rem;font-weight:700}.nbar.on{filter:none;border-bottom-color:var(--ink)}
+.nfact>span:first-child{color:var(--muted,#6b7280);font-size:.88rem;font-weight:400}.nfact b{font-weight:500;font-size:1rem}
+.nhead .nname{font-weight:600}
 .nrowbtns{margin-top:.9rem;justify-content:center}.nhbox{margin-top:.5rem}.nhbox .nsec{margin-top:.3rem}
 .vcountries{max-width:420px;margin:.2rem auto .6rem;padding:.4rem .8rem;background:var(--card,#f4f4f4);border-radius:10px;font-size:.85rem;text-align:center;display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem .5rem}.vcountries>div:last-child:nth-child(3n+1),.vcountries>div.vold{grid-column:1/-1}.vcountries[hidden]{display:none}.vbtn{background:none;border:0;color:inherit;cursor:pointer;font:inherit;padding:0 .2rem}
 </style>
