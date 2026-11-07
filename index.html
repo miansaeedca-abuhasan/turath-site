@@ -179,6 +179,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .appbar{transition:transform .25s ease}body.abhide .appbar{transform:translateY(-100%)}
 @media (orientation:landscape) and (max-height:520px){.appbar{padding:calc(.15rem + env(safe-area-inset-top,0px)) 5rem .15rem .6rem}.appbar .ttl{font-size:.9rem}.bnav:not(.mini){left:auto;top:0;bottom:0;right:0;width:4.4rem;flex-direction:column;justify-content:space-around;border-top:0;border-left:1px solid var(--line);box-shadow:-1px 0 8px rgba(20,40,70,.08);padding-bottom:0}.bnav:not(.mini) a{flex:none;padding:.25rem 0}.bnav:not(.mini) .navgap{display:none}.bnav:not(.mini) a.navhome .nico{margin-top:0;width:2.2rem;height:2.2rem}main{padding-right:max(5.2rem,env(safe-area-inset-right,0px))!important}.hpill{bottom:.6rem;left:calc(50% - 2.2rem)}.hsx{margin-bottom:2rem}}
 .gsres>summary{cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:.6rem;font-weight:700;padding:.2rem 0}.gsres>summary .cs{background:var(--wash);color:var(--accent);border-radius:999px;padding:.1rem .7rem;font-size:.85rem;font-weight:600;white-space:nowrap}.gsres[open]>summary{border-bottom:1px solid var(--line);margin-bottom:.6rem;padding-bottom:.5rem}
+.hjump{animation:hjump 2.4s ease-out}@keyframes hjump{0%,40%{box-shadow:0 0 0 3px var(--accent)}100%{box-shadow:0 0 0 0 transparent}}
 .hmode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:.2rem 0 .5rem}.hmode>*{padding:.3rem 1rem;font-size:.95rem;text-decoration:none;color:var(--accent)}.hmode .on{background:var(--accent);color:#fff}
 .hsx{margin-top:1.4rem}.hsxl{margin:0 0 .4rem;color:var(--muted);font-size:.9rem}.hsxn{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}.hsxb{min-width:2.6rem;padding:.4rem .6rem;border:1px solid var(--line);border-radius:10px;text-align:center;text-decoration:none;color:var(--accent)}.hsxb:hover{border-color:var(--accent)}.hsxb.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.hsxd{align-self:center;color:var(--muted)}
 .hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .9rem;color:var(--accent);text-decoration:none}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
@@ -1190,7 +1191,7 @@ function actions(d,scope,withRead){
   const paint=()=>{bm.replaceChildren(icon(bmHas(scope,d.num)?'bm1':'bm0'));bm.classList.toggle('on',bmHas(scope,d.num));};
   bm.addEventListener('click',()=>{bmToggle(scope,d.num);paint();if(location.hash==='#/bm')route();});paint();
   a.append(bm);
-  if(withRead)a.append(el('a',{class:'ab',href:'#/h/'+d.num,'aria-label':T('read'),title:T('read')},icon('read')));
+  if(withRead)a.append(el('a',{class:'ab',href:'#/h/'+d.num+'?one','aria-label':T('read'),title:T('read')},icon('read')));
   const cp=el('button',{class:'ab',type:'button','aria-label':T('copy'),title:T('copy'),on:{click:()=>doCopy(d,scope)}},icon('copy'));
   const ps=el('button',{class:'ab',type:'button','aria-label':T('poster'),title:T('poster'),on:{click:()=>hadithPoster(d)}},icon('poster'));
   const sh=el('button',{class:'ab',type:'button','aria-label':T('share'),title:T('share'),on:{click:()=>doShare(d,scope)}},icon('share'));
@@ -1509,7 +1510,8 @@ async function showChapters(no){
   box.append(el('div',{class:'card pad0 filterbox'},icon('search'),f),list);draw();
 }
 async function showChapter(no,idx,page){
-  hSaveLast();
+  hSaveLast();HONE=false;const jump=HJUMP;HJUMP=0;
+  const goJump=()=>{if(!jump)return;const t=document.querySelector('#list [data-n="'+jump+'"]');if(t){t.classList.add('hjump');setTimeout(()=>{try{t.scrollIntoView({block:'start',behavior:'instant'})}catch(e){t.scrollIntoView()}},60);}};
   const ks=await loadToc(),k=ks.find(x=>String(x.no)===String(no)),c=k&&k.chapters[idx],box=$('#list');box.replaceChildren();
   if(!c){box.append(el('p',{class:'note'},T('nf')));return;}
   bar(EN()?(k.no+'. '+k.en):(ad(k.no)+' — '+k.ar),EN()?(c.no+'. '+c.en):(ad(c.no)+' — '+c.ar),true);
@@ -1522,16 +1524,17 @@ async function showChapter(no,idx,page){
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
     const items=[...box.querySelectorAll('article.card,section.hr-item')];
     LISTEN.playHadiths(ds.filter(d=>!d.error).map((d,i)=>({d,node:items[i]||null})));}}},icon('listen'),T('listenAll'))));
-  if(HM.mode==='read')return readingView(ks,k,c,no,idx,box);
+  if(HM.mode==='read'){await readingView(ks,k,c,no,idx,box);goJump();return;}
   const PAGE=20;let shown=0;
   const more=el('button',{class:'btn more',type:'button'},T('more'));
   const load=async()=>{
     const part=c.nums.slice(shown,shown+PAGE);
     const ds=await Promise.all(part.map(n=>api('hadith/'+n+'?book='+JB())));
-    ds.filter(d=>!d.error).forEach(d=>box.insertBefore(hadithCard(d,'jami'),more));
+    ds.filter(d=>!d.error).forEach(d=>{const cd=hadithCard(d,'jami');cd.dataset.n=d.num;box.insertBefore(cd,more)});
     shown+=part.length;if(shown>=c.nums.length)more.remove();
   };
   more.addEventListener('click',load);box.append(more);await load();
+  if(jump){const at=c.nums.indexOf(jump);while(at>=shown&&box.contains(more)&&shown<c.nums.length)await load();goJump();}
 }
 /* ---------- reading mode for hadith (like the Quran's mushaf mode): one continuous page, auto scroll ---------- */
 const HM={mode:'cards',ar:26,tr:19,sanad:true,trans:true};
@@ -1542,8 +1545,8 @@ async function readingView(ks,k,c,no,idx,box){
   const ds=(await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())))).filter(d=>!d.error);
   const paper=el('div',{class:'card hread'});
   ds.forEach(d=>{
-    const sec=el('section',{class:'hr-item'});
-    sec.append(el('div',{class:'hr-no'},el('a',{class:'hr-num',href:'#/h/'+d.num,title:T('read')},EN()?String(d.num):ad(d.num)),gradeNode(d.grade)));
+    const sec=el('section',{class:'hr-item'});sec.dataset.n=d.num;
+    sec.append(el('div',{class:'hr-no'},el('a',{class:'hr-num',href:'#/h/'+d.num+'?one',title:T('read')},EN()?String(d.num):ad(d.num)),gradeNode(d.grade)));
     const ar=el('p',{class:'hr-ar',lang:'ar'});
     if(HM.sanad&&d.sanad)ar.append(sanadEl(d));
     ar.append(...rich(d.matn.join(' '),'ar'));sec.append(ar);
@@ -1828,9 +1831,13 @@ async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookN
   (window.MADKHAL||[]).forEach(([s,t])=>box.append(s.startsWith('Heading')?el('h3',{class:'grp ar'},t):el('p',{},...rich(t,'ar'))));
   v.replaceChildren(box);}
 /* ---------- full reading page ---------- */
+let HONE=false,HJUMP=0;   // HONE: the reader chose the single-hadith page; otherwise a hadith link opens its whole chapter at that hadith
 async function showHadith(num){
   hSaveLast();
   const scope=scopeOf();
+  if(!HONE&&(scope==='jami'||scope==='jamik')){try{const ks=await loadToc(),n=+num;
+    for(const k of ks){const i=k.chapters.findIndex(c=>c.nums.includes(n));if(i>=0){if(k.chapters[i].nums.length>=5){HJUMP=n;location.replace('#/c/'+k.no+'/'+i);return;}break;}}}catch(e){}}
+  HONE=true;
   const d=await api('hadith/'+num+'?book='+(scope==='jami'?JB():scope)),v=$('#view');v.replaceChildren();
   if(d.error){bar(curBookName(),'',true);v.append(el('p',{class:'note'},T('nf')));return;}
   bar(curBookName(),T('hadith')(label(d.num)),true);
@@ -1942,6 +1949,7 @@ function route(){
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
+  if(!/^#\/h\//.test(h))HONE=false;if(/^#\/h\/-?\d+\?one/.test(h))HONE=true;
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa'&&!!window.SHOW_QA,hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);

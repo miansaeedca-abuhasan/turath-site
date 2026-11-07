@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch(),p=await b.newPage({viewport:{width:1100,height:1000}});let bad=[];
 p.on('pageerror',e=>bad.push(e.message));
 await p.addInitScript(()=>{localStorage.ui='ur';localStorage.book='jamik'});
-await p.goto('http://localhost:8765/#/h/3618');await p.waitForSelector('.mtabs button',{timeout:15000});
+await p.goto('http://localhost:8765/#/h/3618?one');await p.waitForSelector('.mtabs button',{timeout:15000});
 await p.evaluate(()=>document.querySelectorAll('.sheetbg,#ipop').forEach(x=>x.remove()));
 await (await p.$$('.mtabs button'))[1].click();await p.waitForSelector('.fullh a.snlink',{timeout:15000});await p.waitForTimeout(3000);
 const r=await p.evaluate(()=>{const f=document.querySelector('.fullh'),L=[...f.querySelectorAll('a.snlink')].map(a=>a.textContent.replace(/[ً-ْـ]/g,'').trim());return{n:L.length,L,dim:f.querySelectorAll('.dimw').length,txt:f.textContent.replace(/[ً-ْـ]/g,'')}});
