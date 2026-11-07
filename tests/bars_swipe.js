@@ -1,0 +1,22 @@
+// Guard: top bar hides when scrolling down and returns when scrolling up; swipe moves between hadiths; in landscape the bottom bar is a vertical rail on the right and the top bar is slim
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();let bad=[];
+let p=await b.newPage({viewport:{width:420,height:800},hasTouch:true});p.on('pageerror',e=>bad.push(e.message));
+await p.addInitScript(()=>{localStorage.ui='ur'});
+await p.goto('http://localhost:8765/#/h/1310');await p.waitForSelector('.hpill',{timeout:15000});await p.waitForTimeout(6000);
+await p.evaluate(()=>{document.querySelectorAll('.sheetbg,.sheet,#ipop').forEach(x=>x.remove());document.documentElement.classList.remove('sheetopen')});
+await p.evaluate(()=>window.scrollTo(0,600));await p.waitForTimeout(500);await p.evaluate(()=>window.scrollTo(0,700));await p.waitForTimeout(600);
+if(!await p.evaluate(()=>document.body.classList.contains('abhide')))bad.push('top bar did not hide');
+await p.evaluate(()=>window.scrollTo(0,500));await p.waitForTimeout(600);
+if(await p.evaluate(()=>document.body.classList.contains('abhide')))bad.push('top bar did not return');
+await p.evaluate(()=>{window.scrollTo(0,0)});await p.waitForTimeout(300);
+const before=await p.evaluate(()=>location.hash);
+await p.evaluate(()=>{const v=document.querySelector('#view');const mk=(t,x)=>new Touch({identifier:1,target:v,clientX:x,clientY:300});
+ v.dispatchEvent(new TouchEvent('touchstart',{touches:[mk(0,300)],bubbles:true}));v.dispatchEvent(new TouchEvent('touchend',{changedTouches:[mk(0,100)],touches:[],bubbles:true}));});
+await p.waitForTimeout(1200);const after=await p.evaluate(()=>location.hash);if(after===before)bad.push('swipe did nothing');
+await p.close();
+p=await b.newPage({viewport:{width:800,height:380}});await p.addInitScript(()=>{localStorage.ui='ur'});
+await p.goto('http://localhost:8765/#/h/1310');await p.waitForSelector('.hpill',{timeout:15000});await p.waitForTimeout(800);
+const r=await p.evaluate(()=>{const n=document.querySelector('#bnav').getBoundingClientRect(),a=document.querySelector('.appbar').getBoundingClientRect();return{nw:n.width,nh:n.height,nl:n.left,ah:a.height,iw:innerWidth,ih:innerHeight,mini:document.querySelector('#bnav').classList.contains('mini')}});
+if(!r.mini&&(r.nl<r.iw-100||r.nh<r.ih-5))bad.push('landscape rail wrong '+JSON.stringify(r));if(r.ah>70)bad.push('top bar too tall in landscape '+r.ah);
+console.log(bad.length?'FAIL '+bad.join(' | '):'PASS '+JSON.stringify(r));await b.close();process.exit(bad.length?1:0)})();
