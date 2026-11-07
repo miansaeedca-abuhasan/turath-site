@@ -1370,7 +1370,7 @@ async function showKitabs(){
   const list=el('div');
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[\u064b-\u0652]/g,''),n=toNum(f.value);
     if(n!=null&&n>ks.length){list.replaceChildren(numLink(n));return;}
-    list.replaceChildren(...ks.filter(k=>!q||String(k.no)===q||ad(k.no)===q||(k.en||'').toLowerCase().includes(q)||(k.ar||'').includes(q)).map(k=>{
+    list.replaceChildren(...ks.filter(k=>!q||String(k.no)===q||ad(k.no)===q||BQM(q,(k.en||'')+' '+(k.ar||''))).map(k=>{
       const a=el('a',{class:'card srow2',href:'#/k/'+k.no});
       a.append(el('span',{class:'snum'},EN()?k.no:ad(k.no)),
         el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},EN()?k.en:k.ar),el('span',{class:'cs'},rng(kitNums(k))+'  ،  '+T('count')(k.count))),
@@ -1448,7 +1448,7 @@ async function showBookList(cat,aut,authors,topics){
   const N=n=>n==null?'':EN()?Number(n).toLocaleString('en-US'):ad(n);
   const draw=()=>{const q=f.value.trim().toLowerCase().replace(/[ً-ْ]/g,''),n=toNum(f.value);
     let lastG;
-    if(authors&&!aut){const arr=[...AUS.values()].filter(o=>!q||(o.a[1]+' '+o.a[2]+' '+o.a[3]).toLowerCase().replace(/[ً-ْ]/g,'').includes(q)).sort((x,y)=>(x.a[0]==='jami'?-1:x.a[4]||9999)-(y.a[0]==='jami'?-1:y.a[4]||9999));
+    if(authors&&!aut){const arr=[...AUS.values()].filter(o=>!q||BQM(q,o.a[1]+' '+o.a[2]+' '+o.a[3])).sort((x,y)=>(x.a[0]==='jami'?-1:x.a[4]||9999)-(y.a[0]==='jami'?-1:y.a[4]||9999));
       list.replaceChildren(...arr.map(o=>el('a',{class:'card aucard',href:'#/hb/a/'+o.a[0]},el('span',{class:'aunm'+(ui==='ar'?' ar':''),dir:'auto'},o.a[0]==='jami'?(AZ[ui]||AZ.en):auNm(o.a)),el('span',{class:'aumeta'},(o.a[4]?el('span',{class:'aupill'},deathTxt(o.a[4]).replace(/^\(|\)$/g,'')):''),el('span',{class:'catn'},T('hbNBooks')(N(o.n)))))));return;}
     if(!q&&!cat&&!aut&&topics){const cnt={};rows.forEach(r=>cnt[r.cat]=(cnt[r.cat]||0)+1);if(RC)RC.b.forEach(r=>cnt[r[2]]=(cnt[r[2]]||0)+1);
       const g=el('div',{class:'catgrid'});Object.keys(HB_CATS).filter(id=>cnt[id]).forEach(id=>{
@@ -1456,7 +1456,7 @@ async function showBookList(cat,aut,authors,topics){
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
       list.replaceChildren(...rows.slice(0,nJ).map(rowEl),g);return;}
-    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:(r.en+' '+r.ur+' '+r.ar).toLowerCase().replace(/[ً-ْ]/g,'').includes(q))));const mine=mineR.map(rowEl);
+    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const mine=mineR.map(rowEl);
     const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
     if(allB&&RC&&n==null){const out=[];for(let k=0;k<=5;k++){out.push(...mine.filter((_,i)=>rk(mineR[i].cat)===k));const g=rbAll.filter(x=>rk(+x[2])===k);if(g.length)out.push(...RB.rows(RC,g));}list.replaceChildren(...out);return;}
     const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
@@ -1487,6 +1487,12 @@ async function showBookList(cat,aut,authors,topics){
   else box.append(el('div',{class:'card pad0'},g),totCard,seg,el('div',{class:'card pad0 filterbox'},icon('search'),f),list);
   if(!cat&&!aut&&!authors){const r=hResume();if(r)box.append(r);}
 }
+// one forgiving matcher for every book / author / chapter filter: letters are unified (alef, ya, ta marbuta, kaf, heh forms), marks and tatweel dropped, every word typed must be found (any order), and plural/dual endings and the leading «ال»/«و» are tolerated
+const BQN=s=>String(s||'').toLowerCase().replace(/[\u064b-\u0652\u0670\u06d6-\u06ed\u0640]/g,'').replace(/[أإآٱ]/g,'ا').replace(/[ىیي]/g,'ي').replace(/[ةۃہھ]/g,'ه').replace(/ک/g,'ك').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/g,' ').trim();
+const BQM=(q,h)=>{const w=BQN(q).split(' ').filter(Boolean);if(!w.length)return true;const H=BQN(h);
+  return w.every(x=>{if(H.includes(x))return true;let y=x;if(/^[وبل]ال/.test(y))y=y.slice(1);if(y.startsWith('ال')&&y.length>4)y=y.slice(2);if(y.length>3&&H.includes(y))return true;
+    const z=y.replace(/(ين|ون|ان|ات)$/,'');return z.length>2&&z!==y&&H.includes(z)})};
+window.BQN=BQN;window.BQM=BQM;
 const toNum=v=>{const d=String(v).trim().replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[۰-۹]/g,c=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(c)).replace(/[০-৯]/g,c=>'০১২৩৪৫৬৭৮৯'.indexOf(c));return /^\d+$/.test(d)?+d:null;};
 function numLink(n,inBook){return el('a',{class:'card numhit',href:'#/h/'+n},icon('find'),el('span',{class:'ct'},T('hadith')(n)),inBook===false?el('span',{class:'cs'},T('notInKitab')):null);}
 async function showChapters(no){
@@ -4946,7 +4952,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const list = el('div', {class: 'gslist'}), cnt = el('span', {class: 'cs'});
     const paint = () => {
       cnt.textContent = T('gsChosen')(fmtN(sel.length));
-      list.replaceChildren(...books.map(x => {
+      const bq = (window.GSBF && GSBF.value) || '';
+      list.replaceChildren(...books.filter(x => !bq || BQM(bq, x.name)).map(x => {
         const c = el('input', {type: 'checkbox'}); c.checked = sel.includes(x.key);
         c.addEventListener('change', () => { sel = c.checked ? sel.concat(x.key) : sel.filter(k => k !== x.key); save(); cnt.textContent = T('gsChosen')(fmtN(sel.length)); });
         return el('label', {class: 'srow chk'}, c, el('span', {}, x.name, x.count ? el('small', {class: 'cs'}, '  ' + T('count')(fmtN(x.count))) : ''));
@@ -4954,7 +4961,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     const all = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = allKeys.slice(); save(); paint(); }}}, T('gsAll'));
     const none = el('button', {class: 'chip', type: 'button', on: {click: () => { sel = []; save(); paint(); }}}, T('gsNone'));
-    const pick = el('details', {class: 'card gspick'}, el('summary', {}, T('gsPick'), ' ', cnt), el('div', {class: 'chips'}, all, none), list);
+    const bf = el('input', {type: 'search', class: 'filter', placeholder: T('hbFilter'), 'aria-label': T('hbFilter'), id: 'gsbf'}); window.GSBF = bf; bf.addEventListener('input', paint);
+    const pick = el('details', {class: 'card gspick'}, el('summary', {}, T('gsPick'), ' ', cnt), bf, el('div', {class: 'chips'}, all, none), list);
     const out = el('div'); let run = 0;
     const clr = el('button', {class: 'btn lbtn', type: 'button', on: {click: () => { run++; q.value = ''; out.replaceChildren(); window.scrollTo(0, 0); q.focus(); }}}, CLR[ui] || CLR.en);
     const root = el('div'); root.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), q), modeBar(() => { if (q.value.trim()) go.click(); }), el('div', {class: 'gsbar'}, go, ' ', clr), pick, el('p', {class: 'note'}, T('gsHint')), out);
@@ -9805,7 +9813,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const T = L(), body = el('p', {class: 'rbtxt ar', lang: 'ar', dir: 'rtl'}, render(h.html));
     return el('article', {class: 'card rbh'}, el('div', {class: 'rbhd'}, el('a', {class: 'rbno', href: '#/rb/b/' + bid + '/' + h.page + '#' + n}, T.hn(N(n)))), body);
   }
-  window.RB = {route, on: ON, isNew, hit, hitCard, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => nrm(r[1]).includes(q), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
+  window.RB = {route, on: ON, isNew, hit, hitCard, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => BQM(q, r[1]), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
     parent: h => { let m; if ((m = h.match(/^#\/rb\/b\/(\d+)\/\d+$/))) return '#/rb/b/' + m[1]; if ((m = h.match(/^#\/rb\/b\/(\d+)$/))) return '#/hb/c/' + (window.__rbcat && window.__rbcat[m[1]] || ''); return '#/hb'; }};
   cat().then(C => { window.__rbcat = {}; C.b.forEach(r => window.__rbcat[r[0]] = r[2]); }).catch(() => {});
 })();
