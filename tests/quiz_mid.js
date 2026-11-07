@@ -1,0 +1,25 @@
+const fs=require('fs'),vm=require('vm');const {chromium}=require('playwright');
+let bad=[];
+let D;global.QUIZDATA=(l,d)=>{D=d};vm.runInThisContext(fs.readFileSync('quiz/data_ur.js','utf8'));
+const strip=s=>String(s).replace(/\s+/g,' ').trim();
+const old=new Set();['k','a'].forEach(w=>{for(const c in D[w])D[w][c].forEach(q=>old.add(strip(q[0])))});
+for(const c of ['seerah','sahaba','adhkar']){const a=(D.m||{})[c]||[];
+ if(a.length!==150)bad.push(c+' count '+a.length);
+ const seen=new Set();
+ a.forEach((q,i)=>{if(q.length!==6)bad.push(c+i+' shape');const o=q.slice(1,5).map(strip);
+  if(new Set(o).size!==4||o.some(x=>!x))bad.push(c+' '+i+' options');
+  if(!/^(seerah:s\d+|fazail:s\d+|jami:\d+)$/.test(q[5]))bad.push(c+' '+i+' ref '+q[5]);
+  if(c==='adhkar'&&!/^jami:\d+$/.test(q[5]))bad.push(c+' '+i+' ref type');
+  if(c==='seerah'&&!/^seerah:/.test(q[5]))bad.push(c+' '+i+' ref type');
+  if(c==='sahaba'&&!/^fazail:/.test(q[5]))bad.push(c+' '+i+' ref type');
+  const k=strip(q[0]);if(seen.has(k))bad.push(c+' dup '+i);seen.add(k);if(old.has(k))bad.push(c+' dup with k/a '+i);
+  if(/[A-Za-z]{4,}/.test(q[0]))bad.push(c+' latin in question '+i)})}
+(async()=>{const b=await chromium.launch(),p=await b.newPage();await p.addInitScript(()=>{localStorage.ui='ur';localStorage.clear&&0});
+await p.goto('http://localhost:8765/#/quiz');await p.waitForSelector('.qzwho',{timeout:10000});
+const cards=await p.$$eval('.qzwho',a=>a.map(x=>x.getAttribute('href')));
+if(!cards.includes('#/quiz/m'))bad.push('middle card missing '+cards);
+await p.goto('http://localhost:8765/#/quiz/m/seerah');await p.waitForSelector('.qzlname',{timeout:10000});
+const n=await p.$$eval('.qzlname',a=>a.length);if(n!==15)bad.push('levels '+n);
+const gate=await p.$('.qzgate');if(!gate)bad.push('gate missing for fresh user');
+await b.close();
+console.log(bad.length?'FAIL '+bad.slice(0,15).join(' | '):'PASS 450 questions, gate ok');process.exit(bad.length?1:0)})();

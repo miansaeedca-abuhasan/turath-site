@@ -7833,7 +7833,7 @@ Object.assign(I.fr, {
   function showStart() {
     bar(L().title, L().sub, true);
     page(el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('quiz')), el('h2', {}, L().hero), el('p', {class: 'cs'}, L().intro(UD(15), UD(PER)))),
-      ...(window.QUIZ_MID ? ['k', 'm', 'a'] : ['k', 'a']).map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, el('span', {class: 'qzwi'}, w === 'k' ? '🧒' : w === 'm' ? '🎓' : '📖'),
+      ...['k', 'm', 'a'].map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, el('span', {class: 'qzwi'}, w === 'k' ? '🧒' : w === 'm' ? '🎓' : '📖'),
         el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, L().who[w][0]), el('span', {class: 'cs'}, L().who[w][1])))));
   }
   /* ---------- 2: the categories ---------- */
