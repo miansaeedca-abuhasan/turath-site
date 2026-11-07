@@ -174,7 +174,9 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .nav{display:flex;justify-content:space-between;margin-top:2rem}
 .secnav{margin:1.2rem 0 .5rem}.secnext{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;border-inline-start:4px solid var(--accent)}.secnext .ct{font-weight:700;color:var(--accent)}.secprev{display:block;text-align:center;margin-top:.6rem;color:var(--muted);font-size:.9em}.readstart{display:inline-flex;align-items:center;margin:.3rem 0 .6rem}
 .nav a{color:var(--accent)}
-.refbox.fullbox{background:none;border:0;border-radius:0;padding:.2rem 0 .4rem;margin:.2rem 0}.refbox.fullbox>b{display:block;font:600 .95rem/1.6 var(--serif);color:var(--accent);margin-bottom:.2rem}.fullh{margin:.2rem 0}.hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .9rem;color:var(--accent);text-decoration:none}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
+.refbox.fullbox{background:none;border:0;border-radius:0;padding:.2rem 0 .4rem;margin:.2rem 0}.refbox.fullbox>b{display:block;font:600 .95rem/1.6 var(--serif);color:var(--accent);margin-bottom:.2rem}.fullh{margin:.2rem 0}.hmode{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;margin:.2rem 0 .5rem}.hmode>*{padding:.3rem 1rem;font-size:.95rem;text-decoration:none;color:var(--accent)}.hmode .on{background:var(--accent);color:#fff}
+.hsx{margin-top:1.4rem}.hsxl{margin:0 0 .4rem;color:var(--muted);font-size:.9rem}.hsxn{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}.hsxb{min-width:2.6rem;padding:.4rem .6rem;border:1px solid var(--line);border-radius:10px;text-align:center;text-decoration:none;color:var(--accent)}.hsxb:hover{border-color:var(--accent)}.hsxb.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.hsxd{align-self:center;color:var(--muted)}
+.hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .9rem;color:var(--accent);text-decoration:none}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
 .chead{padding:.2rem .2rem .7rem;border-bottom:1px solid var(--line)}.chead .ct{display:block;font:700 1.25rem/1.8 var(--serif)}
 .secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}
 .hstrip{display:flex;margin:-.2rem -.2rem .8rem;background:var(--bar,var(--accent));border-radius:12px;overflow:hidden}.hstrip .hs{flex:1;min-width:0;padding:.7rem .3rem;text-align:center;color:#ffffffb8;text-decoration:none;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:3px solid transparent}.hstrip .hs.on{color:#fff;font-weight:700;border-bottom-color:#fff}
@@ -1871,9 +1873,23 @@ async function showHadith(num){
   if(d.has_tuhfa&&scope==='jami')v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>switchBook('tuhfa')}},T('toTuhfa'))));
   if(scope==='tuhfa'&&d.has_jami)v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>switchBook('jami')}},T('toJami'))));
   const nav=el('div',{class:'nav'});
-  const hb=(n,lbl,ic,cls)=>n!=null?el('a',{href:'#/h/'+n,class:'hnb '+cls,rel:cls},ic?icon(ic):'',el('span',{class:'hnt'},el('small',{},lbl),el('b',{},fmt(n)))):el('span',{class:'hnb off'});
+  const hb=(n,lbl,ic,cls)=>n!=null?el('a',{href:'#/h/'+n,class:'hnb '+cls,rel:cls},ic?icon(ic):'',el('span',{class:'hnt'},el('small',{},lbl),el('b',{},String(n)))):el('span',{class:'hnb off'});
   nav.append(hb(d.prev,T('prev'),'prev','prev'),hb(d.next,T('next'),'next','next'));nav.classList.add('hnav');
+  const strip=el('div',{class:'hsx',role:'navigation'}),modeBar=el('div',{class:'hmode',role:'tablist'});
+  v.append(strip);
+  (async()=>{try{if(scope!=='jami'&&scope!=='jamik')return;const ks=await loadToc();let kk=null,ci=-1;
+    for(const k of ks){const i=k.chapters.findIndex(c=>c.nums.includes(d.num));if(i>=0){kk=k;ci=i;break;}}
+    let nums=kk?kk.chapters[ci].nums.slice():[];const near=nums.length<5;if(near)nums=[d.num-3,d.num-2,d.num-1,d.num,d.num+1,d.num+2,d.num+3].filter(n=>n>0&&(n<=d.num||d.next!=null));const at=nums.indexOf(d.num);
+    let a=Math.max(0,at-3),b=Math.min(nums.length,a+7);a=Math.max(0,b-7);
+    const mk=n=>n===d.num?el('span',{class:'hsxb on','aria-current':'true'},String(n)):el('a',{class:'hsxb',href:'#/h/'+n},String(n));
+    const row=el('div',{class:'hsxn',dir:'ltr'});if(a>0){row.append(mk(nums[0]));if(a>1)row.append(el('span',{class:'hsxd'},'…'));}
+    nums.slice(a,b).forEach(n=>row.append(mk(n)));if(b<nums.length){if(b<nums.length-1)row.append(el('span',{class:'hsxd'},'…'));row.append(mk(nums[nums.length-1]));}
+    const sl=near?({ur:'قریبی احادیث — نمبر پر کلک کریں',ar:'أحاديث قريبة — اضغط على الرقم',en:'Nearby hadiths — tap a number'}):({ur:'اسی باب کی احادیث — نمبر پر کلک کریں',ar:'أحاديث هذا الباب — اضغط على الرقم',en:'Hadiths of this chapter — tap a number'});strip.append(el('p',{class:'hsxl'},sl[ui]||sl.en),row);
+    if(kk){const cl='#/c/'+kk.no+'/'+ci;modeBar.append(el('span',{class:'on'},({ur:'ایک حدیث',ar:'حديث واحد',en:'One hadith'})[ui]||'One hadith'),el('a',{href:cl},({ur:'پورا باب',ar:'الباب كاملًا',en:'Whole chapter'})[ui]||'Whole chapter'));
+      v.insertBefore(modeBar,v.firstChild);}
+  }catch(e){}})();
   v.append(nav);
+  if(!isRestore){try{window.scrollTo({top:0,behavior:'instant'})}catch(e){scrollTo(0,0)}}
 }
 async function showExt(key,num){
   const d=await api('ext?book='+key+'&num='+num),v=$('#view');v.replaceChildren();
