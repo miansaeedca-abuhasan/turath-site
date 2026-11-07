@@ -346,6 +346,7 @@ body.withplayer .resume.float{display:none}
 @media (max-width:700px){.hbrow{padding:.7rem .8rem;gap:.6rem}.hbrow .snum{min-width:1.7rem;font-size:1.15rem}.hbrow .sar{order:5;flex:1 1 100%;max-width:100%;text-align:start;font-size:1.15rem;padding:.3rem 2.3rem 0 0;border-top:1px dashed var(--line,#d9e3dd)}html[dir=ltr] .hbrow .sar{padding:.3rem 0 0 2.3rem}}
 @media (min-width:701px){.hbrow{flex-wrap:nowrap}.hbrow .sinfo{flex:1 1 56%}}
 /* book list: lighter edge */
+.bmempty{display:flex;flex-direction:column;align-items:center;gap:.6rem;padding:3.5rem 1.2rem;text-align:center;color:var(--muted,#6b7280)}.bmempty svg{width:56px;height:56px;opacity:.35;color:var(--accent)}.bmempty p{margin:0;line-height:1.9;max-width:22rem}
 .hbrow{border-inline-start-width:3px}
 
 .snum{font:700 1.4rem/1 var(--sans);color:var(--accent);min-width:2.2rem;text-align:center}
@@ -1603,7 +1604,7 @@ async function showHome(){
 }
 async function showBookmarks(){
   const box=$('#list');box.replaceChildren();bar(T('bm'),'',true);
-  const a=bmGet();if(!a.length){box.append(el('p',{class:'note'},T('nobm')));return;}
+  const a=bmGet();if(!a.length){box.append(el('div',{class:'bmempty'},icon('bms'),el('p',{},T('nobm'))));return;}
   for(const x of a){if(String(x.b).startsWith('c:')){const c=await COLL.bookmarkCard(x.b,x.n);if(c)box.append(c);continue;}
     const d=await api('hadith/'+x.n+'?book='+x.b);if(!d.error)box.append(hadithCard(d,x.b));}
 }
