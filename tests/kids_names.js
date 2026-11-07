@@ -4,5 +4,6 @@ await p.goto('http://localhost:8765/#/quiz/k/seerah');await p.waitForSelector('.
 const r=await p.$$eval('.qzlname',a=>a.map(x=>({t:x.textContent,h:x.querySelector('.qzhon')?getComputedStyle(x.querySelector('.qzhon')).fontSize:null,f:getComputedStyle(x).fontSize})));
 let bad=[];if(r.length!==15)bad.push('count '+r.length);
 r.forEach(x=>{if(!/\(.+\)/.test(x.t))bad.push('no bracket '+x.t);if(!x.h||parseFloat(x.h)>=parseFloat(x.f))bad.push('hon not smaller '+x.t)});
+const WANT=['حسن','حسین','امامہ','اسامہ','ابن عمر|بن عمر','عباس','زید بن ثابت','انس','زبیر','جعفر','معاذ','عمیر','خالد','سلمہ','رافع'];WANT.forEach((w,i)=>{if(!new RegExp(w).test(r[i].t))bad.push('order '+i+' '+r[i].t)});
 if(!r[0].t.includes('رضی اللہ عنہ'))bad.push('first '+r[0].t);
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS '+r[0].t+' / '+r[10].t);await b.close();process.exit(bad.length?1:0)})();
