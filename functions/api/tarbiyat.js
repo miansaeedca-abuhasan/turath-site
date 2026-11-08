@@ -16,7 +16,7 @@ const CLEAN = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 // [key, kind, group, fridayOnly]. Name is stored empty: the page shows the built-in name in the reader's language until a parent renames it.
 // group 'w' = عابد نونہال (worship), 'h' = ہونہار نونہال (homework and study), 'a' = مثالی نونہال (conduct, plus the minus rows; marked by the parents only)
 const DEFAULT_ACTS = [['pray_unasked', 'p', 'a', 0], ['obey_parents', 'p', 'a', 0], ['sibling_manners', 'p', 'a', 0], ['cleanliness', 'p', 'a', 0], ['sleep_time', 'p', 'a', 0], ['fight', 'n', 'a', 0], ['complaint', 'n', 'a', 0], ['loud', 'n', 'a', 0], ['stubborn', 'n', 'a', 0],
-  ['fajr', 'p', 'w', 0], ['zuhr', 'p', 'w', 0], ['asr', 'p', 'w', 0], ['maghrib', 'p', 'w', 0], ['isha', 'p', 'w', 0], ['w_am', 'p', 'w', 0], ['w_pm', 'p', 'w', 0], ['w_sleep', 'p', 'w', 0], ['w_quran', 'p', 'w', 0], ['w_kahf', 'p', 'w', 1],
+  ['fajr', 'p', 'w', 0], ['zuhr', 'p', 'w', 0], ['asr', 'p', 'w', 0], ['maghrib', 'p', 'w', 0], ['isha', 'p', 'w', 0], ['w_am', 'p', 'w', 0], ['w_pm', 'p', 'w', 0], ['w_sleep', 'p', 'w', 0], ['w_quran', 'p', 'w', 0], ['w_durood', 'p', 'w', 0], ['w_kahf', 'p', 'w', 1], ['w_durood_fri', 'p', 'w', 1],
   ['h_homework', 'p', 'h', 0], ['h_revise', 'p', 'h', 0], ['h_bag', 'p', 'h', 0], ['h_read', 'p', 'h', 0], ['h_neat', 'p', 'h', 0]];
 
 const SCHEMA = [
@@ -57,6 +57,12 @@ async function who(db, token) {
   return s ? {fam: s.fam, kid: s.kid, fname: s.fname} : null;
 }
 async function snapshot(db, u) {
+  // families made before a default row existed get the missing rows added once
+  const have = new Set(((await db.prepare('SELECT akey FROM t_act WHERE fam=?').bind(u.fam).all()).results || []).map(r => r.akey));
+  for (const a of DEFAULT_ACTS) if (a[2] === 'w' && !have.has(a[0])) {
+    const m = await db.prepare('SELECT COALESCE(MAX(pos),0)+1 AS p FROM t_act WHERE fam=?').bind(u.fam).first();
+    await db.prepare('INSERT INTO t_act (fam,name,kind,pos,grp,akey,fri) VALUES (?,?,?,?,?,?,?)').bind(u.fam, '', a[1], m.p, a[2], a[0], a[3]).run();
+  }
   const kids = (await db.prepare('SELECT id, name FROM t_kid WHERE fam=? ' + (u.kid ? 'AND id=? ' : '') + 'ORDER BY id').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || [];
   const acts = (await db.prepare('SELECT id, name, kind, grp, akey AS key, fri FROM t_act WHERE fam=? AND off=0 ORDER BY pos, id').bind(u.fam).all()).results || [];
   const reminds = ((await db.prepare('SELECT r.kid, r.day FROM t_remind r JOIN t_kid k ON k.id=r.kid WHERE k.fam=? ' + (u.kid ? 'AND r.kid=? ' : '') + 'ORDER BY r.ts').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || []).map(r => [r.kid, r.day]);

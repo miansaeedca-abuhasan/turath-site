@@ -16,7 +16,7 @@ const MIME={'.html':'text/html;charset=utf-8','.png':'image/png','.js':'text/jav
  const c=await call('create',{family:'گھر',kids:['علی','احمد','فاطمہ']});
 if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  ok(c.parentCode&&c.parentCode.length===8,'parent code 8 chars');ok(c.kids.length===3&&c.kids.every(k=>k.code.length===6),'child codes');
- ok(c.acts&&c.acts.filter(a=>a.kind==='n').length===4&&c.acts.length===24,'24 default rows incl. 4 minus rows');
+ ok(c.acts&&c.acts.filter(a=>a.kind==='n').length===4&&c.acts.length===26,'26 default rows incl. 4 minus rows');
  const [ali,ahmad]=c.kids,pos=c.acts.find(a=>a.key==='fajr'),neg=c.acts.find(a=>a.kind==='n');
  const day=new Date().toISOString().slice(0,10);
  const lg=await call('login',{code:ali.code});ok(lg.token&&lg.role==='child'&&lg.kids.length===1,'child login sees only himself');
@@ -33,7 +33,7 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  const bad1=await call('login',{code:'AAAAAA'});ok(bad1.s===401||bad1.s===403||bad1.error==='login','wrong code refused');
  // weekly worship rows + friday-only rule on the server
  const wacts=c.acts.filter(a=>a.grp==='w'),kahf=c.acts.find(a=>a.key==='w_kahf');
- ok(wacts.length===10&&['fajr','zuhr','asr','maghrib','isha','w_am','w_pm','w_sleep','w_quran','w_kahf'].every(k=>wacts.some(a=>a.key===k)),'10 worship rows: 5 prayers, 3 adhkar, quran, kahf');
+ ok(wacts.length===12&&['fajr','zuhr','asr','maghrib','isha','w_am','w_pm','w_sleep','w_quran','w_kahf','w_durood','w_durood_fri'].every(k=>wacts.some(a=>a.key===k)),'12 worship rows: 5 prayers, 3 adhkar, quran, kahf, 2 durood');
  ok(c.acts.filter(a=>a.grp==='a').length===9&&c.acts.filter(a=>a.grp==='h').length===5,'9 conduct rows, 5 homework rows');
  const nf=new Date(Date.now()-864e5*((new Date().getUTCDay()+2)%7)); // a recent non-friday day
  let nonFri=new Date();while(nonFri.getUTCDay()===5)nonFri=new Date(nonFri-864e5);const nfd=nonFri.toISOString().slice(0,10);
@@ -53,11 +53,11 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  await p.goto('http://localhost:8766/tarbiyat.html');
  await p.fill('#code',ali.code);await p.click('button:text-is("داخل ہوں")');await p.waitForSelector('table.ch');
  ok(await p.$$eval('table.ch thead th',a=>a.length)===9,'weekly chart: name + 7 days + total');
- ok(await p.$$eval('table.ch tbody tr',a=>a.length)===11,'first category: 10 worship rows + total');
+ ok(await p.$$eval('table.ch tbody tr',a=>a.length)===13,'first category: 12 worship rows + total');
  ok(await p.$$eval('.chips button',a=>['عابد نونہال','ہونہار نونہال','مثالی نونہال'].every(n=>a.some(x=>x.textContent===n))),'three categories');
  const dn=await p.$$eval('table.ch thead th',a=>a.slice(1,8).map(x=>x.querySelector('div').textContent));
  ok(['پیر','منگل','بدھ','جمعرات','جمعہ','ہفتہ','اتوار'].every(d=>dn.includes(d)),'Urdu day names');
- ok(await p.$$eval('table.ch tbody tr:nth-child(10) .lock',a=>a.length)===6,'Friday-only row shows 6 locked days');
+ ok(await p.$$eval('table.ch tbody tr:nth-child(11) .lock',a=>a.length)===6&&await p.$$eval('table.ch tbody tr:nth-child(12) .lock',a=>a.length)===6&&await p.$$eval('table.ch tbody tr:nth-child(10) .lock',a=>a.length)===0,'Friday-only rows (kahf, friday durood) show 6 locked days, daily durood none');
  await p.click('table.ch tbody tr:nth-child(1) td button:not([disabled])');await p.waitForFunction(()=>document.querySelector('table.ch tbody tr:nth-child(1) td button:not([disabled])').textContent==='✓',null,{timeout:4000}).catch(async()=>{console.log('ERRS',errs,await p.$eval('table.ch tbody tr:nth-child(1)',e=>e.innerText));process.exit(1)});ok(true,'tick works');
  if(process.env.SHOT)await p.screenshot({path:process.env.SHOT+'/week_ur.png',fullPage:true});
  ok(await p.$$eval('.tabs button',a=>a.map(x=>x.textContent).includes('ترتیبات'))===false,'child has no settings tab');
