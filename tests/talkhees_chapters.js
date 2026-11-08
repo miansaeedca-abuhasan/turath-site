@@ -19,4 +19,9 @@ has(12428,1,'بَرَاءَةٌ مِنَ اللَّهِ');has(12637,1,'سُبْ�
 // second place kept in the full Jami' order: 5420 Ibn Umar, 5421 Amr ibn Shu'ayb, 5422 Jabir
 const tx=n=>[].concat(by.get(n).matn).join(' ').replace(/[\u064B-\u0652]/g,'');
 ok(/ابن عمر/.test(tx(5420)),'5420 Ibn Umar');ok(/عمرو بن شعيب/.test(tx(5421)),'5421 Amr');ok(/جابر/.test(tx(5422)),'5422 Jabir');ok(/المحاقلة/.test(tx(5555)),'5555 Jabir muhaqala');
+// group headings (surah names in the tafsir, the introduction group of the Sira, split groups) as in the Word/PDF
+const grp=(n,no,frag)=>{const h=by.get(n);ok(h&&h.group_no===no&&nz(h.group_ar).includes(nz(frag))&&h.group_en,n+' group '+no+' '+frag+' (got '+(h&&h.group_no+' '+h.group_ar)+')')};
+grp(11858,1,'تفسير سورة الفاتحة');grp(11890,2,'تفسير سورة البقرة');grp(12428,9,'تفسير سورة التوبة');grp(8494,1,'مقدمة');grp(8801,6,'الأحداث التي بين غزوة بدر');grp(8810,7,'غزوة أحد');grp(10367,14,'النِّسَاءِ');
+grp(16255,1,'جموع ما جاء في صفة الجنة');
+ok(!H.some(h=>h.part_no===60&&h.num>0&&!h.group_ar),'every tafsir hadith has its surah group');
 console.log(fail?'tests/talkhees_chapters FAILED '+fail:'tests/talkhees_chapters ok');process.exit(fail?1:0);

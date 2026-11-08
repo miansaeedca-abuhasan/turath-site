@@ -10,4 +10,7 @@ const a=f('أَوْ كَصَيِّبٍ'.replace(/[ً-ٰٟ]/g,'')),c=f('وَإِ�
 if(a<0||c<0||d<0)bad.push('verse chapters missing '+[a,c,d]);else if(!(c<a&&a<d))bad.push('verse chapters out of order '+[c,a,d]);
 const x=f('إِنِّي رَسُولُ اللَّهِ إِلَيْكُمْ'.replace(/[ً-ٰٟ]/g,'')),y=f('وَمَا أَرْسَلْنَاكَ إِلَّا كَافَّةً'.replace(/[ً-ٰٟ]/g,''));
 if(x<0||y<0||x===y)bad.push('same-number chapters merged '+[x,y]);
+const gh=await p.evaluate(()=>[...document.querySelectorAll('#list p.grp')].map(x=>x.textContent.replace(/[\u064B-\u065F\u0670\u0640]/g,'').trim()));
+const gi=s=>gh.findIndex(x=>x.includes(s));
+if(gi('تفسير سورة الفاتحة')<0||gi('تفسير سورة البقرة')<=gi('تفسير سورة الفاتحة')||gi('تفسير سورة آل عمران')<=gi('تفسير سورة البقرة'))bad.push('surah group headings missing or out of order '+gh.slice(0,4).join(' / '));
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS',t.length);await b.close();process.exit(bad.length?1:0)})();
