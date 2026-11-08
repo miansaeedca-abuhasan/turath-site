@@ -4373,8 +4373,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   window.COLLS = list => { C.idx = list; list.forEach(b => { if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
   C.fixes = {};
   window.COLLDATA = (b, l, rows) => { const m = (C.data[b + '|' + l] = C.data[b + '|' + l] || new Map()); rows.forEach(r => { const f = C.fixes[b + '|' + l + '|' + r[0]]; if (f) { r = r.slice(); r[1] = f; } m.set(r[0], r); }); };
-  const load = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); });
-  const once = (id, src) => C.loading[id] || (C.loading[id] = load(src));
+  const load1 = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
+  // a data file that fails to load is asked for once more under a fresh address (a stale or broken cached answer is skipped); the reason is kept for the «try again» note
+  window.LOADERR = window.LOADERR || [];
+  addEventListener('error', e => { if (e && e.filename && /\/coll\//.test(e.filename)) window.LOADERR.push(e.filename.split('/').pop() + ' [' + String(e.message).slice(0, 60) + ']'); }, true);
+  const load = async src => { try { return await load1(src); } catch (e) { try { return await load1(src + (src.includes('?') ? '&' : '?') + 'r=' + Date.now()); } catch (e2) { let st = '?'; try { st = (await fetch(src, {cache: 'no-store'})).status; } catch (e3) { st = 'net'; } window.LOADERR.push(src + ' [' + st + ']'); throw e2; } } };
+  const once = (id, src) => C.loading[id] || (C.loading[id] = load(src).catch(e => { delete C.loading[id]; throw e; }));
   async function index() { if (!C.idx) await once('index', 'coll/index.js'); return C.idx; }
   const bookOf = k => (C.idx || []).find(b => b.key === k);
   async function needRange0(b, lang, from, to) {
@@ -5181,7 +5185,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     more.addEventListener('click', add); await add();
     if (!list.children.length) { const rt = {ur: ['اس باب کا متن لوڈ نہیں ہو سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', 'دوبارہ کوشش کریں'], en: ['This chapter could not be loaded. Check the connection and try again.', 'Try again']}[ui] || ['This chapter could not be loaded. Check the connection and try again.', 'Try again'];
-      list.append(el('p', {class: 'note'}, rt[0]), el('button', {class: 'btn lbtn', type: 'button', on: {click: () => location.reload()}}, rt[1])); }
+      list.append(el('p', {class: 'note'}, rt[0]), (window.LOADERR && window.LOADERR.length) ? el('p', {class: 'note', dir: 'ltr', style: 'font-size:.75rem;opacity:.7;word-break:break-all'}, window.LOADERR.slice(-2).join(' ; ')) : '', el('button', {class: 'btn lbtn', type: 'button', on: {click: () => location.reload()}}, rt[1])); }
     // reading in order: the previous / next section (person, kitab) at the end
     const i = b.sections.indexOf(s), pv = b.sections[i - 1], nx = b.sections[i + 1];
     const SB = {ur: ['پچھلا باب', 'اگلا باب'], ar: ['الباب السابق', 'الباب التالي'], en: ['Previous chapter', 'Next chapter'], bn: ['আগের অধ্যায়', 'পরের অধ্যায়'], hi: ['पिछला अध्याय', 'अगला अध्याय'], gu: ['પાછલો અધ્યાય', 'આગળનો અધ્યાય'], fr: ['Chapitre précédent', 'Chapitre suivant']}[ui] || ['Previous chapter', 'Next chapter'];
