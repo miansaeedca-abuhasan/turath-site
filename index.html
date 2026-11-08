@@ -5180,6 +5180,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (at > s[3]) more.remove();
     };
     more.addEventListener('click', add); await add();
+    if (!list.children.length) { const rt = {ur: ['اس باب کا متن لوڈ نہیں ہو سکا۔ انٹرنیٹ دیکھ کر دوبارہ کوشش کریں۔', 'دوبارہ کوشش کریں'], en: ['This chapter could not be loaded. Check the connection and try again.', 'Try again']}[ui] || ['This chapter could not be loaded. Check the connection and try again.', 'Try again'];
+      list.append(el('p', {class: 'note'}, rt[0]), el('button', {class: 'btn lbtn', type: 'button', on: {click: () => location.reload()}}, rt[1])); }
     // reading in order: the previous / next section (person, kitab) at the end
     const i = b.sections.indexOf(s), pv = b.sections[i - 1], nx = b.sections[i + 1];
     const SB = {ur: ['پچھلا باب', 'اگلا باب'], ar: ['الباب السابق', 'الباب التالي'], en: ['Previous chapter', 'Next chapter'], bn: ['আগের অধ্যায়', 'পরের অধ্যায়'], hi: ['पिछला अध्याय', 'अगला अध्याय'], gu: ['પાછલો અધ્યાય', 'આગળનો અધ્યાય'], fr: ['Chapitre précédent', 'Chapitre suivant']}[ui] || ['Previous chapter', 'Next chapter'];
