@@ -105,6 +105,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .cs{color:var(--muted);font-size:.95rem;display:block;margin-top:.2rem}
 .ca{font:1.15rem/1.9 var(--arabic);direction:rtl;text-align:right;color:var(--muted);display:block}
 .grp{margin:1.2rem .2rem .2rem;font:600 .95rem/1.5 var(--serif);color:var(--accent)}
+.chintro{padding:.5rem .6rem;margin:.4rem 0 1rem;background:#fff;border:1px solid var(--line);border-radius:.7rem;overflow:hidden}.chintro img{display:block;width:100%;height:auto;margin:0 auto}:root[data-theme=dark] .chintro{background:#1b1b1b}:root[data-theme=dark] .chintro img{filter:invert(1) hue-rotate(180deg)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .chintro{background:#1b1b1b}:root:not([data-theme=light]) .chintro img{filter:invert(1) hue-rotate(180deg)}}
 .chead{margin:.6rem 0}
 .hd{font:700 1.7rem/1.3 var(--serif);margin:.4rem 0 .2rem}
 .ar{font-family:var(--arabic);direction:rtl}
@@ -917,16 +918,22 @@ function ENGINE(){
   let JS_P = null;
   const needStruct = () => JS_P || (JS_P = new Promise((ok, no) => { if (window.JSTRUCT) return ok(); window.TURATH_JSTRUCT = x => { window.JSTRUCT = x; ok(); };
     const s = document.createElement('script'); s.src = 'jstruct.js?h=' + ((window.TURATH_DATA && TURATH_DATA.jsh) || ''); s.onerror = no; document.head.append(s); }));
+  // chapter intros (verse + note printed between a chapter heading and its first hadith in the Talkhees PDF) as page images; intro/index.js
+  let IN_P = null;
+  const needIntro = () => IN_P || (IN_P = new Promise(ok => { if (window.INTRO) return ok(); window.TURATH_INTRO = x => { window.INTRO = x; ok(); };
+    const s = document.createElement('script'); s.src = 'intro/index.js'; s.onerror = () => { window.INTRO = {by: {}, emp: []}; ok(); }; document.head.append(s); }));
+  window.introOf = c => { const I = window.INTRO; if (!I || !c) return null; return c.ik ? (I.emp.find(e => e.k === c.ik) || null) && I.emp.find(e => e.k === c.ik) : (c.nums && c.nums.length ? I.by[String(Math.min.apply(null, c.nums))] : null); };
   const realApi = async function (u, tl) {
     const [path, qs] = u.split('?'), q = Object.fromEntries(new URLSearchParams(qs || ''));
     const FULLK = q.book === 'jamik'; if (FULLK) q.book = 'jami';
     if (path === 'books') return {books: D.books.slice(0, 1).concat([FULLB], VIRT, D.books.slice(1))};
     if (path === 'toc' && FULLK) {
-      await needStruct();
-      return {kitabs: window.JSTRUCT.map(k => { const ch = k[2].map(c => ({no: c[0], en: c[1], ar: c[1], group_no: 0, group_en: c[3] || '', group_ar: c[3] || '', nums: c[2].filter(n => byNum.has(n))}));
+      await needStruct(); await needIntro();
+      return {kitabs: window.JSTRUCT.map(k => { const ch = k[2].map(c => { const o = {no: c[0], en: c[1], ar: c[1], group_no: 0, group_en: c[3] || '', group_ar: c[3] || '', nums: c[2].filter(n => byNum.has(n))}; if (!o.nums.length) o.ik = 'e' + k[0] + '.' + c[0]; return o; });
         return {no: k[0], en: k[1], ar: k[1], count: ch.reduce((s, c) => s + c.nums.length, 0), chapters: ch}; })};
     }
     if (path === 'toc') {
+      await needIntro();
       const kit = new Map();
       D.hadith.filter(h => !h.demo && hasJami(h)).map(h => inLang(h, tl)).forEach(h => {
         const kk = h.part_no + '|' + h.part_en; let k = kit.get(kk);
@@ -936,7 +943,16 @@ function ENGINE(){
         if (!c) k.ch.set(ck, c = {no: h.chapter_no, en: h.chapter_en, ar: h.chapter_ar, group_no: h.group_no, group_en: h.group_en, group_ar: h.group_ar, nums: []});
         c.nums.push(h.num);
       });
-      return {kitabs: [...kit.values()].map(k => ({no: k.no, en: k.en, ar: k.ar, count: k.count, chapters: [...k.ch.values()]}))};
+      const kits = [...kit.values()].map(k => ({no: k.no, en: k.en, ar: k.ar, count: k.count, chapters: [...k.ch.values()]}));
+      // chapters that have a heading (and intro) in the printed Talkhees but no hadith of their own: put them where the book has them
+      ((window.INTRO && window.INTRO.emp) || []).forEach(e => {
+        const an = e.b != null ? e.b : e.a; if (an == null) return;
+        for (const k of kits) { const i = k.chapters.findIndex(c => c.nums.length && Math.min.apply(null, c.nums) === an); if (i < 0) continue;
+          const ref = k.chapters[i], g = ref.group_ar;
+          const nc = {no: e.no, en: e.name, ar: e.name, group_no: ref.group_no, group_en: e.grp || ref.group_en, group_ar: e.grp || ref.group_ar, nums: [], ik: e.k};
+          k.chapters.splice(e.b != null ? i : i + 1, 0, nc); break; }
+      });
+      return {kitabs: kits};
     }
     if (path === 'search') {
       const book = q.book || 'jami', t = (q.q || '').trim(), ext = book !== 'jami' && book !== 'tuhfa';
@@ -1533,6 +1549,8 @@ async function showChapter(no,idx,page){
   xt.append(tb(HM.mode==='read'?'list':'read',HM.mode==='read'?T('cardMode'):T('readMode'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();showChapter(no,idx);}),tb('tune',T('settings'),()=>hSettings(()=>showChapter(no,idx))));
   box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},EN()?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(ad(c.no)+' — '+c.ar)),
     EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
+  {const io=window.introOf&&window.introOf(c);if(io){const card=el('div',{class:'card chintro','aria-label':'باب کی تمہید'});
+    const cnt=io.cnt||io[1],id=io.id!=null?io.id:io[0];for(let q=0;q<cnt;q++)card.append(el('img',{src:'intro/'+id+(q?'-'+q:'')+'.webp',alt:'',loading:'lazy',decoding:'async'}));if(cnt)box.append(card);}}
   if(!c.nums.length)return;
   box.append(el('p',{},el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
