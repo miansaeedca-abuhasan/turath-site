@@ -11,8 +11,11 @@ for(const book of ['jami','jamik']){
  if(!/^[۱١]/.test(t[i]))bad.push(book+' number '+t[i].slice(0,12));
  if(!/^[۲٢]/.test(t[i+1]||''))bad.push(book+' next is not 2: '+(t[i+1]||'').slice(0,12));
  const href=await p.evaluate(i=>document.querySelectorAll('#list a.card')[i].getAttribute('href'),i);
- await p.goto('http://localhost:8765/'+href);await p.waitForSelector('.chintro img',{timeout:20000});
- await p.waitForFunction(()=>{const m=document.querySelector('.chintro img');return m&&m.complete&&m.naturalWidth>200},{timeout:20000}).catch(()=>bad.push(book+' intro image did not load'));
+ await p.goto('http://localhost:8765/'+href);if(book==='jami'){await p.waitForSelector('.chintro img',{timeout:20000});
+  await p.waitForFunction(()=>{const m=document.querySelector('.chintro img');return m&&m.complete&&m.naturalWidth>200},{timeout:20000}).catch(()=>bad.push(book+' intro image did not load'));}
+ else{await p.waitForSelector('.chintro.txt p',{timeout:20000});
+  const tx=await p.evaluate(()=>document.querySelector('.chintro.txt').textContent);
+  if(!/يُؤَاخِذُكُمُ/.test(tx)||!/عبد الرزاق/.test(tx)||!/﴿/.test(tx)||/\(89\)/.test(tx))bad.push('jamik intro text wrong: '+tx.slice(0,80));}
  // a chapter with hadith and an intro: kitab 35 chapter 2 still opens with its hadith
  await p.close();
 }
