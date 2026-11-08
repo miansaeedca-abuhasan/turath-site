@@ -14,8 +14,8 @@ const dnum = d => Math.floor(Date.parse(d + 'T00:00:00Z') / DAY);
 const CLEAN = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 
 // [key, kind, group, fridayOnly]. Name is stored empty: the page shows the built-in name in the reader's language until a parent renames it.
-// group 'w' = عابد نونہال (worship), 'h' = ہونہار نونہال (homework and study), 'a' = مثالی نونہال (conduct and home duties, with the minus row)
-const DEFAULT_ACTS = [['am_adhkar', 'p', 'a', 0], ['tidy_toys', 'p', 'a', 0], ['extra_clean', 'p', 'a', 0], ['pm_adhkar', 'p', 'a', 0], ['obey_mother', 'p', 'a', 0], ['arrange_things', 'p', 'a', 0], ['sleep_time', 'p', 'a', 0], ['pray_unasked', 'p', 'a', 0], ['complaint', 'n', 'a', 0],
+// group 'w' = عابد نونہال (worship), 'h' = ہونہار نونہال (homework and study), 'a' = مثالی نونہال (conduct, plus the minus rows; marked by the parents only)
+const DEFAULT_ACTS = [['pray_unasked', 'p', 'a', 0], ['obey_parents', 'p', 'a', 0], ['sibling_manners', 'p', 'a', 0], ['cleanliness', 'p', 'a', 0], ['sleep_time', 'p', 'a', 0], ['fight', 'n', 'a', 0], ['complaint', 'n', 'a', 0], ['loud', 'n', 'a', 0], ['stubborn', 'n', 'a', 0],
   ['fajr', 'p', 'w', 0], ['zuhr', 'p', 'w', 0], ['asr', 'p', 'w', 0], ['maghrib', 'p', 'w', 0], ['isha', 'p', 'w', 0], ['w_am', 'p', 'w', 0], ['w_pm', 'p', 'w', 0], ['w_sleep', 'p', 'w', 0], ['w_quran', 'p', 'w', 0], ['w_kahf', 'p', 'w', 1],
   ['h_homework', 'p', 'h', 0], ['h_revise', 'p', 'h', 0], ['h_bag', 'p', 'h', 0], ['h_read', 'p', 'h', 0], ['h_neat', 'p', 'h', 0]];
 
@@ -26,6 +26,7 @@ const SCHEMA = [
   'CREATE TABLE IF NOT EXISTS t_mark (kid INTEGER NOT NULL, act INTEGER NOT NULL, day TEXT NOT NULL, n INTEGER NOT NULL, PRIMARY KEY (kid, act, day))',
   'CREATE TABLE IF NOT EXISTS t_sess (token TEXT PRIMARY KEY, fam INTEGER NOT NULL, kid INTEGER, exp INTEGER NOT NULL)',
   'CREATE TABLE IF NOT EXISTS t_fail (k TEXT PRIMARY KEY, n INTEGER NOT NULL, ts INTEGER NOT NULL)',
+  'CREATE TABLE IF NOT EXISTS t_remind (kid INTEGER NOT NULL, day TEXT NOT NULL, ts INTEGER NOT NULL, PRIMARY KEY (kid, day))',
   'CREATE TABLE IF NOT EXISTS t_meta (k TEXT PRIMARY KEY, v INTEGER)',
   'CREATE INDEX IF NOT EXISTS t_kid_fam ON t_kid (fam)', 'CREATE INDEX IF NOT EXISTS t_act_fam ON t_act (fam)',
 ];
@@ -44,6 +45,7 @@ async function sweep(db) {
 async function wipe(db, fam) {
   await db.batch([
     db.prepare('DELETE FROM t_mark WHERE kid IN (SELECT id FROM t_kid WHERE fam=?)').bind(fam),
+    db.prepare('DELETE FROM t_remind WHERE kid IN (SELECT id FROM t_kid WHERE fam=?)').bind(fam),
     db.prepare('DELETE FROM t_kid WHERE fam=?').bind(fam), db.prepare('DELETE FROM t_act WHERE fam=?').bind(fam),
     db.prepare('DELETE FROM t_sess WHERE fam=?').bind(fam), db.prepare('DELETE FROM t_fam WHERE id=?').bind(fam)]);
 }
@@ -57,7 +59,8 @@ async function who(db, token) {
 async function snapshot(db, u) {
   const kids = (await db.prepare('SELECT id, name FROM t_kid WHERE fam=? ' + (u.kid ? 'AND id=? ' : '') + 'ORDER BY id').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || [];
   const acts = (await db.prepare('SELECT id, name, kind, grp, akey AS key, fri FROM t_act WHERE fam=? AND off=0 ORDER BY pos, id').bind(u.fam).all()).results || [];
-  return {role: u.kid ? 'child' : 'parent', family: u.fname, me: u.kid || null, kids, acts};
+  const reminds = ((await db.prepare('SELECT r.kid, r.day FROM t_remind r JOIN t_kid k ON k.id=r.kid WHERE k.fam=? ' + (u.kid ? 'AND r.kid=? ' : '') + 'ORDER BY r.ts').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || []).map(r => [r.kid, r.day]);
+  return {role: u.kid ? 'child' : 'parent', family: u.fname, me: u.kid || null, kids, acts, reminds};
 }
 const FAILMAX = 12;
 async function guard(db, ip) { const r = await db.prepare('SELECT n, ts FROM t_fail WHERE k=?').bind(ip).first(); return !(r && r.n >= FAILMAX && Date.now() - r.ts < 15 * 60000); }
@@ -117,17 +120,26 @@ export async function onRequest(ctx) {
       const today = Math.floor(now / DAY), d = dnum(day);
       if (d > today + 1) return json({error: 'future'}, 400);
       if (u.kid && d < today - 2) return json({error: 'old'}, 403);        // a child can fill today and yesterday (the page enforces the exact local days; the server allows one extra day for time zones); a parent can fix any day
-      const A = await db.prepare('SELECT kind, fri FROM t_act WHERE id=? AND fam=? AND off=0').bind(act, u.fam).first(), K = await db.prepare('SELECT 1 FROM t_kid WHERE id=? AND fam=?').bind(kid, u.fam).first();
+      const A = await db.prepare('SELECT kind, fri, grp FROM t_act WHERE id=? AND fam=? AND off=0').bind(act, u.fam).first(), K = await db.prepare('SELECT 1 FROM t_kid WHERE id=? AND fam=?').bind(kid, u.fam).first();
       if (!A || !K) return json({error: 'bad'}, 400);
       if (A.fri && new Date(day + 'T00:00:00Z').getUTCDay() !== 5) return json({error: 'notfri'}, 400);
-      if (u.kid && A.kind === 'n') return json({error: 'parentonly'}, 403); // minus points are written by the parent
+      if (u.kid && (A.kind === 'n' || A.grp === 'a')) return json({error: 'parentonly'}, 403); // the whole third category (conduct + minus points) is marked by the parents
       if (n === 0) await db.prepare('DELETE FROM t_mark WHERE kid=? AND act=? AND day=?').bind(kid, act, day).run();
       else await db.prepare('INSERT INTO t_mark (kid,act,day,n) VALUES (?,?,?,?) ON CONFLICT(kid,act,day) DO UPDATE SET n=?').bind(kid, act, day, n, n).run();
+      if (!u.kid && A.grp === 'a') await db.prepare('DELETE FROM t_remind WHERE kid=? AND day=?').bind(kid, day).run(); // the parent has now marked this day
       await db.prepare('UPDATE t_fam SET last_active=? WHERE id=?').bind(now, u.fam).run();
       return json({ok: 1});
     }
+    if (a === 'remind') { // a child asks the parents (at bedtime) to mark his report
+      if (!u.kid) return json({error: 'forbidden'}, 403);
+      const day = str(b.day, 10), d = dnum(day); if (!dayOk(day) || d > Math.floor(now / DAY) + 1 || d < Math.floor(now / DAY) - 2) return json({error: 'bad'}, 400);
+      await db.prepare('INSERT INTO t_remind (kid,day,ts) VALUES (?,?,?) ON CONFLICT(kid,day) DO UPDATE SET ts=?').bind(u.kid, day, now, now).run();
+      await db.prepare('DELETE FROM t_remind WHERE kid=? AND day<?').bind(u.kid, new Date(now - 14 * DAY).toISOString().slice(0, 10)).run();
+      return json({ok: 1, ...(await snapshot(db, u))});
+    }
     if (!parent) return json({error: 'forbidden'}, 403);
     // ---- parent only ----
+    if (a === 'clearremind') { const k = await db.prepare('SELECT id FROM t_kid WHERE id=? AND fam=?').bind(parseInt(b.kid, 10), u.fam).first(); if (!k) return json({error: 'bad'}, 400); await db.prepare('DELETE FROM t_remind WHERE kid=?').bind(k.id).run(); return json({ok: 1}); }
     if (a === 'fname') { await db.prepare('UPDATE t_fam SET name=? WHERE id=?').bind(str(b.name, 40) || 'ہمارا گھر', u.fam).run(); return json({ok: 1}); }
     if (a === 'addkid') {
       const c = (await db.prepare('SELECT COUNT(*) n FROM t_kid WHERE fam=?').bind(u.fam).first()).n; if (c >= 8) return json({error: 'max'}, 400);
@@ -139,7 +151,7 @@ export async function onRequest(ctx) {
     const ownKid = async id => await db.prepare('SELECT id FROM t_kid WHERE id=? AND fam=?').bind(parseInt(id, 10), u.fam).first();
     if (a === 'kidcode') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); const cc = await newCode(db, 't_kid', 'ccode', 6); await db.prepare('UPDATE t_kid SET ccode=? WHERE id=?').bind(await sha(cc), k.id).run(); await db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id).run(); return json({ok: 1, code: cc}); }
     if (a === 'kidname') { const k = await ownKid(b.kid), name = str(b.name, 30); if (!k || !name) return json({error: 'bad'}, 400); await db.prepare('UPDATE t_kid SET name=? WHERE id=?').bind(name, k.id).run(); return json({ok: 1}); }
-    if (a === 'kiddel') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); await db.batch([db.prepare('DELETE FROM t_mark WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_kid WHERE id=?').bind(k.id)]); return json({ok: 1}); }
+    if (a === 'kiddel') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); await db.batch([db.prepare('DELETE FROM t_mark WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_remind WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_kid WHERE id=?').bind(k.id)]); return json({ok: 1}); }
     if (a === 'parentcode') { const pc = await newCode(db, 't_fam', 'pcode', 8); await db.prepare('UPDATE t_fam SET pcode=? WHERE id=?').bind(await sha(pc), u.fam).run(); await db.prepare('DELETE FROM t_sess WHERE fam=? AND kid IS NULL AND token<>?').bind(u.fam, str(b.token, 64)).run(); return json({ok: 1, code: pc}); }
     if (a === 'actadd') {
       const name = str(b.name, 60), kind = b.kind === 'n' ? 'n' : 'p', grp = b.grp === 'w' ? 'w' : b.grp === 'h' ? 'h' : 'a'; if (!name) return json({error: 'bad'}, 400);

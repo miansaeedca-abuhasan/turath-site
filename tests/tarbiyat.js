@@ -16,13 +16,14 @@ const MIME={'.html':'text/html;charset=utf-8','.png':'image/png','.js':'text/jav
  const c=await call('create',{family:'گھر',kids:['علی','احمد','فاطمہ']});
 if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  ok(c.parentCode&&c.parentCode.length===8,'parent code 8 chars');ok(c.kids.length===3&&c.kids.every(k=>k.code.length===6),'child codes');
- ok(c.acts&&c.acts.filter(a=>a.kind==='n').length===1&&c.acts.length>=9,'9 default rows incl. 1 negative');
- const [ali,ahmad]=c.kids,pos=c.acts.find(a=>a.kind==='p'),neg=c.acts.find(a=>a.kind==='n');
+ ok(c.acts&&c.acts.filter(a=>a.kind==='n').length===4&&c.acts.length===24,'24 default rows incl. 4 minus rows');
+ const [ali,ahmad]=c.kids,pos=c.acts.find(a=>a.key==='fajr'),neg=c.acts.find(a=>a.kind==='n');
  const day=new Date().toISOString().slice(0,10);
  const lg=await call('login',{code:ali.code});ok(lg.token&&lg.role==='child'&&lg.kids.length===1,'child login sees only himself');
  ok((await call('mark',{token:lg.token,kid:ali.id,act:pos.id,day,n:2})).ok,'child marks own box');
  ok((await call('mark',{token:lg.token,kid:ahmad.id,act:pos.id,day,n:1})).s===403,'child cannot mark a sibling');
  ok((await call('mark',{token:lg.token,kid:ali.id,act:neg.id,day,n:1})).s===403,'child cannot write minus points');
+ const prayA=c.acts.find(x=>x.key==='pray_unasked');ok((await call('mark',{token:lg.token,kid:ali.id,act:prayA.id,day,n:1})).s===403,'child cannot mark the parents-only third category');ok((await call('mark',{token:lg.token,kid:ali.id,act:c.acts.find(x=>x.key==='fajr').id,day,n:1})).ok,'child marks a worship row');
  ok((await call('mark',{token:lg.token,kid:ali.id,act:pos.id,day:'2020-01-01',n:1})).s===403,'child cannot edit old days');
  ok((await call('mark',{token:lg.token,kid:ali.id,act:pos.id,day:'2099-01-01',n:1})).s===400,'future rejected');
  ok((await call('kidname',{token:lg.token,kid:ali.id,name:'x'})).s===403,'child cannot use parent actions');
@@ -39,6 +40,14 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  ok((await call('mark',{token:pl.token,kid:ali.id,act:kahf.id,day:nfd,n:1})).s===400,'Surah Kahf row refuses a non-Friday');
  let fri=new Date();while(fri.getUTCDay()!==5)fri=new Date(fri-864e5);const frd=fri.toISOString().slice(0,10);
  ok((await call('mark',{token:pl.token,kid:ali.id,act:kahf.id,day:frd,n:1})).ok,'Surah Kahf row accepts Friday');
+ // bedtime reminder
+ ok((await call('remind',{token:lg.token,day})).ok,'child sends the bedtime reminder');
+ ok((await call('state',{token:pl.token})).reminds.some(r=>r[0]===ali.id&&r[1]===day),'parent sees the reminder');
+ ok((await call('remind',{token:pl.token,day})).s===403,'parent cannot send reminders');
+ ok((await call('mark',{token:pl.token,kid:ali.id,act:prayA.id,day,n:1})).ok&&!(await call('state',{token:pl.token})).reminds.some(r=>r[0]===ali.id&&r[1]===day),'parent marking the third category clears that day\'s reminder');
+ await call('remind',{token:lg.token,day});ok((await call('clearremind',{token:pl.token,kid:ali.id})).ok&&(await call('state',{token:pl.token})).reminds.length===0,'parent can dismiss');
+ ok((await call('clearremind',{token:lg.token,kid:ali.id})).s===403,'child cannot dismiss');
+ {const d=new Date(),ld=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');await call('remind',{token:lg.token,day:ld})} // the page uses the child's local date
  // ---- browser
  const b=await chromium.launch(),p=await b.newPage({viewport:{width:390,height:800}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.goto('http://localhost:8766/tarbiyat.html');
@@ -52,10 +61,12 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  await p.click('table.ch tbody tr:nth-child(1) td button:not([disabled])');await p.waitForFunction(()=>document.querySelector('table.ch tbody tr:nth-child(1) td button:not([disabled])').textContent==='✓',null,{timeout:4000}).catch(async()=>{console.log('ERRS',errs,await p.$eval('table.ch tbody tr:nth-child(1)',e=>e.innerText));process.exit(1)});ok(true,'tick works');
  if(process.env.SHOT)await p.screenshot({path:process.env.SHOT+'/week_ur.png',fullPage:true});
  ok(await p.$$eval('.tabs button',a=>a.map(x=>x.textContent).includes('ترتیبات'))===false,'child has no settings tab');
+ ok(await p.$$eval('button',b=>b.some(x=>x.textContent==='یاد دہانی بھیج دی گئی ✓'&&x.disabled)),'child sees the reminder was sent');
  await p.click('.chips >> text=ہونہار نونہال');await p.waitForTimeout(300);ok(await p.$$eval('table.ch tbody tr',a=>a.length)===6,'second category: 5 homework rows + total');
  await p.click('.chips >> text=مثالی نونہال');await p.waitForSelector('table.ch tr.neg');
  ok(await p.$$eval('table.ch tbody tr',a=>a.length)===10,'third category: 9 rows + total');
- ok(await p.$$eval('table.ch tr.neg button',a=>a.length>0&&a.every(x=>x.disabled)),'child minus row is locked');
+ ok(await p.$$eval('table.ch tr.neg button',a=>a.length>0&&a.every(x=>x.disabled)),'child minus rows are locked');
+ ok(await p.$$eval('table.ch tbody button',a=>a.length>0&&a.every(x=>x.disabled)),'child cannot press any box in the third category');
  ok(await p.$$eval('table.ch thead th .kid',a=>a.length)===1,'child sees only own column');
  for(const t of ['کارکردگی','سرٹیفکیٹ']){await p.click('.tabs >> text='+t);await p.waitForTimeout(500)}
  ok(await p.$('.cert .nm')&&/علی/.test(await p.$eval('.cert .nm',e=>e.textContent)),'certificate has the name');
@@ -75,7 +86,8 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  await p.click('#out');await p.waitForSelector('#code');
  await p.fill('#code',c.parentCode);await p.click('button:text-is("داخل ہوں")');await p.waitForSelector('table.ch');
  ok(await p.$$eval('.chips button',a=>a.filter(x=>['علی','احمد','فاطمہ'].includes(x.textContent)).length)===3,'parent sees 3 children on the weekly chart');
- await p.click('.chips >> text=مثالی نونہال');await p.waitForSelector('table.ch tr.neg');ok(await p.$$eval('table.ch tr.neg button',a=>a.length===7&&a.some(x=>!x.disabled)),'parent can edit minus row');
+ ok(/رپورٹ مارک کرنے کی یاد دہانی/.test(await p.$eval('#app',e=>e.innerText)),'parent sees the reminder banner');
+ await p.click('.chips >> text=مثالی نونہال');await p.waitForSelector('table.ch tr.neg');ok(await p.$$eval('table.ch tr.neg button',a=>a.length===28&&a.some(x=>!x.disabled)),'parent can edit the four minus rows');ok(await p.$$eval('table.ch tbody tr',a=>a.length)===10,'third category: 5 + 4 rows + total');
  await p.click('.tabs >> text=سرٹیفکیٹ');await p.waitForSelector('.cert');await p.click('.chips >> text=احمد');await p.waitForTimeout(400);
  ok(/احمد/.test(await p.$eval('.cert .nm',e=>e.textContent)),'parent switches child on certificate');
  await p.click('.tabs >> text=ترتیبات');await p.waitForSelector('.set');
