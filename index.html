@@ -9526,6 +9526,16 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       s.onerror = () => { delete loaded[url]; no(new Error(url)); }; document.head.append(s);
     })).catch(e => { delete loaded[url]; throw e; }));
   }
+  /* the critics' sayings copied word for word from Tahdhib al-Kamal (idb/jx_<k>.js, built by tools/jx.js: a paragraph is kept only when its speaker is a known critic) */
+  const jxLoaded = {};
+  function jxChunk(id) {
+    const k = Math.floor((id - 1) / 250), url = 'idb/jx_' + k + '.js';
+    if (jxLoaded[url]) return jxLoaded[url];
+    return jxLoaded[url] = (chain = chain.then(() => new Promise(ok => {
+      const s = document.createElement('script'); s.src = url; window.JXC = d => ok(d); s.onload = () => s.remove(); s.onerror = () => { delete jxLoaded[url]; ok({}); }; document.head.append(s);
+    })));
+  }
+  const JXT = {ur: 'پورے اقوال (تہذیب الکمال سے، ہو بہو)', ar: 'نصوص الأقوال (من تهذيب الكمال)', en: 'Full sayings (word for word, from Tahdhib al-Kamal)'};
   let HBK = null, hchain = Promise.resolve();
   async function hbooks() { if (HBK) return HBK; return HBK = await load('idb/hbk.js', 'HBK'); }
   function hchunk(id) {
@@ -9645,6 +9655,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const refs = {}; ((SRC && SRC.d && SRC.d[id]) || []).forEach(([qi, bk, no]) => { refs[qi] = [SRC.keys[bk], no]; });
     const refEl = qi => { const x = refs[qi]; if (!x || !window.COLL || !COLL.rjName) return ''; const nm = COLL.rjName(x[0]); return nm ? el('a', {class: 'nref', lang: 'ar', dir: 'rtl', href: x[0] === 'tahdhibkamal' ? '#/s/rijal/' + x[1] : '#/s/' + x[0] + '/n/' + x[1]}, '(' + nm.replace(/[\u064b-\u0652]/g, '') + ' ' + x[1] + ')') : ''; };
     const J = jarh.length ? el('div', {class: 'njarh'}, ...jarh.map(([who, op], qi) => el('div', {class: 'nj'}, el('div', {class: 'njh', lang: 'ar', dir: 'rtl'}, who ? el('b', {class: 'nwho'}, who) : '', refEl(qi)), el('p', {class: 'ar', lang: 'ar', dir: 'rtl'}, op)))) : el('p', {class: 'cs'}, T.noJ);
+    let JXD = []; try { JXD = (await jxChunk(id))[id] || []; } catch (e) {}
+    const JXE = JXD.length ? el('div', {class: 'njx'}, el('h4', {class: 'nsrch'}, JXT[ui] || JXT.en), ...JXD.map(([who, op, en]) => el('div', {class: 'nj'}, el('div', {class: 'njh', lang: 'ar', dir: 'rtl'}, el('b', {class: 'nwho'}, who), window.COLL && COLL.rjName && COLL.rjName('tahdhibkamal') ? el('a', {class: 'nref', lang: 'ar', dir: 'rtl', href: '#/s/rijal/' + en}, '(' + COLL.rjName('tahdhibkamal').replace(/[\u064b-\u0652]/g, '') + ' ' + en + ')') : ''), el('p', {class: 'ar', lang: 'ar', dir: 'rtl'}, op)))) : '';
     const txt = () => [r[1] + (r[2] ? ' (' + r[2] + ')' : ''), rank(r) + (r[5] ? ' — ' + T.tabn(r[5]) : '') + (r[6] ? ' — ' + T.died(r[6]) : ''), ...jarh.slice(0, 5).map(([w, o]) => '• ' + (w ? w + ': ' : '') + o), '', 'https://turathkhairalquroon.com/#/n/' + id].join('\n');
     const toast = m => { const t = el('div', {class: 'vtoast'}, m); document.body.append(t); setTimeout(() => t.remove(), 1800); };
     const acts = el('div', {class: 'vact'},
@@ -9661,7 +9673,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const panes = [[T.about, el('div', {class: 'nfacts'}, ...facts)],
       [T.teachers + ' (' + tch.length + ')', tch.length ? relList(tch, T) : el('p', {class: 'cs'}, T.none2)],
       [T.students + ' (' + std.length + ')', std.length ? relList(std, T) : el('p', {class: 'cs'}, T.none2)],
-      [T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), el('div', {}, J, el('h4', {class: 'nsrch'}, T.srcb), srcBox(tkn, T))]];
+      [T.jarh + (jarh.length ? ' (' + jarh.length + ')' : ''), el('div', {}, J, JXE, el('h4', {class: 'nsrch'}, T.srcb), srcBox(tkn, T))]];
     const tabs = el('div', {class: 'ntabs', role: 'tablist'}), body = el('div', {class: 'ntbody'});
     const pn = panes.map(([t, c], i) => { const p = el('div', {class: 'npanel card pad', hidden: i !== 0}, c), bt = el('button', {type: 'button', role: 'tab', class: 'ntab' + (i === 0 ? ' on' : ''), 'aria-selected': String(i === 0)}, t);
       bt.onclick = () => { pn.forEach(x => { x.p.hidden = x.p !== p; x.bt.classList.toggle('on', x.bt === bt); x.bt.setAttribute('aria-selected', String(x.bt === bt)); }); };

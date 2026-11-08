@@ -1,0 +1,25 @@
+// The critics' sayings copied from Tahdhib al-Kamal: checked against the alminasa list the user sent for Amr ibn Dinar (id 6123) and in the page
+const {chromium}=require('playwright');const fs=require('fs');
+let bad=0;const ok=(c,m)=>{console.log(c?'PASS':'FAIL',m);if(!c)bad=1};
+const get=(src)=>{let o;new Function('JXC',src)(d=>o=d);return o};
+const d=get(fs.readFileSync('idb/jx_'+Math.floor(6122/250)+'.js','utf8'))[6123]||[];
+const has=(who,re)=>d.some(([w,t])=>w===who&&re.test(t.replace(/[ً-ْ]/g,'')));
+ok(d.length>=12,'at least 12 sayings for Amr ibn Dinar: '+d.length);
+ok(has('شعبة بن الحجاج',/لم أر مثل/),'Shu\'ba: لم أر مثل');
+ok(has('أحمد بن حنبل',/لا يقدم على/),'Ahmad: كان شعبة لا يقدم');
+ok(has('أحمد بن حنبل',/أثبت الناس في عطاء/),'Ahmad via his son Salih: أثبت الناس في عطاء');
+ok(has('سفيان بن عيينة',/أعلم أهل مكة/),'Ibn Uyayna: أعلم أهل مكة');
+ok(has('سفيان بن عيينة',/ثقة، ثقة، ثقة/),'Ibn Uyayna: ثقة ثقة ثقة');
+ok(has('عبد الله بن أبي نجيح المكي',/أفقه ولا أعلم/),'Ibn Abi Najih');
+ok(has('مسعر بن كدام الكوفي',/أثبت/),'Mis\'ar');
+ok(has('يحيى بن سعيد القطان',/أثبت عندي من قتادة/),'al-Qattan');
+ok(has('أبو زرعة الرازي',/ثقة/)&&has('أبو حاتم الرازي',/ثقة/)&&has('أحمد بن شعيب النسائي',/ثقة/),'Abu Zur\'a, Abu Hatim, al-Nasa\'i: ثقة (three speakers)');
+ok(has('ابن شهاب الزهري',/أنص للحديث/),'al-Zuhri: أنص للحديث الجيد');
+ok(!d.some(([w,t])=>/مات سنة|ولد سنة/.test(t)),'no death/birth dates among the sayings');
+ok(d.every(([w,t,e])=>t.length<=500&&e>0),'every saying is short and carries its entry number');
+(async()=>{const b=await chromium.launch(),p=await b.newPage({viewport:{width:420,height:900}});p.on('pageerror',e=>{console.log('ERR',e.message);bad=1});
+await p.addInitScript(()=>{localStorage.ui='ur'});await p.goto('http://localhost:8765/#/n/6123');await p.waitForSelector('.ntabs',{timeout:20000});
+await p.click('.ntab:nth-child(4)');await p.waitForSelector('.njx .nj',{timeout:10000});
+const r=await p.evaluate(()=>({n:document.querySelectorAll('.njx .nj').length,ref:[...document.querySelectorAll('.njx .nref')].map(a=>a.getAttribute('href'))[0],h:document.querySelector('.njx h4').textContent}));
+ok(r.n>=12,'page shows the sayings: '+r.n);ok(/#\/s\/rijal\/\d+/.test(r.ref||''),'each saying links to the Tahdhib al-Kamal entry '+r.ref);ok(/تہذیب الکمال/.test(r.h),'Urdu heading');
+await b.close();console.log(bad?'FAILED':'PASS');process.exit(bad)})();
