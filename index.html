@@ -106,7 +106,7 @@ html[lang=ur] .ct{font:600 1.25rem/1.9 var(--urdu)}
 .ca{font:1.15rem/1.9 var(--arabic);direction:rtl;text-align:right;color:var(--muted);display:block}
 .grp{margin:1.2rem .2rem .2rem;font:600 .95rem/1.5 var(--serif);color:var(--accent)}
 .chintro{padding:.5rem .6rem;margin:.4rem 0 1rem;background:#fff;border:1px solid var(--line);border-radius:.7rem;overflow:hidden}.chintro img{display:block;width:100%;height:auto;margin:0 auto}:root[data-theme=dark] .chintro{background:#1b1b1b}:root[data-theme=dark] .chintro img{filter:invert(1) hue-rotate(180deg)}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .chintro{background:#1b1b1b}:root:not([data-theme=light]) .chintro img{filter:invert(1) hue-rotate(180deg)}}
-.chintro.txt{padding:.9rem 1.1rem;background:var(--card);font-family:var(--arabic)}.chintro.txt p{margin:.3rem 0;font-size:var(--har,24px);line-height:2.1}
+.chintro.txt.tr{font-family:var(--sans);direction:ltr}.chintro.txt.tr p{font-size:1.05rem!important;line-height:1.9}.chintro.txt{padding:.9rem 1.1rem;background:var(--card);font-family:var(--arabic)}.chintro.txt p{margin:.3rem 0;font-size:var(--har,24px);line-height:2.1}
 .chead{margin:.6rem 0}
 .hd{font:700 1.7rem/1.3 var(--serif);margin:.4rem 0 .2rem}
 .ar{font-family:var(--arabic);direction:rtl}
@@ -936,12 +936,19 @@ function ENGINE(){
   let IN_P = null;
   const needIntro = () => IN_P || (IN_P = new Promise(ok => { if (window.INTRO) return ok(); window.TURATH_INTRO = x => { window.INTRO = x; ok(); };
     const s = document.createElement('script'); s.src = 'intro/index.js'; s.onerror = () => { window.INTRO = {by: {}, emp: []}; ok(); }; document.head.append(s); }));
+  let TI_P = null;
+  const needTKIDX = () => TI_P || (TI_P = new Promise(ok => { if (window.TKIDX) return ok(); window.TURATH_TKIDX = x => { window.TKIDX = x; ok(); };
+    const s = document.createElement('script'); s.src = 'intro/tkidx.js'; s.onerror = () => { window.TKIDX = []; ok(); }; document.head.append(s); }));
+  const TK_P = {};
+  window.needTK = ki => TK_P[ki] || (TK_P[ki] = new Promise(ok => { window.TKD = window.TKD || {}; if (window.TKD[ki]) return ok();
+    window.TURATH_TK = (k, m) => { window.TKD[k] = m; if (k === ki) ok(); };
+    const s = document.createElement('script'); s.src = 'intro/tk' + ki + '.js'; s.onerror = () => { window.TKD[ki] = {}; ok(); }; document.head.append(s); }));
   const JK_P = {};
   window.needJK = ki => JK_P[ki] || (JK_P[ki] = new Promise(ok => { window.JKD = window.JKD || {}; if (window.JKD[ki]) return ok();
     const prev = window.TURATH_JK; window.TURATH_JK = (k, m) => { (window.JKD = window.JKD || {})[k] = m; if (k === ki) ok(); };
     const s = document.createElement('script'); s.src = 'intro/jk' + ki + '.js'; s.onerror = () => { window.JKD[ki] = {}; ok(); }; document.head.append(s); }));
   window.INTLB = () => ({ur: 'باب کی تمہید', ar: 'تمهيد الباب', en: 'Chapter introduction', bn: 'অধ্যায়ের ভূমিকা', hi: 'अध्याय की भूमिका', gu: 'પ્રકરણની પ્રસ્તાવના', fr: 'Introduction du chapitre'})[typeof ui === 'string' ? ui : 'en'] || 'Chapter introduction';
-  window.introOf = c => { const I = window.INTRO; if (!I || !c) return null; if (c.jk != null) return null; return c.ik ? (I.emp.find(e => e.k === c.ik) || null) && I.emp.find(e => e.k === c.ik) : (c.nums && c.nums.length ? I.by[String(Math.min.apply(null, c.nums))] : null); };
+  window.introOf = c => { const I = window.INTRO; if (!c || c.jk != null) return null; if (c.img) return c.img; if (!I || !c.nums || !c.nums.length) return null; return I.by[String(Math.min.apply(null, c.nums))] || null; };
   const realApi = async function (u, tl) {
     const [path, qs] = u.split('?'), q = Object.fromEntries(new URLSearchParams(qs || ''));
     const FULLK = q.book === 'jamik'; if (FULLK) q.book = 'jami';
@@ -952,7 +959,7 @@ function ENGINE(){
         return {no: k[0], en: k[1], ar: k[1], count: ch.reduce((s, c) => s + c.nums.length, 0), chapters: ch}; })};
     }
     if (path === 'toc') {
-      await needIntro();
+      await needIntro(); await needTKIDX();
       const kit = new Map();
       D.hadith.filter(h => !h.demo && hasJami(h)).map(h => inLang(h, tl)).forEach(h => {
         const kk = h.part_no + '|' + h.part_en; let k = kit.get(kk);
@@ -963,13 +970,15 @@ function ENGINE(){
         c.nums.push(h.num);
       });
       const kits = [...kit.values()].map(k => ({no: k.no, en: k.en, ar: k.ar, count: k.count, chapters: [...k.ch.values()]}));
-      // chapters that have a heading (and intro) in the printed Talkhees but no hadith of their own: put them where the book has them
-      ((window.INTRO && window.INTRO.emp) || []).forEach(e => {
-        const an = e.b != null ? e.b : e.a; if (an == null) return;
+      // chapters that have a heading (and maybe verse and note) in the printed Talkhees but no hadith of their own: put them where the book has them
+      const cntAfter = new Map();
+      (window.TKIDX || []).forEach(e => {
+        const an = e.ab != null ? e.ab : e.aa; if (an == null) return;
         for (const k of kits) { const i = k.chapters.findIndex(c => c.nums.length && Math.min.apply(null, c.nums) === an); if (i < 0) continue;
-          const ref = k.chapters[i], g = ref.group_ar;
-          const nc = {no: e.no, en: e.name, ar: e.name, group_no: ref.group_no, group_en: e.grp || ref.group_en, group_ar: e.grp || ref.group_ar, nums: [], ik: e.k};
-          k.chapters.splice(e.b != null ? i : i + 1, 0, nc); break; }
+          const ref = k.chapters[i], same = e.sm ? ref : null, en = (tl === 'bn' ? e.tb : e.te) || e.ar;
+          const nc = {no: e.no, en, ar: e.ar, group_no: ref.group_no, group_en: same ? ref.group_en : '', group_ar: same ? ref.group_ar : '', nums: [], ik: e.k, tk: e.kit || k.no, img: e.img || null};
+          if (e.ab != null) k.chapters.splice(i, 0, nc); else { const o = cntAfter.get(an) || 0; cntAfter.set(an, o + 1); k.chapters.splice(i + 1 + o, 0, nc); }
+          break; }
       });
       return {kitabs: kits};
     }
@@ -1570,8 +1579,15 @@ async function showChapter(no,idx,page){
     EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
   if(c.jk!=null){await window.needJK(c.jk);const ps=((window.JKD||{})[c.jk]||{})[String(c.ik.split('.')[1])];
     if(ps&&ps.length){const card=el('div',{class:'card chintro txt',lang:'ar',dir:'rtl','data-lb':INTLB()});ps.forEach(t=>card.append(el('p',{lang:'ar'},...rich(t,'ar'))));box.append(card);}}
-  {const io=window.introOf&&window.introOf(c);if(io){const card=el('div',{class:'card chintro','data-lb':INTLB()});
-    const cnt=io.cnt||io[1],id=io.id!=null?io.id:io[0];for(let q=0;q<cnt;q++)card.append(el('img',{src:'intro/'+id+(q?'-'+q:'')+'.webp',alt:'',loading:'lazy',decoding:'async'}));if(cnt)box.append(card);}}
+  if(c.jk==null){await window.needTK(c.tk||k.no);const TD=(window.TKD||{})[c.tk||k.no]||{};
+    const es=(c.ik?[c.ik]:c.nums.map(n=>'n'+n)).map(x=>TD[x]).filter(Boolean);let hasAr=false;
+    es.forEach(e=>{
+      if(e.a&&e.a.length){hasAr=true;const card=el('div',{class:'card chintro txt',lang:'ar',dir:'rtl','data-lb':INTLB()});e.a.forEach(t=>card.append(el('p',{lang:'ar'},...rich(t,'ar'))));box.append(card);}
+      const tr=ui==='bn'?e.b:ui==='en'?e.e:null,tl2=ui==='bn'?'bn':'en';
+      if(tr&&tr.length){const card=el('div',{class:'card chintro txt tr',lang:tl2,'data-lb':INTLB()});tr.forEach(t=>card.append(el('p',{lang:tl2},t)));box.append(card);}});
+    const io=!hasAr&&window.introOf&&window.introOf(c);
+    if(io){const card=el('div',{class:'card chintro','data-lb':INTLB()});const cnt=io.cnt||io[1],id=io.id!=null?io.id:io[0];
+      for(let q=0;q<cnt;q++)card.append(el('img',{src:'intro/'+id+(q?'-'+q:'')+'.webp',alt:'',loading:'lazy',decoding:'async'}));if(cnt)box.append(card);}}
   if(!c.nums.length)return;
   box.append(el('p',{},el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
