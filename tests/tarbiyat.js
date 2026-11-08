@@ -33,7 +33,7 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  // weekly worship rows + friday-only rule on the server
  const wacts=c.acts.filter(a=>a.grp==='w'),kahf=c.acts.find(a=>a.key==='w_kahf');
  ok(wacts.length===10&&['fajr','zuhr','asr','maghrib','isha','w_am','w_pm','w_sleep','w_quran','w_kahf'].every(k=>wacts.some(a=>a.key===k)),'10 worship rows: 5 prayers, 3 adhkar, quran, kahf');
- ok(c.acts.filter(a=>a.grp==='a').length===9,'9 conduct rows');
+ ok(c.acts.filter(a=>a.grp==='a').length===9&&c.acts.filter(a=>a.grp==='h').length===5,'9 conduct rows, 5 homework rows');
  const nf=new Date(Date.now()-864e5*((new Date().getUTCDay()+2)%7)); // a recent non-friday day
  let nonFri=new Date();while(nonFri.getUTCDay()===5)nonFri=new Date(nonFri-864e5);const nfd=nonFri.toISOString().slice(0,10);
  ok((await call('mark',{token:pl.token,kid:ali.id,act:kahf.id,day:nfd,n:1})).s===400,'Surah Kahf row refuses a non-Friday');
@@ -44,14 +44,17 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  await p.goto('http://localhost:8766/tarbiyat.html');
  await p.fill('#code',ali.code);await p.click('button:text-is("داخل ہوں")');await p.waitForSelector('table.ch');
  ok(await p.$$eval('table.ch thead th',a=>a.length)===9,'weekly chart: name + 7 days + total');
- ok(await p.$$eval('table.ch tbody tr',a=>a.length)===22,'one chart: 10 worship + 9 conduct rows + 2 headings + total');
- ok(await p.$$eval('table.ch tbody tr',a=>a[0].className==='secr'&&a[11].className==='secr'),'worship first, conduct below');
+ ok(await p.$$eval('table.ch tbody tr',a=>a.length)===11,'first category: 10 worship rows + total');
+ ok(await p.$$eval('.chips button',a=>['عابد نونہال','ہونہار نونہال','مثالی نونہال'].every(n=>a.some(x=>x.textContent===n))),'three categories');
  const dn=await p.$$eval('table.ch thead th',a=>a.slice(1,8).map(x=>x.querySelector('div').textContent));
  ok(['پیر','منگل','بدھ','جمعرات','جمعہ','ہفتہ','اتوار'].every(d=>dn.includes(d)),'Urdu day names');
- ok(await p.$$eval('table.ch tbody tr:nth-child(11) .lock',a=>a.length)===6,'Friday-only row shows 6 locked days');
- await p.click('table.ch tbody tr:nth-child(2) td button:not([disabled])');await p.waitForFunction(()=>document.querySelector('table.ch tbody tr:nth-child(2) td button:not([disabled])').textContent==='✓');ok(true,'tick works');
+ ok(await p.$$eval('table.ch tbody tr:nth-child(10) .lock',a=>a.length)===6,'Friday-only row shows 6 locked days');
+ await p.click('table.ch tbody tr:nth-child(1) td button:not([disabled])');await p.waitForFunction(()=>document.querySelector('table.ch tbody tr:nth-child(1) td button:not([disabled])').textContent==='✓',null,{timeout:4000}).catch(async()=>{console.log('ERRS',errs,await p.$eval('table.ch tbody tr:nth-child(1)',e=>e.innerText));process.exit(1)});ok(true,'tick works');
  if(process.env.SHOT)await p.screenshot({path:process.env.SHOT+'/week_ur.png',fullPage:true});
  ok(await p.$$eval('.tabs button',a=>a.map(x=>x.textContent).includes('ترتیبات'))===false,'child has no settings tab');
+ await p.click('.chips >> text=ہونہار نونہال');await p.waitForTimeout(300);ok(await p.$$eval('table.ch tbody tr',a=>a.length)===6,'second category: 5 homework rows + total');
+ await p.click('.chips >> text=مثالی نونہال');await p.waitForSelector('table.ch tr.neg');
+ ok(await p.$$eval('table.ch tbody tr',a=>a.length)===10,'third category: 9 rows + total');
  ok(await p.$$eval('table.ch tr.neg button',a=>a.length>0&&a.every(x=>x.disabled)),'child minus row is locked');
  ok(await p.$$eval('table.ch thead th .kid',a=>a.length)===1,'child sees only own column');
  for(const t of ['کارکردگی','سرٹیفکیٹ']){await p.click('.tabs >> text='+t);await p.waitForTimeout(500)}
@@ -62,9 +65,9 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  // English
  await p.click('#lang');await p.waitForTimeout(300);
  ok(await p.evaluate(()=>document.documentElement.dir==='ltr'&&document.documentElement.lang==='en'),'English switches direction');
- await p.click('.tabs >> text=Chart');await p.waitForSelector('table.ch');
+ await p.click('.tabs >> text=Chart');await p.click('.chips >> text=Aabid');await p.waitForSelector('table.ch');
  if(process.env.SHOT)await p.screenshot({path:process.env.SHOT+'/week_en.png',fullPage:true});
- const en=await p.$eval('#app',e=>e.innerText);ok(/Fajr/.test(en)&&/Monday/.test(en)&&/Worship/.test(en)&&/Total/.test(en),'English chart text');
+ const en=await p.$eval('#app',e=>e.innerText);ok(/Fajr/.test(en)&&/Monday/.test(en)&&/Aabid/.test(en)&&/Total/.test(en),'English chart text');
  ok(!/[؀-ۿ]/.test(en.replace(/[؀-ۿ]+\s*$/,'').replace(/علی/g,'')),'no Urdu left on the English chart page');
  await p.click('.tabs >> text=Certificate');await p.waitForSelector('.cert');
  const ce=await p.$eval('.cert',e=>e.innerText);ok(/Certificate/.test(ce)&&/star/i.test(ce)&&!/[؀-ۿ]/.test(ce.replace('علی','').replace('گھر','')),'English certificate');
@@ -72,11 +75,11 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  await p.click('#out');await p.waitForSelector('#code');
  await p.fill('#code',c.parentCode);await p.click('button:text-is("داخل ہوں")');await p.waitForSelector('table.ch');
  ok(await p.$$eval('.chips button',a=>a.filter(x=>['علی','احمد','فاطمہ'].includes(x.textContent)).length)===3,'parent sees 3 children on the weekly chart');
- ok(await p.$$eval('table.ch tr.neg button',a=>a.length===7&&a.some(x=>!x.disabled)),'parent can edit minus row');
+ await p.click('.chips >> text=مثالی نونہال');await p.waitForSelector('table.ch tr.neg');ok(await p.$$eval('table.ch tr.neg button',a=>a.length===7&&a.some(x=>!x.disabled)),'parent can edit minus row');
  await p.click('.tabs >> text=سرٹیفکیٹ');await p.waitForSelector('.cert');await p.click('.chips >> text=احمد');await p.waitForTimeout(400);
  ok(/احمد/.test(await p.$eval('.cert .nm',e=>e.textContent)),'parent switches child on certificate');
  await p.click('.tabs >> text=ترتیبات');await p.waitForSelector('.set');
- ok(await p.$$eval('.set h2',a=>a.map(x=>x.textContent)).then(h=>h.includes('عبادات کے کام')&&h.includes('تربیتی کام')),'settings list both groups');
+ ok(await p.$$eval('.set h2',a=>a.map(x=>x.textContent)).then(h=>h.includes('عابد نونہال')&&h.includes('ہونہار نونہال')&&h.includes('مثالی نونہال')),'settings list three categories');
  const sw=await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2);ok(sw,'no horizontal page scroll on phone');
  ok(errs.length===0,'page errors: '+errs.join('|'));
  // tile on the home page

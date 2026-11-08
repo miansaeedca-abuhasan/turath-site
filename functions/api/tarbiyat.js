@@ -14,9 +14,10 @@ const dnum = d => Math.floor(Date.parse(d + 'T00:00:00Z') / DAY);
 const CLEAN = c => String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
 
 // [key, kind, group, fridayOnly]. Name is stored empty: the page shows the built-in name in the reader's language until a parent renames it.
-// group 'a' = daily conduct chart (children in columns); group 'w' = weekly worship chart (days in columns)
+// group 'w' = عابد نونہال (worship), 'h' = ہونہار نونہال (homework and study), 'a' = مثالی نونہال (conduct and home duties, with the minus row)
 const DEFAULT_ACTS = [['am_adhkar', 'p', 'a', 0], ['tidy_toys', 'p', 'a', 0], ['extra_clean', 'p', 'a', 0], ['pm_adhkar', 'p', 'a', 0], ['obey_mother', 'p', 'a', 0], ['arrange_things', 'p', 'a', 0], ['sleep_time', 'p', 'a', 0], ['pray_unasked', 'p', 'a', 0], ['complaint', 'n', 'a', 0],
-  ['fajr', 'p', 'w', 0], ['zuhr', 'p', 'w', 0], ['asr', 'p', 'w', 0], ['maghrib', 'p', 'w', 0], ['isha', 'p', 'w', 0], ['w_am', 'p', 'w', 0], ['w_pm', 'p', 'w', 0], ['w_sleep', 'p', 'w', 0], ['w_quran', 'p', 'w', 0], ['w_kahf', 'p', 'w', 1]];
+  ['fajr', 'p', 'w', 0], ['zuhr', 'p', 'w', 0], ['asr', 'p', 'w', 0], ['maghrib', 'p', 'w', 0], ['isha', 'p', 'w', 0], ['w_am', 'p', 'w', 0], ['w_pm', 'p', 'w', 0], ['w_sleep', 'p', 'w', 0], ['w_quran', 'p', 'w', 0], ['w_kahf', 'p', 'w', 1],
+  ['h_homework', 'p', 'h', 0], ['h_revise', 'p', 'h', 0], ['h_bag', 'p', 'h', 0], ['h_read', 'p', 'h', 0], ['h_neat', 'p', 'h', 0]];
 
 const SCHEMA = [
   'CREATE TABLE IF NOT EXISTS t_fam (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, pcode TEXT UNIQUE NOT NULL, created INTEGER NOT NULL, last_active INTEGER NOT NULL)',
@@ -115,7 +116,7 @@ export async function onRequest(ctx) {
       if (u.kid && kid !== u.kid) return json({error: 'forbidden'}, 403);   // a child can mark only his own boxes
       const today = Math.floor(now / DAY), d = dnum(day);
       if (d > today + 1) return json({error: 'future'}, 400);
-      if (u.kid && d < today - 1) return json({error: 'old'}, 403);        // a child can fill today and yesterday only; a parent can fix any day
+      if (u.kid && d < today - 2) return json({error: 'old'}, 403);        // a child can fill today and yesterday (the page enforces the exact local days; the server allows one extra day for time zones); a parent can fix any day
       const A = await db.prepare('SELECT kind, fri FROM t_act WHERE id=? AND fam=? AND off=0').bind(act, u.fam).first(), K = await db.prepare('SELECT 1 FROM t_kid WHERE id=? AND fam=?').bind(kid, u.fam).first();
       if (!A || !K) return json({error: 'bad'}, 400);
       if (A.fri && new Date(day + 'T00:00:00Z').getUTCDay() !== 5) return json({error: 'notfri'}, 400);
@@ -141,7 +142,7 @@ export async function onRequest(ctx) {
     if (a === 'kiddel') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); await db.batch([db.prepare('DELETE FROM t_mark WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_kid WHERE id=?').bind(k.id)]); return json({ok: 1}); }
     if (a === 'parentcode') { const pc = await newCode(db, 't_fam', 'pcode', 8); await db.prepare('UPDATE t_fam SET pcode=? WHERE id=?').bind(await sha(pc), u.fam).run(); await db.prepare('DELETE FROM t_sess WHERE fam=? AND kid IS NULL AND token<>?').bind(u.fam, str(b.token, 64)).run(); return json({ok: 1, code: pc}); }
     if (a === 'actadd') {
-      const name = str(b.name, 60), kind = b.kind === 'n' ? 'n' : 'p', grp = b.grp === 'w' ? 'w' : 'a'; if (!name) return json({error: 'bad'}, 400);
+      const name = str(b.name, 60), kind = b.kind === 'n' ? 'n' : 'p', grp = b.grp === 'w' ? 'w' : b.grp === 'h' ? 'h' : 'a'; if (!name) return json({error: 'bad'}, 400);
       const c = (await db.prepare('SELECT COUNT(*) n, COALESCE(MAX(pos),0) m FROM t_act WHERE fam=? AND off=0').bind(u.fam).first()); if (c.n >= 40) return json({error: 'max'}, 400);
       const id = (await db.prepare('INSERT INTO t_act (fam,name,kind,pos,grp) VALUES (?,?,?,?,?)').bind(u.fam, name, kind, c.m + 1, grp).run()).meta.last_row_id; return json({ok: 1, id});
     }
