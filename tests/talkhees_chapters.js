@@ -14,6 +14,9 @@ ok(by.get(11890).chapter_en!==by.get(11889).chapter_en,'11890 must not share the
 ok(by.get(12339).chapter_ar!==by.get(13117).chapter_ar,'12339 and 13117 are different chapters');
 // places kept exactly as the author arranged them (follow the full Jami' order)
 has(5555,6,'النهي عن الثنيا');has(5556,7,'جواز كراء الأرض');has(5564,7,'جواز كراء الأرض');has(5565,8,'المزارعة');has(5567,8,'المزارعة');
-[12428,12429].forEach(n=>ok(/تفسير سورة التوبة/.test(by.get(n).chapter_ar),n+' surah heading chapter kept'));
-[12637,12638].forEach(n=>ok(/تفسير سورة الإسراء/.test(by.get(n).chapter_ar),n+' kept'));
+// the 7 hadith that sat under a surah-heading chapter now follow the Word/PDF (first verse chapter of the surah)
+has(12428,1,'بَرَاءَةٌ مِنَ اللَّهِ');has(12637,1,'سُبْحَانَ الَّذِي أَسْرَىٰ');has(12768,1,'يَا أَيُّهَا النَّاسُ اتَّقُوا');has(12815,1,'قَدْ أَفْلَحَ');has(13187,1,'إِنْ تَكْفُرُوا');
+// second place kept in the full Jami' order: 5420 Ibn Umar, 5421 Amr ibn Shu'ayb, 5422 Jabir
+const tx=n=>[].concat(by.get(n).matn).join(' ').replace(/[\u064B-\u0652]/g,'');
+ok(/ابن عمر/.test(tx(5420)),'5420 Ibn Umar');ok(/عمرو بن شعيب/.test(tx(5421)),'5421 Amr');ok(/جابر/.test(tx(5422)),'5422 Jabir');ok(/المحاقلة/.test(tx(5555)),'5555 Jabir muhaqala');
 console.log(fail?'tests/talkhees_chapters FAILED '+fail:'tests/talkhees_chapters ok');process.exit(fail?1:0);
