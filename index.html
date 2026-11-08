@@ -965,7 +965,7 @@ function ENGINE(){
         const kk = h.part_no + '|' + h.part_en; let k = kit.get(kk);
         if (!k) kit.set(kk, k = {no: h.part_no, en: h.part_en, ar: h.part_ar, count: 0, ch: new Map()});
         k.count++;
-        const ck = h.chapter_no + '|' + h.chapter_en + '|' + h.group_en; let c = k.ch.get(ck);
+        const ck = h.chapter_no + '|' + h.chapter_en + '|' + h.group_en + '|' + h.chapter_ar; let c = k.ch.get(ck);
         if (!c) k.ch.set(ck, c = {no: h.chapter_no, en: h.chapter_en, ar: h.chapter_ar, group_no: h.group_no, group_en: h.group_en, group_ar: h.group_ar, nums: []});
         c.nums.push(h.num);
       });
