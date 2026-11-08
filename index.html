@@ -694,6 +694,19 @@ body.vfpage .appbar{position:static}
 .nhead .nname{font-weight:600}
 .nrowbtns{margin-top:.9rem;justify-content:center}.nhbox{margin-top:.5rem}.nhbox .nsec{margin-top:.3rem}
 .vcountries{max-width:420px;margin:.2rem auto .6rem;padding:.4rem .8rem;background:var(--card,#f4f4f4);border-radius:10px;font-size:.85rem;text-align:center;display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem .5rem}.vcountries>div:last-child:nth-child(3n+1),.vcountries>div.vold{grid-column:1/-1}.vcountries[hidden]{display:none}.vbtn{background:none;border:0;color:inherit;cursor:pointer;font:inherit;padding:0 .2rem}
+/* v2 polish: one emerald-and-gold look on phone and desktop */
+:root{--accent:#0f6b57;--bar:#0e5f4e;--wash:#e7f2ee;--paper:#f4f7f4;--line:#dde6e0;--gold:#b58a2e;--shadow:0 1px 2px rgba(15,50,40,.06),0 8px 22px rgba(15,50,40,.07)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--accent:#62c4a6;--bar:#0b3b32;--wash:#16302a;--line:#27403a;--gold:#d6b05f;--paper:#0e1614}}
+:root[data-theme="dark"]{--accent:#62c4a6;--bar:#0b3b32;--wash:#16302a;--line:#27403a;--gold:#d6b05f;--paper:#0e1614}
+.appbar{background:linear-gradient(135deg,#0a4f42,#12795f);box-shadow:0 2px 14px rgba(6,46,38,.28),inset 0 -2px 0 rgba(214,176,95,.6)}
+.card{border:1px solid var(--line);border-radius:14px}
+a.card{transition:background .15s,transform .15s,box-shadow .15s}a.card:hover{background:var(--wash);transform:translateY(-1px)}
+a.card .ct{color:var(--ink)}
+.chead{text-align:center;padding:1rem .4rem .4rem;border-bottom:0}.chead .ct{display:block}.chead::after{content:"";display:block;width:84px;height:3px;margin:.9rem auto .2rem;border-radius:3px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.chintro{border-inline-start:4px solid var(--gold);cursor:zoom-in}.chintro.txt{cursor:auto}
+.chintro::before{content:attr(data-lb);display:block;font:600 .8rem var(--urdu);color:var(--gold);margin:0 0 .4rem;letter-spacing:.02em}
+.lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.88);overflow:auto;-webkit-overflow-scrolling:touch}.lbx img{display:block;background:#fff;margin:3.2rem auto 2rem;width:min(1100px,230vw);max-width:none;height:auto;border-radius:6px}.lbx button{position:fixed;top:.7rem;inset-inline-end:.8rem;z-index:100;border:0;border-radius:2rem;padding:.5rem 1.1rem;font:600 1rem var(--urdu);background:#fff;color:#0a4f42}
+@media (min-width:900px){.chead .ct{font-size:1.6rem}}
 </style>
 </head>
 <body>
@@ -927,6 +940,7 @@ function ENGINE(){
   window.needJK = ki => JK_P[ki] || (JK_P[ki] = new Promise(ok => { window.JKD = window.JKD || {}; if (window.JKD[ki]) return ok();
     const prev = window.TURATH_JK; window.TURATH_JK = (k, m) => { (window.JKD = window.JKD || {})[k] = m; if (k === ki) ok(); };
     const s = document.createElement('script'); s.src = 'intro/jk' + ki + '.js'; s.onerror = () => { window.JKD[ki] = {}; ok(); }; document.head.append(s); }));
+  window.INTLB = () => ({ur: 'باب کی تمہید', ar: 'تمهيد الباب', en: 'Chapter introduction', bn: 'অধ্যায়ের ভূমিকা', hi: 'अध्याय की भूमिका', gu: 'પ્રકરણની પ્રસ્તાવના', fr: 'Introduction du chapitre'})[typeof ui === 'string' ? ui : 'en'] || 'Chapter introduction';
   window.introOf = c => { const I = window.INTRO; if (!I || !c) return null; if (c.jk != null) return null; return c.ik ? (I.emp.find(e => e.k === c.ik) || null) && I.emp.find(e => e.k === c.ik) : (c.nums && c.nums.length ? I.by[String(Math.min.apply(null, c.nums))] : null); };
   const realApi = async function (u, tl) {
     const [path, qs] = u.split('?'), q = Object.fromEntries(new URLSearchParams(qs || ''));
@@ -1555,8 +1569,8 @@ async function showChapter(no,idx,page){
   box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},EN()?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(ad(c.no)+' — '+c.ar)),
     EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
   if(c.jk!=null){await window.needJK(c.jk);const ps=((window.JKD||{})[c.jk]||{})[String(c.ik.split('.')[1])];
-    if(ps&&ps.length){const card=el('div',{class:'card chintro txt',lang:'ar',dir:'rtl'});ps.forEach(t=>card.append(el('p',{lang:'ar'},...rich(t,'ar'))));box.append(card);}}
-  {const io=window.introOf&&window.introOf(c);if(io){const card=el('div',{class:'card chintro','aria-label':'باب کی تمہید'});
+    if(ps&&ps.length){const card=el('div',{class:'card chintro txt',lang:'ar',dir:'rtl','data-lb':INTLB()});ps.forEach(t=>card.append(el('p',{lang:'ar'},...rich(t,'ar'))));box.append(card);}}
+  {const io=window.introOf&&window.introOf(c);if(io){const card=el('div',{class:'card chintro','data-lb':INTLB()});
     const cnt=io.cnt||io[1],id=io.id!=null?io.id:io[0];for(let q=0;q<cnt;q++)card.append(el('img',{src:'intro/'+id+(q?'-'+q:'')+'.webp',alt:'',loading:'lazy',decoding:'async'}));if(cnt)box.append(card);}}
   if(!c.nums.length)return;
   box.append(el('p',{},el('button',{class:'btn lbtn',type:'button',on:{click:async()=>{
@@ -10201,5 +10215,6 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
 .sn-save{background:var(--bar,#1d4f78);color:#fff;border:0;border-radius:8px;padding:.45rem 1.1rem;font-weight:700;cursor:pointer}
 .sn-x,.sn-del{background:transparent;color:inherit;border:0;padding:.45rem .6rem;cursor:pointer}.sn-del{color:#c0392b}
 </style>
+<script>(function(){document.addEventListener('click',function(e){var im=e.target.closest&&e.target.closest('.chintro:not(.txt) img');if(!im)return;var o=document.createElement('div');o.className='lbx';var i2=document.createElement('img');i2.src=im.src;i2.alt='';var b=document.createElement('button');b.type='button';b.textContent='بند کریں';o.append(b,i2);o.addEventListener('click',function(){o.remove();document.documentElement.style.overflow='';});document.documentElement.style.overflow='hidden';document.body.append(o);});})();</script>
 </body>
 </html>
