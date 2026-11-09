@@ -10,4 +10,7 @@ ck(l.every(x=>!/\?si=/.test(x)),'no tracking parameter');
 await p.evaluate(()=>{VIDEOS.items.push({k:'seerah',t:{ur:'سیرت کی ویڈیو',en:'Seerah video'},u:'https://youtu.be/TESTID'});location.hash='#/s/seerah'});
 await p.waitForSelector('.vidchip',{timeout:8000});ck(await p.evaluate(()=>document.querySelector('.vidchip').href==='https://youtu.be/TESTID'),'category page shows its video button');
 await p.evaluate(()=>{location.hash='#/q'});await p.waitForTimeout(2500);ck(await p.evaluate(()=>!document.querySelector('.vidchip')),'no button where the category has no video');
+await p.evaluate(()=>{location.hash='#/quiz'});await p.waitForSelector('.vidchip',{timeout:8000});
+ck(await p.evaluate(()=>document.querySelector('.vidchip').href==='https://www.youtube.com/watch?v=AurdFoyAmko'),'quiz page shows the quiz video');
+ck(await p.evaluate(()=>/مسابقہ\/کوئز/.test(document.body.innerText)),'quiz named مسابقہ/کوئز');
 ck(!errs.length,'errors '+errs);await b.close();console.log(bad?'FAIL':'PASS videos')})();

@@ -3,7 +3,8 @@
 window.VIDEOS = {
   channel: '',
   items: [
-    {k: 'intro', t: {ur: 'مختصر تعارف', ar: 'تعريف موجز', en: 'Short introduction', bn: 'সংক্ষিপ্ত পরিচিতি', hi: 'संक्षिप्त परिचय', gu: 'ટૂંકો પરિચય', fr: 'Brève présentation'}, u: 'https://youtu.be/s2rYvrofrUo'}
+    {k: 'intro', t: {ur: 'مختصر تعارف', ar: 'تعريف موجز', en: 'Short introduction', bn: 'সংক্ষিপ্ত পরিচিতি', hi: 'संक्षिप्त परिचय', gu: 'ટૂંકો પરિચય', fr: 'Brève présentation'}, u: 'https://youtu.be/s2rYvrofrUo'},
+    {k: 'quiz', t: {ur: 'مسابقہ/کوئز', ar: 'المسابقة', en: 'Quiz', bn: 'কুইজ', hi: 'क्विज़', gu: 'ક્વિઝ', fr: 'Quiz'}, u: 'https://www.youtube.com/watch?v=AurdFoyAmko'}
   ],
   // the video of one category (null when there is none yet)
   for(k) { return this.items.find(i => i.k === k) || null; },
