@@ -321,7 +321,7 @@ body.withplayer .resume.float{display:none}
 .hbgrp .ca{font-size:1.15rem;color:var(--ink)}.srow2 .ca{font-size:1.2rem;color:var(--ink);opacity:.85}
 .intro summary{cursor:pointer;font-weight:600;color:var(--accent)}.intro p{margin:.6rem 0}
 .gspanel{padding:.9rem .9rem 1rem;border-radius:1.1rem}.gspanel .filterbox{margin:0 0 .8rem}
-.gstabs{display:flex;gap:.25rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.2rem 0 .7rem}.gstab{flex:1;min-width:0;border:0;background:transparent;color:var(--ink,inherit);font:inherit;font-weight:600;padding:.55rem .3rem;border-radius:999px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gsgrade{flex-wrap:wrap;border-radius:1rem!important}.gsgrade .segb{flex:1 1 auto;white-space:nowrap}.gstabs{display:flex;gap:.25rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.2rem 0 .7rem}.gstab{flex:1;min-width:0;border:0;background:transparent;color:var(--ink,inherit);font:inherit;font-weight:600;padding:.55rem .3rem;border-radius:999px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gstab[aria-selected=true]{background:var(--card);color:var(--accent);box-shadow:0 1px 6px rgba(0,0,0,.14)}
 .gspanel .seg{margin:.2rem auto .8rem;width:auto;display:flex}.gspanel .seg .segb{flex:1}
 .gscap{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;opacity:.65;margin:.5rem .2rem .3rem;display:block}
@@ -4857,7 +4857,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     f.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 350); });
     const startBtn = b.sections && b.sections.length ? el('a', {class: 'btn lbtn readstart', href: '#/s/' + b.key + '/' + b.sections[0][0]}, icon('read'), ' ', T('readStart')) : '';
-    box.append(langChips(b, () => showBook(b)), startBtn, el('div', {class: 'card pad0 filterbox'}, icon('search'), f), out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
+    const inBook = el('button', {class: 'btn lbtn bksearch', type: 'button', on: {click: () => bookSearch(b.key)}}, icon('search'), ' ', BKS[ui] || BKS.en);
+    box.append(langChips(b, () => showBook(b)), startBtn, inBook, el('div', {class: 'card pad0 filterbox'}, icon('search'), f), out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
@@ -4888,10 +4889,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     return {key, rb: true, bid, ar: r[1], ur: r[1], en: r[1], count: r[4], langs: ['ar'], au: a ? [a[0]] : null};
   }
   // the hits of one book, found as needed: pool.fill(n) checks the candidates until n hits are found (or none is left)
-  function makePool(b, ns, lang, words, md) {
-    const test = modeTest(md, words), multi = md === 'exact' && words.length > 1;
+  // the ruling of a hadith, read from the grade text of its book: the first judgement named decides (mawdu' · da'if · sahih, which holds muttafaq 'alayh, sahih and every kind of hasan)
+  const GRADES = [['mawdu', /موضوع|مكذوب|مختلق|لا اصل له|باطل|fabricat|maudu|mawdu/i], ['daif', /ضعيف|منكر|واه|شاذ|متروك|da.?if|weak/i], ['sahih', /صحيح|متفق عليه|حسن|جيد|قوي|sahih|hasan|hassan/i]];
+  const gradeCat = g => { if (!g || typeof g !== 'string') return ''; const t = g.replace(/[\u064b-\u0652\u0670]/g, '').replace(/[أإآ]/g, 'ا'); let best = '', pos = 1e9;
+    for (const [c, r] of GRADES) { const m = t.search(r); if (m >= 0 && m < pos) { pos = m; best = c; } } return best; };
+  window.GRADECAT = gradeCat;
+  function makePool(b, ns, lang, words, md, gr) {
+    const test = modeTest(md, words), multi = md === 'exact' && words.length > 1, gOk = r => !gr || (r && gradeCat(r[2]) === gr);
     const p = {b, ok: [], pos: 0, more: true, total: null};
-    if (ns && !multi) { p.ok = ns.slice(); p.more = false; p.total = ns.length; return p; }
+    if (ns && !multi && !gr) { p.ok = ns.slice(); p.more = false; p.total = ns.length; return p; }
     p.fill = async target => {
       if (p.busy) return; p.busy = true;
       try {
@@ -4899,7 +4905,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           if (!ns) {      // every row of the book: text and translation (an interface language other than Arabic)
             if (!p.rows) { await needAll(b, 'ar'); if (lang) await needAll(b, lang); p.rows = [...(C.data[b.key + '|ar'] || new Map()).keys()]; }
             const part = p.rows.slice(p.pos, p.pos + 1500); p.pos += part.length;
-            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if ((r && test(r[1])) || (tr && test(tr[1]))) p.ok.push(n); }
+            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if (((r && test(r[1])) || (tr && test(tr[1]))) && gOk(r)) p.ok.push(n); }
             if (p.pos >= p.rows.length) p.more = false;
           } else if (b.rb) {
             const part = ns.slice(p.pos, p.pos + 24); p.pos += part.length;
@@ -4909,7 +4915,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           } else {
             const part = ns.slice(p.pos, p.pos + 40); p.pos += part.length;
             await needRange(b, 'ar', part[0], part[part.length - 1]); if (lang) await needRange(b, lang, part[0], part[part.length - 1]);
-            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if ((r && test(r[1])) || (tr && test(tr[1]))) p.ok.push(n); }
+            for (const n of part) { const r = row(b, 'ar', n), tr = lang ? row(b, lang, n) : null; if (((r && test(r[1])) || (tr && test(tr[1]))) && gOk(r)) p.ok.push(n); }
             if (p.pos >= ns.length) p.more = false;
           }
           await tick();
@@ -4945,7 +4951,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   // o: {words, md, sel (a Set of book keys, or null for all), cur (is this search still the current one), site (the box for the results), sum (the line of the total)}
   async function siteSearch(o) {
-    const {words, md, sel, cur, site, sum} = o, jobs = [], pools = [], placed = [], lg = o.lg || ui;
+    const {words, md, sel, cur, site, sum} = o, jobs = [], pools = [], placed = [], lg = o.lg || ui, gr = o.gr || '';
     const upd = () => { const t = pools.reduce((a, x) => a + (x.total != null ? x.total : x.ok.length), 0), pl = pools.some(x => x.more);
       sum.textContent = pools.length ? T('gsTotal')(fmtN(t) + (pl ? '+' : ''), fmtN(pools.length)) : T('loading'); };
     const put = (idx, sec) => { const nx = placed.filter(x => x.idx > idx).sort((a, b) => a.idx - b.idx)[0]; site.insertBefore(sec, nx ? nx.sec : null); placed.push({idx, sec});
@@ -4957,7 +4963,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       let d; try { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=' + jb + '&mode=' + md); } catch (e) { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=jami&mode=' + md); }
       if (!cur()) return;
       const n = d.total || d.results.length;
-      if (n && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
+      if (n && (!gr || gr === 'sahih') && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
     } catch (e) {}
     upd();
     let hits = new Map(), lhits = null;
@@ -4990,8 +4996,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       while (next < jobs.length && cur()) {
         const i = next++, j = jobs[i];
         try {
+          if (gr && isRbKey(j.key)) continue;   // the Hadith Library has no rulings
           const b = j.b || (isRbKey(j.key) ? await rbBook(j.key) : bookOf(j.key)); if (!b) continue;
-          const lang = arUI ? null : lg, pool = makePool(b, j.ns, lang, words, md);
+          const lang = arUI ? null : lg, pool = makePool(b, j.ns, lang, words, md, gr);
           if (pool.fill) await pool.fill(20);
           if (!cur() || !pool.ok.length) continue;
           pools.push(pool); put(i + 1, hitSection(bname(b) + (b.au && b.rb ? ' — ' + b.au[0] : ''), pool, b, lang, words, null)); upd();
@@ -5015,7 +5022,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const GSL = {ur: 'اردو', ar: 'العربية', en: 'English', bn: 'বাংলা', hi: 'हिन्दी', gu: 'ગુજરાતી', fr: 'Français'};
   const GSTOPIC = {ur: 'موضوع', ar: 'الموضوع', en: 'Topic', bn: 'বিষয়', hi: 'विषय', gu: 'વિષય', fr: 'Sujet'};
   const GSTHINT = {ur: 'موضوع لکھیں، مثلاً: نماز، زکاۃ، نکاح۔ ان ابواب اور کتابوں کے عنوان آئیں گے جن میں یہ لفظ ہو۔', ar: 'اكتب موضوعاً، مثل: الصلاة، الزكاة، النكاح — تظهر الأبواب والكتب التي في عنوانها هذه الكلمة.', en: 'Type a topic, e.g. prayer, zakah, marriage. Chapters and books whose titles contain it are listed.', bn: 'বিষয় লিখুন, যেমন: নামাজ, যাকাত, বিবাহ। যেসব অধ্যায় ও কিতাবের শিরোনামে শব্দটি আছে সেগুলো আসবে।', hi: 'विषय लिखें, जैसे: नमाज़, ज़कात, निकाह। जिन अध्यायों और किताबों के शीर्षक में यह शब्द हो वे आएँगे।', gu: 'વિષય લખો, જેમ કે: નમાઝ, ઝકાત, નિકાહ. જેમના શીર્ષકમાં આ શબ્દ હોય તે પ્રકરણો અને કિતાબો આવશે.', fr: 'Saisissez un sujet, p. ex. prière, zakât, mariage. Les chapitres et livres dont le titre le contient sont listés.'};
+  const BKS = {ur: 'اس کتاب میں تلاش — حدیث نمبر، الفاظ، جملے', ar: 'البحث في هذا الكتاب — رقم الحديث والكلمات والعبارات', en: 'Search in this book — hadith number, words, phrases', bn: 'এই বইয়ে খুঁজুন — হাদীস নম্বর, শব্দ, বাক্য', hi: 'इस किताब में खोजें — हदीस नंबर, शब्द, वाक्य', gu: 'આ કિતાબમાં શોધો — હદીસ નંબર, શબ્દો, વાક્યો', fr: 'Chercher dans ce livre — numéro, mots, phrases'};
   const gsLs = (k, d) => { try { return JSON.parse(localStorage[k] || 'null') || d; } catch (e) { return d; } };
+  const GSGR = {ur: ['سب', 'صحیح و حسن', 'ضعیف', 'موضوع / من گھڑت'], ar: ['الكل', 'صحيح وحسن', 'ضعيف', 'موضوع'], en: ['All', 'Sahih & Hasan', 'Da‘if', 'Fabricated'], bn: ['সব', 'সহীহ ও হাসান', 'দুর্বল', 'জাল'], hi: ['सभी', 'सहीह व हसन', 'ज़ईफ़', 'मनगढ़ंत'], gu: ['બધા', 'સહીહ અને હસન', 'ઝઈફ', 'મનઘડત'], fr: ['Tous', 'Sahih et Hasan', 'Da‘if', 'Forgé']};
+  const GSGH = {ur: '«صحیح و حسن» میں متفق علیہ، صحیح اور حسن کی سبھی اقسام شامل ہیں۔ جس کتاب میں حکم درج نہ ہو وہ اس انتخاب میں چھوڑ دی جاتی ہے۔', ar: '«صحيح وحسن» يشمل المتفق عليه والصحيح وأنواع الحسن كلها. والكتب التي لم يُذكر فيها حكم تُترك عند اختيار حكم.', en: '«Sahih & Hasan» holds agreed-upon, sahih and every kind of hasan. Books that give no ruling are left out when a ruling is chosen.', bn: '«সহীহ ও হাসান»-এ মুত্তাফাক আলাইহি, সহীহ ও সব ধরনের হাসান আছে। যে বইয়ে হুকুম নেই, হুকুম বাছাই করলে তা বাদ যায়।', hi: '«सहीह व हसन» में मुत्तफ़क़ अलैहि, सहीह और हसन की सभी क़िस्में शामिल हैं। जिस किताब में हुक्म नहीं, वह इस चुनाव में छोड़ दी जाती है।', gu: '«સહીહ અને હસન» માં મુત્તફક અલૈહિ, સહીહ અને હસનના બધા પ્રકારો છે. જે કિતાબમાં હુકમ ન હોય તે આ પસંદગીમાં છોડી દેવાય છે.', fr: '«Sahih et Hasan» comprend muttafaq ‘alayh, sahih et toutes les sortes de hasan. Les livres sans jugement sont écartés quand un jugement est choisi.'};
+  const GSGK = ['', 'sahih', 'daif', 'mawdu'];
   const gsTabs = () => { const a = []; if (ui !== 'ar') a.push(ui); a.push('ar'); if (ui !== 'en') a.push('en'); a.push('topic'); return [...new Set(a)]; };
   const GSSYN = {"نماز": "صلاة صلوات prayer", "روزہ": "صوم صيام fasting", "روزے": "صوم صيام fasting", "زکاۃ": "زكاة زكاه zakah", "زکوٰۃ": "زكاة zakah", "زکوة": "زكاة zakah", "حج": "حج hajj", "عمرہ": "عمرة umrah", "نکاح": "نكاح marriage", "شادی": "نكاح marriage", "طلاق": "طلاق divorce", "وضو": "وضوء wudu", "غسل": "غسل ghusl", "تیمم": "تيمم tayammum", "طہارت": "طهارة purification", "پاکیزگی": "طهارة purification", "جہاد": "جهاد jihad", "تجارت": "بيع بيوع تجارة sales trade", "خرید": "بيع بيوع sales", "فروخت": "بيع بيوع sales", "بیع": "بيع بيوع sales", "قرض": "قرض دين loan debt", "میراث": "فرائض ميراث inheritance", "وراثت": "فرائض ميراث inheritance", "قسم": "أيمان أيمان oaths", "قسمیں": "أيمان oaths", "نذر": "نذور نذر vows", "جنازہ": "جنائز جنازة funeral", "قربانی": "أضاحي أضحية sacrifice", "عقیقہ": "عقيقة aqiqah", "توبہ": "توبة repentance", "دعا": "دعاء دعوات supplication", "دعائیں": "دعاء دعوات supplication", "ذکر": "ذكر remembrance", "ایمان": "إيمان faith", "علم": "علم knowledge", "اخلاق": "أخلاق آداب manners", "آداب": "آداب أدب manners", "کھانا": "أطعمة طعام food", "کھانے": "أطعمة طعام food", "مشروبات": "أشربة drinks", "پینا": "أشربة drinks", "لباس": "لباس clothing", "نیند": "نوم sleep", "سونا": "نوم sleep", "سفر": "سفر travel", "جمعہ": "جمعة friday", "عید": "عيد eid", "اذان": "أذان adhan", "مسجد": "مساجد مسجد mosque", "سلام": "سلام greeting", "والدین": "والدين parents", "حیض": "حيض menstruation", "رضاعت": "رضاع nursing", "قصاص": "قصاص retribution", "حدود": "حدود punishments", "خلافت": "خلافة إمارة caliphate", "فتنے": "فتن tribulations", "فتن": "فتن tribulations", "قیامت": "قيامة ساعة resurrection", "جنت": "جنة paradise", "جہنم": "نار جهنم hell", "دوزخ": "نار جهنم hell", "موت": "موت وفاة death", "قبر": "قبر grave", "صبر": "صبر patience", "شکر": "شكر gratitude", "غیبت": "غيبة backbiting", "جھوٹ": "كذب lying", "ظلم": "ظلم injustice", "پڑوسی": "جار جيران neighbour", "یتیم": "يتيم orphan", "عورتیں": "نساء women", "عورت": "نساء women", "بچے": "أولاد children", "اولاد": "أولاد children", "علاج": "طب treatment medicine", "بیماری": "مرض مرضى illness", "جادو": "سحر magic", "نظر": "نظر gaze", "قرآن": "قرآن quran", "تلاوت": "تلاوة recitation", "نیت": "نية intention", "اخلاص": "إخلاص sincerity", "بدعت": "بدعة innovation", "سنت": "سنة sunnah", "مال": "مال wealth", "صدقہ": "صدقة charity", "خیرات": "صدقة charity", "وصیت": "وصية will bequest", "ہبہ": "هبة gift", "تحفہ": "هدية gift", "غلام": "عتق رقيق slaves", "آزادی": "عتق freeing", "ستر": "عورة", "داڑھی": "لحية beard", "بال": "شعر hair", "خوشبو": "طيب perfume", "شراب": "خمر wine", "سود": "ربا usury", "رشوت": "رشوة bribe", "چوری": "سرقة theft", "زنا": "زنا adultery", "نبوت": "نبوة prophethood", "وحی": "وحي revelation", "معراج": "إسراء معراج night journey", "ہجرت": "هجرة migration", "غزوہ": "غزوة غزوات expedition"};
   const gsAlt = w => { const a = [w]; const k = w.replace(/[\u064b-\u0652\u0670]/g, ''); const x = GSSYN[k] || GSSYN[w]; if (x) a.push(...x.split(' ')); return a; };
@@ -5023,13 +5034,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the rows of a result group are made only when it is opened (a topic like «prayer» has thousands of chapters)
   const gsLazy = (d, hit, mk, openNow) => { let done = false; const fill = () => { if (done) return; done = true; hit.forEach(x => d.append(mk(x))); }; d.addEventListener('toggle', () => { if (d.open) fill(); }); if (openNow) { d.open = true; fill(); } };
   async function topicSearch(o) {
-    const {v, cur, site, sum} = o, key = ui === 'bn' ? 'jami_bn' : 'jami', W0 = v.split(/[\s&+،,]+/).filter(Boolean);
+    const {v, cur, site, sum, sel} = o, key = ui === 'bn' ? 'jami_bn' : 'jami', W0 = v.split(/[\s&+،,]+/).filter(Boolean);
     let ks = []; try { ks = (await api('toc?book=' + key)).kitabs || []; } catch (e) {}
     if (!cur()) return;
     const enFirst = ['en', 'bn', 'fr'].includes(ui), pri = x => (enFirst ? x.en || x.ar : x.ar || x.en) || '', sec = x => (enFirst ? x.ar : x.en) || '';
     const open = (e, h) => { e.preventDefault(); if (window.hbOpen) window.hbOpen(key, h); else { try { localStorage.book = key; } catch (x) {} location.hash = h; } };
     let n = 0, first = true;
-    ks.forEach(k => {
+    (sel && !sel.has('jami') ? [] : ks).forEach(k => {
       const kt = (k.ar || '') + ' ' + (k.en || ''), whole = gsMatch(W0, kt), hit = [];
       k.chapters.forEach((c, i) => { if (!c.nums.length) return; if (whole || gsMatch(W0, (c.ar || '') + ' ' + (c.en || '') + ' ' + (c.group_ar || '') + ' ' + (c.group_en || ''))) hit.push([c, i]); });
       if (!hit.length) return; n += hit.length;
@@ -5039,7 +5050,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       gsLazy(d, hit, mk, first); first = false; site.append(d);
     });
     // the sections of the other books (their titles in the app's language and in Arabic)
-    (C.idx || []).forEach(b => { if (b.ext || !b.sections) return; const hit = b.sections.filter(sc => gsMatch(W0, (sc[1] || '') + ' ' + (sc[4] || '')));
+    (C.idx || []).forEach(b => { if (b.ext || !b.sections || (sel && !sel.has(b.key))) return; const hit = b.sections.filter(sc => gsMatch(W0, (sc[1] || '') + ' ' + (sc[4] || '')));
       if (!hit.length) return; n += hit.length;
       const d = el('details', {class: 'card gsres'}, el('summary', {dir: 'auto'}, bname(b) + '  ', el('small', {class: 'cs'}, fmtN(hit.length))));
       const mk = sc => { const h = '#/s/' + b.key + '/' + sc[0];
@@ -5055,7 +5066,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (!pre0 && keepShow(box, 's')) return;
     const jamL = ['ur', 'en', 'bn'].concat((window.TURATH_DATA && TURATH_DATA.langs) || []);
     let rb = []; try { const K = window.RB && RB.on ? await RB.catalog() : null; if (K) K.b.slice().sort((x, y) => (K.a[x[3]] ? K.a[x[3]][1] || 9999 : 9999) - (K.a[y[3]] ? K.a[y[3]][1] || 9999 : 9999)).forEach(r => rb.push({key: 'rb' + r[0], name: r[1] + (K.a[r[3]] ? ' — ' + K.a[r[3]][0] : ''), count: r[4]})); } catch (e) {}
-    const booksFor = t => t === 'topic' ? [] :
+    const booksFor = t => t === 'topic' ? [{key: 'jami', name: T('jamiName'), count: 16552}].concat(C.idx.filter(b => !b.ext && b.sections && b.sections.length).map(b => ({key: b.key, name: bname(b), count: b.count}))) :
       ((t === 'ar' || jamL.includes(t)) ? [{key: 'jami', name: T('jamiName'), count: 16552}] : [])
         .concat(C.idx.filter(b => !SKIP.has(b.key) && !b.ext && (t === 'ar' || (b.langs || []).includes(t))).map(b => ({key: b.key, name: bname(b), count: b.count})))
         .concat(t === 'ar' ? rb : []);
@@ -5084,11 +5095,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const clr = el('button', {class: 'btn lbtn', type: 'button', on: {click: () => { run++; q.value = ''; out.replaceChildren(); window.scrollTo(0, 0); q.focus(); }}}, CLR[ui] || CLR.en);
     const tabBar = el('div', {class: 'gstabs', role: 'tablist'}), hint = el('p', {class: 'note'});
     const mb = modeBar(() => { if (q.value.trim()) go.click(); });
+    let gk = gsLs('gsgrade', ''); if (!GSGK.includes(gk)) gk = '';
+    const gb = el('div', {class: 'seg gsgrade', role: 'group'});
+    const drawG = () => gb.replaceChildren(...GSGK.map((k, i) => el('button', {type: 'button', class: 'segb', 'data-g': k, 'aria-pressed': String(k === gk), on: {click: () => { gk = k; try { localStorage.gsgrade = JSON.stringify(k); } catch (e) {} drawG(); if (q.value.trim()) go.click(); }}}, (GSGR[ui] || GSGR.en)[i])));
+    drawG();
     const drawTabs = () => {
       tabBar.replaceChildren(...tabs.map(t => el('button', {type: 'button', class: 'gstab', role: 'tab', 'data-tab': t, 'aria-selected': String(t === tab), on: {click: () => { if (t === tab) return; tab = t; try { localStorage.gstab4 = JSON.stringify(t); } catch (e) {} run++; out.replaceChildren(); loadSel(); drawTabs(); paint(); if (q.value.trim()) go.click(); }}}, t === 'topic' ? GSTOPIC[ui] || GSTOPIC.en : GSL[t] || t)));
-      const tp = tab === 'topic'; pick.hidden = tp; mb.hidden = tp; hint.textContent = tp ? GSTHINT[ui] || GSTHINT.en : T('gsHint');
+      const tp = tab === 'topic'; mb.hidden = tp; gb.hidden = tp; hint.textContent = (tp ? GSTHINT[ui] || GSTHINT.en : T('gsHint') + '  ' + (GSGH[ui] || GSGH.en));
     };
-    const root = el('div'); root.append(el('div', {class: 'card gspanel'}, el('div', {class: 'card pad0 filterbox'}, icon('search'), q), tabBar, mb, pick, el('div', {class: 'gsbar'}, go, ' ', clr)), hint, out);
+    const root = el('div'); root.append(el('div', {class: 'card gspanel'}, el('div', {class: 'card pad0 filterbox'}, icon('search'), q), tabBar, mb, gb, pick, el('div', {class: 'gsbar'}, go, ' ', clr)), hint, out);
     box.append(root); KEEP.s = {root, ui, hash: location.hash, y: 0};
     drawTabs(); paint();
     const doRun = async () => {
@@ -5097,8 +5112,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const md = /[&+،,]/.test(v) ? 'all' : GSMODE(), tk = ++run;
       pick.open = false; out.replaceChildren();
       const sum = el('div', {class: 'qsbar'}, T('loading')), site = el('div'); out.append(sum, site);
-      if (tab === 'topic') return topicSearch({v, cur: () => tk === run, site, sum});
-      await siteSearch({v, words, md, sel: new Set(sel), cur: () => tk === run, site, sum, lg: tab});
+      if (tab === 'topic') return topicSearch({v, cur: () => tk === run, site, sum, sel: new Set(sel)});
+      await siteSearch({v, words, md, sel: new Set(sel), cur: () => tk === run, site, sum, lg: tab, gr: gk});
     };
     go.addEventListener('click', doRun);
     q.addEventListener('keydown', e => { if (e.key === 'Enter') doRun(); });
