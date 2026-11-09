@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>تربیت — تراث خيرالقرون</title>
+<title>تربیہ — تراث خيرالقرون</title>
 <style>
 @font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
 @font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
@@ -81,7 +81,7 @@ svg.gr text{font-family:inherit;fill:var(--muted);font-size:11px}
 </head>
 <body>
 <main>
-<header class="top"><img src="icons/tarbiyat.png" alt="" width="44" height="44"><h1 id="ttl">تربیت<small id="sub">بچوں کی اچھی عادتوں کا چارٹ</small></h1><button class="sec sm" id="lang">English</button><button class="sec sm" id="home">ہوم</button><button class="sec sm" id="out" hidden>باہر نکلیں</button></header>
+<header class="top"><img src="icons/tarbiyat.png" alt="" width="44" height="44"><h1 id="ttl">تربیہ<small id="sub">بچوں کی اچھی عادتوں کا چارٹ</small></h1><button class="sec sm" id="lang">English</button><button class="sec sm" id="home">ہوم</button><button class="sec sm" id="out" hidden>باہر نکلیں</button></header>
 <div id="app"></div>
 </main>
 <script>
@@ -90,7 +90,7 @@ const $=s=>document.querySelector(s);
 const E=(t,a,...k)=>{const e=document.createElement(t);for(let [n,v] of Object.entries(a||{})){if(v==null||v===false)continue;if(typeof v==='string'&&(n==='placeholder'||n==='aria-label'))v=tr(v);if(n==='on')for(const [ev,f] of Object.entries(v))e.addEventListener(ev,f);else if(n==='class')e.className=v;else if(n==='html')e.innerHTML=v;else if(n==='style')e.style.cssText=v;else if(v===true)e.setAttribute(n,'');else e.setAttribute(n,v)}for(const c of k.flat())if(c!=null&&c!==false)e.append(c.nodeType?c:document.createTextNode(typeof c==='string'?tr(c):c));return e};
 let LG=(()=>{try{return localStorage.tb_lang==='en'?'en':'ur'}catch(e){return 'ur'}})();
 const EN=()=>LG==='en';
-const XEN={'تربیت':'Tarbiyah','بچوں کی اچھی عادتوں کا چارٹ':'Children\'s good habits chart','ہوم':'Home','باہر نکلیں':'Sign out','کوڈ لکھیں':'Enter code',
+const XEN={'تربیہ':'Tarbiyah','بچوں کی اچھی عادتوں کا چارٹ':'Children\'s good habits chart','ہوم':'Home','باہر نکلیں':'Sign out','کوڈ لکھیں':'Enter code',
 'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔':'A chart of good daily habits. Children mark their own progress, parents watch over it, and there are graphs and certificates from the week up to the year.',
 'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔':'This is free. Parents have one code and each child has a separate code, with which the child can fill in only his or her own boxes.',
 'کوڈ سے داخل ہوں':'Enter with a code','والدین کا کوڈ یا بچے کا اپنا کوڈ':'Parents\' code or the child\'s own code','داخل ہوں':'Enter','نیا چارٹ بنائیں':'Create a new chart',
@@ -168,7 +168,7 @@ function landing(msg){
   const err=E('div',{class:'err'},msg||'');
   const go=async()=>{err.textContent='';try{const r=await api('login',{code:code.value});setTok(r.token);S=r;MK.clear();tab='chart';dash()}catch(e){err.textContent=errText(e)}};
   code.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
-  show(E('div',{class:'hero'},E('h2',{},'تربیت'),E('p',{},'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔'),E('p',{class:'muted',style:'color:#fff;opacity:.85'},'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔')),
+  show(E('div',{class:'hero'},E('h2',{},'تربیہ'),E('p',{},'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔'),E('p',{class:'muted',style:'color:#fff;opacity:.85'},'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔')),
     E('div',{class:'card'},E('h2',{},'کوڈ سے داخل ہوں'),E('label',{},'والدین کا کوڈ یا بچے کا اپنا کوڈ'),code,E('button',{on:{click:go}},'داخل ہوں'),err),
     E('div',{class:'card'},E('h2',{},'نیا چارٹ بنائیں'),E('p',{class:'muted'},'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔'),E('button',{class:'sec',on:{click:create}},'نیا خاندان بنائیں')));
 }
@@ -297,7 +297,7 @@ async function vSet(body){
       E('button',{class:'bad',on:{click:act(async()=>{if(!confirm(EN()?'The whole family, the children and all records will be erased for ever. Delete for sure?':'پورا خاندان، بچے اور سارا ریکارڈ ہمیشہ کے لیے مٹ جائے گا۔ پکا مٹانا ہے؟'))return;await api('famdel',{sure:'yes'});setTok('');S=null;landing()})}},'پورا چارٹ مٹائیں')));
   async function refresh2(){S={...S,...(await api('state'))}}
 }
-function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیت');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیت — تراث خيرالقرون'}
+function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیہ');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیہ — تراث خيرالقرون'}
 $('#lang').addEventListener('click',()=>{LG=EN()?'ur':'en';try{localStorage.tb_lang=LG}catch(e){}applyLang();if(S)dash();else landing()});
 $('#out').addEventListener('click',async()=>{try{await api('logout')}catch(e){}setTok('');S=null;MK.clear();landing()});
 $('#home').addEventListener('click',()=>{location.href='./'});

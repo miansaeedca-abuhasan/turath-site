@@ -1,4 +1,4 @@
-// «تربیت» (children's good-conduct chart) for turathkhairalquroon.com — free, Cloudflare Pages Function + the D1 database bound as DB.
+// «تربیہ» (children's good-conduct chart) for turathkhairalquroon.com — free, Cloudflare Pages Function + the D1 database bound as DB.
 // One family = one parent code + one code per child. A child's code can only mark that child's own boxes and see that child's own results.
 // Privacy: no e-mail, no surname needed; the owner of the site can read nothing about families. A family idle for 120 days is removed.
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
