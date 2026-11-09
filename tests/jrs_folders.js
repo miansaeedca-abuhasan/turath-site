@@ -11,7 +11,7 @@ if(D.s.filter(x=>!x.h.length).length>6)bad.push('sources without numbers');
 if(D.n[0].c!==2447)bad.push('abu hurayrah count');
 if(!/#\/jr/.test(ix)||!/#\/js/.test(ix)||!/function jrRows/.test(ix))bad.push('index wiring');
 if(!/book!=='jami'&&book!=='jamik'/.test(ix))bad.push('rows only in Jami books');
-if(ix.indexOf('...jrRows(),')<0||ix.indexOf('...jrRows(),')>ix.indexOf("href:'#/madkhal'"))bad.push('rows must follow the introduction');
+if(ix.indexOf('...jrRows(),list')<0||ix.indexOf('...jrRows(),list')<ix.indexOf("href:'#/madkhal'"))bad.push('rows must follow the introduction');
 ['مرتب: تراث خیرالقرون','مرتب: تراث خير القرون','Compiled by: Turath Khair al-Quroon'].forEach(s=>{if(!js.includes(s))bad.push('byline '+s)});
 ['intro','total','nums'].forEach(k=>{if(!js.includes("['"+k+"'"))bad.push('tab '+k)});
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');process.exit(bad.length?1:0);

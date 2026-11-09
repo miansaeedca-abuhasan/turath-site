@@ -964,17 +964,33 @@ function ENGINE(){
   const JK_P = {};
   window.needJK = ki => JK_P[ki] || (JK_P[ki] = new Promise(ok => { window.JKD = window.JKD || {}; if (window.JKD[ki]) return ok();
     const prev = window.TURATH_JK; window.TURATH_JK = (k, m) => { (window.JKD = window.JKD || {})[k] = m; if (k === ki) ok(); };
-    const s = document.createElement('script'); s.src = 'intro/jk' + ki + '.js'; s.onerror = () => { window.JKD[ki] = {}; ok(); }; document.head.append(s); }));
+    const s = document.createElement('script'); s.src = 'intro/jk' + ki + '.js?v=20261110'; s.onerror = () => { window.JKD[ki] = {}; ok(); }; document.head.append(s); }));
   window.INTLB = () => ({ur: 'باب کی تمہید', ar: 'تمهيد الباب', en: 'Chapter introduction', bn: 'অধ্যায়ের ভূমিকা', hi: 'अध्याय की भूमिका', gu: 'પ્રકરણની પ્રસ્તાવના', fr: 'Introduction du chapitre'})[typeof ui === 'string' ? ui : 'en'] || 'Chapter introduction';
   window.introOf = c => { const I = window.INTRO; if (!c || c.jk != null) return null; if (c.img) return c.img; if (!I || !c.nums || !c.nums.length) return null; return I.by[String(Math.min.apply(null, c.nums))] || null; };
+  /* the Kashshaf (printed index) has 67 books: the Word files made Salat and Tafsir two parts each, put the Shama'il under the Sira, and left seven books as headings inside another book. Same chapters, same intros (ik/jk keep their original place); only the grouping changes. */
+  const J_MERGE = {9: 8, 56: 55, 46: 45}, J_SPLIT = {'33.49': 1, '36.13': 1, '43.41': 1, '47.290': 1, '47.310': 1, '47.316': 1, '61.112': 1};
+  function jRegroup(ks) {
+    if (ks.length !== 63) return ks;
+    const out = [];
+    ks.forEach((k, ki) => {
+      let cur = J_MERGE[ki] != null ? out[out.length - 1] : null;
+      if (!cur) { cur = {no: 0, en: k.en, ar: k.ar, count: 0, chapters: []}; out.push(cur); }
+      k.chapters.forEach((c, ci) => {
+        if (J_SPLIT[ki + '.' + ci]) { cur = {no: 0, en: c.en.replace(/^\s*\d+\s*-\s*/, ''), ar: c.en.replace(/^\s*\d+\s*-\s*/, ''), count: 0, chapters: []}; out.push(cur); }
+        cur.chapters.push(c); cur.count += c.nums.length;
+      });
+    });
+    out.forEach((k, i) => { k.no = i + 1; });
+    return out;
+  }
   const realApi = async function (u, tl) {
     const [path, qs] = u.split('?'), q = Object.fromEntries(new URLSearchParams(qs || ''));
     const FULLK = q.book === 'jamik'; if (FULLK) q.book = 'jami';
     if (path === 'books') return {books: D.books.slice(0, 1).concat([FULLB], VIRT, D.books.slice(1))};
     if (path === 'toc' && FULLK) {
       await needStruct(); await needIntro();
-      return {kitabs: window.JSTRUCT.map((k, ki) => { const ch = k[2].map((c, ci) => { const o = {no: c[0], en: c[1], ar: c[1], group_no: 0, group_en: c[3] || '', group_ar: c[3] || '', nums: c[2].filter(n => byNum.has(n))}; o.ik = 'j' + ki + '.' + ci; o.jk = ki; return o; });
-        return {no: k[0], en: k[1], ar: k[1], count: ch.reduce((s, c) => s + c.nums.length, 0), chapters: ch}; })};
+      return {kitabs: jRegroup(window.JSTRUCT.map((k, ki) => { const ch = k[2].map((c, ci) => { const o = {no: c[0], en: c[1], ar: c[1], group_no: 0, group_en: c[3] || '', group_ar: c[3] || '', nums: c[2].filter(n => byNum.has(n))}; o.ik = 'j' + ki + '.' + ci; o.jk = ki; return o; });
+        return {no: k[0], en: k[1], ar: k[1], count: ch.reduce((s, c) => s + c.nums.length, 0), chapters: ch}; }))};
     }
     if (path === 'toc') {
       await needIntro(); await needTKIDX();
@@ -1059,7 +1075,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=b00f030fe2", "data/d2.js?h=0366fda540", "data/d3.js?h=11c90bfde6", "data/d4.js?h=719484bece", "data/d5.js?h=4e56914bec", "data/d6.js?h=715c6f44f7", "data/d7.js?h=e332b17493", "data/d8.js?h=0d8826b977", "data/d9.js?h=ea61cce8e3", "data/d10.js?h=a456ff3822"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=865d5a0c70", "data/d2.js?h=0366fda540", "data/d3.js?h=11c90bfde6", "data/d4.js?h=719484bece", "data/d5.js?h=4e56914bec", "data/d6.js?h=715c6f44f7", "data/d7.js?h=e332b17493", "data/d8.js?h=0d8826b977", "data/d9.js?h=ea61cce8e3", "data/d10.js?h=a456ff3822"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1427,6 +1443,8 @@ function hResume(){
   return last&&last.h?el('a',{class:'resume float',href:last.h,on:{click:()=>{if(last.b)switchBook(last.b);}}},icon('history'),T('hResume')):null;
 }
 function hSaveLast(){try{localStorage.hlast=JSON.stringify({h:location.hash,b:book})}catch(e){}}
+/* chapter title: the verse inside it (﴿ ﴾) gets the same colour as verses everywhere */
+function chTi(c,head){return EN()?[head?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(c.no?c.no+'. ':'')+c.en]:[c.no?ad(c.no)+' — ':'',...rich(c.ar||'','ar')];}
 async function showKitabs(){
   const ks=await loadToc(),box=$('#list');box.replaceChildren();
   {const bo=BOOKS.find(x=>x.key===book);bar(curBookName(),T('count')(ks.reduce((s,k)=>s+k.count,0)+((book==='jami'||book==='jamik'||(bo&&bo.kind==='lang'))?6:0)),false);}
@@ -1448,7 +1466,7 @@ async function showKitabs(){
   window.HBQ=window.HBQ||{};{const hk='k:'+book;f.value=window.HBQ[hk]||'';f.addEventListener('input',()=>{window.HBQ[hk]=f.value;});}
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),...jrRows(),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',...jrRows(),list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
@@ -1578,8 +1596,8 @@ async function showChapters(no){
       const g=EN()?c.group_en:c.group_ar;
       if(g!==last){last=g;if(g)list.append(el('p',{class:'grp',dir:'auto'},g));}
       const ti=EN()?(c.no?c.no+'. ':'')+c.en:(c.no?ad(c.no)+' — ':'')+c.ar;
-      list.append(el('a',{class:'card',href:'#/c/'+k.no+'/'+i},el('span',{class:'ct',dir:'auto'},ti),
-        EN()&&c.ar?el('span',{class:'ca',lang:'ar'},(c.no?ad(c.no)+' — ':'')+c.ar):null,el('span',{class:'cs'},rng(c.nums))));
+      list.append(el('a',{class:'card',href:'#/c/'+k.no+'/'+i},el('span',{class:'ct',dir:'auto'},...chTi(c)),
+        EN()&&c.ar?el('span',{class:'ca',lang:'ar'},(c.no?ad(c.no)+' — ':''),...rich(c.ar,'ar')):null,el('span',{class:'cs'},rng(c.nums))));
     });};
   window.HBQ=window.HBQ||{};{const hk='c:'+location.hash.replace(/\?.*/,'');f.value=window.HBQ[hk]||'';f.addEventListener('input',()=>{window.HBQ[hk]=f.value;});}
   f.addEventListener('input',draw);
@@ -1594,8 +1612,8 @@ async function showChapter(no,idx,page){
   bar(EN()?(k.no+'. '+k.en):(ad(k.no)+' — '+k.ar),EN()?(c.no+'. '+c.en):(ad(c.no)+' — '+c.ar),true);
   const xt=$('#xtools'),tb=(ic,lbl,fn)=>el('button',{class:'ib',type:'button',title:lbl,'aria-label':lbl,on:{click:fn}},icon(ic));
   xt.append(tb(HM.mode==='read'?'list':'read',HM.mode==='read'?T('cardMode'):T('readMode'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();showChapter(no,idx);}),tb('tune',T('settings'),()=>hSettings(()=>showChapter(no,idx))));
-  box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},EN()?(((T('field')||{}).chapter)||'Chapter')+' '+c.no+'. '+c.en:(ad(c.no)+' — '+c.ar)),
-    EN()&&c.ar?el('span',{class:'ca',lang:'ar'},c.ar):null,el('span',{class:'cs'},rng(c.nums))));
+  box.append(el('div',{class:'chead'},el('span',{class:'ct',dir:'auto'},...chTi(c,true)),
+    EN()&&c.ar?el('span',{class:'ca',lang:'ar'},...rich(c.ar,'ar')):null,el('span',{class:'cs'},rng(c.nums))));
   if(c.jk!=null){await window.needJK(c.jk);const ps=((window.JKD||{})[c.jk]||{})[String(c.ik.split('.')[1])];
     if(ps&&ps.length){const card=el('div',{class:'card chintro txt',lang:'ar',dir:'rtl','data-lb':INTLB()});ps.forEach(t=>card.append(el('p',{lang:'ar'},...rich(t,'ar'))));box.append(card);}}
   if(c.jk==null){await window.needTK(c.tk||k.no);const TD=(window.TKD||{})[c.tk||k.no]||{};
@@ -1918,7 +1936,7 @@ function jrRows(){if(book!=='jami'&&book!=='jamik')return [];
     ar:[['رواة الجامع الكامل','مرتب: تراث خير القرون — تعريف بـ233 راويًا وعدد أحاديثهم وأرقامها'],['مؤلفو الجامع الكامل','مرتب: تراث خير القرون — تعريف بـ224 كتابًا ومؤلفًا وعدد أحاديثهم وأرقامها']],
     en:[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators: introduction, total hadith and hadith numbers'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors: introduction, total hadith and hadith numbers']]}[ui]||null;
   const Z=L||[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors']];
-  return ['#/jr','#/js'].map((h,i)=>el('a',{class:'card srow2',href:h},el('span',{class:'snum'},i?'٢':'١'),el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' ar':''),lang:ui==='ar'?'ar':null,dir:'auto'},Z[i][0]),el('span',{class:'cs'},Z[i][1]))));}
+  return ['#/jr','#/js'].map((h,i)=>el('a',{class:'card srow2',href:h},el('span',{class:'snum'},ui==='en'?(i?'A':'N'):(i?'م':'ر')),el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' ar':''),lang:ui==='ar'?'ar':null,dir:'auto'},Z[i][0]),el('span',{class:'cs'},Z[i][1]))));}
 async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=1';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
 async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
