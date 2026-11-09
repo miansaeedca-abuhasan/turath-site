@@ -708,6 +708,7 @@ a.card .ct{color:var(--ink)}
 .lbx{position:fixed;inset:0;z-index:99;background:rgba(0,0,0,.88);overflow:auto;-webkit-overflow-scrolling:touch}.lbx img{display:block;background:#fff;margin:3.2rem auto 2rem;width:min(1100px,230vw);max-width:none;height:auto;border-radius:6px}.lbx button{position:fixed;top:.7rem;inset-inline-end:.8rem;z-index:100;border:0;border-radius:2rem;padding:.5rem 1.1rem;font:600 1rem var(--urdu);background:#fff;color:#0a4f42}
 @media (min-width:900px){.chead .ct{font-size:1.6rem}}
 </style>
+<script src="audio-en.js" defer></script>
 </head>
 <body>
 <div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><div id="splsnd" hidden></div></div>
@@ -1249,6 +1250,7 @@ function actions(d,scope,withRead){
   const sh=el('button',{class:'ab',type:'button','aria-label':T('share'),title:T('share'),on:{click:()=>doShare(d,scope)}},icon('share'));
   const ls=el('button',{class:'ab',type:'button','aria-label':T('listen'),title:T('listen'),on:{click:()=>LISTEN.playHadiths([{d,node:a.closest('.card')||a.parentNode}])}},icon('listen'));
   if(scope==='jami'&&window.CMP)a.append(CMP.button({k:'jami',n:d.num}));
+  {const en=window.ENAUD&&ENAUD.btn(d,()=>a.closest('.card')||a.parentNode);if(en)a.append(en);}
   a.append(ls,cp,ps,sh,el('span',{class:'sp'}));return a;
 }
 function gradeNode(g){
@@ -1593,6 +1595,7 @@ async function showChapter(no,idx,page){
     const ds=await Promise.all(c.nums.map(n=>api('hadith/'+n+'?book='+JB())));const nodes=[...box.querySelectorAll('article.card')];
     const items=[...box.querySelectorAll('article.card,section.hr-item')];
     LISTEN.playHadiths(ds.filter(d=>!d.error).map((d,i)=>({d,node:items[i]||null})));}}},icon('listen'),T('listenAll'))));
+  if(c.jk==null&&window.ENAUD){const slot=el('p',{});box.append(slot);ENAUD.chapterBtn(k.no,idx+1,c.nums).then(x=>{if(x)slot.append(x);else slot.remove();});}
   if(HM.mode==='read'){await readingView(ks,k,c,no,idx,box);goJump();return;}
   const PAGE=20;let shown=0;
   const more=el('button',{class:'btn more',type:'button'},T('more'));
