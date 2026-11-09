@@ -1448,7 +1448,7 @@ async function showKitabs(){
   window.HBQ=window.HBQ||{};{const hk='k:'+book;f.value=window.HBQ[hk]||'';f.addEventListener('input',()=>{window.HBQ[hk]=f.value;});}
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
+  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),...jrRows(),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
@@ -1912,6 +1912,14 @@ function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{}
       if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps.map(x=>x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'')),'ar',body)}},icon('listen'),T('listenPart')));}
     catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
   return det;}
+/* ---------- رواة الجامع الكامل ومؤلفوه (jrs.js) ---------- */
+function jrRows(){if(book!=='jami'&&book!=='jamik')return [];
+  const L={ur:[['رواۃ الجامع الکامل','مرتب: تراث خیرالقرون — 233 رواۃ کا تعارف، کل احادیث اور احادیث کے نمبر'],['مؤلفین الجامع الکامل','مرتب: تراث خیرالقرون — 224 کتب و مؤلفین کا تعارف، کل احادیث اور احادیث کے نمبر']],
+    ar:[['رواة الجامع الكامل','مرتب: تراث خير القرون — تعريف بـ233 راويًا وعدد أحاديثهم وأرقامها'],['مؤلفو الجامع الكامل','مرتب: تراث خير القرون — تعريف بـ224 كتابًا ومؤلفًا وعدد أحاديثهم وأرقامها']],
+    en:[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators: introduction, total hadith and hadith numbers'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors: introduction, total hadith and hadith numbers']]}[ui]||null;
+  const Z=L||[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors']];
+  return ['#/jr','#/js'].map((h,i)=>el('a',{class:'card srow2',href:h},el('span',{class:'snum'},i?'٢':'١'),el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' ar':''),lang:ui==='ar'?'ar':null,dir:'auto'},Z[i][0]),el('span',{class:'cs'},Z[i][1]))));}
+async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=1';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
 async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
   v.append(el('p',{class:'note'},'…'));
@@ -2036,6 +2044,7 @@ function route(){
   if(!h.startsWith('#/hifz')&&window.HIFZ&&HIFZ.leave)HIFZ.leave();
   if(sec!=='q'||!/^#\/q\/[sjr]\//.test(h))QURAN.leave();
   else QURAN.hideBar();
+  if(/^#\/j[rs](\/\d+)?$/.test(h)){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showJrs(h);return;}
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   if(!/^#\/h\//.test(h))HONE=false;if(/^#\/h\/-?\d+\?one/.test(h))HONE=true;
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
