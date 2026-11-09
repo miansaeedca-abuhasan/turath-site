@@ -725,6 +725,7 @@ a.card .ct{color:var(--ink)}
 @media (min-width:900px){.chead .ct{font-size:1.6rem}}
 </style>
 <script src="audio-en.js" defer></script>
+<script src="videos.js" defer></script>
 </head>
 <body>
 <div id="splash" hidden><video id="splv" playsinline webkit-playsinline preload="auto" aria-hidden="true"></video><div id="splsnd" hidden></div></div>
@@ -3338,6 +3339,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (last) v.append(el('a', {class: 'resume', href: '#/q/s/' + last.s + '/' + last.a}, icon('history'), T('resume')));
     v.append(el('div', {id: 'today'}));
     const vis = el('span', {class: 'visits'});
+    if (window.VIDEOS) v.append(el('button', {type: 'button', class: 'resume vidbtn', on: {click: () => VIDEOS.open(ui)}}, '▶ ' + VIDEOS.label(ui)));
     if (window.OFFLINE) v.append(el('button', {type: 'button', class: 'resume', on: {click: () => OFFLINE.open()}}, OFFLINE.label()));
     v.append(el('p', {class: 'note foot'}, {ur: 'آفیشل ایپ پلے سٹور پر دستیاب ہے۔ دوسری جگہوں سے آنے والی APK فائلوں سے ایپ انسٹال نہ کریں، تاکہ آپ اصل ڈیٹا اور تازہ اپڈیٹس سے پورا فائدہ اٹھا سکیں۔',
       ar: 'التطبيق الرسمي متوفّر على متجر Google Play. لا تثبّتوا التطبيق من ملفات APK الواردة من مصادر أخرى، لتستفيدوا من البيانات الأصلية والتحديثات الحديثة.',
