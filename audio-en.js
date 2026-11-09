@@ -5,12 +5,12 @@
   'use strict';
   var IDX = null, W = {}, WP = {}, IP = null;
   var A = new Audio(); A.preload = 'none';
-  var Q = [], qi = -1, mode = '', bar = null, ra = null, raNum = 0, raf = 0;
+  var Q = [], qi = -1, mode = '', bar = null, ra = null, raNum = 0, raLg = 'en', raf = 0;
   var UI = function () { try { return localStorage.ui || 'ur'; } catch (e) { return 'ur'; } };
   var L = {
     ur: {hd: 'انگریزی آڈیو', ch: 'پورا باب سنیں (انگریزی)', stop: 'بند کریں', nx: 'اگلی', pv: 'پچھلی', title: 'باب کا عنوان', had: 'حدیث', min: 'منٹ'},
     en: {hd: 'English audio', ch: 'Play the whole chapter (English)', stop: 'Stop', nx: 'Next', pv: 'Previous', title: 'Chapter title', had: 'Hadith', min: 'min'},
-    bn: {hd: 'ইংরেজি অডিও', ch: 'পুরো অধ্যায় শুনুন (ইংরেজি)', stop: 'বন্ধ করুন', nx: 'পরবর্তী', pv: 'আগের', title: 'অধ্যায়ের শিরোনাম', had: 'হাদীস', min: 'মিনিট'}
+    bn: {hd: 'অডিও', ch: 'পুরো অধ্যায় শুনুন', stop: 'বন্ধ করুন', nx: 'পরবর্তী', pv: 'আগের', title: 'অধ্যায়ের শিরোনাম', had: 'হাদীস', min: 'মিনিট'}
   };
   var T = function (k) { return (L[UI()] || L.en)[k]; };
   var DG = function (n) { return UI() === 'ur' ? String(n).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }) : String(n); };
@@ -21,22 +21,35 @@
       load('audio/en/idx.js', function () { IDX = IDX || {books: {}}; ok(IDX); });
     }));
   }
-  function words(book) {
-    if (WP[book]) return WP[book];
-    return WP[book] = new Promise(function (ok) {
-      window.ENAUD_W = function (x) { Object.assign(W, x); };
-      var b = IDX && IDX.books[book];
-      if (!b || !b.w) return ok();
-      load('audio/en/w' + book + '.js', ok);
-    });
-  }
-  function bookOf(num) {
-    if (!IDX) return null;
-    for (var k in IDX.books) { var b = IDX.books[k]; if (num >= b.from && num <= b.to) return k; }
+  /* audio language: Bengali when the app is in Bengali and that book has Bengali audio, otherwise English */
+  function cfg(lg) { return lg === 'bn' ? IDX.bn : IDX; }
+  function inBook(lg, num) {
+    var c = IDX && cfg(lg); if (!c || !c.books) return null;
+    if (IDX.skip && IDX.skip.indexOf(num) >= 0) return null;
+    for (var k in c.books) { var b = c.books[k]; if (num >= b.from && num <= b.to) return k; }
     return null;
   }
-  var has = function (num) { return !!bookOf(num); };
-  var hurl = function (num) { return IDX.hbase + num + '.mp3'; };
+  function pick(num) {
+    if (!IDX) return null;
+    if (UI() === 'bn') { var kb = inBook('bn', num); if (kb) return {lg: 'bn', book: kb}; }
+    var ke = inBook('en', num); return ke ? {lg: 'en', book: ke} : null;
+  }
+  function words(lg, book) {
+    var key = lg + book;
+    if (WP[key]) return WP[key];
+    return WP[key] = new Promise(function (ok) {
+      window.ENAUD_W = function (x) { for (var n in x) W[lg + ':' + n] = x[n]; };
+      var b = IDX && cfg(lg).books[book];
+      if (!b || !b.w) return ok();
+      load('audio/' + lg + '/w' + book + '.js', ok);
+    });
+  }
+  function chLang(book, ord) {
+    var b = IDX && IDX.bn && IDX.bn.books && IDX.bn.books[String(book)];
+    return UI() === 'bn' && b && b.c && b.c[ord] ? 'bn' : 'en';
+  }
+  var has = function (num) { return !!pick(num); };
+  var hurl = function (lg, num) { return cfg(lg).hbase + num + '.mp3'; };
   var fmt = function (s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); };
 
   function css() {
@@ -90,7 +103,7 @@
   function tick() {
     paintBar();
     if (ra && raNum) {
-      var ws = W[raNum] || [], t = A.currentTime, on = -1;
+      var ws = W[raLg + ':' + raNum] || [], t = A.currentTime, on = -1;
       for (var i = 0; i < ws.length; i++) { if (t >= ws[i][1]) on = i; else break; }
       var sp = ra.children;
       for (var j = 0; j < sp.length; j++) { var c = j === on ? 'on' : j < on ? 'done' : ''; if (sp[j].className !== c) sp[j].className = c; }
@@ -113,10 +126,10 @@
   A.addEventListener('loadedmetadata', paintBar);
   A.addEventListener('error', function () { if (mode === 'chapter' && qi < Q.length - 1) step(1); else if (bar) bar.querySelector('b').textContent = '⚠ ' + (Q[qi] ? Q[qi].label : ''); });
 
-  function showRA(anchor, num) {
+  function showRA(anchor, num, lg) {
     if (ra) ra.remove();
-    ra = document.createElement('div'); ra.className = 'enra'; raNum = num;
-    var ws = W[num] || [];
+    ra = document.createElement('div'); ra.className = 'enra'; raNum = num; raLg = lg;
+    var ws = W[lg + ':' + num] || [];
     ws.forEach(function (w, i) {
       var s = document.createElement('span'); s.textContent = w[0]; s.onclick = function () { A.currentTime = w[1]; A.play(); };
       ra.append(s, ' ');
@@ -130,21 +143,21 @@
     has: has,
     /* one hadith with read-along; card = the .card element */
     hadith: async function (num, card) {
-      await idx(); var b = bookOf(num); if (!b) return;
+      await idx(); var pk = pick(num); if (!pk) return;
       if (mode === 'one' && Q[0] && Q[0].num === num && !A.paused) { stopAll(); return; }
-      stopAll(); await words(b); mode = 'one';
-      Q = [{url: hurl(num), label: T('had') + ' ' + DG(num), num: num}];
-      play(0); if (card) showRA(card, num);
+      stopAll(); await words(pk.lg, pk.book); mode = 'one';
+      Q = [{url: hurl(pk.lg, num), label: T('had') + ' ' + DG(num), num: num}];
+      play(0); if (card) showRA(card, num, pk.lg);
     },
     /* a whole chapter: title audio, then every hadith that has audio, in order */
     chapter: async function (book, ord, nums) {
-      await idx(); var b = IDX.books[book]; stopAll(); mode = 'chapter'; Q = [];
-      if (b && b.c && b.c[ord]) Q.push({url: IDX.cbase + book + '/' + ('0' + ord).slice(-2) + '.mp3', label: T('title')});
-      nums.forEach(function (n) { if (has(n)) Q.push({url: hurl(n), label: T('had') + ' ' + DG(n), num: n}); });
+      await idx(); var lg = chLang(book, ord), c = cfg(lg), b = c.books[book]; stopAll(); mode = 'chapter'; Q = [];
+      if (b && b.c && b.c[ord]) Q.push({url: c.cbase + book + '/' + ('0' + ord).slice(-2) + '.mp3', label: T('title')});
+      nums.forEach(function (n) { var pk = pick(n); if (pk) Q.push({url: hurl(pk.lg, n), label: T('had') + ' ' + DG(n), num: n}); });
       if (Q.length) play(0);
     },
     chapterInfo: async function (book, ord, nums) {
-      await idx(); var b = IDX.books[String(book)]; if (!b || !b.c || !b.c[ord]) return null;
+      await idx(); var b = (cfg(chLang(book, ord)).books || {})[String(book)]; if (!b || !b.c || !b.c[ord]) return null;
       var sec = b.c[ord], k = 0; nums.forEach(function (n) { var s = b.h && b.h[n]; if (s) { sec += s; k++; } });
       return {minutes: Math.max(1, Math.round(sec / 60)), count: k};
     },
