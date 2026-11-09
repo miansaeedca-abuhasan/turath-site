@@ -82,6 +82,7 @@ svg.gr text{font-family:inherit;fill:var(--muted);font-size:11px}
 <body>
 <main>
 <header class="top"><img src="icons/tarbiyat.png" alt="" width="44" height="44"><h1 id="ttl">تربیہ<small id="sub">بچوں کی اچھی عادتوں کا چارٹ</small></h1><button class="sec sm" id="lang">English</button><button class="sec sm" id="home">ہوم</button><button class="sec sm" id="out" hidden>باہر نکلیں</button></header>
+<p id="cr" class="muted" style="text-align:center;margin:0 0 8px">(مرتب: بنت یوسف عفی اللہ عنہا)</p>
 <div id="app"></div>
 </main>
 <script>
@@ -297,7 +298,7 @@ async function vSet(body){
       E('button',{class:'bad',on:{click:act(async()=>{if(!confirm(EN()?'The whole family, the children and all records will be erased for ever. Delete for sure?':'پورا خاندان، بچے اور سارا ریکارڈ ہمیشہ کے لیے مٹ جائے گا۔ پکا مٹانا ہے؟'))return;await api('famdel',{sure:'yes'});setTok('');S=null;landing()})}},'پورا چارٹ مٹائیں')));
   async function refresh2(){S={...S,...(await api('state'))}}
 }
-function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیہ');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیہ — تراث خيرالقرون'}
+function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیہ');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#cr').textContent=EN()?'(Compiled by: Bint Yusuf, may Allah pardon her)':'(مرتب: بنت یوسف عفی اللہ عنہا)';$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیہ — تراث خيرالقرون'}
 $('#lang').addEventListener('click',()=>{LG=EN()?'ur':'en';try{localStorage.tb_lang=LG}catch(e){}applyLang();if(S)dash();else landing()});
 $('#out').addEventListener('click',async()=>{try{await api('logout')}catch(e){}setTok('');S=null;MK.clear();landing()});
 $('#home').addEventListener('click',()=>{location.href='./'});
