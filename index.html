@@ -195,7 +195,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .hsx{margin-top:1.4rem}.hsxl{margin:0 0 .4rem;color:var(--muted);font-size:.9rem}.hsxn{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center}.hsxb{min-width:2.6rem;padding:.4rem .6rem;border:1px solid var(--line);border-radius:10px;text-align:center;text-decoration:none;color:var(--accent)}.hsxb:hover{border-color:var(--accent)}.hsxb.on{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}.hsxd{align-self:center;color:var(--muted)}
 .hnav{gap:.7rem;margin-top:1.6rem}.hnb{flex:1 1 0;display:flex;align-items:center;gap:.6rem;border:1px solid var(--line);border-radius:10px;padding:.6rem .9rem;color:var(--accent);text-decoration:none}.hnb.next{flex-direction:row-reverse;text-align:left}.hnb:hover{border-color:var(--accent)}.hnb.off{visibility:hidden}.hnt{display:flex;flex-direction:column;line-height:1.35}.hnt small{color:var(--muted);font-size:.8rem}.hnt b{color:var(--ink);font-size:1.1rem}
 .chead{padding:.2rem .2rem .7rem;border-bottom:1px solid var(--line)}.chead .ct{display:block;font:700 1.25rem/1.8 var(--serif)}
-.secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}
+.secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}.secbtns .sbp::before{content:'◀  ';font-size:.8em}.secbtns .sbn::after{content:'  ▶';font-size:.8em}
 .hstrip{display:flex;margin:-.2rem -.2rem .8rem;background:var(--bar,var(--accent));border-radius:12px;overflow:hidden}.hstrip .hs{flex:1;min-width:0;padding:.7rem .3rem;text-align:center;color:#ffffffb8;text-decoration:none;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:3px solid transparent}.hstrip .hs.on{color:#fff;font-weight:700;border-bottom-color:#fff}
 .hpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(5.1rem + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:.9rem;padding:.35rem .9rem;background:var(--card,#fff);border-radius:2rem;box-shadow:0 2px 14px #0003;direction:ltr}.hpill b{color:var(--accent);font-size:1.15rem;min-width:5.2rem;display:flex;justify-content:center;gap:.35rem;direction:ltr}.hpill b i{font-style:normal;unicode-bidi:isolate}.hpill .hpb{border:0;background:none;color:var(--accent);font-size:1.15rem;padding:.3rem .4rem;cursor:pointer}.hpill .hpb:disabled{opacity:.3}
 .hpg{display:flex;justify-content:center;gap:.4rem;margin:.8rem 0;flex-wrap:nowrap}.hpg a,.hpg span{min-width:2.6rem;padding:.45rem .5rem;text-align:center;border:1px solid var(--line,#c9cde8);border-radius:6px;color:var(--accent);text-decoration:none;font-variant-numeric:tabular-nums}.hpg span.on{background:var(--accent);color:#fff;font-weight:700;border-color:var(--accent)}
@@ -1975,9 +1975,8 @@ async function showHadith(num){
   if(scope==='tuhfa'&&d.has_jami)v.append(el('p',{},el('button',{class:'btn',type:'button',on:{click:()=>switchBook('jami')}},T('toJami'))));
   /* moving between hadiths: a slim pill «‹ 3 / 51 ›» floating at the bottom, a one-line row of numbered boxes at the end, and a swipe left / right */
   const rtl=ui==='ur'||ui==='ar',goH=n=>{if(n!=null)location.hash='#/h/'+n;};
-  const pill=el('div',{class:'hpill',dir:'ltr'}),pPrev=el('button',{type:'button','aria-label':T('prev'),on:{click:()=>goH(d.prev)}},icon(rtl?'next':'prev')),pNext=el('button',{type:'button','aria-label':T('next'),on:{click:()=>goH(d.next)}},icon(rtl?'prev':'next')),pMid=el('button',{type:'button',class:'hpm'},String(d.num));
-  pPrev.disabled=rtl?d.next==null:d.prev==null;pNext.disabled=rtl?d.prev==null:d.next==null;
-  if(rtl){pPrev.onclick=()=>goH(d.next);pNext.onclick=()=>goH(d.prev);}
+  const pill=el('div',{class:'hpill',dir:'ltr'}),pPrev=el('button',{type:'button','aria-label':T('prev'),on:{click:()=>goH(d.prev)}},icon('prev')),pNext=el('button',{type:'button','aria-label':T('next'),on:{click:()=>goH(d.next)}},icon('next')),pMid=el('button',{type:'button',class:'hpm'},String(d.num));
+  pPrev.disabled=d.prev==null;pNext.disabled=d.next==null;   /* the same in every language: the previous one on the left, the next one on the right, like the numbers in the row above */
   pill.append(pPrev,pMid,pNext);v.append(pill);
   const strip=el('div',{class:'hsx',role:'navigation'}),modeBar=el('div',{class:'hmode',role:'tablist'});
   v.append(strip);
@@ -1997,7 +1996,7 @@ async function showHadith(num){
   {let x0=0,y0=0,t0=0,ok=false;
     v.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();ok=e.touches.length===1&&!e.target.closest('.hsxn,.hgrid,input,textarea,select,.sheet');},{passive:true});
     v.addEventListener('touchend',e=>{if(!ok)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)<80||Math.abs(dx)<Math.abs(dy)*2||Date.now()-t0>700)return;
-      const sel=window.getSelection&&String(getSelection());if(sel)return;goH((dx>0)===rtl?d.next:d.prev);},{passive:true});}
+      const sel=window.getSelection&&String(getSelection());if(sel)return;goH(dx<0?d.next:d.prev);},{passive:true});}
   if(!isRestore){try{window.scrollTo({top:0,behavior:'instant'})}catch(e){scrollTo(0,0)}}
 }
 async function showExt(key,num){
@@ -5335,9 +5334,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // reading in order: the previous / next section (person, kitab) at the end
     const i = b.sections.indexOf(s), pv = b.sections[i - 1], nx = b.sections[i + 1];
     const SB = {ur: ['پچھلا باب', 'اگلا باب'], ar: ['الباب السابق', 'الباب التالي'], en: ['Previous chapter', 'Next chapter'], bn: ['আগের অধ্যায়', 'পরের অধ্যায়'], hi: ['पिछला अध्याय', 'अगला अध्याय'], gu: ['પાછલો અધ્યાય', 'આગળનો અધ્યાય'], fr: ['Chapitre précédent', 'Chapitre suivant']}[ui] || ['Previous chapter', 'Next chapter'];
-    box.append(el('div', {class: 'secnav'}, el('div', {class: 'secbtns'},
-      pv ? el('a', {href: '#/s/' + b.key + '/' + pv[0]}, SB[0]) : el('span', {class: 'off'}),
-      nx ? el('a', {href: '#/s/' + b.key + '/' + nx[0]}, SB[1]) : el('span', {class: 'off'})), tocBtn()));
+    box.append(el('div', {class: 'secnav'}, el('div', {class: 'secbtns', dir: 'ltr'},
+      pv ? el('a', {href: '#/s/' + b.key + '/' + pv[0], dir: getComputedStyle(document.documentElement).direction, class: 'sbp'}, SB[0]) : el('span', {class: 'off'}),
+      nx ? el('a', {href: '#/s/' + b.key + '/' + nx[0], dir: getComputedStyle(document.documentElement).direction, class: 'sbn'}, SB[1]) : el('span', {class: 'off'})), tocBtn()));
     // auto scroll bar, as in the other reading pages (hides aside after 20 s of not being used)
     if (window.QURAN && QURAN.scrollBar) { const go = h => () => { location.hash = h; }; const sl = T('chapShort') || T('nextSec');
       box.append(QURAN.scrollBar({prev: [['prev', sl, pv ? go('#/s/' + b.key + '/' + pv[0]) : null]], next: [['next', sl, nx ? go('#/s/' + b.key + '/' + nx[0]) : null]]})); setTimeout(() => QURAN.showTime(), 50); }
@@ -5368,15 +5367,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       box.append(nav);
     } else if (IS_APP) {
       const g = k => () => { location.hash = '#/s/' + b.key + '/n/' + k; }, bt = (t, k, lb) => el('button', {type: 'button', class: 'hpb', disabled: k < 1 || k > b.count || k === n ? '' : null, 'aria-label': lb, on: {click: g(k)}}, t);
-      box.append(el('div', {class: 'hpill'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
+      box.append(el('div', {class: 'hpill', dir: 'ltr'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
     } else box.append(pager());
-    // flipping the page: a swipe moves to the next / previous hadith (the next one is on the left in a right-to-left interface)
+    // flipping the page: a swipe to the left moves to the next hadith, to the right to the previous one (the same in every language)
     if (box._sw) { box.removeEventListener('touchstart', box._sw[0]); box.removeEventListener('touchend', box._sw[1]); }
     let sx = 0, sy = 0, st = 0, ok = false;
     const ts = e => { const p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now(); ok = e.touches.length === 1 && !e.target.closest('input,textarea,select,table,pre,[data-noswipe]'); };
     const te = e => { if (!ok) return; ok = false; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy;
       if (Math.abs(dx) < 90 || Math.abs(dy) > Math.abs(dx) * .5 || Date.now() - st > 700) return;
-      const fwd = getComputedStyle(document.documentElement).direction === 'rtl' ? dx > 0 : dx < 0, to = fwd ? n + 1 : n - 1;
+      const fwd = dx < 0, to = fwd ? n + 1 : n - 1;
       if (to >= 1 && to <= b.count) location.hash = '#/s/' + b.key + '/n/' + to; };
     box.addEventListener('touchstart', ts, {passive: true}); box.addEventListener('touchend', te, {passive: true}); box._sw = [ts, te];
   }
