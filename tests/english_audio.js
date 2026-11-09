@@ -1,5 +1,9 @@
 // English audio: hadith button + read-along, chapter button + chapter mode (Book 1); audio host is stubbed
 const {chromium}=require('playwright');const fs=require('fs');
+// the audio host must be allowed by the site's Content-Security-Policy (media-src), or the browser blocks the audio
+{const h=fs.readFileSync(__dirname+'/../_headers','utf8').match(/media-src ([^;]*);/);const idx=fs.readFileSync(__dirname+'/../audio/en/idx.js','utf8');
+ const hosts=[...new Set([...idx.matchAll(/"hbase":"(https:\/\/[^\/"]+)/g)].map(m=>m[1]))];
+ hosts.forEach(x=>{if(!h||!h[1].split(/\s+/).includes(x)){console.log('FAIL CSP media-src lacks',x);process.exit(1)}});}
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:420,height:860}});let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
 await p.addInitScript(()=>{localStorage.ui='en'});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 const mp3=fs.readFileSync(__dirname+'/../audio/en/ch/1/02.mp3');
