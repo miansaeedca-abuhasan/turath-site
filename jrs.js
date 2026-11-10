@@ -4,19 +4,20 @@
 (function () {
   'use strict';
   const L = {
-    ur: {byline: 'مرتب: تراث خیرالقرون', nT: 'رواۃ الجامع الکامل', sT: 'مؤلفین الجامع الکامل', nSub: 'ان صحابہ اور راویوں کا تعارف جن سے الجامع الکامل میں سب سے زیادہ احادیث آئی ہیں', sSub: 'ان کتابوں اور مؤلفین کا تعارف جن کے حوالے الجامع الکامل میں آئے ہیں', ph: 'نام لکھ کر تلاش کریں', none: 'کوئی نتیجہ نہیں ملا۔', intro: 'تعارف', total: 'کل احادیث', nums: 'احادیث کے نمبر', hCount: n => n.toLocaleString('en') + ' احادیث', totalIs: 'الجامع الکامل میں کل احادیث', nNums: 'ان احادیث کے نمبر', noNums: 'الجامع الکامل کی تخریج اور حواشی میں اس مصدر کا نام لے کر حوالہ نہیں ملا۔', open: 'حدیث کھولیں', title: 'نام', author: 'مؤلف', born: 'ولادت', died: 'وفات', type: 'کتاب کا تعارف', count: 'کتاب میں احادیث کی تعداد', cnt: n => n + ' ترجمے', all: 'سب', rows: n => n + ' اندراجات', listHint: 'کسی نام پر کلک کریں', more: n => 'مزید ' + n + ' نمبر دکھائیں', other: 'یہ تعداد اس کتاب کی ہے', fromNums: 'الجامع الکامل کے نمبر (تخریج اور حواشی میں ذکر)', back: 'فہرست'},
-    ar: {byline: 'مرتب: تراث خير القرون', nT: 'رواة الجامع الكامل', sT: 'مؤلفو الجامع الكامل', nSub: 'تعريف بالصحابة والرواة الذين وردت عنهم أحاديث الجامع الكامل', sSub: 'تعريف بالكتب ومؤلفيها التي ورد تخريجها في الجامع الكامل', ph: 'ابحث بالاسم', none: 'لا توجد نتائج.', intro: 'تعريف', total: 'مجموع الأحاديث', nums: 'أرقام الأحاديث', hCount: n => n.toLocaleString('en') + ' حديثًا', totalIs: 'مجموع الأحاديث في الجامع الكامل', nNums: 'أرقام هذه الأحاديث', noNums: 'لم يرد ذكر هذا المصدر صراحة في تخريج الجامع الكامل ولا في حواشيه.', open: 'افتح الحديث', title: 'الاسم', author: 'المؤلف', born: 'الولادة', died: 'الوفاة', type: 'التعريف بالكتاب', count: 'عدد الأحاديث في الكتاب', all: 'الكل', back: 'القائمة', more: n => 'عرض ' + n + ' رقمًا أخرى', other: 'هذا العدد خاص بالكتاب', fromNums: 'الأرقام هي أرقام الجامع الكامل'},
-    en: {byline: 'Compiled by: Turath Khair al-Quroon', nT: 'Narrators of al-Jami al-Kamil', sT: 'Authors of al-Jami al-Kamil', nSub: 'The Companions and narrators whose hadith fill al-Jami al-Kamil', sSub: 'The books and authors cited in the references of al-Jami al-Kamil', ph: 'Search by name', none: 'No results.', intro: 'Introduction', total: 'Total hadith', nums: 'Hadith numbers', hCount: n => n.toLocaleString('en') + ' hadith', totalIs: 'Total hadith in al-Jami al-Kamil', nNums: 'Numbers of these hadith', noNums: 'This source is not cited by name in the takhrij or notes of al-Jami al-Kamil.', open: 'Open hadith', title: 'Name', author: 'Author', born: 'Born', died: 'Died', type: 'About the book', count: 'Hadith in the book', all: 'All', back: 'List', more: n => 'Show ' + n + ' more numbers', other: 'This count belongs to the book itself', fromNums: 'Numbers are al-Jami al-Kamil numbers'}
+    ur: {byline: 'مرتب: تراث خیرالقرون', nT: 'رواۃ الجامع الکامل', sT: 'مؤلفین الجامع الکامل', nSub: 'ان صحابہ کرام کا تعارف جن سے الجامع الکامل کی احادیث مروی ہیں، ہر ایک کی احادیث کی تعداد اور نمبروں کے ساتھ', sSub: 'ان کتابوں اور مؤلفین کا تعارف جن کے حوالے الجامع الکامل میں آئے ہیں', ph: 'نام لکھ کر تلاش کریں', none: 'کوئی نتیجہ نہیں ملا۔', intro: 'تعارف', total: 'کل احادیث', nums: 'احادیث کے نمبر', hCount: n => n.toLocaleString('en') + ' احادیث', totalIs: 'الجامع الکامل میں کل احادیث', nNums: 'ان احادیث کے نمبر', noNums: 'الجامع الکامل کی تخریج اور حواشی میں اس مصدر کا نام لے کر حوالہ نہیں ملا۔', noNumsN: 'الجامع الکامل میں ان کے نام سے براہِ راست کوئی حدیث نہیں ملی؛ ان کا ذکر دوسری روایات میں آیا ہے۔', open: 'حدیث کھولیں', title: 'نام', author: 'مؤلف', born: 'ولادت', died: 'وفات', type: 'کتاب کا تعارف', count: 'کتاب میں احادیث کی تعداد', cnt: n => n + ' ترجمے', all: 'سب', rows: n => n + ' اندراجات', listHint: 'کسی نام پر کلک کریں', more: n => 'مزید ' + n + ' نمبر دکھائیں', other: 'یہ تعداد اس کتاب کی ہے', fromNums: 'الجامع الکامل کے نمبر (تخریج اور حواشی میں ذکر)', back: 'فہرست'},
+    ar: {byline: 'مرتب: تراث خير القرون', nT: 'رواة الجامع الكامل', sT: 'مؤلفو الجامع الكامل', nSub: 'تعريف بالصحابة والرواة الذين وردت عنهم أحاديث الجامع الكامل', sSub: 'تعريف بالكتب ومؤلفيها التي ورد تخريجها في الجامع الكامل', ph: 'ابحث بالاسم', none: 'لا توجد نتائج.', intro: 'تعريف', total: 'مجموع الأحاديث', nums: 'أرقام الأحاديث', hCount: n => n.toLocaleString('en') + ' حديثًا', totalIs: 'مجموع الأحاديث في الجامع الكامل', nNums: 'أرقام هذه الأحاديث', noNums: 'لم يرد ذكر هذا المصدر صراحة في تخريج الجامع الكامل ولا في حواشيه.', noNumsN: 'لا يوجد في الجامع الكامل حديث مسند إليه مباشرة، وإنما ورد ذكره في روايات أخرى.', open: 'افتح الحديث', title: 'الاسم', author: 'المؤلف', born: 'الولادة', died: 'الوفاة', type: 'التعريف بالكتاب', count: 'عدد الأحاديث في الكتاب', all: 'الكل', back: 'القائمة', more: n => 'عرض ' + n + ' رقمًا أخرى', other: 'هذا العدد خاص بالكتاب', fromNums: 'الأرقام هي أرقام الجامع الكامل'},
+    en: {byline: 'Compiled by: Turath Khair al-Quroon', nT: 'Narrators of al-Jami al-Kamil', sT: 'Authors of al-Jami al-Kamil', nSub: 'The Companions and narrators whose hadith fill al-Jami al-Kamil', sSub: 'The books and authors cited in the references of al-Jami al-Kamil', ph: 'Search by name', none: 'No results.', intro: 'Introduction', total: 'Total hadith', nums: 'Hadith numbers', hCount: n => n.toLocaleString('en') + ' hadith', totalIs: 'Total hadith in al-Jami al-Kamil', nNums: 'Numbers of these hadith', noNums: 'This source is not cited by name in the takhrij or notes of al-Jami al-Kamil.', noNumsN: 'No hadith in al-Jami al-Kamil is narrated directly on his or her authority; the name appears only inside other reports.', open: 'Open hadith', title: 'Name', author: 'Author', born: 'Born', died: 'Died', type: 'About the book', count: 'Hadith in the book', all: 'All', back: 'List', more: n => 'Show ' + n + ' more numbers', other: 'This count belongs to the book itself', fromNums: 'Numbers are al-Jami al-Kamil numbers'}
   };
   const lang = () => { let u = 'en'; try { u = localStorage.ui || 'en'; } catch (e) {} return L[u] ? u : 'en'; };
   const T = () => L[lang()];
   let DATA = null, P = null;
   const load = () => P || (P = new Promise((ok, no) => {
     window.TURATH_JRS = d => { DATA = d; ok(d); };
-    const s = document.createElement('script'); s.src = 'data/jrs.js?v=' + (window.JRS_V || '1'); s.onerror = () => { P = null; no(); }; document.head.append(s);
+    const s = document.createElement('script'); s.src = 'data/jrs.js?v=' + (window.JRS_V || '2'); s.onerror = () => { P = null; no(); }; document.head.append(s);
   }));
   const el = (t, a, ...k) => { const e = document.createElement(t); for (const n in a || {}) { if (n === 'on') for (const ev in a.on) e.addEventListener(ev, a.on[ev]); else if (a[n] != null && a[n] !== false) e.setAttribute(n, a[n]); } e.append(...k.filter(x => x != null)); return e; };
-  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return x.nm[l] || x.nm.en; const o = x[l] || x.en; return o.title; };
+  const RD = {ur: ['رضی اللہ عنہ', 'رضی اللہ عنہا'], ar: ['رضي الله عنه', 'رضي الله عنها'], en: ['رضي الله عنه', 'رضي الله عنها']};
+  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + RD[l][x.g === 'f' ? 1 : 0]; const o = x[l] || x.en; return o.title; };
   const fmt = n => n.toLocaleString('en');
   const norm = s => (s || '').replace(/[ً-ٰٟۖ-ۭـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ۃ/g, 'ه').replace(/[یے]/g, 'ي').replace(/ک/g, 'ك').replace(/ہ|ھ/g, 'ه').toLowerCase();
   const CSS = `
@@ -52,9 +53,9 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
 .jr .kv div{padding:.5rem 0;border-top:1px solid var(--line)}.jr .kv div:first-child{border-top:0}
 .jr .kv b{display:block;font-size:.85rem;color:var(--accent);font-weight:600}
 .jr .kv span{font-size:1.08rem;line-height:1.9}
-.jr .big{text-align:center;padding:1.2rem 0 .6rem}
-.jr .big b{display:block;font:800 3rem/1.2 system-ui,sans-serif;color:var(--accent);direction:ltr}
-.jr .big span{color:var(--muted)}
+.jr .big{display:flex;align-items:center;justify-content:center;gap:.7rem;flex-wrap:wrap;padding:.5rem 0}
+.jr .big b{display:inline-block;font:700 1.35rem/1.4 system-ui,sans-serif;color:var(--accent);direction:ltr;background:var(--wash);border-radius:12px;padding:.2rem .9rem}
+.jr .big span{color:var(--ink);font-size:1.05rem}
 .jr .chips{display:flex;flex-wrap:wrap;gap:.4rem;direction:ltr;margin-top:.6rem}
 .jr .chips a{padding:.25rem .65rem;border-radius:9px;background:var(--wash);color:var(--accent);text-decoration:none;font:600 .92rem system-ui,sans-serif}
 .jr .chips a:hover{background:var(--accent);color:#fff}
@@ -86,9 +87,9 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
     return box;
   }
 
-  function numsPane(x) {
+  function numsPane(x, kind) {
     const T_ = T(), w = el('div'), hs = x.h;
-    if (!hs.length) { w.append(el('p', {class: 'note'}, T_.noNums)); return w; }
+    if (!hs.length) { w.append(el('p', {class: 'note'}, kind === 'n' ? T_.noNumsN : T_.noNums)); return w; }
     w.append(el('p', {class: 'note'}, T_.fromNums + ' — ' + T_.hCount(hs.length)));
     const chips = el('div', {class: 'chips'}); w.append(chips);
     let shown = 0; const STEP = 300;
@@ -113,7 +114,7 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
       else if (k === 'total') {
         pane.append(el('div', {class: 'big'}, el('b', null, fmt(x.c)), el('span', null, T_.totalIs)));
         if (kind === 's') { const o = x[lang()] || x.en; if (o.count) pane.append(el('h3', null, T_.count), el('p', null, o.count)); }
-      } else pane.append(numsPane(x));
+      } else pane.append(numsPane(x, kind));
     };
     defs.forEach(([k, t]) => tabs.append(el('button', {type: 'button', role: 'tab', 'data-k': k, on: {click: () => show(k)}}, t + (k === 'total' ? ' (' + fmt(x.c) + ')' : ''))));
     const head = el('div', {class: 'head'}, el('span', {class: 'no'}, String(x.i)), el('div', null, el('div', {class: 'tt' + (kind === 's' || isAr ? ' ar' : '')}, nm(x, kind)), el('div', {class: 'by'}, T_.byline)));
