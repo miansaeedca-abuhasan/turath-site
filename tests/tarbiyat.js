@@ -94,6 +94,17 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  ok(await p.$$eval('.set h2',a=>a.map(x=>x.textContent)).then(h=>h.includes('عابد نونہال')&&h.includes('ہونہار نونہال')&&h.includes('مثالی نونہال')),'settings list three categories');
  const sw=await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2);ok(sw,'no horizontal page scroll on phone');
  ok(errs.length===0,'page errors: '+errs.join('|'));
+ // lock: leaving the app / screen off, back button and reload all lock the chart; only the code opens it; 5-minute idle limit; 3-week deletion
+ const login=async()=>{await p.waitForSelector('#code');await p.fill('#code',c.parentCode);await p.click('button:text-is("داخل ہوں")');await p.waitForSelector('table.ch')};
+ await p.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'))});await p.waitForSelector('#code',{timeout:3000});
+ ok(await p.$$eval('table.ch',a=>a.length)===0&&/بند ہو گیا/.test(await p.$eval('#app',e=>e.innerText)),'screen off locks the chart and says so');
+ await p.evaluate(()=>{delete document.hidden});await login();
+ await p.goBack();await p.waitForSelector('#code',{timeout:3000});ok(await p.$$eval('table.ch',a=>a.length)===0,'back button locks the chart');
+ await login();await p.reload();await p.waitForSelector('#code');ok(await p.$$eval('table.ch',a=>a.length)===0&&!(await p.evaluate(()=>{try{return localStorage.tb_tok||''}catch(e){return ''}})),'reload locks the chart, no token kept on the phone');
+ ok(await p.$$eval('#app .card h2',a=>a[0].textContent==='نیا چارٹ بنائیں'&&a[1].textContent==='کوڈ سے داخل ہوں'),'new-chart card first, code card below');
+ ok(/اگر آپ نے خاندان کا اندراج کر کے کوڈ حاصل کر لیا ہے تو کوڈ داخل کریں/.test(await p.$eval('#app',e=>e.innerText))&&await p.$$eval('ol.steps li',a=>a.length)>=3,'code card sentence and numbered steps');
+ const th=fs.readFileSync(root+'/tarbiyat.html','utf8'),tj=fs.readFileSync(root+'/functions/api/tarbiyat.js','utf8');
+ ok(/IDLE_MS=5\*60\*1000/.test(th),'5-minute idle lock');ok(/IDLE = 21 \* DAY/.test(tj)&&!/120/.test(th.replace(/120\d/g,'')),'unused chart deleted after 3 weeks');
  // tile on the home page
  const ix=fs.readFileSync(root+'/index.html','utf8');ok(/img:tarbiyat/.test(ix)&&/'tarbiyat\.html'/.test(ix)&&fs.existsSync(root+'/icons/tarbiyat.png'),'home tile + icon');
  await b.close();srv.close();

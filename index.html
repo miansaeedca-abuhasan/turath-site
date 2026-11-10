@@ -716,7 +716,7 @@ body.vfpage .appbar{position:static}
 .nfact>span:first-child{color:var(--muted,#6b7280);font-size:.88rem;font-weight:400}.nfact b{font-weight:500;font-size:1rem}
 .nhead .nname{font-weight:600}
 .nrowbtns{margin-top:.9rem;justify-content:center}.nhbox{margin-top:.5rem}.nhbox .nsec{margin-top:.3rem}
-.vcountries{max-width:420px;margin:.2rem auto .6rem;padding:.4rem .8rem;background:var(--card,#f4f4f4);border-radius:10px;font-size:.85rem;text-align:center;display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem .5rem}.vcountries>div:last-child:nth-child(3n+1),.vcountries>div.vold{grid-column:1/-1}.vcountries[hidden]{display:none}.vbtn{background:none;border:0;color:inherit;cursor:pointer;font:inherit;padding:0 .2rem}
+.vcountries{max-width:440px;margin:.2rem auto .6rem;padding:.4rem .5rem;background:var(--card,#f4f4f4);border-radius:10px;font-size:.85rem;display:grid;grid-template-columns:repeat(3,1fr);gap:.25rem .5rem}.vcountries>div:last-child:nth-child(3n+1),.vcountries>div.vold{grid-column:1/-1}.vcountries>div{display:flex;align-items:baseline;gap:.25rem;text-align:start;direction:rtl}.vcountries>div.vold{justify-content:center}.vcountries .vn{flex:0 0 1.9em;font-size:.75rem;text-align:end;opacity:.6;direction:ltr;unicode-bidi:isolate}.vcountries .vt{unicode-bidi:isolate;white-space:nowrap}.vcountries[hidden]{display:none}.vbtn{background:none;border:0;color:inherit;cursor:pointer;font:inherit;padding:0 .2rem}
 /* v2 polish: one emerald-and-gold look on phone and desktop */
 :root{--accent:#0f6b57;--bar:#0e5f4e;--wash:#e7f2ee;--paper:#f4f7f4;--line:#dde6e0;--gold:#b58a2e;--shadow:0 1px 2px rgba(15,50,40,.06),0 8px 22px rgba(15,50,40,.07)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--accent:#62c4a6;--bar:#0b3b32;--wash:#16302a;--line:#27403a;--gold:#d6b05f;--paper:#0e1614}}
@@ -3320,7 +3320,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           const nm = cc => { if (cc === 'XX') return UL2[ui] || UL2.en; if (SH[ui] && SH[ui][cc]) return SH[ui][cc]; try { return (dn && dn.of(cc)) || cc; } catch (e) { return cc; } };
           const known = cs.reduce((a, x) => a + x[1], 0), older = j.n - known;
           const rows = cs.map(([cc, n]) => [nm(cc), n]); if (older > 0) rows.push([OL[ui] || OL.en, older]);
-          const list = el('div', {class: 'vcountries', hidden: true}, ...rows.map((r, i) => el('div', {class: (older > 0 && i === rows.length - 1) ? 'vold' : ''}, ((older > 0 && i === rows.length - 1) ? '' : nf(i + 1) + '. ') + r[0] + ': ' + nf(r[1]))));
+          const list = el('div', {class: 'vcountries', hidden: true}, ...rows.map((r, i) => el('div', {class: (older > 0 && i === rows.length - 1) ? 'vold' : ''}, (older > 0 && i === rows.length - 1) ? '' : el('span', {class: 'vn'}, nf(i + 1)), el('span', {class: 'vt'}, r[0] + ': ' + nf(r[1])))));
           const btn = el('button', {type: 'button', class: 'vbtn', 'aria-label': VL[ui] || VL.en, on: {click: () => { list.hidden = !list.hidden; }}}, ' ▾');
           box.append(btn); if (box.parentNode) box.parentNode.after(list);
         }
@@ -9639,7 +9639,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       const known = r.c.reduce((s, x) => s + x[1], 0);
       const rows = r.c.map(([cc, n]) => [cc === 'XX' ? 'نامعلوم ملک' : ((dn && dn.of(cc)) || cc), n]); if (r.n > known) rows.push(['پرانے زائرین (ملک معلوم نہیں)', r.n - known]);
       wrap.replaceChildren(el('h3', {style: 'text-align:center'}, 'کل زائرین: ' + r.n.toLocaleString('en-US')),
-        el('div', {style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:.2rem .6rem;text-align:center'}, ...rows.map((x, i) => el('div', {}, (x[0].startsWith('پرانے') ? '' : (i + 1) + '. ') + x[0] + ': ' + x[1]))));
+        el('div', {class: 'vcountries', style: 'display:grid;max-width:none'}, ...rows.map((x, i) => el('div', {}, x[0].startsWith('پرانے') ? '' : el('span', {class: 'vn'}, String(i + 1)), el('span', {class: 'vt'}, x[0] + ': ' + x[1])))));
     });
     return wrap;
   }

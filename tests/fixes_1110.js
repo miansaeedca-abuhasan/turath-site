@@ -11,7 +11,7 @@ for(const k of ['fitan','bulughsaada','tarikhbukhari','tahdhibkamal','jamjawami'
     for(const r of rows){const l=(r[1].match(L)||[]).length;if(l>15){tot++;if((r[1].match(T)||[]).length<l*0.08)n++}}}
   ck(tot>0&&n===0,k+': '+n+' rows without tashkeel of '+tot)}
 const ix=fs.readFileSync('index.html','utf8');
-ck(/if \(!b\.an\) b\.an = \{\}/.test(ix),'books without an-map get an empty one (search cards)');ck(/nf\(i \+ 1\) \+ '\. '/.test(ix),'visitor country list numbered');ck(/\(i \+ 1\) \+ '\. '\) \+ x\[0\]/.test(ix),'admin country list numbered');
+ck(/if \(!b\.an\) b\.an = \{\}/.test(ix),'books without an-map get an empty one (search cards)');ck(/class: 'vn'\}, nf\(i \+ 1\)/.test(ix),'visitor country list numbered in its own aligned column');ck(/class: 'vn'\}, String\(i \+ 1\)/.test(ix),'admin country list numbered');ck(/\.vcountries \.vn\{flex:0 0 1\.9em/.test(ix),'number column fixed width');
 const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:400,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new Date().toDateString())});
