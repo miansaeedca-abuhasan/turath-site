@@ -17,7 +17,7 @@
   }));
   const el = (t, a, ...k) => { const e = document.createElement(t); for (const n in a || {}) { if (n === 'on') for (const ev in a.on) e.addEventListener(ev, a.on[ev]); else if (a[n] != null && a[n] !== false) e.setAttribute(n, a[n]); } e.append(...k.filter(x => x != null)); return e; };
   const RD = {ur: ['رضی اللہ عنہ', 'رضی اللہ عنہا'], ar: ['رضي الله عنه', 'رضي الله عنها'], en: ['رضي الله عنه', 'رضي الله عنها']};
-  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + RD[l][x.g === 'f' ? 1 : 0]; const o = x[l] || x.en; return o.title; };
+  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + RD[l][x.g === 'f' ? 1 : 0]; const o = x[l] || x.en; return x.sh && o.title.indexOf('—') < 0 ? o.title + ' — ' + (x.sh[l] || x.sh.en) : o.title; };
   const fmt = n => n.toLocaleString('en');
   const norm = s => (s || '').replace(/[ً-ٰٟۖ-ۭـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ۃ/g, 'ه').replace(/[یے]/g, 'ي').replace(/ک/g, 'ك').replace(/ہ|ھ/g, 'ه').toLowerCase();
   const CSS = `
