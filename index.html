@@ -3320,7 +3320,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           const nm = cc => { if (cc === 'XX') return UL2[ui] || UL2.en; if (SH[ui] && SH[ui][cc]) return SH[ui][cc]; try { return (dn && dn.of(cc)) || cc; } catch (e) { return cc; } };
           const known = cs.reduce((a, x) => a + x[1], 0), older = j.n - known;
           const rows = cs.map(([cc, n]) => [nm(cc), n]); if (older > 0) rows.push([OL[ui] || OL.en, older]);
-          const list = el('div', {class: 'vcountries', hidden: true}, ...rows.map((r, i) => el('div', {class: (older > 0 && i === rows.length - 1) ? 'vold' : ''}, r[0] + ': ' + nf(r[1]))));
+          const list = el('div', {class: 'vcountries', hidden: true}, ...rows.map((r, i) => el('div', {class: (older > 0 && i === rows.length - 1) ? 'vold' : ''}, ((older > 0 && i === rows.length - 1) ? '' : nf(i + 1) + '. ') + r[0] + ': ' + nf(r[1]))));
           const btn = el('button', {type: 'button', class: 'vbtn', 'aria-label': VL[ui] || VL.en, on: {click: () => { list.hidden = !list.hidden; }}}, ' ▾');
           box.append(btn); if (box.parentNode) box.parentNode.after(list);
         }
@@ -4504,7 +4504,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   if (I.ar) Object.assign(I.ar, {sxTitle: 'الشروح', sxMore: 'اقرأ الشرح كاملاً', sxLess: 'أقل', sxOpen: 'افتح في الكتاب', sxBab: 'شرح الباب', sxHad: 'شرح هذا الحديث', sxNone: 'تعذّر تحميل الشرح.'});
   ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {sxTitle: {bn: 'ব্যাখ্যা', hi: 'शरहें', gu: 'શરહો', fr: 'Commentaires'}[l], sxMore: {bn: 'পূর্ণ ব্যাখ্যা পড়ুন', hi: 'पूरी शरह पढ़ें', gu: 'પૂરી શરહ વાંચો', fr: 'Lire le commentaire complet'}[l], sxLess: {bn: 'কম', hi: 'कम', gu: 'ઓછું', fr: 'Moins'}[l], sxOpen: {bn: 'বইয়ে খুলুন', hi: 'किताब में खोलें', gu: 'કિતાબમાં ખોલો', fr: 'Ouvrir dans le livre'}[l], sxBab: {bn: 'অধ্যায়ের ব্যাখ্যা', hi: 'अध्याय की शरह', gu: 'પ્રકરણની શરહ', fr: 'Commentaire du chapitre'}[l], sxHad: {bn: 'এই হাদীসের ব্যাখ্যা', hi: 'इस हदीस की शरह', gu: 'આ હદીસની શરહ', fr: 'Commentaire de ce hadith'}[l], sxNone: {bn: 'লোড হয়নি।', hi: 'लोड नहीं हो सकी।', gu: 'લોડ થઈ શકી નથી.', fr: 'Chargement impossible.'}[l]}); });
   const C = {idx: null, data: {}, loading: {}, rev: {}};
-  window.COLLS = list => { C.idx = list; list.forEach(b => { if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
+  window.COLLS = list => { C.idx = list; list.forEach(b => { if (!b.an) b.an = {}; if (b.an && b.an._r) { const r = b.an._r; delete b.an._r; for (const [n, v, c] of r) for (let i = 0; i < c; i++) b.an[n + i] = String(v + i); } const r = {}; for (const n in b.an) { const p = parseInt(b.an[n], 10); if (!(p in r)) r[p] = +n; } C.rev[b.key] = r; }); };
   C.fixes = {};
   window.COLLDATA = (b, l, rows) => { const m = (C.data[b + '|' + l] = C.data[b + '|' + l] || new Map()); rows.forEach(r => { const f = C.fixes[b + '|' + l + '|' + r[0]]; if (f) { r = r.slice(); r[1] = f; } m.set(r[0], r); }); };
   const load1 = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
@@ -4713,6 +4713,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       // the chapter's name in the reading language (shamail ...), under the Arabic one
       const sc = ui !== 'ar' && b.secL && b.secL[ui] ? b.sections.find(s => s[2] <= n && n <= s[3]) : null, st = sc && sc[0] > 0 ? b.secL[ui][sc[0] - 1] : (sc && sc[5] && sc[5][ui]);
       if (st) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, st)); } }
+    // books that carry only an Urdu bab title (section row: [no, urdu title, from, to, arabic title]) show it under the Arabic bab in the Urdu UI
+    if (ui === 'ur' && b.langs.includes('ur') && b.sections && !(b.secL && b.secL.ur) && !c.querySelector('.babtr')) { const su = b.sections.find(s => s[2] <= n && n <= s[3] && s[4] && s[1] && s[1] !== s[4] && !/^[A-Za-z]/.test(s[1]));
+      if (su) { if (!c.querySelector('.babbox')) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, su[4])); c.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, su[1])); } }
     if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
@@ -9636,7 +9639,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       const known = r.c.reduce((s, x) => s + x[1], 0);
       const rows = r.c.map(([cc, n]) => [cc === 'XX' ? 'نامعلوم ملک' : ((dn && dn.of(cc)) || cc), n]); if (r.n > known) rows.push(['پرانے زائرین (ملک معلوم نہیں)', r.n - known]);
       wrap.replaceChildren(el('h3', {style: 'text-align:center'}, 'کل زائرین: ' + r.n.toLocaleString('en-US')),
-        el('div', {style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:.2rem .6rem;text-align:center'}, ...rows.map(x => el('div', {}, x[0] + ': ' + x[1]))));
+        el('div', {style: 'display:grid;grid-template-columns:repeat(2,1fr);gap:.2rem .6rem;text-align:center'}, ...rows.map((x, i) => el('div', {}, (x[0].startsWith('پرانے') ? '' : (i + 1) + '. ') + x[0] + ': ' + x[1]))));
     });
     return wrap;
   }
