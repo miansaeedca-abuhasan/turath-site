@@ -330,6 +330,11 @@ body.withplayer .resume.float{display:none}
 .intro summary{cursor:pointer;font-weight:600;color:var(--accent)}.intro p{margin:.6rem 0}
 .gspanel{padding:.9rem .9rem 1rem;border-radius:1.1rem}.gspanel .filterbox{margin:0 0 .8rem}
 .gsgrade{flex-wrap:wrap;border-radius:1rem!important}.gsgrade .segb{flex:1 1 auto;white-space:nowrap}.gstabs{display:flex;gap:.25rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.2rem 0 .7rem}.gstab{flex:1;min-width:0;border:0;background:transparent;color:var(--ink,inherit);font:inherit;font-weight:600;padding:.55rem .3rem;border-radius:999px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.totcard{padding:.55rem .9rem!important}.totcard .totn{font-size:1.15rem!important;line-height:1.5}.totcard .cs{font-size:.78rem;line-height:1.5}.totcard .totnote{display:none}
+.gscompact{padding:.55rem .65rem .6rem}.gscompact .gsfb{margin:0 0 .45rem;padding:.05rem .5rem;gap:.35rem;border-radius:999px}.gscompact .gsfb .filter{padding:.5rem .2rem;font-size:1rem;letter-spacing:normal;word-spacing:.12em}.gsgo,.gsx{border:0;background:none;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;width:2.1rem;height:2.1rem;border-radius:50%;font-size:1.3rem;line-height:1;padding:0}.gsgo{background:var(--accent);color:#fff}.gsgo svg{width:1.05rem;height:1.05rem}.gsx{color:var(--muted,#888)}
+.gscompact .gstabs{margin:.1rem 0 .3rem;padding:.15rem}.gscompact .gstab{padding:.32rem .2rem;font-size:.88rem}
+.gsflt{margin:.2rem 0 0}.gsflt>summary{cursor:pointer;font-size:.85rem;color:var(--accent);padding:.25rem .2rem;list-style:revert}.gsflt .seg{margin:.3rem auto .5rem}.gsflt .segb{padding:.2rem .7rem;font-size:.85rem}.gsflt .note{font-size:.8rem;margin:.3rem 0 0}
+.gsnum{padding:.3rem .8rem}.gsnum .gstopic{display:flex;justify-content:space-between;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}.gsnum .gstopic:last-child{border:0}
 .gstab[aria-selected=true]{background:var(--card);color:var(--accent);box-shadow:0 1px 6px rgba(0,0,0,.14)}
 .gspanel .seg{margin:.2rem auto .8rem;width:auto;display:flex}.gspanel .seg .segb{flex:1}
 .gscap{font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;opacity:.65;margin:.5rem .2rem .3rem;display:block}
@@ -5097,6 +5102,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       gsLazy(d, hit, mk, first); first = false; site.append(d); });
     sum.textContent = n ? T('results') + ': ' + fmtN(n) : T('none');
   }
+  /* a number alone = the hadith number: the same number in every book that has it, one tap to open */
+  function numSearch(n, out, sel) {
+    const NT = {ur: 'حدیث نمبر', ar: 'رقم الحديث', en: 'Hadith number', bn: 'হাদীস নম্বর', hi: 'हदीस नंबर', gu: 'હદીસ નંબર', fr: 'Numéro du hadith'};
+    const rows = [];
+    if (n >= 1 && n <= 16552 && (!sel || sel.has('jami'))) rows.push([T('jamiName'), '#/h/' + n, 'jami']);
+    (C.idx || []).forEach(b => { if (b.ext || SKIP.has(b.key) || !b.count || n > b.count || (sel && !sel.has(b.key))) return; rows.push([bname(b), '#/s/' + b.key + '/n/' + n, b.key]); });
+    const open = (e, h, k) => { e.preventDefault(); if (window.hbOpen && k !== 'jami') window.hbOpen(k, h); else location.hash = h; };
+    out.append(el('div', {class: 'qsbar'}, (NT[ui] || NT.en) + ': ' + fmtN(n) + ' — ' + fmtN(rows.length)),
+      el('div', {class: 'card gsnum'}, ...rows.map(r => el('a', {class: 'gstopic', href: r[1], on: {click: e => open(e, r[1], r[2])}}, el('span', {class: 'ct', dir: 'auto'}, r[0]), el('span', {class: 'cs'}, fmtN(n))))));
+  }
   async function showSearch() {
     await index();
     bar(T('gsTitle'), '', true);
@@ -5142,14 +5157,19 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tabBar.replaceChildren(...tabs.map(t => el('button', {type: 'button', class: 'gstab', role: 'tab', 'data-tab': t, 'aria-selected': String(t === tab), on: {click: () => { if (t === tab) return; tab = t; try { localStorage.gstab4 = JSON.stringify(t); } catch (e) {} run++; out.replaceChildren(); loadSel(); drawTabs(); paint(); if (q.value.trim()) go.click(); }}}, t === 'topic' ? GSTOPIC[ui] || GSTOPIC.en : GSL[t] || t)));
       const tp = tab === 'topic'; mb.hidden = tp; gb.hidden = tp; hint.textContent = (tp ? GSTHINT[ui] || GSTHINT.en : T('gsHint') + '  ' + (GSGH[ui] || GSGH.en));
     };
-    const root = el('div'); root.append(el('div', {class: 'card gspanel'}, el('div', {class: 'card pad0 filterbox'}, icon('search'), q), tabBar, mb, gb, pick, el('div', {class: 'gsbar'}, go, ' ', clr)), hint, out);
+    const FLT = {ur: 'فلٹر اور کتب', ar: 'التصفية والكتب', en: 'Filters & books', bn: 'ফিল্টার ও বই', hi: 'फ़िल्टर और किताबें', gu: 'ફિલ્ટર અને કિતાબો', fr: 'Filtres et livres'};
+    go.className = 'gsgo'; go.replaceChildren(icon('search')); go.title = go.ariaLabel = T('gsGo'); clr.className = 'gsx'; clr.replaceChildren('×'); clr.title = clr.ariaLabel = CLR[ui] || CLR.en;
+    const flt = el('details', {class: 'gsflt'}, el('summary', {}, FLT[ui] || FLT.en), mb, gb, pick, hint);
+    const root = el('div'); root.append(el('div', {class: 'card gspanel gscompact'}, el('div', {class: 'card pad0 filterbox gsfb'}, q, go), tabBar, flt), out);
     box.append(root); KEEP.s = {root, ui, hash: location.hash, y: 0};
     drawTabs(); paint();
     const doRun = async () => {
       const v = q.value.trim(); if (!v) return;
       const words = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!words.length) return;
       const md = /[&+،,]/.test(v) ? 'all' : GSMODE(), tk = ++run;
-      pick.open = false; out.replaceChildren();
+      pick.open = false; flt.open = false; out.replaceChildren();
+      const nv = v.replace(/[٠-٩۰-۹]/g, c => String(c.charCodeAt(0) & 15)).replace(/[٠-٩]/g, c => String(c.charCodeAt(0) - 1632));
+      if (/^\d{1,6}$/.test(nv) && tab !== 'topic') return numSearch(+nv, out, new Set(sel));
       const sum = el('div', {class: 'qsbar'}, T('loading')), site = el('div'); out.append(sum, site);
       if (tab === 'topic') return topicSearch({v, cur: () => tk === run, site, sum, sel: new Set(sel)});
       await siteSearch({v, words, md, sel: new Set(sel), cur: () => tk === run, site, sum, lg: tab, gr: gk});
