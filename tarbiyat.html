@@ -95,7 +95,7 @@ const XEN={'تربیہ':'Tarbiyah','بچوں کی اچھی عادتوں کا چ�
 'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔':'A chart of good daily habits. Children mark their own progress, parents watch over it, and there are graphs and certificates from the week up to the year.',
 'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔':'This is free. Parents have one code and each child has a separate code, with which the child can fill in only his or her own boxes.',
 'کوڈ سے داخل ہوں':'Enter with a code','والدین کا کوڈ یا بچے کا اپنا کوڈ':'Parents\' code or the child\'s own code','داخل ہوں':'Enter','نیا چارٹ بنائیں':'Create a new chart',
-'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔':'Parents create it once. Write the children\'s names and each one gets a code.','نیا خاندان بنائیں':'Create a family',
+'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔':'Parents create it once. Write the children\'s names and each one gets a code.','نیا خاندان بنائیں':'Create a family','نئے آنے والوں کیلئے ’’خاندان کا اندراج‘‘ ضروری ہے لہٰذا اندراج کیلئے ’’خاندان‘‘ پر کلک کریں۔':'New visitors must first register a family: click “Family” to register.','خاندان':'Family',
 'نیا خاندان':'New family','خاندان یا گھر کا نام (اختیاری)':'Family or home name (optional)','مثلاً: ہمارا گھر':'e.g. Our home','بچوں کے نام':'Children\'s names','بچے کا نام':'Child\'s name','+ ایک اور بچہ':'+ Add another child','چارٹ بنائیں':'Create chart','واپس':'Back',
 'آپ کے کوڈ':'Your codes','والدین کا کوڈ (سب کچھ دیکھنے اور بدلنے کے لیے)':'Parents\' code (to see and change everything)','بچے کا کوڈ: ':'Child\'s code: ',
 'ان کوڈز کو ابھی کہیں لکھ کر محفوظ کر لیں۔ سیکیورٹی کے لیے والدین کا کوڈ دوبارہ نہیں دکھایا جاتا۔ بچے کا کوڈ بھول جائے تو ترتیبات میں نیا بنا سکتے ہیں۔':'Write these codes down somewhere safe now. For security the parents\' code is not shown again. If a child forgets the code, make a new one in Settings.',
@@ -171,7 +171,7 @@ function landing(msg){
   code.addEventListener('keydown',e=>{if(e.key==='Enter')go()});
   show(E('div',{class:'hero'},E('h2',{},'تربیہ'),E('p',{},'روزانہ کی اچھی عادتوں کا چارٹ۔ بچے خود اپنی کارکردگی لکھتے ہیں، والدین دیکھتے ہیں، اور ہفتے سے سال تک کا گراف اور سرٹیفکیٹ ملتا ہے۔'),E('p',{class:'muted',style:'color:#fff;opacity:.85'},'یہ سہولت مفت ہے۔ والدین کا ایک کوڈ ہوتا ہے اور ہر بچے کا اپنا الگ کوڈ، جس سے وہ صرف اپنے خانے بھر سکتا ہے۔')),
     E('div',{class:'card'},E('h2',{},'کوڈ سے داخل ہوں'),E('label',{},'والدین کا کوڈ یا بچے کا اپنا کوڈ'),code,E('button',{on:{click:go}},'داخل ہوں'),err),
-    E('div',{class:'card'},E('h2',{},'نیا چارٹ بنائیں'),E('p',{class:'muted'},'والدین ایک بار بناتے ہیں۔ بچوں کے نام لکھیں، ہر ایک کا کوڈ مل جائے گا۔'),E('button',{class:'sec',on:{click:create}},'نیا خاندان بنائیں')));
+    E('div',{class:'card'},E('h2',{},'نیا چارٹ بنائیں'),E('p',{class:'muted'},'نئے آنے والوں کیلئے ’’خاندان کا اندراج‘‘ ضروری ہے لہٰذا اندراج کیلئے ’’خاندان‘‘ پر کلک کریں۔'),E('button',{class:'sec',on:{click:create}},'خاندان')));
 }
 function create(){
   const fam=E('input',{placeholder:'مثلاً: ہمارا گھر',maxlength:40,value:''}),box=E('div'),err=E('div',{class:'err'});
@@ -307,5 +307,6 @@ applyLang();
 window.__TB={api,dash,get S(){return S}};
 })();
 </script>
+<script src="copybar.js?v=1"></script>
 </body>
 </html>

@@ -95,4 +95,5 @@ function set(l){lg=l;document.documentElement.lang=l;document.documentElement.di
 set(lg);document.getElementById('lg').onclick=function(){set(lg==='ur'?'en':'ur')};
 document.querySelectorAll('.cp').forEach(function(b){var o=b.textContent;b.onclick=async function(){var el=document.getElementById(b.dataset.t),t=el.textContent;try{await navigator.clipboard.writeText(t);b.textContent=b.dataset.ok}catch(e){var r=document.createRange();r.selectNodeContents(el);var s=getSelection();s.removeAllRanges();s.addRange(r)}setTimeout(function(){b.textContent=o},2500)}});
 })();
-</script></body></html>
+</script><script src="copybar.js?v=1"></script>
+</body></html>

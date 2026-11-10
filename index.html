@@ -10232,7 +10232,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   function store(a){try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
   var AREAS='#view,#list,#qv';
   var bar=null,cur=null,lastCol=3;
-  function area(n){n=n&&(n.nodeType===3?n.parentElement:n);return n&&n.closest&&n.closest(AREAS)}
+  function area(n){n=n&&(n.nodeType===3?n.parentElement:n);if(!n||!n.closest)return null;var a=n.closest(AREAS);if(a)return a;if(n.closest('input,textarea,select,[contenteditable="true"],.selbar,.selnote'))return null;return document.body}
   function svg(d){return '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>'}
   var IC={note:svg('<path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/>'),cref:svg('<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/>'),cplain:svg('<rect x="8" y="8" width="12" height="12" rx="2"/><rect x="4" y="4" width="12" height="12" rx="2"/>'),share:svg('<circle cx="6" cy="12" r="2.4"/><circle cx="17" cy="6" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="M8.2 11l6.6-3.8M8.2 13l6.6 3.8"/>')};
   function mk(tag,cls,html){var e=document.createElement(tag);if(cls)e.className=cls;if(html!=null)e.innerHTML=html;return e}
@@ -10243,16 +10243,19 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     COLS.forEach(function(c,i){var b=mk('button','sb-c');b.type='button';b.style.background=c;b.title=b.ariaLabel=lb('hl');b.dataset.c=i;b.addEventListener('mousedown',function(e){e.preventDefault()});b.addEventListener('click',function(){lastCol=i;doHl(i)});bar.append(b)});
     document.body.append(bar);
   }
-  function selInfo(){var s=getSelection();if(!s||s.isCollapsed||!s.rangeCount)return null;var r=s.getRangeAt(0),a=area(r.commonAncestorContainer);if(!a)return null;var t=String(s).trim();if(t.length<2)return null;return{r:r,t:t,a:a}}
+  function selInfo(){var s=getSelection();if(!s||s.isCollapsed||!s.rangeCount)return null;var r=s.getRangeAt(0),a=area(r.commonAncestorContainer);if(!a)return null;var t=String(s).trim();if(t.length<2)return null;return{r:r,t:t,a:a,plain:a===document.body}}
   function show(){
     var i=selInfo();if(!i){hide();return}
-    cur=i;if(!bar)build();bar.hidden=false;
+    cur=i;if(!bar)build();bar.classList.toggle('plain',!!i.plain);bar.hidden=false;
     var rc=i.r.getBoundingClientRect(),bw=bar.offsetWidth||250,bh=bar.offsetHeight||44;
     var top=rc.top-bh-10;if(top<8)top=Math.min(rc.bottom+bh+24,innerHeight-bh-8);
     var left=Math.max(8,Math.min(innerWidth-bw-8,rc.left+rc.width/2-bw/2));
     bar.style.top=top+'px';bar.style.left=left+'px';
   }
   function hide(){if(bar)bar.hidden=true;cur=null}
+  /* the browser's own copy (right-click menu, long-press menu, Ctrl+C) is closed on the whole site: text is copied only from this bar (typing fields keep their normal menu) */
+  function typing(t){return !!(t&&t.closest&&t.closest('input,textarea,select,[contenteditable="true"]'))}
+  ['contextmenu','copy','cut','dragstart'].forEach(function(n){document.addEventListener(n,function(e){var t=e.target&&e.target.nodeType===3?e.target.parentElement:e.target;if(!typing(t))e.preventDefault()},true)});
   var tmr;document.addEventListener('selectionchange',function(){clearTimeout(tmr);tmr=setTimeout(show,180)});
   addEventListener('hashchange',hide);addEventListener('scroll',function(){if(cur)show()},{passive:true});
 
@@ -10282,12 +10285,12 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return pieces;
   }
   function doHl(ci){
-    if(!cur)return;var all=load(),id='h'+Date.now().toString(36),pcs=wrapRange(cur.r,id,ci);
+    if(!cur||cur.plain)return;var all=load(),id='h'+Date.now().toString(36),pcs=wrapRange(cur.r,id,ci);
     if(pcs.length){all.push({id:id,h:location.hash,c:ci,n:'',pcs:pcs,ts:Date.now()});store(all)}
     getSelection().removeAllRanges();hide();
   }
   function doNote(){
-    if(!cur)return;var all=load(),first;var i=cur;
+    if(!cur||cur.plain)return;var all=load(),first;var i=cur;
     // highlight first (default colour) so the note is attached to a mark
     var id='h'+Date.now().toString(36),pcs=wrapRange(i.r,id,lastCol);
     if(!pcs.length){hide();return}
@@ -10337,6 +10340,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
 <style>
 .selbar{position:fixed;z-index:60;display:flex;align-items:center;gap:.15rem;padding:.3rem .45rem;border-radius:999px;background:var(--card,#fff);color:var(--ink,#222);border:1px solid var(--line,#ccc);box-shadow:0 4px 18px rgba(0,0,0,.22);max-width:calc(100vw - 16px);direction:ltr}
 .selbar[hidden]{display:none}
+.selbar.plain .sb-c,.selbar.plain .sb-b:first-child{display:none}
 .sb-b{width:34px;height:34px;border-radius:50%;border:1px solid var(--line,#ccc);background:transparent;color:inherit;display:grid;place-items:center;cursor:pointer;padding:0}
 .sb-b:hover{background:var(--wash,#eef)}
 .sb-c{width:26px;height:26px;border-radius:50%;border:2px solid rgba(0,0,0,.12);cursor:pointer;padding:0;margin-inline-start:.15rem}
