@@ -3,7 +3,7 @@ const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch(),p=await b.newPage({viewport:{width:1000,height:900}});const bad=[];p.on('pageerror',e=>bad.push(e.message));
 await p.addInitScript(()=>{localStorage.ui='ur';localStorage.book='jamik'});
 await p.goto('http://localhost:8765/#/k/1');await p.waitForSelector('#view .card, #list .card',{timeout:30000});
-await p.goto('http://localhost:8765/#/');await p.waitForTimeout(1200);await p.click('text=الجامع الکامل (مکمل');await p.waitForSelector('.srow2',{timeout:30000});
+await p.goto('http://localhost:8765/#/');await p.waitForTimeout(1200);await p.evaluate(()=>document.querySelectorAll('.sheetbg,#ipop').forEach(n=>n.remove()));await p.evaluate(()=>{[...document.querySelectorAll('span')].find(e=>e.textContent.startsWith('الجامع الکامل (مکمل')).click()});await p.waitForSelector('.srow2',{timeout:30000});
 const rows=await p.$$eval('.srow2',els=>els.map(e=>e.innerText.replace(/\n+/g,' | ')));
 const books=rows.filter(r=>/كتاب/.test(r.split('|')[1]||'')&&/حدیث نمبر/.test(r));
 if(books.length!==67)bad.push('books '+books.length);

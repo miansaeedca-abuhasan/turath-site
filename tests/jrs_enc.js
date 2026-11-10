@@ -1,7 +1,8 @@
 const {chromium}=require('playwright');
 (async()=>{const b=await chromium.launch();const p=await b.newPage();let bad=0;
 const ok=(c,m)=>{if(!c){console.log('FAIL',m);bad++;}};
-await p.goto('http://localhost:8765/#/jr/269');await p.waitForSelector('.jr .tabs');
+const fs=require('fs'),dj=fs.readFileSync(__dirname+'/../data/jrs.js','utf8'),DD=JSON.parse(dj.slice(dj.indexOf('(')+1,dj.lastIndexOf(')')));const USID=DD.n.find(x=>x.nm.ar==='أسيد بن ظهير').i;
+await p.goto('http://localhost:8765/#/jr/'+USID);await p.waitForSelector('.jr .tabs');
 await p.evaluate(()=>{try{localStorage.setItem('seenWhatsNew','1')}catch(e){}});
 ok(await p.$$eval('.jr .tabs button',b=>b.length)===4,'4 tabs for Usayd');
 await p.evaluate(()=>[...document.querySelectorAll('.jr .tabs button')].find(b=>b.dataset.k==='enc').click());
