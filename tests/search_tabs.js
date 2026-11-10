@@ -32,11 +32,11 @@ for(const [ui,word] of [['ur','نماز'],['en','prayer']]){
 // an opened book offers the search by hadith number, words and phrases
 {const p=await b.newPage({viewport:{width:420,height:900}});const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new Date().toDateString())});
- await p.goto('http://localhost:8765/#/s/bukhari?idx');await p.waitForSelector('.bksearch',{timeout:20000});
+ await p.goto('http://localhost:8765/#/s/bukhari?idx');await p.waitForSelector('#csearch',{timeout:20000});
+ ck(await p.evaluate(()=>document.querySelectorAll('#csearch').length===1&&!document.querySelector('.bksearch')),'one search bar in the book (no second search button)');
  await p.evaluate(()=>document.querySelectorAll('.sheetbg').forEach(n=>n.remove()));
- await p.click('.bksearch');await p.waitForSelector('.sheet input[type=search],.sheetbg input[type=search]',{timeout:8000});
- const inp='.sheetbg input[type=search]';
- await p.fill(inp,'1');await p.waitForTimeout(2500);ck(await p.evaluate(()=>document.querySelectorAll('.bsres .card,.bsres [class*=card]').length)>=1,'book search: hadith number finds the hadith');
- await p.fill(inp,'إنما الأعمال بالنيات');await p.waitForTimeout(4000);ck(await p.evaluate(()=>/\d/.test((document.querySelector('.bsres .qsbar')||{}).textContent||''))||await p.evaluate(()=>document.querySelectorAll('.bsres .card').length)>=1,'book search: words and phrases find hadith');
+ await p.click('.bknum');ck(await p.evaluate(()=>document.querySelector('#csearch').inputMode==='numeric'),'number option switches to the number keypad');
+ await p.fill('#csearch','1');await p.waitForTimeout(2500);ck(await p.evaluate(()=>document.querySelectorAll('#view .card,main .card').length)>=1,'book search: hadith number finds the hadith');
+ await p.click('.bknum');await p.fill('#csearch','إنما الأعمال بالنيات');await p.waitForTimeout(4000);ck(await p.evaluate(()=>/\d/.test((document.querySelector('.qsbar')||{}).textContent||''))||await p.evaluate(()=>document.querySelectorAll('.rno').length)>=1,'book search: words and phrases find hadith');
  ck(!errs.length,'page errors '+errs);await p.close();}
 console.log(bad?'FAIL':'PASS search_tabs');await b.close();process.exit(bad?1:0)})();

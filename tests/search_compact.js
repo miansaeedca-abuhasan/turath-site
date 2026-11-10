@@ -10,4 +10,6 @@ await p.fill('#gsq','540');await p.keyboard.press('Enter');await p.waitForTimeou
 const n=await p.evaluate(()=>document.querySelectorAll('.gsnum a').length);if(n<8)bad.push('number search rows '+n);
 await p.fill('#gsq','نماز & عمر & رونا');await p.keyboard.press('Enter');await p.waitForTimeout(7000);
 const r=await p.evaluate(()=>document.querySelectorAll('#list .card').length);if(r<2)bad.push('& search no results');
+await p.fill('#gsq','انبیاء پر آزمائش');await p.keyboard.press('Enter');await p.waitForTimeout(9000);
+const am=await p.evaluate(()=>[...document.querySelectorAll('#list mark.qhit')].filter(m=>(m.closest('[lang]')||{}).lang==='ar').length);if(am)bad.push('Urdu search colours Arabic words: '+am);
 await b.close();console.log(bad.length?'FAIL '+bad.join('; '):'PASS');process.exit(bad.length?1:0)})();

@@ -183,6 +183,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .panel p.en{font-size:1.05rem}
 .panel p.q{font-weight:700}
 .nav{display:flex;justify-content:space-between;margin-top:2rem}
+.bkrow{display:flex;gap:.5rem;margin:.2rem 0 .5rem}.bkrow .btn{flex:1;justify-content:center;padding:.45rem .6rem;font-size:.9rem;margin:0}.bkrow .bknum[aria-pressed=true]{background:var(--accent);color:#fff}
 .secnav{margin:1.2rem 0 .5rem}.secnext{display:flex;flex-direction:column;gap:.15rem;text-decoration:none;border-inline-start:4px solid var(--accent)}.secnext .ct{font-weight:700;color:var(--accent)}.secprev{display:block;text-align:center;margin-top:.6rem;color:var(--muted);font-size:.9em}.readstart{display:inline-flex;align-items:center;margin:.3rem 0 .6rem}
 .nav a{color:var(--accent)}
 .refbox.fullbox{background:none;border:0;border-radius:0;padding:.2rem 0 .4rem;margin:.2rem 0}.refbox.fullbox>b{display:block;font:600 .95rem/1.6 var(--serif);color:var(--accent);margin-bottom:.2rem}.fullh{margin:.2rem 0}.hpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(4.7rem + env(safe-area-inset-bottom,0px));z-index:4;display:flex;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:999px;box-shadow:0 2px 12px rgba(0,0,0,.18);opacity:.92}.hpill button{background:none;border:0;color:var(--accent);padding:.35rem .7rem;font:600 .95rem/1.4 var(--serif);cursor:pointer;display:flex;align-items:center}.hpill button:disabled{opacity:.3}.hpill svg{width:1.1rem;height:1.1rem}.hpill .hpm{color:var(--ink);min-width:4.2rem;justify-content:center}
@@ -486,6 +487,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .qref:hover{color:var(--accent)}
 .qrside .ab{background:none;border:0;color:var(--muted);border-radius:50%;width:2.4rem;height:2.4rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .qrside .ab:hover{background:var(--wash);color:var(--accent)}
+a.card .ca.snipl{font-family:inherit;font-size:1rem;line-height:1.9;text-align:start}[lang=ur].snipl{font-family:var(--urdu,inherit)}
 mark.qhit{background:none;color:#d0312d;font-weight:700}
 .trname.inl{display:inline;font-weight:400}
 .qwrap{text-align:center;transition:background .3s}
@@ -829,6 +831,15 @@ function ENGINE(){
     for (const k in c) for (const l in c[k]) c[k][l].forEach(t => a.push([k, t]));
     return a;
   };
+  // the texts of ONE language only (a search typed in Urdu must not look at, or colour, the Arabic text and the other way round)
+  const textsLang = (h, book, lang) => {
+    const a = [];
+    if (lang === 'ar') { if (h.sanad) a.push(['sanad', h.sanad]); h.matn.forEach(t => a.push(['matn', t])); (h.takhrij || '').split('\n').filter(Boolean).forEach(t => a.push(['takhrij', t])); if (h.chapter_ar) a.push(['chapter', h.chapter_ar]); if (h.group_ar) a.push(['chapter', h.group_ar]); }
+    if (lang === 'ur' && h.chapter_ur) a.push(['chapter', h.chapter_ur]);
+    if (lang === 'en') { if (h.chapter_en) a.push(['chapter', h.chapter_en]); if (h.takhrij_en) a.push(['takhrij', h.takhrij_en]); if (h.group_en) a.push(['chapter', h.group_en]); }
+    const c = contentOf(h, book); for (const k in c) for (const l in c[k]) if (l === lang) c[k][l].forEach(t => a.push([k, t]));
+    return a;
+  };
   function buildIndex(items) {
     const idx = new Map();
     for (const [id, texts] of items) for (const [f, t] of texts) for (const k of toks(t)) {
@@ -902,8 +913,8 @@ function ENGINE(){
     fields: [], snippet: []}, extra);
 
   // mode: 'all' = every word present, any order (default) · 'exact' = the words together as one phrase · 'similar' = ranked, partial words too
-  async function search(q, book, mode) {
-    mode = mode || 'all'; EXACT = mode !== 'similar';
+  async function search(q, book, mode, lang) {
+    mode = mode || 'all'; if (!['ar', 'ur', 'en'].includes(lang) || book !== 'jami') lang = null; EXACT = mode !== 'similar';
     const tk = toks(q.replace(/[&+،,]/g, ' ')); if (!tk.length) return [];
     const ext = book !== 'jami' && book !== 'tuhfa';
     const I = ext ? extIndex(book) : book === 'tuhfa' ? tuhfaIndex() : jamiIndex();
@@ -923,14 +934,25 @@ function ENGINE(){
       }
       ids = keep;
     }
+    if (lang) {            // keep only the hadith whose text IN THIS LANGUAGE has the words
+      const keepL = [];
+      for (let i = 0; i < ids.length; i++) {
+        const id = ids[i], ts = textsLang(byNum.get(id), book, lang), set = new Set(ts.flatMap(([, t]) => toks(t)));
+        const okAll = tk.every(t => set.has(t) || (mode === 'similar' && t.length >= 3 && [...set].some(w => w.startsWith(t))));
+        const phrase = ' ' + tk.join(' ') + ' ';
+        if (mode === 'exact' ? (okAll && ts.some(([, t]) => (' ' + toks(t).join(' ') + ' ').includes(phrase))) : (mode === 'similar' ? tk.some(t => set.has(t) || [...set].some(w => w.startsWith(t))) : okAll)) keepL.push(id);
+        if (i % 150 === 149) await new Promise(r => setTimeout(r, 0));
+      }
+      ids = keepL;
+    }
     if (mode !== 'similar') ids.sort((a, b) => a - b);  // in book order
     if (book === 'tuhfa') ids = ids.filter(id => hasLayer(byNum.get(id)));
     const total = ids.length;
     const rows = ids.slice(0, 300).map(id => {
       const f = [...hits.get(id).fields].sort();
       if (ext) { const e = extBy.get(book + '|' + id); return {book, num: id, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: snippet(e.matn, tk)}; }
-      const h = byNum.get(id), t = bestText(textsOf(h, book), tk);
-      return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk) : []});
+      const h = byNum.get(id), t = bestText(lang ? textsLang(h, book, lang) : textsOf(h, book), tk);
+      return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk) : [], lang: lang || ''});
     });
     rows.total = total; return rows;
   }
@@ -1035,7 +1057,7 @@ function ENGINE(){
       let total = res.length;
       if (!res.length) {
         if (book === 'jami') await jamiReady(); else if (book === 'tuhfa') await tuhfaReady();
-        res = await search(t, book, q.mode); total = res.total || res.length;
+        res = await search(t, book, q.mode, q.lang); total = res.total || res.length;
       }
       return {results: res, total, semantic: false};
     }
@@ -1400,7 +1422,7 @@ function row(r){
     a.append(el('span',{class:'ct',dir:'auto'},en||num),en?el('span',{class:'cs'},num):null,ar?el('span',{class:'ca',lang:'ar'},ar):null);
   }else{
     a.append(el('span',{class:'ct'},num));
-    const body=el('span',{class:'ca',lang:'ar'});
+    const body=el('span',{class:r.lang&&r.lang!=='ar'?'ca snipl':'ca',lang:r.lang&&r.lang!=='ar'?r.lang:'ar'});
     if(r.snippet&&r.snippet.length){r.snippet.forEach(([w,f])=>body.append(f?el('mark',{class:'qhit'},w):w,' '));}else body.append(r.matn);
     a.append(body,el('span',{class:'cs'},r.chapter||''));
   }
@@ -2062,6 +2084,12 @@ window.mkDateBar=function(){
   }catch(e){b.hidden=true;}
   return b;
 };
+['ar', 'bn', 'hi', 'gu', 'fr'].forEach(l => { I[l] = I[l] || {}; });   // the later «if (I.ar) Object.assign» blocks ran before these existed and were silently skipped
+Object.assign(I.ar, {tafsirs: 'التفاسير', hMore: 'إعدادات إضافية (تكرار النطاق كاملاً، الفاصل، القارئ)'});
+Object.assign(I.bn, {tafsirs: 'তাফসীর সমূহ', hMore: 'আরও সেটিংস (পুরো অংশ পুনরাবৃত্তি, বিরতি, ক্বারী)', pTakh: 'যাচাই ও সূত্র'});
+Object.assign(I.hi, {tafsirs: 'तफ़सीरें', hMore: 'और सेटिंग (पूरा हिस्सा दोहराना, ठहराव, क़ारी)', pTakh: 'तहक़ीक़ और तख़रीज'});
+Object.assign(I.gu, {tafsirs: 'તફસીરો', hMore: 'વધુ સેટિંગ (આખો ભાગ દોહરાવવો, વિરામ, કારી)', pTakh: 'તહકીક અને તખરીજ'});
+Object.assign(I.fr, {tafsirs: 'Tafsirs', hMore: 'Plus de réglages (répéter toute la plage, pause, récitateur)', pTakh: 'Vérification et sources'});
 function route(){
   const h=location.hash,sec=navBar();if(lastRouted!==h){lastRouted=h;histMark();}else isRestore=false;
   if(!h.startsWith('#/hifz')&&window.HIFZ&&HIFZ.leave)HIFZ.leave();
@@ -4786,7 +4814,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       api('hadith/' + b.jami[n] + '?book=jami').then(j => { if (j && !j.error) tb.append(...refBlock(j)); }).catch(() => {}); }
     if (b.dup && b.dup[n]) { const dl = el('p', {class: 'cs hdup', lang: ui === 'ar' ? 'ar' : ui, dir: DIR(ui === 'ar' ? 'ar' : ui)}, (HFD[ui] || HFD.en) + ' (');
       b.dup[n].forEach((x, i) => { if (i) dl.append(ui === 'ur' || ui === 'ar' ? '، ' : ', '); dl.append(el('a', {href: '#/h/' + x}, fmtN(x))); }); dl.append(')'); c.append(dl); }
-    if (q && q.length) c.querySelectorAll('.mt, .tr').forEach(x => markHits(x, q));
+    if (q && q.length) c.querySelectorAll(lang ? '.tr' : '.mt').forEach(x => markHits(x, q));   // Urdu words colour only the translation, Arabic words only the Arabic
     // the Sheikh's research and takhrij: the al-Jami hadith (Dr. al-A'zami) that cite this hadith, as small number buttons
     { const jr = row(b, 'jx', n), jl = jr && jr[1] ? String(jr[1]).split(',').filter(Boolean) : [];
       if (jl.length && !(b.jami && b.jami[n])) c.append(el('div', {class: 'shk', lang: ui === 'ar' ? 'ar' : ui, dir: DIR(ui === 'ar' ? 'ar' : ui)},
@@ -4901,8 +4929,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     f.addEventListener('input', () => { clearTimeout(tm); tm = setTimeout(run, 350); });
     const startBtn = b.sections && b.sections.length ? el('a', {class: 'btn lbtn readstart', href: '#/s/' + b.key + '/' + b.sections[0][0]}, icon('read'), ' ', T('readStart')) : '';
-    const inBook = el('button', {class: 'btn lbtn bksearch', type: 'button', on: {click: () => bookSearch(b.key)}}, icon('search'), ' ', BKS[ui] || BKS.en);
-    box.append(langChips(b, () => showBook(b)), startBtn, inBook, el('div', {class: 'card pad0 filterbox'}, icon('search'), f), out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
+    /* one search bar for the whole book: a number opens that hadith, words list the hadith; «# number» switches the bar to the number keypad */
+    const NB = {ur: ['نمبر سے', 'حدیث نمبر لکھیں'], ar: ['بالرقم', 'اكتب رقم الحديث'], en: ['By number', 'Type the hadith number'], bn: ['নম্বর দিয়ে', 'হাদীস নম্বর লিখুন'], hi: ['नंबर से', 'हदीस नंबर लिखें'], gu: ['નંબરથી', 'હદીસ નંબર લખો'], fr: ['Par numéro', 'Saisir le numéro du hadith']}[ui] || ['By number', 'Type the hadith number'];
+    const numBtn = el('button', {class: 'btn lbtn bknum', type: 'button', 'aria-pressed': 'false', on: {click: () => { const on = numBtn.getAttribute('aria-pressed') !== 'true'; numBtn.setAttribute('aria-pressed', String(on)); f.inputMode = on ? 'numeric' : 'search'; f.placeholder = on ? NB[1] : sPh; f.value = ''; run(); f.focus(); }}}, '# ' + NB[0]);
+    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, numBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
@@ -5004,7 +5034,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // Talkhis al-Jami al-Kamil first (its own search, in the interface language's translation too)
     try {
       const jb = ['ar', 'ur', 'en'].includes(lg) ? 'jami' : 'jami_' + lg;
-      let d; try { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=' + jb + '&mode=' + md); } catch (e) { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=jami&mode=' + md); }
+      const lq = ['ar', 'ur', 'en'].includes(lg) ? '&lang=' + lg : ''; let d; try { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=' + jb + '&mode=' + md + lq); } catch (e) { d = await api('search?q=' + encodeURIComponent(o.v) + '&book=jami&mode=' + md); }
       if (!cur()) return;
       const n = d.total || d.results.length;
       if (n && (!gr || gr === 'sahih') && (!sel || sel.has('jami'))) { const pool = {ok: d.results, total: n, more: false}; pools.push(pool); put(0, hitSection(T('jamiName'), pool, null, null, words, d.results.map(r => () => window.row(r)))); }
@@ -6106,7 +6136,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 // Arabic and Bangla interface (Urdu and English are in index.html and the other scripts). Any missing word falls back to English.
 (function () {
   const bd = n => String(n).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
-  I.ar = {
+  I.ar = Object.assign(I.ar, {
     hbNBooks: n => n + ' كتاب', hbTabBooks: 'الكتب', hbCats: 'الموضوعات', hbAuthors: 'المؤلفون', hbRbMore: 'المزيد: ١٣٢٨ كتابًا',
     kSearch: 'في هذا الكتاب: رقم الحديث أو اسم الباب', notInKitab: 'هذا الحديث في كتاب آخر — اضغط لفتحه', mAll: 'جميع الكلمات', mExact: 'العبارة كاملة', mSimilar: 'مشابه',
     results: 'عدد النتائج', shownFirst: n => '(عُرض أول ' + n + ' — زد الكلمات لتضييق البحث)', readMode: 'وضع القراءة (كالمصحف)', cardMode: 'وضع البطاقات',
@@ -6167,8 +6197,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // app settings
     navQuran: 'القرآن', urduFont: 'خط الأردية', appSet: 'إعدادات التطبيق', uiLang: 'لغة التطبيق', themeColor: 'لون التطبيق', dayNight: 'النهار والليل', modeLight: 'نهاري', modeDark: 'ليلي', modeAuto: 'تلقائي (حسب الهاتف)',
     privacy: 'سياسة الخصوصية', free: 'مجاني — في سبيل الله', hours: 'ساعة', mins: 'دقيقة', jamiName: 'تلخيص الجامع الكامل في الحديث الصحيح الشامل', tuhfaName: 'شرح تحفة المتقين'
-  };
-  I.bn = {
+  });
+  I.bn = Object.assign(I.bn, {
     kSearch: 'এই বইয়ে: হাদীস নম্বর বা অধ্যায়ের নাম', notInKitab: 'এই হাদীস অন্য বইয়ে আছে — খুলতে চাপুন', mAll: 'সব শব্দ', mExact: 'হুবহু বাক্য', mSimilar: 'কাছাকাছি',
     results: 'ফলাফল', shownFirst: n => '(প্রথম ' + n + 'টি দেখানো হলো — শব্দ বাড়িয়ে খোঁজ সীমিত করুন)', readMode: 'পড়ার মোড (মুসহাফের মতো)', cardMode: 'কার্ড মোড',
     showSanad: 'সনদ দেখান', showTr: 'অনুবাদ দেখান', brand: 'তুরাস খাইরুল কুরূন', navFazail: 'সাহাবা', death: y => '(মৃ. ' + y + ' হি.)', arOnly: 'শুধু আরবি',
@@ -6227,7 +6257,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     cmpExt: 'এই বইটি অ্যাপের অন্য লিংকে আছে', cmpMy: 'আমার তুলনার তালিকা', cmpOpen: 'খুলুন', cmpCount: n => n + 'টি হাদীস',
     navQuran: 'কুরআন', urduFont: 'উর্দু ফন্ট', appSet: 'অ্যাপের সেটিংস', uiLang: 'অ্যাপের ভাষা', themeColor: 'অ্যাপের রং', dayNight: 'দিন ও রাত', modeLight: 'দিনের মোড', modeDark: 'রাতের মোড', modeAuto: 'স্বয়ংক্রিয় (ফোন অনুযায়ী)',
     privacy: 'গোপনীয়তা নীতি', free: 'বিনামূল্যে — ফী সাবীলিল্লাহ', hours: 'ঘণ্টা', mins: 'মিনিট', jamiName: 'তালখীস আল-জামি আল-কামিল', tuhfaName: 'শরহে তুহফাতুল মুত্তাকীন'
-  };
+  });
   // the same new keys for Urdu and English
   Object.assign(I.ur, {navQuran: 'قرآن مجید', urduFont: 'اردو فونٹ', appSet: 'ایپ کی ترتیبات', uiLang: 'ایپ کی زبان', themeColor: 'ایپ کا رنگ', dayNight: 'دن اور رات', modeLight: 'دن (روشن)', modeDark: 'رات (تاریک)', modeAuto: 'خودکار (فون کے مطابق)',
     privacy: 'پرائیویسی پالیسی', free: 'مفت — فی سبیل اللہ', hours: 'گھنٹے', mins: 'منٹ', jamiName: 'تلخیص الجامع الکامل', tuhfaName: 'شرح تحفۃ المتقین'});
