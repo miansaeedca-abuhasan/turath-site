@@ -4718,7 +4718,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (su) { if (!c.querySelector('.babbox')) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, su[4])); c.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, su[1])); } }
     if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
-      b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null));
+      b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null,
+      // the library copy of a book that also exists as an Urdu-translated book: one button per matching hadith of that book (matched by the words of the hadith)
+      ...(b.xr && b.xr.m[n] != null ? [].concat(b.xr.m[n]).slice(0, 3).map((m, k) => el('a', {class: 'btn', href: '#/s/' + b.xr.key + '/n/' + m, style: k ? '' : 'margin-inline-start:auto'}, ({ur: 'اردو ترجمہ (مولانا عبدالصمد ریالوی) — نمبر ' + fmtN(m), ar: 'الترجمة الأردية — رقم ' + fmtN(m), en: 'Urdu translation (Abdul Samad Rialwi) — no. ' + fmtN(m)})[ui] || ('Urdu translation — ' + fmtN(m)))) : [])));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
     const rjx = RJ_STRUCT.includes(b.key) ? rjParse(d.matn[0] || '') : null;
     if (rjx) c.append(rjBlock(rjx));
