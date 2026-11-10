@@ -1,0 +1,15 @@
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const p=await b.newPage();let bad=0;
+const ok=(c,m)=>{if(!c){console.log('FAIL',m);bad++;}};
+await p.goto('http://localhost:8765/#/jr/269');await p.waitForSelector('.jr .tabs');
+await p.evaluate(()=>{try{localStorage.setItem('seenWhatsNew','1')}catch(e){}});
+ok(await p.$$eval('.jr .tabs button',b=>b.length)===4,'4 tabs for Usayd');
+await p.evaluate(()=>[...document.querySelectorAll('.jr .tabs button')].find(b=>b.dataset.k==='enc').click());
+await p.waitForSelector('.jr .pane .nhead',{timeout:15000});
+const t=await p.$eval('.jr .pane',e=>e.innerText);
+ok(/أسيد بن ظهير/.test(t),'encyclopedia entry shown');
+await p.goto('http://localhost:8765/#/jr/1');await p.waitForSelector('.jr .tabs');
+const d=await p.evaluate(()=>window.TURATH_JRS_DATA||0);
+const n=await p.evaluate(async()=>{const r=await fetch('data/jrs.js');const s=await r.text();return (s.match(/"e":\d+/g)||[]).length});
+ok(n>=260,'mapped narrators '+n);
+await b.close();process.exit(bad?1:0)})();

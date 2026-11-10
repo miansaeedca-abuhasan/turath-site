@@ -1938,7 +1938,7 @@ function jrRows(){if(book!=='jami'&&book!=='jamik')return [];
     en:[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators: introduction, total hadith and hadith numbers'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors: introduction, total hadith and hadith numbers']]}[ui]||null;
   const Z=L||[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors']];
   return ['#/jr','#/js'].map((h,i)=>el('a',{class:'card srow2',href:h},el('span',{class:'snum'},ui==='en'?(i?'A':'N'):(i?'م':'ر')),el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' ar':''),lang:ui==='ar'?'ar':null,dir:'auto'},Z[i][0]),el('span',{class:'cs'},Z[i][1]))));}
-async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=2';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
+async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=3';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
 async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
   v.append(el('p',{class:'note'},'…'));
@@ -9903,7 +9903,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     close = window.sheet(L().title, [host]);
     showNarrator(id, host);
   }
-  window.NAR = {openSheet, route, title: () => L().title, idForTK, linkChips};
+  window.NAR = {openSheet, render: showNarrator, route, title: () => L().title, idForTK, linkChips};
 })();
 
 </script>
