@@ -1102,7 +1102,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=b83759798c", "data/d2.js?h=0366fda540", "data/d3.js?h=11c90bfde6", "data/d4.js?h=719484bece", "data/d5.js?h=4e56914bec", "data/d6.js?h=715c6f44f7", "data/d7.js?h=e332b17493", "data/d8.js?h=0d8826b977", "data/d9.js?h=ea61cce8e3", "data/d10.js?h=a456ff3822"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=2835471119", "data/d2.js?h=260174cf2f", "data/d3.js?h=c1dbd34ee4", "data/d4.js?h=c9fd62225b", "data/d5.js?h=acb3082293", "data/d6.js?h=61560b520b", "data/d7.js?h=31c82e13a7", "data/d8.js?h=9656da2166", "data/d9.js?h=d4fcb5ad42", "data/d10.js?h=7166886ea4"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1276,7 +1276,7 @@ function hadithText(d,scope,arabic){
   const tr=L==='ar'?null:trOf(d);
   let tk;
   if(L==='ur'){const g=d.grade?(UR_GRADE[d.grade.trim()]||d.grade):'',rs=(d.refs||[]).map(r=>(UR_BOOK[r.key]||r.label)+': '+r.number).join('، ');tk=(g||rs)?'تخریج: '+[g,rs].filter(Boolean).join(' — '):'';}
-  else tk=L==='ar'?(d.takhrij||''):L==='bn'?(d.takhrij_bn||d.takhrij_en||''):(d.takhrij_en||'');
+  else tk=L==='ar'?((book!=='jamik'&&d.tks)||d.takhrij||''):L==='bn'?(d.takhrij_bn||d.takhrij_en||''):(d.takhrij_en||'');
   const ref=({ur:'تلخیص الجامع الکامل: ',ar:'تلخيص الجامع الكامل: ',bn:'তালখীস আল-জামি আল-কামিল: ',hi:'तल्ख़ीस अल-जामिउल कामिल: ',gu:'તલ્ખીસ અલ-જામિઉલ કામિલ: ',fr:'Talkhis Al-Jami al-Kamil : '}[L]||'Talkhis Al-Jami al-Kamil: ')+num;
   const voc=(arabic.match(/[\u064B-\u0652]/g)||[]).length>arabic.length/12;
   arabic=arabic.replace(/ﷺ/g,voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم');tk=(tk||'').replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');if(L==='ar')tk=tk.replace(/ﷺ/g,'صلى الله عليه وسلم');
@@ -2003,9 +2003,10 @@ async function showHadith(num){
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
-  if((d.dr||d.full)&&d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(d.takhrij));v.append(t);if(/\ue000\(/.test(d.takhrij)||lafzRefs(d.takhrij).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(d.takhrij))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(d.takhrij))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(d.takhrij))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr&&book==='jamik')v.append(drBlock(d));}
+  const TKX=book==='jamik'?d.takhrij:(d.tks||d.takhrij);
+  if((d.dr||d.full)&&TKX){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(TKX));v.append(t);if(/\ue000\(/.test(TKX)||lafzRefs(TKX).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(TKX))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(TKX))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(TKX))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr&&book==='jamik')v.append(drBlock(d));}
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
-  else if(d.takhrij){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(d.takhrij.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
+  else if(TKX){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(TKX.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
   v.append(...refBlock(d));
   if(window.COLL_SH){const shh=el('div',{class:'shhold'});v.append(shh);COLL_SH.forRefs(d.refs).then(bx=>{if(bx)shh.append(bx);});}
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
