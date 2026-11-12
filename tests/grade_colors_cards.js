@@ -5,7 +5,7 @@ await p.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new 
 const go=async h=>{await p.goto('http://localhost:8765/'+h);await p.waitForSelector('.card',{timeout:25000});await p.evaluate(()=>document.querySelectorAll('.sheetbg').forEach(n=>n.remove()));await p.waitForTimeout(1500)};
 await go('#/s/shamail/1');
 const r=await p.evaluate(()=>{const css=getComputedStyle(document.documentElement);const hd=document.querySelector('.ca'),bx=[...document.querySelectorAll('.babbox')].map(x=>x.textContent);
- return {ttl:document.querySelectorAll('.fttl').length,dir:getComputedStyle(document.querySelector('.tkrow')).flexDirection,tr:document.querySelector('.trrow .trbtn').offsetHeight,ft:document.querySelector('.ftab').offsetHeight,
+ return {ttl:document.querySelectorAll('.fttl').length,dir:(()=>{const k=document.querySelector('.tkrow'),l=k.querySelector('.tklab'),t=k.querySelector('.ptakh');return getComputedStyle(k).display==='flow-root'&&t.getBoundingClientRect().top>=l.getBoundingClientRect().bottom-1&&t.getBoundingClientRect().width>=k.getBoundingClientRect().width-2?'column':'bad'})(),tr:document.querySelector('.trrow .trbtn').offsetHeight,ft:document.querySelector('.ftab').offsetHeight,
  dupBab:bx.some(t=>hd&&t.replace(/[ً-ْ]/g,'').slice(0,30)===hd.textContent.slice(0,30))}});
 ck(r.ttl===0,'no second heading above the sharh text');ck(r.dir==='column','takhrij stacked on a phone');ck(r.tr<32,'translator tab small '+r.tr);ck(r.ft<34,'section tab small '+r.ft);ck(!r.dupBab,'chapter title not repeated in the card');
 await p.click('.ftab.e');await p.waitForTimeout(400);
