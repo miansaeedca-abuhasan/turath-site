@@ -1114,7 +1114,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=1117a44e58", "data/d2.js?h=824f3df0ff", "data/d3.js?h=9243f62251", "data/d4.js?h=be4dd31d18", "data/d5.js?h=a5476a4d1b", "data/d6.js?h=36acd29035", "data/d7.js?h=bec5c0827a", "data/d8.js?h=9c1b5e151e", "data/d9.js?h=7c284037ea", "data/d10.js?h=8c45a83148"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=58d329f045", "data/d2.js?h=824f3df0ff", "data/d3.js?h=9243f62251", "data/d4.js?h=be4dd31d18", "data/d5.js?h=a5476a4d1b", "data/d6.js?h=36acd29035", "data/d7.js?h=bec5c0827a", "data/d8.js?h=9c1b5e151e", "data/d9.js?h=7c284037ea", "data/d10.js?h=8c45a83148"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1426,7 +1426,7 @@ function hadithCard(d,scope){
   {const tb=fullTabs(d,mt,fb);if(tb)c.append(tb);}
   c.append(mt,fb);
   if(book==='jamik'){/* the full Jami reads like the book: hadith, then its takhrij paragraphs, then the detailed study */
-    if(d.takhrij)String(d.takhrij).split('\n').filter(x=>x.trim()).forEach(x=>{const t=el('p',{class:'tk ar',lang:'ar',dir:'rtl',style:'color:inherit;font-size:1rem;line-height:2'});t.append(...refRich(x));c.append(t);});
+    if(d.takhrij)String(d.takhrij).split('\n').filter(x=>x.trim()).forEach(x=>{const t=el('p',{class:'tk ar',lang:'ar',dir:'rtl',style:'color:inherit;font-size:1rem;line-height:2'});t.append(...refRich(x,d.num));c.append(t);});
     if(d.dr){const dr=drBlock(d);dr.open=true;c.append(dr);}}
   const tr=book==='jamik'?null:trOf(d);
   if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
@@ -1929,14 +1929,14 @@ function refMk(key,n,red){const nm=+n;return el('a',{class:'rlink'+(red?' red':'
   let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+n)){box=el('div',{class:'refbox rinl','data-k':key+n});p.after(box);
     box.append(el('b',{},(COLL.name(key)||key)+' ('+n+')'));if(!await COLL.refBox(key,nm,box,nm))box.append(el('p',{class:'note'},T('nobook')));}
   else box.remove();}}},'['+((window.COLL&&COLL.printed&&COLL.printed(key,nm))||n)+']');}
-function refRich(t){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
+function refRich(t,jn){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg,jn));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
   const out=[];let last=0;RRE.lastIndex=0;let m;
   while((m=RRE.exec(t))){const key=RKEY[NK(m[1])];if(!key||!window.COLL)continue;const bn=m[1];
-    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm&&((window.TURATH_DATA||{}).mkrow||{})[hm[1]+'/'+hm[2]];if(!row)continue;
+    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm?((window.TURATH_DATA||{}).mkrow||{})[hm[1]+'/'+hm[2]]:(key==='hakim'&&jn?((window.TURATH_DATA||{}).hkrow||{})[jn+'|'+inner.replace(/\s+/g,'')]:0);if(!row)continue;
       if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));out.push(m[1].replace(/\ue010[^\ue011]*\ue011/g,'')+m[2]+'(');const cl0=pr[0]&&pr[0].cl;
       out.push(el('a',{class:'rlink'+(cl0?' '+cl0:''),href:'#',title:T('cmpRefs'),on:{click:async e=>{e.preventDefault();const p=e.target.closest('p')||e.target.parentNode;
         let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+inner)){box=el('div',{class:'refbox rinl','data-k':key+inner});p.after(box);
-          box.append(el('b',{},(COLL.name(key)||bn)+' ('+inner.trim()+')'));if(!await COLL.refBox(key,+hm[2],box,row))box.append(el('p',{class:'note'},T('nobook')));}else box.remove();}}},m[4].replace(MKS_,'')));
+          box.append(el('b',{},(COLL.name(key)||bn)+' ('+inner.trim()+')'));if(!await COLL.refBox(key,hm?+hm[2]:row,box,row))box.append(el('p',{class:'note'},T('nobook')));}else box.remove();}}},m[4].replace(MKS_,'')));
       out.push(')');last=m.index+m[0].length;continue;}
     const nums=inner.split(/[،,و]/).map(x=>(x.match(/^\s*(\d+)/)||[])[1]).filter(Boolean);if(!nums.length)continue;
     if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));
@@ -1989,7 +1989,7 @@ function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{}
   det.append(sum,body);let done=false;
   det.addEventListener('toggle',async()=>{if(!det.open||done)return;body.replaceChildren(el('p',{class:'note'},'…'));
     try{await drLoad(d.num);const ps=(window.DRDATA||{})[d.num]||[];done=true;
-      body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...refRich(t))));
+      body.replaceChildren(...ps.map(t=>el('p',{class:/^(قلت|تنبيه|تنـبـيـه|فائدة|وقوله|وقولها)/.test(t)?'q':null},...refRich(t,d.num))));
       if(ps.length)body.append(el('button',{class:'btn lbtn',type:'button',style:'margin:.4rem 0',on:{click:()=>LISTEN.playTexts('مفصل دراسة الحديث',ps.map(x=>x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'')),'ar',body)}},icon('listen'),T('listenPart')));}
     catch(e){body.replaceChildren(el('p',{class:'note'},T('nf')));}});
   return det;}
@@ -2040,9 +2040,9 @@ async function showHadith(num){
     b.addEventListener('click',()=>{hidden=!hidden;try{localStorage.hideSanad=hidden?'1':'0'}catch(e){}sync();});sync();box.append(b);}
   box.append(actions(d,scope,false));v.append(box);
   const TKX=book==='jamik'?d.takhrij:(d.tks||d.takhrij);
-  if((d.dr||d.full)&&TKX){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(TKX));v.append(t);if(/\ue000\(/.test(TKX)||lafzRefs(TKX).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(TKX))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(TKX))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(TKX))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr&&book==='jamik')v.append(drBlock(d));}
+  if((d.dr||d.full)&&TKX){const t=el('p',{class:'tk ar',lang:'ar'});t.append(...refRich(TKX,d.num));v.append(t);if(/\ue000\(/.test(TKX)||lafzRefs(TKX).size)v.append(el('p',{class:'note lafznote',lang:ui},LAFZ_NOTE()));if(/\ue004/.test(TKX))v.append(el('p',{class:'note lafznote nb',lang:ui},RIW_NOTE('blue')));if(/\ue006/.test(TKX))v.append(el('p',{class:'note lafznote no',lang:ui},RIW_NOTE('orange')));if(/\ue008/.test(TKX))v.append(el('p',{class:'note lafznote np',lang:ui},RIW4()));if(EN()&&d.takhrij_en)v.append(el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en',style:'color:var(--muted);font-size:.9rem'},d.takhrij_en));if(d.dr&&book==='jamik')v.append(drBlock(d));}
   else if(EN()&&d.takhrij_en){const t=el('p',{class:'tk '+(TL()||'en'),lang:TL()||'en'});d.takhrij_en.split('\n').forEach((x,i)=>{if(i)t.append(el('br'));t.append(x);});v.append(t);}
-  else if(TKX){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(TKX.replace(d.grade?d.grade+':':'','').trim()));v.append(t);}
+  else if(TKX){const t=el('p',{class:'tk ar',lang:'ar'});if(d.grade)t.append(el('span',{class:'grade'},d.grade+': '));t.append(...refRich(TKX.replace(d.grade?d.grade+':':'','').trim(),d.num));v.append(t);}
   v.append(...refBlock(d));
   if(window.COLL_SH){const shh=el('div',{class:'shhold'});v.append(shh);COLL_SH.forRefs(d.refs).then(bx=>{if(bx)shh.append(bx);});}
   if(ui==='ur'&&window.TODAY){const u=TODAY.urOf(d.num);if(u){d.content=d.content||{};d.content.translation=Object.assign({},d.content.translation,{ur:[u]});}}
