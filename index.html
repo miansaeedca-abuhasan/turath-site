@@ -1186,7 +1186,7 @@ function rich(text,lang){
     if(i%2)out.push(el('span',{class:'red'},...rich0(seg,lang)));else out.push(...rich0(seg,lang));});return out;}
   return rich0(text,lang);}
 function rich0(text,lang){
-  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?(TASH.test(w)||/[يكةىأإٱ]/.test(w)):ARL.test(w);
+  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?((TASH.test(w)||/[يكةىأإٱ]/.test(w))&&!/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9]/.test(w)):ARL.test(w);   /* an Urdu word (فتویٰ، تعالیٰ، سیّدنا …) stays in the Urdu font even with a shadda or marks */
   if(other&&!ARL.test(text))return [text];
   text.split(/(﴿[^﴾]*(?:﴾|$)|\{[^{}]{2,}\}|«[^»]*»)/).forEach(seg=>{
     if(!seg)return;
