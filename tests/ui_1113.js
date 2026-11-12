@@ -4,7 +4,7 @@ async function pg(){const p=await b.newPage({viewport:{width:360,height:760}});p
 let p=await pg();await p.goto('http://localhost:8765/#/s/muslim?idx');await p.waitForSelector('.fbhint',{timeout:20000});
 let t=await p.textContent('.fbhint');console.log(t);ck(/\d+\/\d+/.test(t),'muslim two numberings');
 await p.goto('http://localhost:8765/#/s/fadailahmad?idx');await p.waitForSelector('.fbhint',{timeout:20000});t=await p.textContent('.fbhint');console.log(t);ck(/ترقیم تراث خيرالقرون/.test(t),'ours label');ck(/ترقیم تراث خيرالقرون/.test(await p.textContent('#t2')),'ours label in heading');
-await p.fill('#csearch','1');await p.click('.bknum');await p.fill('#csearch','99999');await p.waitForTimeout(1500);ck(!(await p.$('.card .big')),'zero for too big');
+await p.fill('#csearch','1');await p.fill('#csearch','99999');await p.waitForTimeout(1500);ck(!(await p.$('.card .big')),'zero for too big');
 p=await pg();await p.goto('http://localhost:8765/#/b');await p.waitForSelector('.tiles');await p.evaluate(()=>{const x=document.querySelector('#ipop');if(x)x.remove()});
 await p.waitForTimeout(1500);console.log(await p.getAttribute('#q','placeholder'));
 await p.click('text=حدیث نمبر');await p.waitForTimeout(1500);console.log(await p.getAttribute('#hfind','placeholder'));await p.fill('#hfind','999999');await p.click('.sfoot button:last-child');ck(!!(await p.$('#hfind')),'dialog stays on big number');

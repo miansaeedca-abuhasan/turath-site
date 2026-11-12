@@ -104,7 +104,7 @@ if(!c.kids){console.log('create failed',JSON.stringify(c));process.exit(1)}
  ok(await p.$$eval('#app .card h2',a=>a[0].textContent==='نیا چارٹ بنائیں'&&a[1].textContent==='کوڈ سے داخل ہوں'),'new-chart card first, code card below');
  ok(/اگر آپ نے خاندان کا اندراج کر کے کوڈ حاصل کر لیا ہے تو کوڈ داخل کریں/.test(await p.$eval('#app',e=>e.innerText))&&await p.$$eval('ol.steps li',a=>a.length)>=3,'code card sentence and numbered steps');
  const th=fs.readFileSync(root+'/tarbiyat.html','utf8'),tj=fs.readFileSync(root+'/functions/api/tarbiyat.js','utf8');
- ok(/IDLE_MS=5\*60\*1000/.test(th),'5-minute idle lock');ok(/IDLE = 21 \* DAY/.test(tj)&&!/120/.test(th.replace(/120\d/g,'')),'unused chart deleted after 3 weeks');
+ ok(/IDLE_MS=5\*60\*1000/.test(th),'5-minute idle lock');ok(/IDLE = 21 \* DAY/.test(tj)&&!/120/.test(th.replace(/120\d/g,'')),'idle chart deleted after 3 weeks');ok(/5 \* DAY/.test(tj)&&/21 \* DAY/.test(tj)&&/w2/.test(tj)&&/w3/.test(tj),'new family unused 5 days deleted; used week 1 only: deleted when week 3 ends');
  // tile on the home page
  const ix=fs.readFileSync(root+'/index.html','utf8');ok(/img:tarbiyat/.test(ix)&&/'tarbiyat\.html'/.test(ix)&&fs.existsSync(root+'/icons/tarbiyat.png'),'home tile + icon');
  await b.close();srv.close();

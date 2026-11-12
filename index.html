@@ -8,7 +8,7 @@
 .ftabs{display:flex;flex-wrap:wrap;gap:.4rem;margin:.6rem 0 .3rem}
 .ftab{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);border-radius:99px;padding:.1rem .75rem;line-height:1.7;display:inline-flex;align-items:center;gap:.3rem}
 .bkshare{margin:.3rem 0 .6rem}.bkshare .btn{display:inline-flex;align-items:center;gap:.3rem}
-.tbox{border:1px solid color-mix(in srgb,var(--accent) 28%,transparent);border-radius:.9rem;padding:.55rem .8rem .35rem;margin:.6rem 0}
+.tbox{border:0;border-radius:0;padding:0;margin:.5rem 0}.tbox .tr{border-top:0;padding-top:.2rem}
 .tkrow{display:flex;gap:.6rem;align-items:baseline}.tkrow .ptakh{flex:1;min-width:0}.tkrow .tr p{margin:.1rem 0}
 .tklab{flex:none;font-size:.82rem;font-weight:700;padding:.05rem .65rem;border-radius:99px;color:#8a5a12;background:color-mix(in srgb,#c98a1b 18%,transparent)}
 html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
@@ -1889,7 +1889,7 @@ if(d.refs.length){const chips=el('div',{class:'chips'}),rb=el('div',{class:'refb
        if(inColl&&await COLL.refBox(r.key,r.number,rb,r.n))return;
       if(r.available){const x=await api('ref?book='+encodeURIComponent(r.key)+'&num='+r.number);rb.append(el('p',{class:'ar'},x.matn||''),el('a',{href:'#/x/'+encodeURIComponent(r.key)+'/'+r.number},T('open')));}
       else rb.append(el('p',{class:'note'},T('nobook')));}}},nm+' '+r.number);chips.append(btn);});
-    out.push(chips,rb);}
+    /* the source buttons repeated the numbers of the takhrij line: single numbering (the numbers in the line are the links) */}
 return out;}
 window.refBlock=refBlock;
 /* ---------- takhrij references linked to the books in the app: a tap shows that book's hadith under the paragraph (مقارنة) ---------- */
@@ -4727,6 +4727,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       : !own && b.an[n] && String(b.an[n]) !== String(n) ? el('span', {class: 'cs'}, '، ' + T('cPrinted')(b.an[n])) : null;
     // a note of the book (text between the hadith, e.g. in the Seerah) has no number: a small star instead
     const note = b.nn && b.nn[n];
+    // inside a chapter page the chapter's heading (Arabic and its translation together) stands only on the first hadith of the chapter
+    const fresh = !window.__SECV || (() => { const s0 = b.sections && b.sections.find(x => !(x[5] && x[5].src) && x[2] <= n && n <= x[3]); if (s0 && s0[2] === n) return true;
+      const kk = x => (b.bab && b.bab[x]) || chapStr(b, x) || ''; return kk(n) ? kk(n) !== kk(n - 1) : !s0; })();
+    if (fresh) {
     if (b.bab && b.bab[n]) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, b.bab[n]));
     else { const cs = chapStr(b, n); if (cs) { c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, cs));
       // the chapter's name in the reading language (shamail ...), under the Arabic one
@@ -4735,6 +4739,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // books that carry only an Urdu bab title (section row: [no, urdu title, from, to, arabic title]) show it under the Arabic bab in the Urdu UI
     if (ui === 'ur' && b.langs.includes('ur') && b.sections && !(b.secL && b.secL.ur) && !c.querySelector('.babtr')) { const su = b.sections.find(s => s[2] <= n && n <= s[3] && s[4] && s[1] && s[1] !== s[4] && !/^[A-Za-z]/.test(s[1]));
       if (su) { if (!c.querySelector('.babbox')) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, su[4])); c.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, su[1])); } }
+    }
     if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
     c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : fmtN(own && !b.abno ? pn : n)), printed,
       b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null,
@@ -4751,7 +4756,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
       sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
-    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(d.grade)) || 'x'), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => i ? [el('br'), t] : [t])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade); c.append(gEl); }
+    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(d.grade)) || 'x'), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade); c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
@@ -4962,7 +4967,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let totTxt = String(tot); if (b.abno || b.key === 'muslim') { const mx = Math.max(0, ...Object.values(b.an || {}).map(x => parseInt(x, 10) || 0)); if (mx) totTxt = mx + '/' + tot; }
     const ours = OURS;
     const hintEl = b.prose ? '' : el('div', {class: 'fbhint'}, NT[0] + ': ' + (ui === 'ur' ? totTxt : totTxt), ours ? ' · ' + NT[1] : '');
-    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, numBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
+    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
@@ -5398,11 +5403,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const TOC = {ur: 'فہرست ابواب', ar: 'الفهرس', en: 'Contents', bn: 'সূচিপত্র', hi: 'विषय-सूची', gu: 'અનુક્રમણિકા', fr: 'Sommaire'}[ui] || 'Contents';
     const tocBtn = () => el('a', {class: 'btn lbtn toc', href: '#/s/' + b.key + '?idx'}, TOC);
     box.append(tocBtn());
-    if (s[4]) box.append(el('p', {class: 'ca', lang: 'ar', style: 'margin:.2rem 0'}, s[4]));
     // a section may show a range of another book (سیر: the Khulafa' and the ten from Fazail as-Sahaba)
     const B = (s[5] && s[5].src && bookOf(s[5].src)) || b, lang = getLang(B);
     const PROSE = !!B.prose;
-    box.append(langChips(B, () => showSection(b, no)), PROSE ? '' : el('p', {class: 'cs'}, RNG(B)(s[2], s[3])));
+    box.append(B.langs.filter(x => x !== 'ar').length > 1 ? langChips(B, () => showSection(b, no)) : '', PROSE ? '' : el('p', {class: 'cs'}, RNG(B)(s[2], s[3])));
     // books to read like a book: only the Urdu translation, one hadith after the other (Seerah, Fada'il as-Sahabah, Fitan)
     const BKK = ['seerah', 'fazail', 'fitan'].includes(B.key) && B.langs.some(x => x !== 'ar'), BL = lang && B.langs.includes(lang) ? lang : 'ur';
     let BKM = false; try { BKM = BKK && localStorage.bkmode === '1'; } catch (e) {}
@@ -5417,10 +5421,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         src = {ur: 'ماخذ: archive.org — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', ar: 'المصدر: archive.org — تُشغَّل المادة من رابط الموقع نفسه.', en: 'Source: archive.org — played from the publisher\'s own link.', bn: 'সূত্র: archive.org — প্রকাশকের নিজস্ব লিংক থেকে চলে।', hi: 'स्रोत: archive.org — प्रकाशक के अपने लिंक से चलती है।', gu: 'સ્ત્રોત: archive.org — પ્રકાશકની પોતાની લિંકથી ચાલે છે.', fr: 'Source : archive.org — lue depuis le lien de l\'éditeur.'}[ui];
       box.append(el('details', {class: 'card intro'}, el('summary', {}, ti + ' (' + only + ')'), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%;margin:.5rem 0', dir: 'ltr'}), el('p', {class: 'cs'}, src))); }
     const list = el('div'), more = el('button', {class: 'btn more', type: 'button'}, T('more'));
-    { const key = t => (t || '').replace(/[\u064b-\u0652\u0670]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/\s+/g, ' ').trim().slice(0, 18), sk = key(s[4]);   // the chapter title is already in the page header: not again in every card
-      if (sk) new MutationObserver(() => list.querySelectorAll('.babbox').forEach(x => { if (key(x.textContent) === sk) x.remove(); })).observe(list, {childList: true, subtree: true}); }
     box.append(list, more);
-    let at = s[2];
+    let at = s[2], hd = false;
     const add = async () => {
       // numbers without a text in the book (e.g. most of Muslim's Introduction) are skipped: go on until something shows or the section ends
       let got = 0;
@@ -5428,8 +5430,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const to = Math.min(s[3], at + 19);
         await needRange(B, 'ar', at, to); if (lang) await needRange(B, lang, at, to); if (BKM) await needRange(B, BL, at, to);
         for (let n = at; n <= to; n++) {
-          if (BKM) { const ur = row(B, BL, n); if (ur && ur[1]) { list.append(el('div', {class: 'bkitem', lang: BL, dir: DIR(BL)}, PROSE ? '' : el('span', {class: 'bkn'}, fmtN(n)), ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, BL), ur)), ...proseFnBox(ur, BL))); got++; } }
-          else if (row(B, 'ar', n)) { list.append(card(B, n, lang)); got++; } }
+          if (BKM) { const ur = row(B, BL, n); if (ur && ur[1]) { if (!PROSE && !hd) { hd = true; if (s[4]) list.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, s[4])); if (s[1] && s[1] !== s[4] && !/^[A-Za-z]/.test(s[1])) list.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, s[1])); }
+            list.append(el('div', {class: 'bkitem', lang: BL, dir: DIR(BL)}, PROSE ? '' : el('span', {class: 'bkn'}, fmtN(n)), ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, BL), ur)), ...proseFnBox(ur, BL))); got++; } }
+          else if (row(B, 'ar', n)) { window.__SECV = true; try { list.append(card(B, n, lang)); } finally { window.__SECV = false; } got++; } }
         at = to + 1;
       }
       if (at > s[3]) more.remove();

@@ -35,8 +35,8 @@ for(const [ui,word] of [['ur','نماز'],['en','prayer']]){
  await p.goto('http://localhost:8765/#/s/bukhari?idx');await p.waitForSelector('#csearch',{timeout:20000});
  ck(await p.evaluate(()=>document.querySelectorAll('#csearch').length===1&&!document.querySelector('.bksearch')),'one search bar in the book (no second search button)');
  await p.evaluate(()=>document.querySelectorAll('.sheetbg').forEach(n=>n.remove()));
- await p.click('.bknum');ck(await p.evaluate(()=>document.querySelector('#csearch').inputMode==='numeric'),'number option switches to the number keypad');
+ ck(!(await p.$('.bknum')),'no separate number button: the one search bar takes numbers and words');
  await p.fill('#csearch','1');await p.waitForTimeout(2500);ck(await p.evaluate(()=>document.querySelectorAll('#view .card,main .card').length)>=1,'book search: hadith number finds the hadith');
- await p.click('.bknum');await p.fill('#csearch','إنما الأعمال بالنيات');await p.waitForTimeout(4000);ck(await p.evaluate(()=>/\d/.test((document.querySelector('.qsbar')||{}).textContent||''))||await p.evaluate(()=>document.querySelectorAll('.rno').length)>=1,'book search: words and phrases find hadith');
+ await p.fill('#csearch','إنما الأعمال بالنيات');await p.waitForTimeout(4000);ck(await p.evaluate(()=>/\d/.test((document.querySelector('.qsbar')||{}).textContent||''))||await p.evaluate(()=>document.querySelectorAll('.rno').length)>=1,'book search: words and phrases find hadith');
  ck(!errs.length,'page errors '+errs);await p.close();}
 console.log(bad?'FAIL':'PASS search_tabs');await b.close();process.exit(bad?1:0)})();

@@ -218,13 +218,13 @@ function renameCodes(r){
 async function saveCodesImage(rows){
   const W=1080,P=70,fam=S&&S.family||'',ff=getComputedStyle(document.body).fontFamily||'sans-serif';
   const lines=rows.map(([t,c])=>[EN()?(t.startsWith('بچے کا کوڈ: ')?'Child’s code: '+t.slice(12):'Parents’ code (to see and change everything)'):t,c]);
-  const H=300+lines.length*230+120,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  const H=300+lines.length*230+(100+20),cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
   x.fillStyle='#fffdf3';x.fillRect(0,0,W,H);x.strokeStyle='#b88a2a';x.lineWidth=8;x.strokeRect(24,24,W-48,H-48);x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
   x.textAlign='center';x.direction=EN()?'ltr':'rtl';x.fillStyle='#0e5a45';x.font='700 76px '+ff;x.fillText(EN()?'Your codes':'آپ کے کوڈ',W/2,150);
   x.fillStyle='#8a6410';x.font='700 54px '+ff;x.fillText(fam,W/2,230);
   let y=330;for(const [t,c] of lines){x.fillStyle='#1c2b25';x.font='600 46px '+ff;x.direction=EN()?'ltr':'rtl';x.fillText(t,W/2,y);
     x.font='700 88px ui-monospace,Menlo,Consolas,monospace';x.direction='ltr';const w=x.measureText(c.split('').join(' ')).width+80;
-    x.setLineDash([14,10]);x.strokeStyle='#b88a2a';x.lineWidth=4;x.strokeRect(W/2-w/2,y+30,w,120);x.setLineDash([]);x.fillStyle='#0e5a45';x.fillText(c.split('').join(' '),W/2,y+120);y+=230}
+    x.setLineDash([14,10]);x.strokeStyle='#b88a2a';x.lineWidth=4;x.strokeRect(W/2-w/2,y+30,w,(100+20));x.setLineDash([]);x.fillStyle='#0e5a45';x.fillText(c.split('').join(' '),W/2,y+(100+20));y+=230}
   x.fillStyle='#7a8a82';x.font='34px '+ff;x.direction=EN()?'ltr':'rtl';x.fillText(EN()?'Keep this picture private — turathkhairalquroon.com':'اس تصویر کو محفوظ رکھیں، کسی کو نہ دکھائیں',W/2,H-90);
   const blob=await new Promise(ok=>cv.toBlob(ok,'image/png'));if(!blob)return;
   const file=new File([blob],'tarbiyah-codes.png',{type:'image/png'});
