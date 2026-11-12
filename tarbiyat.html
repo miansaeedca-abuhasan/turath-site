@@ -77,6 +77,8 @@ svg.gr text{font-family:inherit;fill:var(--muted);font-size:11px}
 .cert .big{font-size:1.15rem}.cert .sg{display:flex;justify-content:space-around;margin-top:18px;font-size:.95rem;color:#5d6f66}.cert .sg span{border-top:1px solid #b88a2a;padding:2px 24px;min-width:9em}
 .cert .by{font-size:.78rem;color:#7a8a82;margin-top:10px}
 @media print{body{background:#fff}header.top,.tabs,.noprint,.chips,.nav,.card:not(.printme){display:none!important}main{padding:0;max-width:none}.cert{margin:0;page-break-inside:avoid}@page{size:A4 landscape;margin:12mm}}
+@media print{.printme{page:codes;font-size:14pt}.printme h2{font-size:22pt;text-align:center}.printme .codebox{font-size:24pt;padding:8px 22px;border-width:2px}.printme .muted{font-size:11pt}}
+@page codes{size:A5 portrait;margin:12mm}
 ol.steps{margin:.4rem 0 .9rem;padding-inline-start:1.3rem;line-height:1.9;font-size:.95rem}ol.steps li{margin:.15rem 0}
 </style>
 </head>
@@ -118,6 +120,8 @@ const XEN={'تربیہ':'Tarbiyah','بچوں کی اچھی عادتوں کا چ�
 'ہفتہ وار عبادات چارٹ':'Weekly worship chart','روزانہ تربیتی چارٹ':'Daily conduct chart','عبادات کے کام':'Worship activities','تربیتی کام':'Conduct activities','ہفتے کے دن':'Days of the week','مجموعہ':'Total','یہ زمرہ والدین بھرتے ہیں۔':'This category is filled in by parents.','دن کا مجموعہ':'Day total','صرف جمعہ':'Friday only',
 'ہر کام کے آگے اس دن کے خانے میں نشان لگائیں۔ آپ آج اور کل کے خانے بھر سکتے ہیں۔ تربیتی کام کے آخر میں سرخ خانہ والدین بھرتے ہیں۔':'Tick the box of the day next to each activity. You can fill in today and yesterday. The red minus box at the end is filled in by parents.','والدین کسی بھی دن کا خانہ ٹھیک کر سکتے ہیں۔ سرخ خانے (منفی پوائنٹ) کو دبانے سے ایک، دو، تین گنتی بنتی ہے۔ بچے اپنے کوڈ سے اپنے خانے خود بھرتے ہیں۔':'Parents can correct any day. Pressing a red box (minus points) counts one, two, three. Children fill in their own boxes with their own code.','عبادات':'Worship','یہ زمرہ والدین بھرتے ہیں۔':'This category is filled in by parents.',
 'یہ کوڈ درست نہیں۔ دوبارہ دیکھ کر لکھیں۔':'This code is not correct. Check it and write it again.','بہت زیادہ کوششیں ہوئیں۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔':'Too many attempts. Try again after a while.','کم از کم ایک بچے کا نام لکھیں۔':'Write at least one child\'s name.','دوبارہ داخل ہوں۔':'Please enter again.','اس سے زیادہ کی گنجائش نہیں۔':'There is no room for more.','بچے صرف آج اور کل کے خانے بھر سکتے ہیں۔':'Children can fill in only today and yesterday.','یہ خانہ والدین بھرتے ہیں۔':'Parents fill in this box.','یہ سہولت ابھی تیار ہو رہی ہے۔':'This feature is still being prepared.','سونے سے پہلے والدین کو یاد دلائیں کہ آج کی رپورٹ مارک کریں۔':'Before sleeping, remind your parents to mark today\'s report.','میری رپورٹ مارک کریں':'Please mark my report','یاد دہانی بھیج دی گئی ✓':'Reminder sent ✓','کھولیں':'Open','ٹھیک ہے':'OK','یہ زمرہ والدین بھرتے ہیں۔':'Parents fill in this category.','کچھ خرابی ہوئی۔ دوبارہ کوشش کریں۔':'Something went wrong. Please try again.','یہ عبادت صرف جمعہ کے دن ہے۔':'This is for Friday only.'};
+XEN['پرنٹ']='Print';XEN['تصویر محفوظ کریں']='Save as image';XEN['پیچھے (نام بدلیں)']='Back (change names)';XEN['نام بدلیں، کوڈ وہی رہیں گے']='Change names — the codes stay the same';XEN['محفوظ کریں اور کوڈ دیکھیں']='Save and see the codes';XEN['کوڈ پر واپس']='Back to codes';XEN['خاندان کا نام']='Family name';XEN['تصویر بن گئی']='Image made';XEN['آپ کے کوڈ']='Your codes';XEN['ان کوڈز کو محفوظ رکھیں۔ والدین کا کوڈ سب کچھ دیکھنے اور بدلنے کے لیے ہے۔']='Keep these codes safe. The parents’ code is for seeing and changing everything.';
+XEN['نیا خاندان بنانے کے بعد پانچ دن تک چارٹ استعمال نہ ہو تو وہ مٹ جاتا ہے۔ پہلے ہفتے میں استعمال ہو مگر دوسرے یا تیسرے ہفتے میں نہ ہو تو تیسرا ہفتہ ختم ہونے پر مٹ جاتا ہے۔']='If a new family does not use the chart for five days, it is deleted. If it is used in the first week but not in the second or the third week, it is deleted when the third week ends.';
 const tr=x=>EN()&&XEN[x]!=null?XEN[x]:x;
 const UD=n=>EN()?String(n):String(n).replace(/[0-9]/g,d=>'۰۱۲۳۴۵۶۷۸۹'[d]);
 const A_NAMES={am_adhkar:['صبح کے ذکر و اذکار اور دعائیں','Morning adhkar and duas'],pray_unasked:['نماز بغیر کہے پڑھنا','Praying without being told'],obey_parents:['والدین کی بات ماننا','Obeying parents'],sibling_manners:['بہن بھائیوں کے ساتھ اخلاق سے پیش آنا','Treating brothers and sisters kindly'],cleanliness:['صفائی کا اہتمام','Keeping clean and tidy'],sleep_time:['وقت پر سونا','Sleeping on time'],fight:['لڑائی کرنا','Fighting'],complaint:['بلاوجہ شکایت','Needless complaining'],loud:['اونچا بولنا','Speaking loudly'],stubborn:['ضد کرنا','Being stubborn'],
@@ -194,8 +198,38 @@ function create(){
 }
 function codesSheet(r){
   HOLD=true;clearTimeout(IDLE_T);
-  const rows=[['والدین کا کوڈ (سب کچھ دیکھنے اور بدلنے کے لیے)',r.parentCode,'']].concat(r.kids.map(k=>['بچے کا کوڈ: '+k.name,k.code,'']));
-  show(E('div',{class:'card printme'},E('h2',{},'آپ کے کوڈ'),E('p',{class:'muted'},'ان کوڈز کو ابھی کہیں لکھ کر محفوظ کر لیں۔ سیکیورٹی کے لیے والدین کا کوڈ دوبارہ نہیں دکھایا جاتا۔ بچے کا کوڈ بھول جائے تو ترتیبات میں نیا بنا سکتے ہیں۔'),...rows.map(([t,c])=>E('div',{style:'margin:10px 0'},E('div',{},t),E('span',{class:'codebox'},c))),E('div',{class:'row noprint',style:'margin-top:12px'},E('button',{class:'sec',on:{click:()=>window.print()}},'کوڈ چھاپیں'),E('button',{on:{click:()=>dash()}},'میں نے کوڈ محفوظ کر لیے، آگے چلیں'))));
+  const rows=[['والدین کا کوڈ (سب کچھ دیکھنے اور بدلنے کے لیے)',r.parentCode]].concat(r.kids.map(k=>['بچے کا کوڈ: '+k.name,k.code]));
+  show(E('div',{class:'card printme'},E('h2',{},'آپ کے کوڈ'),E('p',{class:'muted',style:'text-align:center;font-weight:700'},S&&S.family||''),E('p',{class:'muted'},'ان کوڈز کو ابھی کہیں لکھ کر محفوظ کر لیں۔ سیکیورٹی کے لیے والدین کا کوڈ دوبارہ نہیں دکھایا جاتا۔ بچے کا کوڈ بھول جائے تو ترتیبات میں نیا بنا سکتے ہیں۔'),...rows.map(([t,c])=>E('div',{style:'margin:12px 0;text-align:center'},E('div',{},tr(t.startsWith('بچے کا کوڈ: ')?(EN()?'Child’s code: '+t.slice(12):t):t)),E('span',{class:'codebox'},c))),
+    E('div',{class:'row noprint',style:'margin-top:12px'},E('button',{class:'sec',on:{click:()=>window.print()}},'پرنٹ'),E('button',{class:'sec',on:{click:()=>saveCodesImage(rows)}},'تصویر محفوظ کریں'),E('button',{class:'sec',on:{click:()=>renameCodes(r)}},'پیچھے (نام بدلیں)')),
+    E('div',{class:'row noprint',style:'margin-top:8px'},E('button',{on:{click:()=>dash()}},'میں نے کوڈ محفوظ کر لیے، آگے چلیں'))));
+}
+// back from the codes: only the names change, the codes stay exactly the same
+function renameCodes(r){
+  const err=E('div',{class:'err'},'');const fam=E('input',{value:S.family,maxlength:40});
+  const ins=r.kids.map(k=>E('input',{value:k.name,maxlength:30}));
+  const save=async()=>{err.textContent='';try{
+    const fn=fam.value.trim();if(fn&&fn!==S.family){await api('fname',{name:fn});S.family=fn}
+    for(let i=0;i<r.kids.length;i++){const nv=ins[i].value.trim();if(nv&&nv!==r.kids[i].name){await api('kidname',{kid:r.kids[i].id,name:nv});r.kids[i].name=nv;const sk=S.kids.find(x=>x.id===r.kids[i].id);if(sk)sk.name=nv}}
+    codesSheet(r)}catch(e){err.textContent=errText(e)}};
+  show(E('div',{class:'card'},E('h2',{},'نام بدلیں، کوڈ وہی رہیں گے'),E('label',{},'خاندان کا نام'),fam,...r.kids.map((k,i)=>E('div',{style:'margin-top:8px'},ins[i])),err,
+    E('div',{class:'row',style:'margin-top:12px'},E('button',{on:{click:save}},'محفوظ کریں اور کوڈ دیکھیں'),E('button',{class:'sec',on:{click:()=>codesSheet(r)}},'کوڈ پر واپس'))));
+}
+// the codes as one picture sized for a phone screen; on a phone the share sheet offers «Save image» (gallery), elsewhere the file is downloaded
+async function saveCodesImage(rows){
+  const W=1080,P=70,fam=S&&S.family||'',ff=getComputedStyle(document.body).fontFamily||'sans-serif';
+  const lines=rows.map(([t,c])=>[EN()?(t.startsWith('بچے کا کوڈ: ')?'Child’s code: '+t.slice(12):'Parents’ code (to see and change everything)'):t,c]);
+  const H=300+lines.length*230+120,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  x.fillStyle='#fffdf3';x.fillRect(0,0,W,H);x.strokeStyle='#b88a2a';x.lineWidth=8;x.strokeRect(24,24,W-48,H-48);x.lineWidth=2;x.strokeRect(40,40,W-80,H-80);
+  x.textAlign='center';x.direction=EN()?'ltr':'rtl';x.fillStyle='#0e5a45';x.font='700 76px '+ff;x.fillText(EN()?'Your codes':'آپ کے کوڈ',W/2,150);
+  x.fillStyle='#8a6410';x.font='700 54px '+ff;x.fillText(fam,W/2,230);
+  let y=330;for(const [t,c] of lines){x.fillStyle='#1c2b25';x.font='600 46px '+ff;x.direction=EN()?'ltr':'rtl';x.fillText(t,W/2,y);
+    x.font='700 88px ui-monospace,Menlo,Consolas,monospace';x.direction='ltr';const w=x.measureText(c.split('').join(' ')).width+80;
+    x.setLineDash([14,10]);x.strokeStyle='#b88a2a';x.lineWidth=4;x.strokeRect(W/2-w/2,y+30,w,120);x.setLineDash([]);x.fillStyle='#0e5a45';x.fillText(c.split('').join(' '),W/2,y+120);y+=230}
+  x.fillStyle='#7a8a82';x.font='34px '+ff;x.direction=EN()?'ltr':'rtl';x.fillText(EN()?'Keep this picture private — turathkhairalquroon.com':'اس تصویر کو محفوظ رکھیں، کسی کو نہ دکھائیں',W/2,H-90);
+  const blob=await new Promise(ok=>cv.toBlob(ok,'image/png'));if(!blob)return;
+  const file=new File([blob],'tarbiyah-codes.png',{type:'image/png'});
+  try{if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file]});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tarbiyah-codes.png';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);
 }
 function dash(){
   HOLD=false;if(!history.state||!history.state.tb)history.pushState({tb:1},'');touch();
@@ -306,7 +340,7 @@ async function vSet(body){
       S.kids.length<8?(()=>{const n=E('input',{placeholder:'نئے بچے کا نام',maxlength:30});return E('div',{class:'row',style:'margin-top:8px'},n,E('button',{on:{click:act(async()=>{if(!n.value.trim())return;const r=await api('addkid',{name:n.value});say([EN()?'Code for '+r.name+' (write it down): ':r.name+' کا کوڈ (اسے لکھ لیں): ',E('span',{class:'codebox'},r.code)]);await refresh2()})}},'بچہ شامل کریں'))})():null),
     ...actsCard('w'),...actsCard('h'),...actsCard('a'),
     E('div',{class:'card set'},E('h2',{},'والدین کا کوڈ اور حفاظت'),E('button',{class:'sec',on:{click:act(async()=>{if(!confirm(EN()?'A new parents\' code will be made, the old one will stop working and you will be signed out on other phones. OK?':'نیا والدین کوڈ بنے گا، پرانا بند ہو جائے گا اور دوسرے فون سے آپ باہر ہو جائیں گے۔ ٹھیک ہے؟'))return;const r=await api('parentcode');say([EN()?'New parents\' code (write it down): ':'نیا والدین کوڈ (اسے لکھ لیں): ',E('span',{class:'codebox'},r.code)])})}},'والدین کا نیا کوڈ بنائیں'),
-      E('p',{class:'muted'},'تین ہفتے تک کوئی استعمال نہ ہو تو چارٹ خود بخود مٹ جاتا ہے۔'),
+      E('p',{class:'muted'},'نیا خاندان بنانے کے بعد پانچ دن تک چارٹ استعمال نہ ہو تو وہ مٹ جاتا ہے۔ پہلے ہفتے میں استعمال ہو مگر دوسرے یا تیسرے ہفتے میں نہ ہو تو تیسرا ہفتہ ختم ہونے پر مٹ جاتا ہے۔'),
       E('button',{class:'bad',on:{click:act(async()=>{if(!confirm(EN()?'The whole family, the children and all records will be erased for ever. Delete for sure?':'پورا خاندان، بچے اور سارا ریکارڈ ہمیشہ کے لیے مٹ جائے گا۔ پکا مٹانا ہے؟'))return;await api('famdel',{sure:'yes'});setTok('');S=null;landing()})}},'پورا چارٹ مٹائیں')));
   async function refresh2(){S={...S,...(await api('state'))}}
 }

@@ -281,6 +281,7 @@ html[lang=ur] .moment .mh{font:600 1.2rem/1.9 var(--urdu)}
 .resume{display:flex;align-items:center;justify-content:center;gap:.5rem;margin:.8rem auto;width:max-content;max-width:100%;border:1px solid var(--line);border-radius:999px;background:var(--card);box-shadow:var(--shadow);padding:.35rem 1.2rem;color:var(--accent);text-decoration:none;font-weight:600}
 .resume.float{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(4.6rem + env(safe-area-inset-bottom,0px));z-index:5;margin:0}
 body.withplayer .resume.float{display:none}
+.fbhint{font-size:.8rem;opacity:.6;margin:.15rem .6rem .4rem;color:var(--muted,#666)}
 .filterbox{display:flex;align-items:center;gap:.5rem;padding:.2rem .9rem;color:var(--accent)}
 .filter{flex:1;min-width:0;border:0;background:none;padding:.6rem 0;outline:none}
 .fcaps{display:flex;flex-wrap:nowrap;justify-content:center;gap:.4rem;margin:.9rem 0 .3rem}
@@ -1458,7 +1459,12 @@ function hTiles(){
 }
 function findHadith(){
   const inp=el('input',{type:'number',min:'1',inputmode:'numeric','aria-label':T('hNum'),id:'hfind'});
-  sheet(T('hFind'),[el('label',{class:'srow'},el('span',{},T('hNum')),inp)],[[T('hClose'),null],[T('hGo'),()=>{const n=parseInt(inp.value,10);if(n>0)location.hash='#/h/'+n;}]]);
+  const NF={ur:['کل احادیث','حدیث نمبر اس سے زیادہ نہیں'],en:['Total hadith','No hadith has a number above this'],ar:['مجموع الأحاديث','لا يوجد رقم أكبر من هذا']};const nf=NF[ui]||NF.en;
+  const hint=el('div',{class:'cs',style:'opacity:.6;font-size:.82rem;margin:.2rem 0'},'');let tot=0;
+  loadToc().then(ks=>{tot=ks.reduce((s,k)=>s+k.count,0)+((book==='jami'||book==='jamik'||(BOOKS.find(x=>x.key===book)||{}).kind==='lang')?6:0);
+    inp.placeholder=String(tot);hint.textContent=nf[0]+': '+tot+' — ترقیم تراث خيرالقرون';}).catch(()=>{});
+  const go=()=>{const n=parseInt(inp.value,10);if(!(n>0))return false;if(tot&&n>tot){hint.textContent=nf[1]+' ('+tot+')';hint.style.opacity='1';hint.style.color='#b3261e';return false;}location.hash='#/h/'+n;};
+  sheet(T('hFind'),[el('label',{class:'srow'},el('span',{},T('hNum')),inp),hint],[[T('hClose'),null],[T('hGo'),go]]);
 }
 async function pickBook(){
   const close=()=>{const x=document.querySelector('.sheetbg');if(x)x.remove();};
@@ -1466,6 +1472,9 @@ async function pickBook(){
   const rows=use.map(b=>{const r=el('input',{type:'radio',name:'bk',value:b.key});r.checked=b.key===book&&!/^#\/s\//.test(location.hash);
     r.addEventListener('change',()=>{$('#q').value='';close();switchBook(b.key);if(location.hash!=='#/b')location.hash='#/b';});
     return el('label',{class:'srow chk'},r,el('span',{dir:'auto'},bookName(b)));});
+  // books taken from Al-Jami al-Kamil (Seerah, Fazail Sahaba, Kitab al-Fitan, Sharh Tuhfat al-Muttaqin) are listed here too
+  const SB=[['seerah',T('seerahT'),'#/s/seerah'],['sahaba',T('navFazail'),'#/s/fazail'],['hadith_books',({ur:'کتاب الفتن',ar:'كتاب الفتن',en:'Kitab al-Fitan'})[ui]||'Kitab al-Fitan','#/s/fitan'],['tuhfa_sharh',T('hTuhfa'),null]];
+  SB.forEach(([ic,nm,h])=>{const a=el('a',{class:'srow chk',href:h||'#/b',on:{click:()=>{close();if(!h){switchBook('tuhfa');if(location.hash!=='#/b')location.hash='#/b';}}}},el('img',{src:'icons/'+ic+'.png',alt:'',width:28,height:28}),el('span',{dir:'auto'},nm));rows.push(a);});
   sheet(T('hTrPick'),rows);
 }
 function hResume(){
@@ -1715,6 +1724,7 @@ function drawModes(){const box=$('#hmode');if(!box)return;const m=/&/.test($('#q
 let timer;
 async function showHome(){
   drawModes();$('#q').placeholder=T('phIn')(curBookName());
+  loadToc().then(ks=>{const bo=BOOKS.find(x=>x.key===book),t=ks.reduce((a,k)=>a+k.count,0)+((book==='jami'||book==='jamik'||(bo&&bo.kind==='lang'))?6:0);if($('#q'))$('#q').placeholder=T('phIn')(curBookName())+' ('+t+')';}).catch(()=>{});
   const q=$('#q').value.trim(),box=$('#list');
   if(!q&&(book==='jami'||book==='jamik'||TL()))return showKitabs();
   box.replaceChildren();bar(curBookName(),'',false);if(!q)box.append(hTiles());
@@ -4927,8 +4937,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const n = b.an && Object.keys(b.an).length && C.rev[b.key][num] ? C.rev[b.key][num] : num;
         out.replaceChildren(el('p', {class: 'note'}, T('loading')));
         const lang = getLang(b); await needRange(b, 'ar', n, n); if (lang) await needRange(b, lang, n, n);
-        out.replaceChildren(row(b, 'ar', n) ? card(b, n, lang) : el('p', {class: 'note'}, T('cNotHere')));
-        if (n !== num && row(b, 'ar', num)) out.append(card(b, num, lang));
+        const noNum = x => (b.nn && b.nn[x]) || x < 1 || x > b.count;   // a note of the book carries no number: zero results
+        out.replaceChildren(row(b, 'ar', n) && !noNum(n) ? card(b, n, lang) : el('p', {class: 'note'}, T('cNotHere')));
+        if (n !== num && row(b, 'ar', num) && !noNum(num)) out.append(card(b, num, lang));
         return;
       }
       const q = norm(v.replace(/[&+،,]/g, ' ')).split(' ').filter(Boolean); if (!q.length) return secs();
@@ -4944,7 +4955,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     /* one search bar for the whole book: a number opens that hadith, words list the hadith; «# number» switches the bar to the number keypad */
     const NB = {ur: ['نمبر سے', 'حدیث نمبر لکھیں'], ar: ['بالرقم', 'اكتب رقم الحديث'], en: ['By number', 'Type the hadith number'], bn: ['নম্বর দিয়ে', 'হাদীস নম্বর লিখুন'], hi: ['नंबर से', 'हदीस नंबर लिखें'], gu: ['નંબરથી', 'હદીસ નંબર લખો'], fr: ['Par numéro', 'Saisir le numéro du hadith']}[ui] || ['By number', 'Type the hadith number'];
     const numBtn = el('button', {class: 'btn lbtn bknum', type: 'button', 'aria-pressed': 'false', on: {click: () => { const on = numBtn.getAttribute('aria-pressed') !== 'true'; numBtn.setAttribute('aria-pressed', String(on)); f.inputMode = on ? 'numeric' : 'search'; f.placeholder = on ? NB[1] : sPh; f.value = ''; run(); f.focus(); }}}, '# ' + NB[0]);
-    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, numBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
+    // total of the hadith, written in advance in light colour (Muslim: two numberings, e.g. 3033/7610); the numbering of this site is named where the book has no printed numbers
+    const NT = {ur: ['کل احادیث', 'ترقیم تراث خيرالقرون'], ar: ['مجموع الأحاديث', 'ترقيم تراث خير القرون'], en: ['Total hadith', 'Turath Khair al-Quroon numbering']}[ui] || ['Total hadith', 'ترقیم تراث خيرالقرون'];
+    const noteN = b.nn ? Object.keys(b.nn).length : 0, tot = (b.count || 0) - noteN;
+    let totTxt = String(tot); if (b.abno || b.key === 'muslim') { const mx = Math.max(0, ...Object.values(b.an || {}).map(x => parseInt(x, 10) || 0)); if (mx) totTxt = mx + '/' + tot; }
+    const ours = !b.prose && b.grp === 'ar' && !Object.keys(b.an || {}).length;   // no printed numbers kept for this book: the numbers are those of this site
+    const hintEl = b.prose ? '' : el('div', {class: 'fbhint'}, NT[0] + ': ' + (ui === 'ur' ? totTxt : totTxt), ours ? ' · ' + NT[1] : '');
+    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, numBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
@@ -6189,6 +6206,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   Object.assign(I.ur, {cmpBook: 'کتاب کا نام لکھیں', cmpNum: 'حدیث نمبر', cmpAddBtn: 'شامل کریں', cmpBooksBox: 'کتب', cmpNumsBox: 'حدیث نمبر', cmpGo: 'موازنہ کریں', cmpNeed2: 'موازنہ کے لیے کم از کم دو احادیث چنیں۔', cmpPickBook: 'پہلے فہرست میں سے کتاب چنیں۔', cmpNoNum: 'یہ نمبر اس کتاب میں نہیں ملا۔', cmpMainIs: 'مرکزی', cmpHelp: 'کتاب چنیں، پھر حدیث نمبر لکھ کر «شامل کریں» دبائیں۔ جتنی چاہیں احادیث جمع کریں؛ ایک حدیث مرکزی ہو گی جس سے باقی کا موازنہ ہو گا۔', cmpTotal: n => 'چنی ہوئی احادیث: ' + n, cmpUn: 'نکالیں', cmpMainTip: 'اسے مرکزی بنائیں'});
   Object.assign(I.en, {cmpBook: 'Type the book name', cmpNum: 'Hadith number', cmpAddBtn: 'Add', cmpBooksBox: 'Books', cmpNumsBox: 'Hadith numbers', cmpGo: 'Compare', cmpNeed2: 'Choose at least two hadith to compare.', cmpPickBook: 'First choose a book from the list.', cmpNoNum: 'This number is not in that book.', cmpMainIs: 'Main', cmpHelp: 'Choose a book, type the hadith number and tap Add. Collect as many as you like; one hadith is the main one and the others are compared with it.', cmpTotal: n => 'Chosen hadith: ' + n, cmpUn: 'Remove', cmpMainTip: 'Make it the main hadith'});
   Object.assign(I.ar || (I.ar = {}), {cmpBook: 'اكتب اسم الكتاب', cmpNum: 'رقم الحديث', cmpAddBtn: 'أضف', cmpBooksBox: 'الكتب', cmpNumsBox: 'أرقام الأحاديث', cmpGo: 'قارن', cmpNeed2: 'اختر حديثين على الأقل للمقارنة.', cmpPickBook: 'اختر الكتاب من القائمة أولًا.', cmpNoNum: 'هذا الرقم غير موجود في هذا الكتاب.', cmpMainIs: 'الأساسي', cmpHelp: 'اختر كتابًا ثم اكتب رقم الحديث واضغط «أضف». اجمع ما شئت؛ حديث واحد أساسي تُقارن به البقية.', cmpTotal: n => 'الأحاديث المختارة: ' + n, cmpUn: 'إزالة', cmpMainTip: 'اجعله الأساسي'});
+  Object.assign(I.bn || (I.bn = {}), {cmpBook: 'বইয়ের নাম লিখুন', cmpNum: 'হাদীস নম্বর', cmpAddBtn: 'যোগ করুন', cmpBooksBox: 'বইসমূহ', cmpNumsBox: 'হাদীস নম্বর', cmpGo: 'তুলনা করুন', cmpNeed2: 'তুলনার জন্য কমপক্ষে দুটি হাদীস বাছুন।', cmpPickBook: 'আগে তালিকা থেকে বই বাছুন।', cmpNoNum: 'এই নম্বর ওই বইয়ে পাওয়া যায়নি।', cmpMainIs: 'মূল', cmpHelp: 'বই বাছুন, তারপর হাদীস নম্বর লিখে «যোগ করুন» চাপুন। যত খুশি হাদীস জমা করুন; একটি হাদীস মূল হবে, বাকিগুলো তার সঙ্গে তুলনা হবে।', cmpTotal: n => 'বাছাই করা হাদীস: ' + n, cmpUn: 'সরান', cmpMainTip: 'এটিকে মূল করুন'});
+  Object.assign(I.hi || (I.hi = {}), {cmpBook: 'किताब का नाम लिखें', cmpNum: 'हदीस नंबर', cmpAddBtn: 'जोड़ें', cmpBooksBox: 'किताबें', cmpNumsBox: 'हदीस नंबर', cmpGo: 'तुलना करें', cmpNeed2: 'तुलना के लिए कम से कम दो हदीसें चुनें।', cmpPickBook: 'पहले सूची में से किताब चुनें।', cmpNoNum: 'यह नंबर उस किताब में नहीं मिला।', cmpMainIs: 'मुख्य', cmpHelp: 'किताब चुनें, फिर हदीस नंबर लिखकर «जोड़ें» दबाएँ। जितनी चाहें हदीसें जमा करें; एक हदीस मुख्य होगी, बाकी की उससे तुलना होगी।', cmpTotal: n => 'चुनी हुई हदीसें: ' + n, cmpUn: 'हटाएँ', cmpMainTip: 'इसे मुख्य बनाएँ'});
+  Object.assign(I.gu || (I.gu = {}), {cmpBook: 'પુસ્તકનું નામ લખો', cmpNum: 'હદીસ નંબર', cmpAddBtn: 'ઉમેરો', cmpBooksBox: 'પુસ્તકો', cmpNumsBox: 'હદીસ નંબર', cmpGo: 'સરખામણી કરો', cmpNeed2: 'સરખામણી માટે ઓછામાં ઓછી બે હદીસ પસંદ કરો.', cmpPickBook: 'પહેલાં યાદીમાંથી પુસ્તક પસંદ કરો.', cmpNoNum: 'આ નંબર એ પુસ્તકમાં મળ્યો નથી.', cmpMainIs: 'મુખ્ય', cmpHelp: 'પુસ્તક પસંદ કરો, પછી હદીસ નંબર લખી «ઉમેરો» દબાવો. જેટલી ઇચ્છો હદીસ ભેગી કરો; એક હદીસ મુખ્ય રહેશે, બાકીની તેની સાથે સરખાવાશે.', cmpTotal: n => 'પસંદ કરેલી હદીસ: ' + n, cmpUn: 'કાઢો', cmpMainTip: 'આને મુખ્ય બનાવો'});
+  Object.assign(I.fr || (I.fr = {}), {cmpBook: 'Saisir le nom du livre', cmpNum: 'Numéro du hadith', cmpAddBtn: 'Ajouter', cmpBooksBox: 'Livres', cmpNumsBox: 'Numéros des hadiths', cmpGo: 'Comparer', cmpNeed2: 'Choisissez au moins deux hadiths à comparer.', cmpPickBook: 'Choisissez d’abord un livre dans la liste.', cmpNoNum: 'Ce numéro ne se trouve pas dans ce livre.', cmpMainIs: 'Principal', cmpHelp: 'Choisissez un livre, saisissez le numéro du hadith et touchez « Ajouter ». Réunissez-en autant que vous voulez ; un hadith est le principal, les autres lui sont comparés.', cmpTotal: n => 'Hadiths choisis : ' + n, cmpUn: 'Retirer', cmpMainTip: 'En faire le hadith principal'});
   async function showList() {
     bar(T('cmp'), '', true);
     const box = $('#list'); box.replaceChildren(el('p', {class: 'note'}, T('loading')));

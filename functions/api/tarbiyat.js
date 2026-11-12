@@ -1,6 +1,6 @@
 // «تربیہ» (children's good-conduct chart) for turathkhairalquroon.com — free, Cloudflare Pages Function + the D1 database bound as DB.
 // One family = one parent code + one code per child. A child's code can only mark that child's own boxes and see that child's own results.
-// Privacy: no e-mail, no surname needed; the owner of the site can read nothing about families. A family idle for 3 weeks is removed.
+// Privacy: no e-mail, no surname needed; the owner of the site can read nothing about families. A family idle for 3 weeks is removed; a new family that marks nothing for 5 days is removed; a family that used the chart in week 1 but not in week 2 or not in week 3 is removed when week 3 ends.
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
 const DAY = 86400000, SESS = 1 * DAY, IDLE = 21 * DAY;
 const enc = new TextEncoder();
@@ -39,6 +39,17 @@ async function sweep(db) {
   await db.prepare("INSERT INTO t_meta (k,v) VALUES ('sweep',?) ON CONFLICT(k) DO UPDATE SET v=?").bind(now, now).run();
   const old = (await db.prepare('SELECT id FROM t_fam WHERE last_active < ?').bind(now - IDLE).all()).results || [];
   for (const f of old) await wipe(db, f.id);
+  // new families: (1) nothing marked within 5 days → removed; (2) at the end of week 3, if week 2 or week 3 had no marks → removed (week = 7 days from the day the family was made)
+  const young = (await db.prepare('SELECT id, created FROM t_fam WHERE created < ?').bind(now - 5 * DAY).all()).results || [];
+  for (const f of young) {
+    const cd = Math.floor(f.created / DAY), age = now - f.created;
+    const days = ((await db.prepare('SELECT DISTINCT m.day FROM t_mark m JOIN t_kid k ON k.id=m.kid WHERE k.fam=?').bind(f.id).all()).results || []).map(r => dnum(r.day) - cd);
+    if (!days.length) { await wipe(db, f.id); continue; }   // 5 days (or more) and still nothing marked
+    if (age >= 21 * DAY) {
+      const w2 = days.some(d => d >= 7 && d < 14), w3 = days.some(d => d >= 14 && d < 21);
+      if (!w2 || !w3) await wipe(db, f.id);
+    }
+  }
   await db.prepare('DELETE FROM t_sess WHERE exp < ?').bind(now).run();
   await db.prepare('DELETE FROM t_fail WHERE ts < ?').bind(now - DAY).run();
 }
