@@ -454,7 +454,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .srow2>.ab,.moment .ab{background:none;border:0;color:var(--accent);border-radius:50%;width:2.6rem;height:2.6rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none}
 .srow2>.ab:hover{background:var(--wash)}
 .bism{text-align:center!important}
-@media (max-width:440px){#xtools:not(:empty)~#lang,#xtools:not(:empty)~#bmbtn,#xtools:not(:empty)~#hsbtn{display:none}}
+@media (max-width:440px){#xtools:not(:empty)~#lang,#xtools:not(:empty)~#bmbtn{display:none}}
 .hsr .mt p{margin:.3rem 0}.hsg{margin:.4rem 0;font-size:1.05em}.hsg.ggood b{color:#1b7f3b}.hsg.gbad b{color:#c00000}
 .hslinks{margin-top:.5rem}.hslinks .chip{text-decoration:none}.hslinks .hssharh{color:#1b7f3b;border-color:#1b7f3b}
 .hsmeta{display:flex;flex-wrap:wrap;gap:.2rem 1rem;font-size:.92em}.hsm .cs{opacity:.8}
@@ -643,11 +643,11 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 #view p.bc,#view .hd,#view h3.grp{font-weight:700;color:var(--accent,#0b5d4b)}#view p.ar.bc{font-size:1.2rem;line-height:1.9}
 .drbody h3,.drbody h3.grp{font:700 1.3rem/1.9 var(--arabic);color:var(--accent,#0b5d4b);margin:1.1rem 0 .4rem;border-bottom:1px solid var(--line,#d9d2c3);padding-bottom:.2rem}
 .card.srow2 .ct{font-weight:700}
-details.dirasa{margin:.6rem 0;border:1px solid var(--line,#d9d2c3);border-radius:10px;background:var(--card,#fff)}
-details.dirasa>summary{cursor:pointer;padding:.6rem .8rem;font:700 1.15rem/1.8 var(--arabic);color:var(--accent,#0b5d4b);list-style:none}
+details.dirasa{margin:.6rem 0;border:0;border-radius:0;background:none}
+details.dirasa>summary{cursor:pointer;padding:.6rem 0;font:700 1.15rem/1.8 var(--arabic);color:var(--accent,#0b5d4b);list-style:none}
 details.dirasa>summary::before{content:'▸ ';}details.dirasa[open]>summary::before{content:'▾ ';}
 details.dirasa>summary small{font:400 .85rem var(--sans);color:var(--muted)}
-.drbody{padding:.2rem .9rem .6rem;font:1.08rem/2 var(--arabic);text-align:justify}.drbody p{margin:.45rem 0}.drbody p.q{color:var(--muted)}
+.drbody{padding:.2rem 0 .6rem;font:1.08rem/2 var(--arabic);text-align:justify}.drbody p{margin:.45rem 0}.drbody p.q{color:var(--muted)}
 .mtabs{display:flex;gap:1.2rem;border-bottom:1px solid var(--line);margin:.2rem 0 .6rem}
 .mtabs button{background:none;border:0;border-bottom:3px solid transparent;margin-bottom:-1px;padding:.45rem .1rem;font:inherit;font-size:1rem;color:var(--muted);cursor:pointer}
 .mtabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
@@ -1169,7 +1169,7 @@ const bookName=b=>LTR()?(b.name_en||b.name):(ui==='ar'&&b.kind!=='lang'&&window.
 const curBookName=()=>{const b=BOOKS.find(x=>x.key===book)||BOOKS.find(x=>x.key===scopeOf());return b?bookName(b):''};
 const fmt=n=>n<0?T('sample'):Number(n).toLocaleString('en-US');
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
-function bar(t1,t2,back){if(/^(?:تلخيص |تلخیص )?الجامع (?:الكامل|الکامل)\s+(?:في|فی)\s/.test(t1||''))t1=t1.split(/\s+(?:في|فی)\s+/)[0];const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();$('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();{const hb=document.getElementById('hsbtn');if(hb)hb.hidden=!/^#\/s\//.test(location.hash);}document.title=t1||T('brand');}
+function bar(t1,t2,back){if(/^(?:تلخيص |تلخیص )?الجامع (?:الكامل|الکامل)\s+(?:في|فی)\s/.test(t1||''))t1=t1.split(/\s+(?:في|فی)\s+/)[0];const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();$('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();document.title=t1||T('brand');}
 /* ---------- Arabic quotes inside Urdu get Arabic fonts ---------- */
 const TASH=/[\u064b-\u0652\u0670]/;
 // Quran verses ﴿…﴾ in maroon, and Arabic words inside a translation in the Arabic font: in Urdu the vocalized words,
