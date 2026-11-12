@@ -88,6 +88,7 @@ button,input,select{font-family:inherit;font-size:inherit;line-height:1.6;color:
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .appbar{position:sticky;top:0;z-index:5;background:var(--bar);color:#fff;display:flex;align-items:center;gap:.4rem;padding:calc(.5rem + env(safe-area-inset-top,0px)) .7rem .5rem}
 .appbar .ttl{flex:1;min-width:0}
+@media (max-width:480px){.appbar{gap:.1rem;padding-left:.35rem;padding-right:.35rem}.appbar .ib{width:2.05rem;height:2.05rem}.appbar .ib svg{width:1.25rem;height:1.25rem}.appbar .ttl{flex:1 1 auto}html[lang=ur] #t1{font:600 1.05rem/2.3 var(--urdu)}#t1{font-size:1.1rem}}
 #t1{font:600 1.25rem/1.4 var(--sans);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 html[lang=ur] #t1{font:600 1.15rem/2.3 var(--urdu);padding-top:.35rem;margin-top:-.2rem}
 /* Urdu headings in Jameel Noori Nastaleeq Kasheeda (the text itself in the chosen Urdu font) */
@@ -151,6 +152,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .mt p{margin:0 0 .4rem}
 .mt p.rep{font-size:15px;line-height:1.9;margin:.2rem 0 .4rem;color:var(--muted)}.mt p.rep a{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}
 .sanad{color:var(--sanad)}
+.rawi.sahabi,.snlink.sahabi,.rjsanad .chips a.sahabi{color:var(--sahabi)!important}.rawi.mubham,.snlink.mubham{color:var(--muted);font-weight:500;border-bottom:1px dotted currentColor}
 .rawi{color:var(--rawi);font-weight:600;text-decoration:none;border-radius:6px;padding:0 .12em;cursor:pointer;transition:background .15s}.rawi:hover,.rawi:focus-visible{background:var(--rawibg);outline:none}.rawi.nmatch{border-bottom:1px dotted currentColor}
 .tr{margin:.4rem 0;border-top:1px solid var(--line);padding-top:.6rem}
 .tr p{margin:.2rem 0 .6rem}
@@ -287,7 +289,7 @@ body.withplayer .resume.float{display:none}
 @media (max-width:380px){.fcap{font-size:.74rem;padding:.28rem .55rem}}
 .qzlv.lock{opacity:.45;filter:grayscale(1)}.qzhon{font-size:.72em;opacity:.8;font-weight:400}
 .qzgate{border:1.5px solid #c39a3b;background:rgba(195,154,59,.1)}.qzgate p{margin:.2rem 0 .6rem;line-height:1.9}
-:root{--mw:46rem;--rawi:#a8481f;--rawibg:rgba(168,72,31,.12)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rawi:#e8a074;--rawibg:rgba(232,160,116,.16)}}:root[data-theme="dark"]{--rawi:#e8a074;--rawibg:rgba(232,160,116,.16)}@media (min-width:1320px){:root{--mw:clamp(46rem,calc(100vw - 41rem),74rem)}}
+:root{--mw:46rem;--sahabi:#17734d;--rawi:#a8481f;--rawibg:rgba(168,72,31,.12)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sahabi:#6fd3a4;--rawi:#e8a074;--rawibg:rgba(232,160,116,.16)}}:root[data-theme="dark"]{--sahabi:#6fd3a4;--rawi:#e8a074;--rawibg:rgba(232,160,116,.16)}@media (min-width:1320px){:root{--mw:clamp(46rem,calc(100vw - 41rem),74rem)}}
 .gpbar{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:flex-start;direction:ltr;margin:0 0 .8rem}
 @media (min-width:1320px){.gpbar.side{position:fixed;top:23rem;width:17.6rem;flex-direction:column;flex-wrap:nowrap;margin:0;z-index:5}.gpbar.side .gpb{flex:none;width:100%;box-sizing:border-box}.gpbar.side.R{right:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}.gpbar.side.Lf{left:max(1rem,calc(50vw - var(--mw,46rem)/2 - 19rem))}}
 #ipop{position:fixed;z-index:99980;left:50%;bottom:4.8rem;transform:translateX(-50%);width:min(94vw,26rem);box-sizing:border-box;background:var(--card,#fff);color:var(--ink,#222);border:1.5px solid #c39a3b;border-radius:18px;box-shadow:0 10px 34px rgba(0,0,0,.28);padding:.8rem .9rem}
@@ -488,7 +490,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .qrside .ab{background:none;border:0;color:var(--muted);border-radius:50%;width:2.4rem;height:2.4rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .qrside .ab:hover{background:var(--wash);color:var(--accent)}
 a.card .ca.snipl{font-family:inherit;font-size:1rem;line-height:1.9;text-align:start}[lang=ur].snipl{font-family:var(--urdu,inherit)}
-mark.qhit{background:none;color:#d0312d;font-weight:700}
+mark.qhit{background:#aeeaea;color:inherit;font-weight:inherit;border-radius:4px;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.qhit{background:#1d6a70;color:#fff}}:root[data-theme="dark"] mark.qhit{background:#1d6a70;color:#fff}
 .trname.inl{display:inline;font-weight:400}
 .qwrap{text-align:center;transition:background .3s}
 .qwrap.ok{background:color-mix(in srgb,#2e9b5b 14%,var(--card))}
@@ -530,6 +532,10 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .rno{float:inline-start;font:700 1rem/1.9 var(--sans);color:var(--muted);margin-inline-end:.5rem}
 #hmode{flex:0 0 100%;margin:.1rem 0 .2rem}
 #hmode .segb{padding:.15rem .9rem}
+.cmpform{display:flex;flex-direction:column;gap:.5rem}.cmpform input{width:100%;box-sizing:border-box;border:1.5px solid var(--line);border-radius:10px;padding:.6rem .8rem;background:var(--card);color:var(--ink);font-size:1.05rem}.cmpform input:focus{border-color:var(--accent);outline:none}.cmpform .btn{align-self:flex-start}.cmpsug{display:flex;flex-direction:column;gap:.25rem}.cmpsb{text-align:start;background:var(--wash);border:1px solid var(--line);border-radius:10px;padding:.45rem .7rem;cursor:pointer}
+.cmpcols{display:grid;grid-template-columns:1.4fr 1fr;gap:.6rem;margin:.6rem 0}.cmpbox{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:.4rem .6rem;min-height:4rem}.cmpbox h4{margin:.1rem 0 .3rem;font-size:.95rem;color:var(--muted)}
+.cmpcell{display:flex;align-items:center;justify-content:space-between;gap:.4rem;height:2.9rem;box-sizing:border-box;border-top:1px solid var(--line);padding:.15rem 0;cursor:default}.cmpcell.main{font-weight:700;color:var(--accent)}.cmpcell:first-of-type{border-top:0}
+.cmpcell>span:last-child{flex:1}.cmpstar{color:#c89b1d;font-size:1.15rem;cursor:pointer}.cmpx{background:none;border:0;color:#b3261e;font-size:1.1rem;cursor:pointer;padding:.3rem}.cmpgo{display:flex;justify-content:center;margin:.6rem 0}
 .numhit{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;color:var(--accent)}
 .numhit .cs{flex:0 0 100%}
 .lbtn{display:inline-flex;align-items:center;gap:.3rem}
@@ -1162,7 +1168,7 @@ const bookName=b=>LTR()?(b.name_en||b.name):(ui==='ar'&&b.kind!=='lang'&&window.
 const curBookName=()=>{const b=BOOKS.find(x=>x.key===book)||BOOKS.find(x=>x.key===scopeOf());return b?bookName(b):''};
 const fmt=n=>n<0?T('sample'):Number(n).toLocaleString('en-US');
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
-function bar(t1,t2,back){const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();$('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();document.title=t1||T('brand');}
+function bar(t1,t2,back){if(/^(?:تلخيص |تلخیص )?الجامع (?:الكامل|الکامل)\s+(?:في|فی)\s/.test(t1||''))t1=t1.split(/\s+(?:في|فی)\s+/)[0];const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();$('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();{const hb=document.getElementById('hsbtn');if(hb)hb.hidden=!/^#\/s\//.test(location.hash);}document.title=t1||T('brand');}
 /* ---------- Arabic quotes inside Urdu get Arabic fonts ---------- */
 const TASH=/[\u064b-\u0652\u0670]/;
 // Quran verses ﴿…﴾ in maroon, and Arabic words inside a translation in the Arabic font: in Urdu the vocalized words,
@@ -1344,13 +1350,13 @@ async function fullHadith(d,box){
   best.raw.forEach((w,i)=>{const st=best.it.text.indexOf(w,pos);pos=st<0?pos:st+w.length;
     if(w.includes('['))inBr=true;const skip=inBr;if(w.includes(']'))inBr=false;if(skip){cur=null;return;}
     const pl=w.replace(/[\u064b-\u0652\u0670\u0640]/g,'');if(/^ر(?:ضي|ضى)$/.test(pl))hon=true;const isHon=hon;if(hon&&/^عن(?:ه|ها|هم|هما)$/.test(pl))hon=false;
-    const x=isHon?null:sn.find(z=>st>=z.a&&st<z.b);const sp=el('span',{class:best.inn[i]?'':'dimw'},w);
-    if(x){if(!cur||cur.x!==x){const a=el('a',{class:'snlink',href:x.href});
+    const wend=st+w.length,x=isHon?null:sn.find(z=>wend>z.a&&st<z.b);let wpre='';if(x&&st<x.a){wpre=w.slice(0,x.a-st);w=w.slice(x.a-st);}const sp=el('span',{class:best.inn[i]?'':'dimw'},w);if(wpre)p.append(el('span',{class:best.inn[i]?'':'dimw'},wpre));
+    if(x){if(!cur||cur.x!==x){const a=el('a',{class:'snlink',href:x.href});a._sn=x;
         a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
-        cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}cur.a.append(sp,' ');}
+        cur={x,a};p.append(a);snNames.push(best.it.text.slice(x.a,x.b));snEls.push(a);}{const tl=/[،,.:؛]+$/.exec(w);if(tl&&wend>x.b){sp.textContent=w.slice(0,w.length-tl[0].length);cur.a.append(sp);p.append(tl[0],' ');cur=null;}else cur.a.append(sp,' ');}}
     else{cur=null;p.append(sp,' ');}});
   box.append(el('p',{class:'jwnote',lang:ui,dir:DIR(ui)},FTX(3)),p);
-  try{if(window.NAR&&NAR.linkChips&&snEls.length){const nn=best.r.n||await COLL.toN(best.r.key,best.r.number)||+best.r.number;if(nn)NAR.linkChips(best.r.key,nn,snNames,snEls);}}catch(e){}
+  try{if(window.NAR&&NAR.linkChips&&snEls.length){const nn=best.r.n||await COLL.toN(best.r.key,best.r.number)||+best.r.number;NAR.linkChips(nn?best.r.key:null,nn||0,snNames,snEls);}}catch(e){}
 }
 
 /* ---------- tabs «متن الحديث» | «الحديث بكامل السند»: the Jami's text, or the source book's whole hadith with its isnad (narrators open in a window) ---------- */
@@ -1377,19 +1383,19 @@ const HONCUT=t=>{const i=t.search(/\s+ر[\u064b-\u0652]*ض[\u064b-\u0652]*[يى]
 function sanadEl(d){const t=String(d.sanad||''),sp=el('span',{class:'sanad'});let sn=[];try{sn=(window.COLL&&COLL.sanad&&COLL.sanad(t))||[]}catch(e){}
   sn=sn.filter(z=>z&&z.b>z.a).sort((x,y)=>x.a-y.a);if(!sn.length){sp.append(t+' ');return sp;}
   let pos=0;const names=[],els=[];
-  sn.forEach(z=>{if(z.a<pos)return;if(z.a>pos)sp.append(t.slice(pos,z.a));const full=t.slice(z.a,z.b),k=HONCUT(full),nm=full.slice(0,k),a=el('a',{class:'rawi',href:z.href,lang:'ar',title:'اضغط: راوی کے حالات'},nm);
+  sn.forEach(z=>{if(z.a<pos)return;if(z.a>pos)sp.append(t.slice(pos,z.a));const full=t.slice(z.a,z.b),k=HONCUT(full),nm=full.slice(0,k),a=el('a',{class:'rawi',href:z.href,lang:'ar',title:'اضغط: راوی کے حالات'},nm);a._sn=z;
     a.addEventListener('click',e=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){e.preventDefault();NAR.openSheet(+h.slice(4));}});
     sp.append(a);if(k<full.length)sp.append(full.slice(k));names.push(nm);els.push(a);pos=z.b;});
   sp.append(t.slice(pos)+' ');
-  (async()=>{try{const r=(d.refs||[]).find(r=>COLL.has(r.key));if(!r||!window.NAR||!NAR.linkChips)return;const nn=r.n||await COLL.toN(r.key,r.number)||+r.number;if(nn)NAR.linkChips(r.key,nn,names,els);}catch(e){}})();
+  (async()=>{try{if(!window.NAR||!NAR.linkChips)return;const r=(d.refs||[]).find(r=>COLL.has(r.key));const nn=r?(r.n||await COLL.toN(r.key,r.number)||+r.number):0;NAR.linkChips(r&&nn?r.key:null,nn,names,els);}catch(e){}})();
   return sp;}
 /* the narrators at the beginning of a matn (e.g. «عن أبي سعيد، عن النبي»): wrapped in place, whatever markup the text already has */
-function linkSanadDom(root,d){try{const T=root.textContent;let sn=(window.COLL&&COLL.sanad&&COLL.sanad(T))||[];sn=sn.filter(z=>z&&z.b>z.a&&z.a<400).sort((x,y)=>x.a-y.a);if(!sn.length)return;
+function linkSanadDom(root,d){try{const T=root.textContent;let sn=(window.COLL&&COLL.sanad&&COLL.sanad(T))||[];sn=sn.filter(z=>z&&z.b>z.a&&z.a<1500).sort((x,y)=>x.a-y.a);if(!sn.length)return;
   const tw=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),nodes=[];let off=0;while(tw.nextNode()){const n=tw.currentNode;nodes.push({n,s:off,e:off+n.nodeValue.length});off+=n.nodeValue.length;}
-  const mk=z=>{const a=el('a',{class:'rawi',href:z.href,lang:'ar'});a.addEventListener('click',ev=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){ev.preventDefault();NAR.openSheet(+h.slice(4));}});return a;};
+  const mk=z=>{const a=el('a',{class:'rawi',href:z.href,lang:'ar'});a._sn=z;a.addEventListener('click',ev=>{const h=a.getAttribute('href')||'';if(/^#\/n\/\d+/.test(h)&&window.NAR&&NAR.openSheet){ev.preventDefault();NAR.openSheet(+h.slice(4));}});return a;};
   sn.slice().reverse().forEach(z=>{const hit=nodes.filter(x=>x.e>z.a&&x.s<z.b);if(hit.length!==1)return;const x=hit[0],a=Math.max(z.a,x.s)-x.s,b=Math.min(z.b,x.e)-x.s,v=x.n.nodeValue;
-    const c=a+HONCUT(v.slice(a,b)),l=mk(z);l.textContent=v.slice(a,c);const f=document.createDocumentFragment();f.append(v.slice(0,a),l,v.slice(c));x.n.replaceWith(f);});
-  const ls=[...root.querySelectorAll('a.rawi')];(async()=>{try{const r=((d&&d.refs)||[]).find(r=>COLL.has(r.key));if(!r||!window.NAR||!NAR.linkChips||!ls.length)return;const nn=r.n||await COLL.toN(r.key,r.number)||+r.number;if(nn)NAR.linkChips(r.key,nn,ls.map(a=>a.textContent),ls);}catch(e){}})();
+    const c=a+HONCUT(v.slice(a,b)),l=mk(z);l.textContent=v.slice(a,c);const f=document.createDocumentFragment(),left=document.createTextNode(v.slice(0,a));f.append(left,l,v.slice(c));x.n.replaceWith(f);x.n=left;x.e=x.s+a;});
+  const ls=[...root.querySelectorAll('a.rawi')];(async()=>{try{if(!window.NAR||!NAR.linkChips||!ls.length)return;const r=((d&&d.refs)||[]).find(r=>COLL.has(r.key));const nn=r?(r.n||await COLL.toN(r.key,r.number)||+r.number):0;NAR.linkChips(r&&nn?r.key:null,nn,ls.map(a=>a.textContent),ls);}catch(e){}})();
  }catch(e){}}
 /* ---------- a hadith card (chapter view, bookmarks) ---------- */
 function hadithCard(d,scope){
@@ -1436,17 +1442,18 @@ const kitNums=k=>k.chapters.flatMap(c=>c.nums);
 /* ---------- Hadith home, laid out like the Quran home: tiles, filter, book rows, resume ---------- */
 const H_UR={hFind:'حدیث نمبر',hSearch:'تلاش',hBooks:'کتب و تراجم',hKitabs:'کتابیں',hRead:'مطالعہ کریں',hListen:'سنیں',hTuhfa:'شرح تحفۃ المتقین',hFilter:'کتاب کا نام یا نمبر، یا حدیث نمبر لکھیں',hResume:'جہاں چھوڑا تھا وہاں سے پڑھیں',hNum:'حدیث نمبر',hGo:'کھولیں',hClose:'بند کریں',hReadOn:'مطالعے کا انداز لگ گیا',hReadOff:'کارڈ موڈ چل گیا',hPick:'کتاب یا ترجمہ چنیں',hOpenRead:'مطالعے کے انداز میں پڑھیں'};
 const H_EN={hFind:'Find Hadith',hSearch:'Search',hBooks:'Books & Translations',hKitabs:'Books',hRead:'Reading Mode',hListen:'Listen',hTuhfa:'Sharh Tuhfat al-Muttaqin',hFilter:'Book name or number, or a hadith number',hResume:'Resume Hadith Reading',hNum:'Hadith number',hGo:'Open',hClose:'Close',hReadOn:'Reading mode on',hReadOff:'Card mode on',hPick:'Choose a book or translation',hOpenRead:'Read in reading mode'};
-Object.assign(I.ur,H_UR);Object.assign(I.en,H_EN);
+Object.assign(I.ur,H_UR,{hTrBooks:'مترجم کتب',hTrPick:'الجامع الکامل کی مترجم کتب'});Object.assign(I.en,H_EN,{hTrBooks:'Translated books',hTrPick:'Translated books of Al-Jami al-Kamil'});
+['ar','bn','hi','gu','fr'].forEach(k=>{I[k]=I[k]||{}});Object.assign(I.ar,{hTrBooks:'الكتب المترجمة',hTrPick:'الكتب المترجمة من الجامع الكامل'});Object.assign(I.bn,{hTrBooks:'অনূদিত বই',hTrPick:'আল-জামিউল কামিলের অনূদিত বই'});Object.assign(I.hi,{hTrBooks:'अनूदित किताबें',hTrPick:'अल-जामिउल कामिल की अनूदित किताबें'});Object.assign(I.gu,{hTrBooks:'અનુવાદિત કિતાબો',hTrPick:'અલ-જામિઉલ કામિલની અનુવાદિત કિતાબો'});Object.assign(I.fr,{hTrBooks:'Livres traduits',hTrPick:'Livres traduits d’Al-Jami al-Kamil'});
 const hTile=(ic,label,fn,href)=>el(href?'a':'button',{class:'tile',href:href||null,type:href?null:'button',on:fn?{click:fn}:null},el('span',{class:'tico'+(ic.startsWith('img:')?' im':'')},ic.startsWith('img:')?el('img',{src:'icons/'+ic.slice(4)+'.png',alt:'',width:56,height:56,loading:'lazy',decoding:'async'}):icon(ic)),el('span',{},label));
 function hTiles(){
   const g=el('div',{class:'tiles'});
-  g.append(hTile('img:find_ayah',T('hFind'),findHadith),hTile('img:search',T('hSearch'),null,'#/search'),hTile('img:hadith_search',T('hsTile'),null,'#/hs'),
+  g.append(hTile('img:find_ayah',T('hFind'),findHadith),
     // «Islam Question & Answer» is hidden for now (his request): the code stays, the tile is not shown (set SHOW_QA to true to bring it back)
     ...(window.SHOW_QA?[hTile('img:qa',T('qaTile'),null,'#/qa')]:[]),
-    hTile('img:saved_hadith',T('bm'),null,'#/bm'),hTile('img:hadith_books',T('hBooks'),pickBook),
+    hTile('img:saved_hadith',T('bm'),null,'#/bm'),hTile('img:hadith_books',T('hTrBooks'),pickBook),
     hTile('img:narrators',T('hKitabs'),()=>{switchBook(TL()?book:'jami');$('#q').value='';showHome();}),
     hTile('img:surahs',T('hRead'),()=>{HM.mode=HM.mode==='read'?'cards':'read';hsave();toast(T(HM.mode==='read'?'hReadOn':'hReadOff'));}),
-    hTile('img:tilawat_audio',T('hListen'),()=>LISTEN.settings()),hTile('img:tuhfa_sharh',T('hTuhfa'),()=>{$('#q').value='';switchBook('tuhfa');}));
+    hTile('img:tilawat_audio',T('hListen'),()=>LISTEN.settings()));
   return el('div',{class:'card pad0'},g);
 }
 function findHadith(){
@@ -1455,15 +1462,11 @@ function findHadith(){
 }
 async function pickBook(){
   const close=()=>{const x=document.querySelector('.sheetbg');if(x)x.remove();};
-  const rows=BOOKS.map(b=>{const r=el('input',{type:'radio',name:'bk',value:b.key});r.checked=b.key===book&&!/^#\/s\//.test(location.hash);
+  const tr=BOOKS.filter(b=>b.kind==='lang'),use=tr.length?tr:BOOKS;
+  const rows=use.map(b=>{const r=el('input',{type:'radio',name:'bk',value:b.key});r.checked=b.key===book&&!/^#\/s\//.test(location.hash);
     r.addEventListener('change',()=>{$('#q').value='';close();switchBook(b.key);if(location.hash!=='#/b')location.hash='#/b';});
     return el('label',{class:'srow chk'},r,el('span',{dir:'auto'},bookName(b)));});
-  rows.push(el('p',{class:'grp'},T('cBooks')));
-  const list=await COLL.list();
-  list.forEach(c=>{const r=el('input',{type:'radio',name:'bk',value:'c:'+c.key});r.checked=location.hash.startsWith('#/s/'+c.key);
-    r.addEventListener('change',()=>{close();location.hash='#/s/'+c.key;});
-    rows.push(el('label',{class:'srow chk'},r,el('span',{},COLL.name(c),el('small',{class:'cs'},'، '+c.count.toLocaleString('en-US')+'، '+c.langs.filter(l=>l!=='ar').map(l=>({ur:'اردو',en:'English',bn:'বাংলা',hi:'हिन्दी',gu:'ગુજરાતી',fr:'Français'})[l]).join('، ')))));});
-  sheet(T('hPick'),rows);
+  sheet(T('hTrPick'),rows);
 }
 function hResume(){
   let last=null;try{last=JSON.parse(localStorage.hlast||'null')}catch(e){}
@@ -1493,7 +1496,7 @@ async function showKitabs(){
   window.HBQ=window.HBQ||{};{const hk='k:'+book;f.value=window.HBQ[hk]||'';f.addEventListener('input',()=>{window.HBQ[hk]=f.value;});}
   f.addEventListener('input',draw);draw();
   f.addEventListener('keydown',e=>{if(e.key==='Enter'){const n=toNum(f.value);if(n!=null&&n>ks.length)location.hash='#/h/'+n;}});
-  box.append(hTiles(),el('div',{class:'card pad0 filterbox'},icon('search'),f),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',...jrRows(),list);
+  box.append(hTiles(),book==='jamik'?el('a',{class:'card srow2',href:'#/madkhal'},el('span',{class:'snum'},'٠'),el('span',{class:'sinfo'},el('span',{class:'ct ar',lang:'ar',dir:'rtl'},'المدخل إلى الجامع الكامل'),el('span',{class:'cs'},({ur:'کتاب کا مقدمہ',ar:'مقدمة الكتاب',bn:'তালখীস আল-জামি আল-কামিলের ভূমিকা',hi:'तल्ख़ीस अल-जामिउल कामिल की भूमिका',gu:'તલ્ખીસ અલ-જામિઉલ કામિલની પ્રસ્તાવના',fr:'Introduction à Talkhîs al-Jâmi‘ al-Kâmil'})[ui]||'Introduction to Talkhis al-Jami al-Kamil'))):'',...jrRows(),list);
   const r=hResume();if(r)box.append(r);
 }
 /* ---------- Hadith tab: list of all hadith books (like IslamOne) — number, name, count, Arabic name, resume icon ---------- */
@@ -1716,12 +1719,16 @@ async function showHome(){
   if(!q&&(book==='jami'||book==='jamik'||TL()))return showKitabs();
   box.replaceChildren();bar(curBookName(),'',false);if(!q)box.append(hTiles());
   const bk=encodeURIComponent(book);
+  const qn=q?toNum(q):null;let hasNum=false;
+  if(qn!=null&&qn>0&&(book==='jami'||book==='jamik'||TL())){box.append(numLink(qn));hasNum=true;}
+  else if(q&&(book==='jami'||book==='jamik'||TL())){try{const ks=await loadToc(),hit=ks.filter(k=>BQM(BQN(q),(k.en||'')+' '+(k.ar||''))).slice(0,6);
+    if(hit.length)box.append(...hit.map(k=>el('a',{class:'card srow2',href:'#/k/'+k.no},el('span',{class:'snum'},EN()?k.no:ad(k.no)),el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},EN()?k.en:k.ar),el('span',{class:'cs'},rng(kitNums(k))+'  ،  '+T('count')(k.count))))));}catch(e){}}
   const d=await api(q?'search?q='+encodeURIComponent(q)+'&book='+bk+'&mode='+HMODE():'list?limit=40&book='+bk);
   if(!q){box.append(el('p',{class:'note'},T('count')(d.total)));
     let shown=d.results.length;d.results.forEach(r=>box.append(row(r)));
     const more=el('button',{class:'btn more',type:'button',on:{click:async()=>{const x=await api('list?limit=40&offset='+shown+'&book='+bk);x.results.forEach(r=>box.insertBefore(row(r),more));shown+=x.results.length;if(shown>=d.total)more.remove();}}},T('more'));
     if(shown<d.total)box.append(more);return;}
-  if(!d.results.length){box.append(el('p',{class:'note'},T('none')));return;}
+  if(!d.results.length){if(!hasNum)box.append(el('p',{class:'note'},T('none')));return;}
   const total=d.total||d.results.length,n=x=>ui==='en'?x.toLocaleString('en-US'):NUM(x);
   box.append(el('div',{class:'qsbar'},el('span',{class:'cs'},T('results')+': '+n(total)),total>d.results.length?el('span',{class:'cs'},T('shownFirst')(n(d.results.length))):null));
   const PAGE=50;let shown=0;
@@ -1947,7 +1954,8 @@ function drLoad(num){const f=(window.TURATH_DATA&&TURATH_DATA.drfiles||[]).find(
   return DRL[f[2]]||(DRL[f[2]]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=f[2];s.onload=ok;s.onerror=()=>{delete DRL[f[2]];no();};document.head.append(s);}));}
 function sanadChips(texts){const seen=new Set(),chips=[];
   texts.forEach(t=>{const pt=String(t).replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');if(!/(?:حدثنا|أخبرنا|اخبرنا|حدثني|عن)\s/.test(pt))return;let sn=[];try{sn=COLL.sanad(pt)}catch(e){}if(sn.length<2)return;
-    sn.forEach(z=>{const nm=pt.slice(z.a,z.b).trim();if(!nm||seen.has(nm)||nm.split(/\s+/).length>6)return;seen.add(nm);chips.push(el('a',{class:'btn',lang:'ar',dir:'rtl',href:z.href},nm));});});
+    sn.forEach(z=>{const nm=pt.slice(z.a,z.b).trim();if(!nm||seen.has(nm)||nm.split(/\s+/).length>6)return;seen.add(nm);const c=el('a',{class:'btn',lang:'ar',dir:'rtl',href:z.href},nm);c._sn=z;chips.push(c);});});
+  if(chips.length&&window.NAR&&NAR.linkChips)NAR.linkChips(null,0,chips.map(c=>c.textContent),chips);
   return chips.length?el('details',{class:'rjsanad'},el('summary',{},'رواة السند ('+chips.length+')'),el('p',{class:'cs'},'اضغط على الاسم'),el('div',{class:'chips'},...chips.slice(0,40))):null;}
 function drBlock(d){const det=el('details',{class:'dirasa'}),sum=el('summary',{},el('span',{class:'ar',lang:'ar'},'مفصل دراسة الحديث'),EN()?el('small',{class:'ltr'},' — Detailed Study of the Hadith'):''),body=el('div',{class:'drbody ar',lang:'ar',dir:'rtl'});
   det.append(sum,body);let done=false;
@@ -4726,10 +4734,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const rjx = RJ_STRUCT.includes(b.key) ? rjParse(d.matn[0] || '') : null;
     if (rjx) c.append(rjBlock(rjx));
     else if (arParas.length) c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar'))));
-    if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail' && b.key !== 'hifzhadith') { const sn = sanadNames(arParas.join(' '));
-      if (sn.length > 1) { const chipEls = sn.map((x, i) => el('a', {class: 'btn', lang: 'ar', dir: 'rtl', href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))}, x.d));
-        c.append(el('details', {class: 'rjsanad'}, el('summary', {}, rt('sanad') + ' (' + fmtN(sn.length) + ')'), el('p', {class: 'cs'}, rt('sanadHint')), el('div', {class: 'chips'}, ...chipEls)));
-        if (window.NAR && NAR.linkChips) NAR.linkChips(b.key, n, sn.map(x => x.q), chipEls); } }
+    // the narrators of the isnad are coloured names inside the text (companions in green); a tap opens the narrator in the encyclopedia
+    if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail' && b.key !== 'hifzhadith') { const mtEl = c.querySelector('.mt.ar'); if (mtEl) { try { linkSanadDom(mtEl, {refs: [{key: b.key, n, number: n}]}); } catch (e) {} } }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
@@ -5488,23 +5494,82 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // names near the narrator (his neighbours in the isnad, or the narrator whose page we come from) tell the same name of two narrators apart
   const rjCtx = arr => { const c = arr.map(q => String(q).split(' ').slice(0, 4).join(' ')).filter(q => q.split(' ').length >= 2); return c.length ? '&c=' + encodeURIComponent(c.join('|')) : ''; };
   const TSH = /[\u064b-\u0652\u0670\u0640]/;
-  function sanadNames(txt) {
-    const map = []; let s = '';
-    for (let i = 0; i < txt.length; i++) if (!TSH.test(txt[i])) { map.push(i); s += txt[i]; }
-    const e = s.search(/(?:قال|يقول|سمعت|ان|أن|عن)\s+(?:رسول\s+الله|النبي|نبي\s+الله)|ﷺ|صلى\s+الله\s+عليه|\s:\s*["«“]/);
-    let sn = e > 0 ? s.slice(0, e) : s.slice(0, 350); if (sn.length > 700) sn = sn.slice(0, 700);
-    if (!/(?:حدثنا|حدثني|اخبرنا|أخبرنا|اخبرني|أخبرني|انبانا|أنبأنا|ثنا|عن)\s/.test(sn)) return [];
-    const out = [], seen = new Set(), SEP = /(?:^|[\s،,.:؛])(?:و|ف)?(?:حدثنا|حدثني|أخبرنا|اخبرنا|أخبرني|اخبرني|أنبأنا|انبانا|أنبأني|أنا|ثنا|نا|حدثناه|أخبرناه|عن|قال|قالا|قالوا|قالت|سمعت|يقول|يعني|ح|أنه|انه|أنها|انها|أن|ان|هو|جميعا|كلاهما|كلهم|في|عنه|عنها)(?=[\s،,.:؛]|$)|\s[-–ـ]+(?=\s)|[،,](?=\s)/g;
-    let last = 0, m; const cut = (a, b) => {
-      let nm = sn.slice(a, b).replace(/\s*[-–ـ]?\s*(?:رضي|رضى)\s+الله\s+(?:تعالى\s+)?عن(?:ه|ها|هما|هم)\s*[-–ـ]?/g, '').replace(/^(?:رواه|رووه)\s+/, '').replace(/^[\s،,.:؛]+|[\s،,.:؛]+$/g, '').replace(/^(?:و|ف)(?=\S+\s)/, '');
-      const w = nm.split(/\s+/).length; if (out.stop) return; if (/(?:^|\s)(?:كنت|كان|كانت|اراد|أراد|ارادت|أرادت|ذكر|ذكرت|يدخل|فزعمت|فذكرت|رأيت|رايت|دخلت|خرجت|نزلت|مررت|قلت|اخبرته|أخبرته)(?:\s|$)/.test(nm) || w > 7) { out.stop = 1; return; } if (nm.length < 3 || w > 8 || /^(?:كان|ما|لا|من|ثم|إذا|اذا|هذا|هذه|في|به|بمثله)\s/.test(nm) || /[0-9٠-٩]/.test(nm)) return;
-      const key = rnorm(nm); if (!key || seen.has(key)) return; if (/(?:^| )(?:النبي|رسول|نبي)(?: |$)/.test(key)) { out.stop = 1; return; } if (/^(?:لي|له|لنا|لها)( |$)/.test(key)) return; seen.add(key);
-      const A0 = map[a + (sn.slice(a, b).length - sn.slice(a, b).trimStart().length)] ?? 0, B0 = (map[Math.min(b, map.length) - 1] ?? txt.length - 1) + 1; out.push({d: txt.slice(A0, B0).replace(/^[\s،,.:؛]+|[\s،,.:؛]+$/g, ''), q: key, a: A0, b: B0});
-    };
-    while ((m = SEP.exec(sn))) { if (m.index > last) cut(last, m.index); last = m.index + m[0].length; }
-    if (last < sn.length) cut(last, sn.length);
-    return out.slice(0, 12);
+  /* isnad parser: names are the runs of words between the words of transmission; «أبيه / جده» are relations to the narrator before; «رجل / شيخ» are unnamed */
+  const SN_SDIA=/[ً-ْٰـ‌‍ۖ-ۭ]/g;
+  const SNnz=s=>String(s).replace(SN_SDIA,'').replace(/[أإآٱ]/g,'ا').replace(/[ىیی]/g,'ي').replace(/ة/g,'ه').replace(/ک/g,'ك').replace(/ؤ/g,'و').replace(/ئ/g,'ي').replace(/ء/g,'');
+  const SN_VERB=/^(?:و|ف)?(?:حدثن[اي]|حدثناه|حدثنيه|حدثتن[اي]|حدثته|حدثتها|حدثهم|حدثه|حدثكم|اخبرن[اي]|اخبرناه|اخبرنيه|اخبرتن[اي]|اخبره|اخبرهم|اخبرتني|انبان[اي]|انبانيه|انبا|نبانا|انبانا|ثنا|نا|انا|ان?بانا|اخبرنا|حدثنا|حدثني|سمعت|سمعنا|سمع|يحدث|يحدثنا|حدث|اخبر|ذكر|ذكره|قراه|قرات|قرايت|وقراه|كتب|كتبت|كتبا?|حدثناهم)$/;
+  const SN_CONN=new Set(['عن','قال','قالا','قالوا','قالت','قلت','يقول','يقولان','يعني','ح','ان','انه','انها','انهم','كلاهما','جميعا','هو','في','وهو','وعن','كلهم','كلاهم','جميعهم','وقال','فقال','قالتا','ومن']);
+  const SN_REL={'ابيه':'f','ابيها':'f','ابيهم':'f','ابوه':'f','جده':'g','جدها':'g','جدهم':'g','امه':'m','امها':'m','عمه':'u','خاله':'k','اخيه':'b','اخته':'s','عمته':'a','خالته':'a','ابنه':'c','ابنها':'c','ابنتها':'c'};
+  const SN_MUB=/^(?:رجل|رجلين|شيخ|امراه|بعض|احد|اهل|رجال|فلان|ناس|جاره|مولي|رجلا|شيخا)$/;
+  const SN_ENDW=new Set(['وهذا','هذا','لفظ','ولفظ','واللفظ','اللفظ','مثله','نحوه','بنحوه','بمثله','بمعني','بمعناه','ومثله','وحديث','بحديث','وفي','بنحو','بمثل','وغيرهما','وغيره','وغيرهم','مثل','نحو','بنحوه','بنحوها']);
+  const SN_HEADW=new Set(['زوج','زوجه','صاحب','خادم','حاجب','كاتب','ربيب','خال','عم','مولي']);
+  const SN_WAWNAMES=new Set(['وكيع','وهب','وائل','ورقاء','وهيب','واصل','وبره','وعله','وراد','وبر','ورد','واقد','وابصه','وثيمه','وردان','وقاص']);
+  const SN_STOPW=new Set(['كان','كانا','كانوا','كانت','يكون','ثم','او','ولم','الي','ما','لا','لم','قد','قام','فقام','رد','استاذن','اتي','اتيت','انطلق','فاتي','دخل','خرج','راي','رايت','سال','سالت','سالنا','اذا','لما','لو','مع','عند','به','بها','له','لها','فيه','عليه','اليه','لي','لنا','قول','اني','ام?','هل','كيف','اين','اما','انما','ايها','يا','اللهم','والله','فان','فاذا','ثنا?','انه?','فلا','فما','حتي','حين','يوم','بعد','قبل','وقد','وما','ولا','وان','وكان','فكان','وكانت','فكانت','يصلي','صليت','دعا','توضا','ساله','سالته','فقلت','وقلت','اتيناه','دخلنا','خرجنا','مررت','كنا','كنت','نهي','امر','امرنا','نهانا','رخص','سئل','سيل','حدثه','ذكر','ذكره']);
+  const SN_MUBW=new Set(['رجل','بعض','امراه','شيخ','احد','رجال','ناس','اهل','مولي']);
+  const SN_STOPSTART=new Set(['رسول','النبي','نبي','ﷺ','صلي','الله','ربه']);
+  function SN_tokens(txt){const out=[];const re=/[ء-ْٰٱیکھہۓ]+/g;let m;while((m=re.exec(txt))){{const r=SNnz(m[0]);out.push({w:m[0],r,n:r.replace(/^(?:ابي|ابا)$/,'ابو').replace(/^ابن$/,'بن'),a:m.index,b:m.index+m[0].length});}}
+    for(let i=0;i<out.length;i++){const gap=txt.slice(i?out[i-1].b:0,out[i].a);out[i].gap=gap;}return out;}
+  const SN_isVerb=t=>t&&SN_VERB.test(t.n);
+  function SN_parse(txt){
+    const T=SN_tokens(txt);if(T.length<3)return [];
+    const lead=T.slice(0,6);if(!lead.some(t=>SN_isVerb(t)||t.n==='عن'||/^و?عن$/.test(t.n)))return [];
+    // the matn starts at the first mention of the Messenger after a verb of saying / «ان»; never later than 420 characters of SN_tokens
+    const out=[];let i=0,started=false,stop=false;
+    const take=(from,to)=>{ // SN_tokens from..to-1 are one name
+      let ws=T.slice(from,to);
+      const h=ws.findIndex(t=>t.n==='رضي'||t.n==='رضا'||t.n==='صلي'||SN_ENDW.has(t.n));if(h>=0)ws=ws.slice(0,h);
+      const nb=ws.findIndex(t=>t.n==='النبي'||t.n==='رسول'||t.n==='نبي');if(nb>=0){const j=nb>0&&SN_HEADW.has(ws[nb-1].n)?nb-1:nb;ws=ws.slice(0,j);}
+      // trailing / leading helper words
+      while(ws.length&&['و','ف','عنه','عنها','عنهما'].includes(ws[0].n))ws=ws.slice(1);
+      if(!ws.length)return null;
+      if(ws.length>9)return {bad:1};
+      let selfFather=ws.length===1&&ws[0].r==='ابي';
+      if(ws.length>1&&SN_REL[ws[0].n])ws=ws.slice(1);
+      const k=ws.map(t=>t.n).join(' ');
+      return {ws,k,selfFather};};
+    let cur=-1;      // start index of the name being collected
+    const flush=(end)=>{ if(cur<0)return; const from=cur;cur=-1;
+      // several names joined by commas and «و» : «هشام بن عبد الملك، والحجاج بن منهال»
+      const cuts=[from];for(let j=from+1;j<end;j++){const t=T[j],cm=/[،,]/.test(t.gap),wa=/^و/.test(t.n)&&!SN_WAWNAMES.has(t.n)&&t.n.length>3;
+        if(wa)cuts.push(j);}
+      if(cuts.length>1){cuts.forEach((c,ix)=>flush1(c,ix+1<cuts.length?cuts[ix+1]:end));return;}
+      flush1(from,end);};
+    const flush1=(from,end)=>{ const r=take(from,end);if(!r)return; if(r.bad){stop=true;return;}
+      const {ws,k,selfFather}=r;const first=ws[0].n;
+      if(SN_STOPSTART.has(first)||/^(?:كنت|كان|كانت|قلت|رايت|دخلت|خرجت|اراد|ارادت|ذكر|فذكر|اتيت|اتي|ما|لا|من|ثم|اذا|هذا|هذه|به|بمثله|نحوه|مثله|انه)$/.test(first)){stop=true;return;}
+      if(ws.some(t=>/\d|[٠-٩]/.test(t.w)))return;
+      const prev=out[out.length-1];
+      let A=ws[0].a;if(/^و/.test(ws[0].n)&&!SN_WAWNAMES.has(ws[0].n)&&ws[0].n.length>3){const m=/^[\u0648][\u064b-\u0652\u0670]*/.exec(ws[0].w);if(m)A+=m[0].length;}
+      out.push({a:A,b:ws[ws.length-1].b,k:(A!==ws[0].a?k.slice(1):k),ws:ws.length,rel:selfFather?'f':SN_REL[k]||(ws.length<=2&&SN_MUB.test(first)&&!/ابن|بن|ابو|عبد/.test(k)?'?':0),verbBefore:T[Math.max(0,T.indexOf(ws[0])-1)]?.n});};
+    for(i=0;i<T.length&&!stop;i++){
+      const t=T[i];
+      if(SN_isVerb(t)){flush(i);started=true;continue;}
+      if(t.n==='عن'||t.n==='وعن'||(t.n==='ح'&&T[i+1])){flush(i);started=true;continue;}
+      if(t.n==='يعني'){flush(i);const prev=out[out.length-1];// the explanation joins the previous name
+        let j=i+1;while(j<T.length&&!SN_isVerb(T[j])&&!SN_CONN.has(T[j].n)&&j-i<7)j++;
+        const ws=T.slice(i+1,j);if(prev&&ws.length&&!SN_STOPSTART.has(ws[0].n)){prev.k+=' '+ws.map(x=>x.n).join(' ');prev.b=ws[ws.length-1].b;prev.ws+=ws.length;i=j-1;}continue;}
+      if(['قال','قالا','قالوا','قالت','قلت','يقول','يقولان','وقال','فقال','قالتا','فقالت'].includes(t.n)){flush(i);
+        const nx=T[i+1];
+        if(!nx||!(SN_isVerb(nx)||nx.n==='عن')){stop=true;} started=true;continue;}
+      if(['ان','انه','انها','انهم'].includes(t.n)){flush(i);
+        const nx=T[i+1];if(!nx||SN_STOPSTART.has(nx.n)||!started){stop=true;}else if(!SN_isVerb(nx)&&nx.n!=='عن'){ // «ان فلانا قال» : a name may follow
+          }
+        continue;}
+      if(['كلاهما','جميعا','كلهم','كلاهم','جميعهم','هو','وهو','في','حديثه','حديث','بمعني','بمعناه','بنحوه','بمثله'].includes(t.n)){flush(i);continue;}
+      if(/^(?:صلي|ﷺ)$/.test(t.n)){flush(i);stop=true;continue;}
+      // an ordinary word: part of a name when we are inside the isnad
+      if(!started){stop=true;break;}
+      if(SN_STOPW.has(t.n)||(t.n==='من'&&!(cur>=0&&SN_MUBW.has(T[cur].n)))||/[﴿\[\]()]/.test(t.gap.slice(0,3))&&cur>=0&&i>cur){flush(i);stop=true;break;}
+      if(cur<0)cur=i;
+      // a punctuation (full stop / quote / colon) inside the run ends it when the next word is not part of a name
+      const g=T[i+1]?T[i+1].gap:'';if(/[:«"“]/.test(g)&&!(T[i+1]&&(SN_isVerb(T[i+1])||T[i+1].n==='عن'))){flush(i+1);stop=true;}
+      if(i>60&&out.length>=1&&!SN_isVerb(t)){}
+    }
+    if(!stop&&cur>=0)flush(T.length);
+    // the last name before the matn (the companion) is the one before «قال»: kept
+    return out.slice(0,14).map(x=>({d:txt.slice(x.a,x.b),q:x.k,a:x.a,b:x.b,rel:x.rel||0}));
   }
+  function sanadNames(txt) { try { return SN_parse(String(txt)); } catch (e) { return []; } }
 
   // ===== A biography of a narrator, arranged: header (name, books he narrates in), teachers, students, sayings of the imams on him =====
   const RJS = {'خ': 'البخاري', 'م': 'مسلم', 'د': 'أبو داود', 'ت': 'الترمذي', 'س': 'النسائي', 'ق': 'ابن ماجه', 'ع': 'الستة', '٤': 'السنن الأربعة', '4': 'السنن الأربعة', 'بخ': 'الأدب المفرد', 'خت': 'البخاري تعليقاً', 'تم': 'الشمائل', 'سي': 'عمل اليوم والليلة', 'مق': 'مقدمة مسلم', 'مد': 'المراسيل', 'قد': 'القدر', 'ر': 'رفع اليدين', 'ي': 'القراءة خلف الإمام', 'عخ': 'خلق أفعال العباد'};
@@ -5931,7 +5996,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }
       return null;
     },
-    sanad: txt => { const sn = sanadNames(txt); return sn.map((x, i) => ({a: x.a, b: x.b, href: '#/s/rijal?q=' + encodeURIComponent(x.q) + rjCtx([sn[i - 1], sn[i + 1]].filter(Boolean).map(y => y.q))})); },
+    sanad: txt => sanadNames(txt).map(x => ({a: x.a, b: x.b, q: x.q, rel: x.rel, href: '#/n/0'})),
     loaded: () => !!C.idx,
     ready: async () => { await index(); },
     has: k => ['bukhari', 'muslim', 'abudawud', 'tirmidhi', 'nasai', 'ibnmajah', 'malik', 'hakim'].includes(k) || !!bookOf(k),
@@ -6120,19 +6185,59 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     await render(main, others, box);
   }
 
+  /* the compare page: pick a book (by name), then the hadith number; the books gather in one box and the numbers in the other; one hadith is the main one; then compare */
+  Object.assign(I.ur, {cmpBook: 'کتاب کا نام لکھیں', cmpNum: 'حدیث نمبر', cmpAddBtn: 'شامل کریں', cmpBooksBox: 'کتب', cmpNumsBox: 'حدیث نمبر', cmpGo: 'موازنہ کریں', cmpNeed2: 'موازنہ کے لیے کم از کم دو احادیث چنیں۔', cmpPickBook: 'پہلے فہرست میں سے کتاب چنیں۔', cmpNoNum: 'یہ نمبر اس کتاب میں نہیں ملا۔', cmpMainIs: 'مرکزی', cmpHelp: 'کتاب چنیں، پھر حدیث نمبر لکھ کر «شامل کریں» دبائیں۔ جتنی چاہیں احادیث جمع کریں؛ ایک حدیث مرکزی ہو گی جس سے باقی کا موازنہ ہو گا۔', cmpTotal: n => 'چنی ہوئی احادیث: ' + n, cmpUn: 'نکالیں', cmpMainTip: 'اسے مرکزی بنائیں'});
+  Object.assign(I.en, {cmpBook: 'Type the book name', cmpNum: 'Hadith number', cmpAddBtn: 'Add', cmpBooksBox: 'Books', cmpNumsBox: 'Hadith numbers', cmpGo: 'Compare', cmpNeed2: 'Choose at least two hadith to compare.', cmpPickBook: 'First choose a book from the list.', cmpNoNum: 'This number is not in that book.', cmpMainIs: 'Main', cmpHelp: 'Choose a book, type the hadith number and tap Add. Collect as many as you like; one hadith is the main one and the others are compared with it.', cmpTotal: n => 'Chosen hadith: ' + n, cmpUn: 'Remove', cmpMainTip: 'Make it the main hadith'});
+  Object.assign(I.ar || (I.ar = {}), {cmpBook: 'اكتب اسم الكتاب', cmpNum: 'رقم الحديث', cmpAddBtn: 'أضف', cmpBooksBox: 'الكتب', cmpNumsBox: 'أرقام الأحاديث', cmpGo: 'قارن', cmpNeed2: 'اختر حديثين على الأقل للمقارنة.', cmpPickBook: 'اختر الكتاب من القائمة أولًا.', cmpNoNum: 'هذا الرقم غير موجود في هذا الكتاب.', cmpMainIs: 'الأساسي', cmpHelp: 'اختر كتابًا ثم اكتب رقم الحديث واضغط «أضف». اجمع ما شئت؛ حديث واحد أساسي تُقارن به البقية.', cmpTotal: n => 'الأحاديث المختارة: ' + n, cmpUn: 'إزالة', cmpMainTip: 'اجعله الأساسي'});
   async function showList() {
-    bar(T('cmpTitle'), T('cmpMy'), true);
-    const box = $('#list'); box.replaceChildren();
-    let a = load();
-    if (!a.length) { box.append(el('p', {class: 'note'}, T('cmpEmpty'))); return; }
-    box.append(el('p', {class: 'note'}, T('loading')));
-    const items = await Promise.all(a.map(x => getItem(x).then(v => v && Object.assign(v, {_it: x})).catch(() => null)));
-    box.replaceChildren(el('div', {class: 'gsbar'}, el('button', {class: 'chip', type: 'button', on: {click: () => { save([]); showList(); }}}, T('cmpClear'))));
-    const ok = items.filter(Boolean); if (!ok.length) { box.append(el('p', {class: 'note'}, T('cmpEmpty'))); return; }
-    const controls = x => el('div', {class: 'acts'},
-      x === ok[0] ? '' : el('button', {class: 'chip', type: 'button', on: {click: () => { save([x._it].concat(load().filter(y => !same(y, x._it)))); showList(); }}}, T('cmpMakeMain')),
-      el('button', {class: 'chip', type: 'button', on: {click: () => { save(load().filter(y => !same(y, x._it))); showList(); }}}, T('cmpRemove')));
-    await render(ok[0], ok.slice(1), box, controls);
+    bar(T('cmp'), '', true);
+    const box = $('#list'); box.replaceChildren(el('p', {class: 'note'}, T('loading')));
+    let cols = [];
+    try { cols = await COLL.list(); } catch (e) {}
+    const books = [{k: 'jami', name: T('jamiName')}].concat(cols.map(c => ({k: c.key, name: COLL.name(c)})));
+    const nameOf = k => (books.find(b => b.k === k) || {name: k}).name;
+    let cur = null;
+    const bi = el('input', {type: 'search', class: 'filter', placeholder: T('cmpBook'), 'aria-label': T('cmpBook'), autocomplete: 'off'}),
+      ni = el('input', {type: 'text', inputmode: 'numeric', class: 'filter', placeholder: T('cmpNum'), 'aria-label': T('cmpNum'), autocomplete: 'off'}),
+      sug = el('div', {class: 'cmpsug'}), sel = el('div'), res = el('div'), msg = el('p', {class: 'note', hidden: true});
+    const say = t => { msg.textContent = t; msg.hidden = !t; };
+    const drawSug = () => {
+      const q = bi.value.trim(); sug.replaceChildren();
+      if (!q || (cur && cur.name === q)) return;
+      books.filter(b => BQM(q, b.name)).slice(0, 8).forEach(b => sug.append(el('button', {type: 'button', class: 'cmpsb', on: {click: () => { cur = b; bi.value = b.name; sug.replaceChildren(); ni.focus(); say(''); }}}, b.name)));
+    };
+    bi.addEventListener('input', () => { cur = null; drawSug(); });
+    const addItem = async () => {
+      say(''); const raw = ni.value.trim(), n = toNum(raw);
+      if (!cur) { say(T('cmpPickBook')); return; } if (!n) { say(T('cmpNoNum')); return; }
+      const it = cur.k === 'jami' ? {k: 'jami', n} : {k: cur.k, p: n};
+      let ok = null; try { ok = await getItem(it); } catch (e) {}
+      if (!ok || (!ok.text && !ok.ext)) { say(T('cmpNoNum')); return; }
+      const a = load(); if (!a.some(x => same(x, it))) a.push(it); save(a); ni.value = ''; draw();
+    };
+    ni.addEventListener('keydown', e => { if (e.key === 'Enter') addItem(); });
+    const go = el('button', {type: 'button', class: 'btn lbtn', on: {click: () => compare()}}, T('cmpGo')), addb = el('button', {type: 'button', class: 'btn', on: {click: addItem}}, T('cmpAddBtn'));
+    const draw = () => {
+      const a = load(); res.replaceChildren();
+      const row = (x, i) => [
+        el('div', {class: 'cmpcell' + (i === 0 ? ' main' : ''), on: {click: () => { if (i) { save([x].concat(a.filter(y => !same(y, x)))); draw(); } }}, title: i ? T('cmpMainTip') : ''},
+          el('span', {class: 'cmpstar'}, i === 0 ? '★' : '☆'), el('span', {}, nameOf(x.k))),
+        el('div', {class: 'cmpcell' + (i === 0 ? ' main' : '')}, el('span', {class: 'cmpnum'}, N(x.p || x.n)), el('button', {type: 'button', class: 'cmpx', 'aria-label': T('cmpUn'), title: T('cmpUn'), on: {click: () => { save(a.filter(y => !same(y, x))); draw(); }}}, '✕'))];
+      const L = el('div', {class: 'cmpbox'}, el('h4', {}, T('cmpBooksBox'))), R = el('div', {class: 'cmpbox'}, el('h4', {}, T('cmpNumsBox')));
+      a.forEach((x, i) => { const [l, r] = row(x, i); L.append(l); R.append(r); });
+      sel.replaceChildren(el('div', {class: 'cmpcols'}, L, R), a.length ? el('p', {class: 'cs'}, T('cmpTotal')(N(a.length)) + ' — ★ ' + T('cmpMainIs')) : '');
+      go.hidden = !a.length;
+    };
+    const compare = async () => {
+      const a = load(); if (a.length < 2) { say(T('cmpNeed2')); return; } say('');
+      res.replaceChildren(el('p', {class: 'note'}, T('loading')));
+      const items = await Promise.all(a.map(x => getItem(x).then(v => v && Object.assign(v, {_it: x})).catch(() => null)));
+      const ok = items.filter(Boolean); res.replaceChildren(); if (ok.length < 2) { say(T('cmpNeed2')); return; }
+      await render(ok[0], ok.slice(1), res);
+      res.scrollIntoView({behavior: 'smooth', block: 'start'});
+    };
+    box.replaceChildren(el('p', {class: 'note'}, T('cmpHelp')), el('div', {class: 'card pad cmpform'}, bi, sug, ni, addb), msg, sel, el('div', {class: 'cmpgo'}, go), res);
+    draw();
   }
 
   window.CMP = {
@@ -9937,17 +10042,81 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     if (!cchLoaded[url]) cchLoaded[url] = (cchain = cchain.then(() => new Promise(ok => { const sc = document.createElement('script'); sc.src = url; window.CCH = d => ok(d); sc.onload = () => sc.remove(); sc.onerror = () => ok({}); document.head.append(sc); })));
     return ((await cchLoaded[url])[n]) || null;
   }
+  /* narrators written in an isnad: first the chain known from the library book (exact), then the written name against the register of narrators (all words of the name must be in the narrator's name, nickname or kunya);
+     «عن أبيه / جده» is taken from the name of the narrator before; an unnamed one («رجل», «شيخ») is never guessed */
+  let NTOK = null;
+  const dal = w => w.length > 4 ? w.replace(/^ال/, '') : w, tkn = s => tk2(s).filter(w => w !== 'بن').map(dal);
+  function ntoks() { if (!NTOK) NTOK = IDX.d.map(r => [r[1], r[2], r[3]].map(x => x ? tkn(x) : []).filter(v => v.length)); return NTOK; }
+  function findName(q) {
+    const Q = tkn(q); if (!Q.length) return []; const T = ntoks(), out = [];
+    for (let i = 0; i < T.length; i++) { let best = 0; for (const V of T[i]) { if (!Q.every(w => V.includes(w))) continue; const sc = Q.length / V.length; if (sc > best) best = sc; } if (best) out.push([best, IDX.d[i][8] || 0, IDX.d[i]]); }
+    // a long name is told by how close the narrator's name is; a short one («عمرو», «مالك») by who narrates most under that name
+    if (Q.length >= 3) out.sort((x, y) => y[0] - x[0] || y[1] - x[1]); else out.sort((x, y) => y[1] - x[1] || y[0] - x[0]);
+    return out.map(x => x[2]);
+  }
+  // namesakes: the one who has the neighbour in the chain among his teachers / students comes first
+  async function rerank(c, nextRow, prevRow) {
+    if (c.length < 2 || (!nextRow && !prevRow)) return c; const top = c.slice(0, 12), sc = [];
+    for (const r of top) { let s = 0; try { const d = (await chunk(r[0]))[r[0]]; if (nextRow && (d[10] || []).includes(nextRow[0])) s += 2; if (prevRow && (d[11] || []).includes(prevRow[0])) s += 2; } catch (e) {} sc.push(s); }
+    return top.map((r, i) => [r, sc[i], i]).sort((a, b) => b[1] - a[1] || a[2] - b[2]).map(x => x[0]).concat(c.slice(12));
+  }
+  const isSahabi = r => r[4] === 1 || /^صحابي/.test(rank(r));
+  // the name of a relative from the full name of the narrator: «هشام بن عروة بن الزبير» → father «عروة بن الزبير», grandfather «الزبير …»
+  function kinQuery(fullName, rel) {
+    const parts = nrm(fullName).split(/\s+(?:بن|ابن)\s+/).filter(Boolean), k = rel === 'g' ? 2 : 1;
+    if (parts.length <= k) return ''; return parts.slice(k, k + 2).join(' بن ');
+  }
+  const NM = {
+    ur: {mub: 'مبہم راوی', mubT: n => 'سند میں «' + n + '» آیا ہے، اس کا نام بیان نہیں ہوا۔ ہم اندازے سے کوئی نام نہیں لگاتے۔', kin: 'راوی کا رشتہ دار', kinT: n => 'سند میں «' + n + '» سے راوی کا رشتہ دار مراد ہے اور اس کا نام یہاں بیان نہیں ہوا۔', none: 'راوی نہیں ملا', noneT: n => '«' + n + '» ہمارے راویوں کے ذخیرے میں نہیں ملا۔', fk: 'والد / دادا کی شناخت نہیں ہو سکی', fkT: 'پچھلے راوی کے نام سے والد کا نام نہیں نکل سکا، اس لیے اندازہ نہیں لگایا۔', alts: 'اس نام کے دوسرے راوی', same: 'ہم نام راوی'},
+    ar: {mub: 'راوٍ مبهم', mubT: n => 'ورد في السند «' + n + '» ولم يُذكر اسمه، ولا نخمّن اسمه.', kin: 'قريب الراوي', kinT: n => 'المراد بـ«' + n + '» قريب للراوي ولم يُسمَّ هنا.', none: 'لم نجد الراوي', noneT: n => 'لم نجد «' + n + '» في سجل الرواة.', fk: 'تعذّر تعيين الأب أو الجد', fkT: 'لم نستخرج اسم الأب من اسم الراوي السابق، فلم نخمّن.', alts: 'رواة آخرون بهذا الاسم', same: 'رواة بنفس الاسم'},
+    en: {mub: 'Unnamed narrator', mubT: n => 'The chain says «' + n + '» and does not name him. We do not guess a name.', kin: 'A relative of the narrator', kinT: n => '«' + n + '» means a relative of the narrator whose name is not given here.', none: 'Narrator not found', noneT: n => '«' + n + '» is not in our register of narrators.', fk: 'Father / grandfather not identified', fkT: 'The father’s name could not be taken from the previous narrator’s name, so nothing is guessed.', alts: 'Other narrators with this name', same: 'Same-name narrators'}
+  };
+  const NMT = () => NM[ui] || NM.en;
   async function linkChips(key, n, names, els) {
     try {
-      const ids = await chainIds(key, n); if (!ids || !ids.length) return; await idx();
-      const cand = ids.map(i => MAP.get(i)).filter(Boolean).map(r => ({r, v: [tk2(r[1]), tk2(r[2]), tk2(r[3])].filter(x => x.length)})), used = new Set();
-      names.forEach((q, i) => {
-        const Q = tk2(q); if (!Q.length) return; let best = null, bs = 0;
-        cand.forEach(c => { if (used.has(c.r[0])) return; c.v.forEach(V => { const com = Q.filter(w => V.includes(w)).length; if (!com) return; const sc = com / Q.length + .3 * com / V.length; if (com / Q.length >= .6 && sc > bs) { bs = sc; best = c.r[0]; } }); });
-        if (best) { used.add(best); els[i].href = '#/n/' + best; els[i].classList.add('nmatch'); }
-      });
+      await idx(); const res = new Array(els.length).fill(null), used = new Set();
+      const ids = key && n ? await chainIds(key, n) : null;
+      if (ids && ids.length) {
+        const cand = ids.map(i => MAP.get(i)).filter(Boolean).map(r => ({r, v: [tk2(r[1]), tk2(r[2]), tk2(r[3])].filter(x => x.length)}));
+        names.forEach((q, i) => {
+          const z = els[i] && els[i]._sn; if (z && z.rel) return;
+          const Q = tk2((z && z.q) || q); if (!Q.length) return; let best = null, bs = 0;
+          cand.forEach(c => { if (used.has(c.r[0])) return; c.v.forEach(V => { const com = Q.filter(w => V.includes(w)).length; if (!com) return; const sc = com / Q.length + .3 * com / V.length; if (com / Q.length >= .6 && sc > bs) { bs = sc; best = c.r; } }); });
+          if (best) { used.add(best[0]); res[i] = best; }
+        });
+      }
+      const zOf = i => els[i] && els[i]._sn;
+      // pass 1, from the companion backwards: ordinary names (the teacher next to the name helps to tell namesakes apart)
+      for (let i = els.length - 1; i >= 0; i--) {
+        const z = zOf(i), e = els[i]; if (!e || res[i] || (z && z.rel)) continue;
+        let c = findName(z ? z.q : names[i]);
+        if (c.length) { c = await rerank(c, res[i + 1] || null, res[i - 1] || null); res[i] = c[0]; e._alts = c.slice(1, 7); } else e._msg = [NMT().none, NMT().noneT(e.textContent)];
+      }
+      // pass 2, forwards: «أبيه / جده» from the name of the narrator before, unnamed ones and other relatives
+      for (let i = 0; i < els.length; i++) {
+        const z = zOf(i), e = els[i]; if (!e || res[i] || !z || !z.rel) continue;
+        if (z.rel === 'f' || z.rel === 'g') {
+          const prev = res[i - 1], pq = prev ? prev[1] : (zOf(i - 1) ? zOf(i - 1).q : '');
+          const q = pq ? kinQuery(pq, z.rel) : ''; let c = q ? findName(q) : [];
+          if (c.length) { c = await rerank(c, res[i + 1] || null, prev || null); res[i] = c[0]; e._alts = c.slice(1, 4); } else e._msg = [NMT().fk, NMT().fkT];
+        } else if (z.rel === '?') { e._msg = [NMT().mub, NMT().mubT(e.textContent)]; e.classList.add('mubham'); }
+        else e._msg = [NMT().kin, NMT().kinT(e.textContent)];
+      }
+      els.forEach((e, i) => { const r = res[i]; if (!e) return; if (r) { e.setAttribute('href', '#/n/' + r[0]); e.classList.add('nmatch'); if (isSahabi(r)) e.classList.add('sahabi'); e._row = r; } });
     } catch (e) {}
   }
+  /* a tap on a narrator of an isnad: his page opens in the window over the hadith; an unnamed / unknown one gets a short, honest note */
+  function openName(a) {
+    const id = a._row ? a._row[0] : 0;
+    if (id) return openSheet(id, a._alts);
+    const m = a._msg || [NMT().none, NMT().noneT(a.textContent)];
+    window.sheet(m[0], [el('p', {class: 'ar', lang: 'ar', dir: 'rtl', style: 'font-size:1.1rem'}, a.textContent), el('p', {}, m[1]), ...(a._alts && a._alts.length ? [el('h4', {}, NMT().alts), ...a._alts.map(r => el('a', {class: 'nrow', href: '#/n/' + r[0]}, r[1]))] : [])]);
+  }
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a.rawi,a.snlink,.rjsanad .chips a'); if (!a || !a._sn) return;
+    const h = a.getAttribute('href') || ''; e.preventDefault(); e.stopImmediatePropagation();
+    if (/^#\/n\/[1-9]\d*/.test(h)) openSheet(+h.slice(4), a._alts); else openName(a);
+  }, true);
   let TKM = null;
   async function idForTK(printed, name) {
     await idx(); if (!TKM) { TKM = new Map(); IDX.d.forEach(r => { if (r[7]) (TKM.get(r[7]) || TKM.set(r[7], []).get(r[7])).push(r); }); }
@@ -9955,12 +10124,12 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const t = new Set(nrm(name).split(' ')); let best = 0, bs = -1; c.forEach(r => { const k = nrm(r[1] + ' ' + r[2]).split(' ').filter(w => t.has(w)).length; if (k > bs) { bs = k; best = r[0]; } }); return best;
   }
   /* the narrator in a window over the page: closing it leaves the reader on the same hadith */
-  function openSheet(id) {
+  function openSheet(id, alts) {
     const host = el('div', {class: 'nsheet'}); let close = null;
     host.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href^="#/"]'); if (!a) return; const m = a.getAttribute('href').match(/^#\/n\/(\d+)/);
       if (m) { e.preventDefault(); showNarrator(+m[1], host); const sb = host.closest('.sbody'); if (sb) sb.scrollTop = 0; } else if (close) close(); });
     close = window.sheet(L().title, [host]);
-    showNarrator(id, host);
+    showNarrator(id, host).then(() => { const al = (alts || []).filter(r => r && r[0] !== id).slice(0, 6); if (al.length) host.append(el('div', {class: 'card pad nalts'}, el('h4', {class: 'nh'}, NMT().same), ...al.map(r => el('a', {class: 'nrow', href: '#/n/' + r[0]}, el('span', {lang: 'ar', dir: 'rtl'}, r[1]), r[5] ? el('span', {class: 'cs'}, ' — ' + L().tabn(r[5])) : '')))); });
   }
   window.NAR = {openSheet, render: showNarrator, route, title: () => L().title, idForTK, linkChips};
 })();
