@@ -10016,7 +10016,9 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const v = into || qv(); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
     let r, d;
     try { await idx(); r = MAP.get(id); if (!r) { v.replaceChildren(el('p', {class: 'vbad'}, T.none)); return; } d = (await chunk(id))[id]; } catch (e) { v.replaceChildren(el('p', {class: 'vbad'}, '✗ ' + e.message)); return; }
-    const [nasab, laqab, job, madhab, birth, age, live, diedAt, rel, mawla, tch, std, jarh] = d;
+    let [nasab, laqab, job, madhab, birth, age, live, diedAt, rel, mawla, tch, std, jarh] = d;
+    // the teachers of a Companion are Companions only: no Tabi'i is listed among them
+    if (isSahabi(r)) tch = (tch || []).filter(i => { const x = MAP.get(i); return x && isSahabi(x); });
     if (!into) bar(r[1], r[2] || '', true);
     const fact = (k, val) => val ? el('div', {class: 'nfact'}, el('span', {class: 'cs'}, k), el('b', {lang: 'ar', dir: 'rtl'}, String(val))) : '';
     const head = el('div', {class: 'card pad nhead'}, el('h2', {class: 'ar nname', lang: 'ar', dir: 'rtl'}, r[1]), r[2] ? el('p', {class: 'cs', lang: 'ar', dir: 'rtl'}, r[2]) : '',
