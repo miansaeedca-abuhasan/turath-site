@@ -5478,7 +5478,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     } else {
       const g = k => () => { location.hash = '#/s/' + b.key + '/n/' + k; }, bt = (t, k, lb) => el('button', {type: 'button', class: 'hpb', disabled: k < 1 || k > b.count || k === n ? '' : null, 'aria-label': lb, on: {click: g(k)}}, t);
       box.append(el('div', {class: 'hpill', dir: 'ltr'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
-      if (!IS_APP) box.append(pager());   /* the website also keeps the row of neighbouring numbers */
+      box.append(pager());   /* the row of neighbouring numbers, in the app too */
     }
     // flipping the page: a swipe to the left moves to the next hadith, to the right to the previous one (the same in every language)
     if (box._sw) { box.removeEventListener('touchstart', box._sw[0]); box.removeEventListener('touchend', box._sw[1]); }
@@ -5572,8 +5572,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         let j=i+1;while(j<T.length&&!SN_isVerb(T[j])&&!SN_CONN.has(T[j].n)&&j-i<7)j++;
         const ws=T.slice(i+1,j);if(prev&&ws.length&&!SN_STOPSTART.has(ws[0].n)){prev.k+=' '+ws.map(x=>x.n).join(' ');prev.b=ws[ws.length-1].b;prev.ws+=ws.length;i=j-1;}continue;}
       if(['قال','قالا','قالوا','قالت','قلت','يقول','يقولان','وقال','فقال','قالتا','فقالت'].includes(t.n)){flush(i);
-        const nx=T[i+1];
-        if(!nx||!(SN_isVerb(nx)||nx.n==='عن')){stop=true;} started=true;continue;}
+        let jx=i+1;while(T[jx]&&['قال','قالا','قالوا','قالت','وقال','فقال'].includes(T[jx].n))jx++;
+        const nx=T[jx];
+        if(!nx||!(SN_isVerb(nx)||nx.n==='عن')){ // «قال ابن جريج أخبرني نافع» : the speaker is a narrator when a verb of transmission follows his name
+          let k=jx,ok=false;while(T[k]&&k-jx<7){if(SN_STOPSTART.has(T[k].n)||SN_STOPW.has(T[k].n))break;if(k>jx&&(SN_isVerb(T[k])||T[k].n==='عن')){ok=true;break;}k++;}
+          if(!ok)stop=true;}
+        started=true;i=jx-1;continue;}
       if(['ان','انه','انها','انهم'].includes(t.n)){flush(i);
         const nx=T[i+1];if(!nx||SN_STOPSTART.has(nx.n)||!started){stop=true;}else if(!SN_isVerb(nx)&&nx.n!=='عن'){ // «ان فلانا قال» : a name may follow
           }
