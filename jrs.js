@@ -10,7 +10,9 @@
   };
   const lang = () => { let u = 'en'; try { u = localStorage.ui || 'en'; } catch (e) {} return L[u] ? u : 'en'; };
   const T = () => L[lang()];
-  let DATA = null, P = null;
+  let DATA = null, P = null, inJrs = false;
+  const LS = {};   /* list scroll position + search text, kept when a person opens an entry and comes back */
+  window.addEventListener('hashchange', () => { if (!/^#\/j[rs](\/|$)/.test(location.hash)) { inJrs = false; delete LS.n; delete LS.s; } });
   const load = () => P || (P = new Promise((ok, no) => {
     window.TURATH_JRS = d => { DATA = d; ok(d); };
     const s = document.createElement('script'); s.src = 'data/jrs.js?v=' + (window.JRS_V || '2'); s.onerror = () => { P = null; no(); }; document.head.append(s);
@@ -133,11 +135,13 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
     const draw = () => {
       const q = norm(inp.value.trim());
       const rows = arr.filter(x => !q || norm([x.i, kind === 'n' ? Object.values(x.nm).join(' ') : ['ar', 'ur', 'en'].map(l => (x[l].title || '') + ' ' + (x[l].author || '')).join(' ')].join(' ')).includes(q));
-      grid.replaceChildren(...(rows.length ? rows.map(x => el('a', {class: 'it', href: base + x.i}, el('span', {class: 'no'}, String(x.i)), el('span', {class: 'nmx' + (kind === 's' || isAr ? ' ar' : '')}, nm(x, kind)), el('span', {class: 'cn'}, fmt(x.c)))) : [el('p', {class: 'note'}, T_.none)]));
+      grid.replaceChildren(...(rows.length ? rows.map(x => el('a', {class: 'it', href: base + x.i, on: {click: () => { LS[kind] = {y: window.scrollY, q: inp.value}; }}}, el('span', {class: 'no'}, String(x.i)), el('span', {class: 'nmx' + (kind === 's' || isAr ? ' ar' : '')}, nm(x, kind)), el('span', {class: 'cn'}, fmt(x.c)))) : [el('p', {class: 'note'}, T_.none)]));
     };
     inp.addEventListener('input', draw);
+    const keep = inJrs && LS[kind]; if (keep) inp.value = keep.q || '';
     root.replaceChildren(el('div', {class: 'jr'}, el('div', {class: 'hero'}, el('h2', null, kind === 'n' ? T_.nT : T_.sT), el('div', {class: 'by'}, T_.byline), el('p', null, kind === 'n' ? T_.nSub : T_.sSub)), el('div', {class: 'sbox'}, inp), grid));
     draw();
+    if (keep && keep.y) { let n = 0; const go = () => { window.scrollTo(0, keep.y); if (++n < 30 && Math.abs(window.scrollY - keep.y) > 3) setTimeout(go, 50); }; go(); }
   }
 
   async function show(hash) {
@@ -150,6 +154,7 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
     if (t1) t1.textContent = kind === 'n' ? T_.nT : T_.sT; if (t2) t2.textContent = T_.byline; if (bk) bk.hidden = false;
     document.title = (kind === 'n' ? T_.nT : T_.sT) + ' — ' + T_.byline;
     m[2] ? detail(kind, +m[2]) : list(kind);
+    inJrs = true;
   }
   window.JRS = {show, labels: L, hash: h => /^#\/j[rs](\/\d+)?$/.test(h)};
 })();

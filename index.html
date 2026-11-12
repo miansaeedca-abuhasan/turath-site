@@ -200,6 +200,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .chead{padding:.2rem .2rem .7rem;border-bottom:1px solid var(--line)}.chead .ct{display:block;font:700 1.25rem/1.8 var(--serif)}
 .secbtns{display:flex;gap:.6rem}.secbtns a,.secbtns .off{flex:1;text-align:center;padding:.75rem .4rem;border:1px solid var(--line,#e2e8e5);border-radius:12px;background:var(--wash);color:var(--accent);font-weight:700;text-decoration:none}.secbtns .off{visibility:hidden}.secbtns .sbp::before{content:'◀  ';font-size:.8em}.secbtns .sbn::after{content:'  ▶';font-size:.8em}
 .hstrip{display:flex;margin:-.2rem -.2rem .8rem;background:var(--bar,var(--accent));border-radius:12px;overflow:hidden}.hstrip .hs{flex:1;min-width:0;padding:.7rem .3rem;text-align:center;color:#ffffffb8;text-decoration:none;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-bottom:3px solid transparent}.hstrip .hs.on{color:#fff;font-weight:700;border-bottom-color:#fff}
+html.sheetopen .hpill{display:none!important}
 .hpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(5.1rem + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:.9rem;padding:.35rem .9rem;background:var(--card,#fff);border-radius:2rem;box-shadow:0 2px 14px #0003;direction:ltr}.hpill b{color:var(--accent);font-size:1.15rem;min-width:5.2rem;display:flex;justify-content:center;gap:.35rem;direction:ltr}.hpill b i{font-style:normal;unicode-bidi:isolate}.hpill .hpb{border:0;background:none;color:var(--accent);font-size:1.15rem;padding:.3rem .4rem;cursor:pointer}.hpill .hpb:disabled{opacity:.3}
 .hpg{display:flex;justify-content:center;gap:.4rem;margin:.8rem 0;flex-wrap:nowrap}.hpg a,.hpg span{min-width:2.6rem;padding:.45rem .5rem;text-align:center;border:1px solid var(--line,#c9cde8);border-radius:6px;color:var(--accent);text-decoration:none;font-variant-numeric:tabular-nums}.hpg span.on{background:var(--accent);color:#fff;font-weight:700;border-color:var(--accent)}
 .snip{display:block;font-size:.95rem;color:var(--muted);margin-top:.3rem}
@@ -1982,7 +1983,7 @@ function jrRows(){if(book!=='jami'&&book!=='jamik')return [];
     en:[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators: introduction, total hadith and hadith numbers'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors: introduction, total hadith and hadith numbers']]}[ui]||null;
   const Z=L||[['Narrators of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 233 narrators'],['Authors of al-Jami al-Kamil','Compiled by Turath Khair al-Quroon — 224 books and authors']];
   return ['#/jr','#/js'].map((h,i)=>el('a',{class:'card srow2',href:h},el('span',{class:'snum'},ui==='en'?(i?'A':'N'):(i?'م':'ر')),el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' ar':''),lang:ui==='ar'?'ar':null,dir:'auto'},Z[i][0]),el('span',{class:'cs'},Z[i][1]))));}
-async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=5';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
+async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document.createElement('script');s.src='jrs.js?v=6';s.onload=ok;s.onerror=ok;document.head.append(s);});if(window.JRS)JRS.show(h);}
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
 async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
   v.append(el('p',{class:'note'},'…'));
@@ -5477,7 +5478,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       box.append(nav);
     } else {
       const g = k => () => { location.hash = '#/s/' + b.key + '/n/' + k; }, bt = (t, k, lb) => el('button', {type: 'button', class: 'hpb', disabled: k < 1 || k > b.count || k === n ? '' : null, 'aria-label': lb, on: {click: g(k)}}, t);
-      box.append(el('div', {class: 'hpill', dir: 'ltr'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
+      box.append(el('div', {class: 'hpill', dir: 'ltr'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, String(n)), el('i', {}, '/'), el('i', {}, String(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
       box.append(pager());   /* the row of neighbouring numbers, in the app too */
     }
     // flipping the page: a swipe to the left moves to the next hadith, to the right to the previous one (the same in every language)
