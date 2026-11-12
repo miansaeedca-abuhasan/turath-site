@@ -4896,7 +4896,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const f = el('input', {type: 'search', class: 'filter', placeholder: sPh, 'aria-label': sPh, id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
-    const intro = () => ((b.introL && (b.introL[ui] || b.introL.en)) || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, (b.introL && (b.introL[ui] || b.introL.en)) ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
+    const iL = b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
+    const intro = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
     const bookAudio = () => { const rs = BA[b.key]; if (!rs) return [];
@@ -5474,10 +5475,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const nav = el('div', {class: 'nav'});
       nav.append(n > 1 ? el('a', {href: '#/s/' + b.key + '/n/' + (n - 1)}, T('prevSec')) : el('span'), n < b.count ? el('a', {href: '#/s/' + b.key + '/n/' + (n + 1)}, T('nextSec')) : el('span'));
       box.append(nav);
-    } else if (IS_APP) {
+    } else {
       const g = k => () => { location.hash = '#/s/' + b.key + '/n/' + k; }, bt = (t, k, lb) => el('button', {type: 'button', class: 'hpb', disabled: k < 1 || k > b.count || k === n ? '' : null, 'aria-label': lb, on: {click: g(k)}}, t);
       box.append(el('div', {class: 'hpill', dir: 'ltr'}, bt('⏮', 1, 'first'), bt('‹', n - 1, 'previous'), el('b', {class: 'hpn'}, el('i', {}, fmtN(n)), el('i', {}, '/'), el('i', {}, fmtN(b.count))), bt('›', n + 1, 'next'), bt('⏭', b.count, 'last')));
-    } else box.append(pager());
+      if (!IS_APP) box.append(pager());   /* the website also keeps the row of neighbouring numbers */
+    }
     // flipping the page: a swipe to the left moves to the next hadith, to the right to the previous one (the same in every language)
     if (box._sw) { box.removeEventListener('touchstart', box._sw[0]); box.removeEventListener('touchend', box._sw[1]); }
     let sx = 0, sy = 0, st = 0, ok = false;
