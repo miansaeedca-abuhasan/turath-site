@@ -9,6 +9,6 @@ const books=rows.filter(r=>/كتاب/.test(r.split('|')[1]||'')&&/حدیث نم�
 if(books.length!==67)bad.push('books '+books.length);
 ['المرتد والمحاربين','الصيد والذبائح','أخبار الماضيين','فضائل القبائل','فضائل البلدان','صفة القيامة'].forEach(n=>{if(!books.some(r=>r.includes(n)))bad.push('missing book '+n)});
 if(books.filter(r=>/\| كتاب الصلاة \|/.test(r)).length!==1)bad.push('Salat must be one book');
-const i0=rows.findIndex(r=>/المدخل/.test(r)),i1=rows.findIndex(r=>/رواۃ الجامع/.test(r)),i2=rows.findIndex(r=>/مؤلفین الجامع/.test(r)),i3=rows.findIndex(r=>/\| كتاب الوحي/.test(r));
+const i0=rows.findIndex(r=>/المدخل/.test(r)),i1=rows.findIndex(r=>/رواۃ الجامع/.test(r)),i2=rows.findIndex(r=>/الکتب مصادر الجامع/.test(r)),i3=rows.findIndex(r=>/\| كتاب الوحي/.test(r));
 if(!(i0<i1&&i1<i2&&i2<i3))bad.push('order introduction, narrators, authors, books: '+[i0,i1,i2,i3]);
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');await b.close();process.exit(bad.length?1:0)})();
