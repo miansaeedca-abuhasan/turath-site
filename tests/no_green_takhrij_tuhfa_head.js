@@ -1,0 +1,11 @@
+const {chromium}=require('playwright');(async()=>{const b=await chromium.launch(),p=await b.newPage({viewport:{width:360,height:780}});let bad=[];
+await p.addInitScript(()=>{localStorage.ui='ur';localStorage.book='tuhfa';localStorage.newsDay=String(new Date().toDateString())});
+await p.goto('http://localhost:8765/#/h/11269');await p.waitForTimeout(7000);
+const t=await p.evaluate(()=>[...document.querySelectorAll('#view>p.ur')].map(e=>e.textContent).join('|'));
+if(/Supplications|هبوب|آندهى/.test(t))bad.push('tuhfa header block back: '+t.slice(0,60));
+await p.evaluate(()=>{localStorage.book='jami'});
+await p.goto('http://localhost:8765/#/s/seerah/n/5');await p.waitForSelector('.card .mt.ar',{timeout:40000});await p.waitForTimeout(2500);
+const r=await p.evaluate(()=>{const g=document.querySelector('p.agrade');const w=g&&g.querySelector('.gc');return {p:g&&getComputedStyle(g).color,w:w&&getComputedStyle(w).color,txt:w&&w.textContent}});
+if(!r.p||r.p==='rgb(27, 122, 70)')bad.push('whole takhrij paragraph green '+r.p);
+if(!r.w||r.w!=='rgb(27, 122, 70)')bad.push('ruling word not green '+r.w);
+console.log(bad.length?'FAIL '+bad.join('; '):'PASS no_green_takhrij_tuhfa_head');await b.close();process.exit(bad.length?1:0)})();

@@ -9,7 +9,7 @@
 .ftab{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);border-radius:99px;padding:.1rem .75rem;line-height:1.7;display:inline-flex;align-items:center;gap:.3rem}
 .bkshare{margin:.3rem 0 .6rem}.bkshare .btn{display:inline-flex;align-items:center;gap:.3rem}
 .tbox{border:0;border-radius:0;padding:0;margin:.5rem 0}.tbox .tr{border-top:0;padding-top:.2rem}
-.tkrow{display:block}.tkrow .tklab{display:inline-block;margin-inline-end:.6rem;vertical-align:baseline}.tkrow .ptakh{display:contents}.tkrow .ptakh>p:first-child{display:inline}.tkrow .tr p{margin:.1rem 0}
+.tkrow{display:block}.tkrow .tklab{border-radius:.9rem;display:inline-block;margin-inline-end:.6rem;vertical-align:baseline}.tkrow .ptakh{display:contents}.tkrow .ptakh>p:first-child{display:inline}.tkrow .tr p{margin:.1rem 0}
 .tklab{flex:none;font-size:.82rem;font-weight:700;padding:.05rem .65rem;border-radius:99px;color:#8a5a12;background:color-mix(in srgb,#c98a1b 18%,transparent)}
 html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
 @media (prefers-color-scheme:dark){.tklab{color:#f0c46c}}
@@ -21,8 +21,8 @@ html[lang=ur] .trbtn,html[lang=ur] .trlab{font-family:var(--uhead);font-weight:4
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
 .ftab[aria-expanded=true]{background:var(--accent);color:#fff}.ftab[aria-expanded=true]::after{transform:rotate(180deg)}
 html[lang=ur] .ftab{font-family:var(--uhead);font-weight:400;font-size:1.02rem}
-.gc-sahih,.agrade.gc-sahih{color:#1b7a46}.gc-daif,.agrade.gc-daif{color:#d97706}.gc-mawdu,.agrade.gc-mawdu{color:#c62828}.gc{font-weight:700}
-@media (prefers-color-scheme:dark){.gc-sahih,.agrade.gc-sahih{color:#5fd08f}.gc-daif,.agrade.gc-daif{color:#ffb454}.gc-mawdu,.agrade.gc-mawdu{color:#ff7b72}}
+.gc-sahih{color:#1b7a46}.gc-daif{color:#d97706}.gc-mawdu{color:#c62828}.gc{font-weight:700}
+@media (prefers-color-scheme:dark){.gc-sahih{color:#5fd08f}.gc-daif{color:#ffb454}.gc-mawdu{color:#ff7b72}}
 .trrow .trbtn,.trrow .trbtn.on.static{font-size:.8rem;line-height:1.55;padding:.02rem .65rem;border-radius:.8rem}
 .trbtn.on.static{background:color-mix(in srgb,var(--accent) 11%,transparent);color:var(--accent);border-color:color-mix(in srgb,var(--accent) 35%,transparent);font-weight:600}
 html[lang=ur] .trrow .trbtn,html[lang=ur] .trrow .trlab{font-size:.92rem}
@@ -41,6 +41,11 @@ html[lang=ur] .trrow .trbtn,html[lang=ur] .trrow .trlab{font-size:.92rem}
 .shk{margin:.8rem 0 .4rem;padding:.6rem .8rem;border-radius:.7rem;background:color-mix(in srgb,#b8860b 9%,transparent);border:1px solid color-mix(in srgb,#b8860b 35%,transparent)}
 .shkt{display:flex;align-items:center;gap:.4rem;color:#8a6508}.shki{font-size:.9rem}
 .shks{margin:.2rem 0 .45rem}.shkn{display:flex;flex-wrap:wrap;gap:.4rem}
+/* takhrij in the style of the full Jami: ruling and the matching reference coloured by the markers, the rest plain */
+.agrade.jtk{color:var(--muted)}
+a.big.jn{text-decoration:none}
+.bkcirc{display:flex;margin:.1rem 0 .2rem}.bkc{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:1.9rem;height:1.9rem;padding:0 .4rem;border:1.5px solid var(--accent);border-radius:50%;font:700 .85rem/1 var(--sans);color:var(--accent);text-decoration:none}
+a.btn.jfull{text-decoration:none;color:var(--accent);font-weight:600;background:var(--wash)}.srefl{text-decoration:none!important}
 </style>
 <meta charset="utf-8">
 <meta name="theme-color" content="#2f7fc0">
@@ -148,7 +153,7 @@ html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){
 .bc{font-size:1.15rem;line-height:1.9;color:var(--muted);margin:.2rem 0}
 .top{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
 .big{font:700 1.9rem/1.2 var(--sans);color:var(--ink)}
-.top .big{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:2.9rem;height:2.9rem;padding:0 .55rem;border:2px solid var(--accent);border-radius:50%;font:700 1.15rem/1 var(--sans);color:var(--accent)}
+.top .big{display:inline-flex;align-items:center;direction:ltr;unicode-bidi:isolate;font:700 1.35rem/1.4 var(--sans);color:var(--accent)}.top .big::after{content:'-'}.top .big.qnote::after{content:''}
 .hpg .on,.hpg a,.hpg span{font-family:var(--sans)}
 .gp{display:inline-block;border-radius:999px;padding:.05rem .9rem;font:600 .9rem/1.7 var(--sans);color:#fff;background:#6b7d88}
 .g-s{background:#2e9b5b}.g-h{background:#b9800f}.g-d{background:#e07b00}.g-m{background:#c62828}
@@ -645,7 +650,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .wplay{background:var(--card);border:1px solid var(--line);color:var(--accent);border-radius:50%;width:2.8rem;height:2.8rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
 .wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
-.rlink{color:var(--accent,#0b5d4b);text-decoration:underline dotted;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
+.rlink{color:var(--accent,#0b5d4b);text-decoration:none;border-bottom:1px dotted currentColor;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
 .mh{color:var(--muted,#7a7a7a)}.red{color:#c00000}.blue,.rlink.blue{color:#0b86c6;text-decoration-color:#0b86c6}.orange,.rlink.orange{color:#d9730d;text-decoration-color:#d9730d}.purple,.rlink.purple{color:#8a3fc7;text-decoration-color:#8a3fc7}.lafznote.np{color:#8a3fc7}.lafznote.nb{color:#0b86c6}.lafznote.no{color:#d9730d}.rlink.red{color:#c00000;text-decoration-color:#c00000}.chip.lafz{border:1.5px solid #c00000;color:#c00000;font-weight:700}.lafznote{font-size:.85rem;color:#c00000;margin:.1rem 0 .4rem}.saw{color:#c00000}html[data-theme=dark] .red,html[data-theme=dark] .saw{color:#ff6b6b}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .red,:root:not([data-theme=light]) .saw{color:#ff6b6b}}
 #view p.bc,#view .hd,#view h3.grp{font-weight:700;color:var(--accent,#0b5d4b)}#view p.ar.bc{font-size:1.2rem;line-height:1.9}
@@ -1308,6 +1313,8 @@ function hadithText(d,scope,arabic){
   const ref=({ur:'تلخیص الجامع الکامل: ',ar:'تلخيص الجامع الكامل: ',bn:'তালখীস আল-জামি আল-কামিল: ',hi:'तल्ख़ीस अल-जामिउल कामिल: ',gu:'તલ્ખીસ અલ-જામિઉલ કામિલ: ',fr:'Talkhis Al-Jami al-Kamil : '}[L]||'Talkhis Al-Jami al-Kamil: ')+num;
   const voc=(arabic.match(/[\u064B-\u0652]/g)||[]).length>arabic.length/12;
   arabic=arabic.replace(/ﷺ/g,voc?'صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ':'صلى الله عليه وسلم');tk=(tk||'').replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');if(L==='ar')tk=tk.replace(/ﷺ/g,'صلى الله عليه وسلم');
+  if(book==='jamik'){const jf=({ur:'الجامع الکامل',ar:'الجامع الكامل',bn:'আল-জামি আল-কামিল',hi:'अल-जामिउल कामिल',gu:'અલ-જામિઉલ કામિલ'}[L]||'Al-Jami al-Kamil')+' ('+num+').';
+    return [num,'',arabic,'',(tk?tk.replace(/\s+$/,'')+' ':'')+jf,'',tr?tr.paras.join('\n'):''].filter((x,i,a)=>!(x===''&&(i===0||a[i-1]===''))).join('\n').trim();}
   return [curBookName()+' — '+T('hadith')(num),path,'',arabic,'',tr?tr.paras.join('\n'):'','',tk,'('+ref+')'].filter((x,i,a)=>!(x===''&&(i===0||a[i-1]===''))).join('\n').trim();
 }
 async function doCopy(d,scope){toast(T(await copyText(withLink(hadithText(d,scope,await vocalized(d)),'#/h/'+d.num))?'copied':'copyfail'));}
@@ -2027,7 +2034,8 @@ async function showHadith(num){
   vocalized(d);   // ready before a copy / share tap
   const enL=[d.part_en,d.group_en,d.chapter_en].filter(Boolean).join(' / ')||(ui==='ur'?[d.part_ur,d.chapter_ur].filter(Boolean).join(' / '):'');
   const arL=[d.part_ar,d.group_ar,d.chapter_ar].filter(Boolean).join(' / ');
-  if(EN()){
+  if(scope==='tuhfa'){/* Sharh Tuhfat al-Muttaqin: no chapter / number header block above the hadith (the bar already shows the number) */}
+  else if(EN()){
     v.append(el('h2',{class:'hd'},d.demo?T('sample'):T('hadith')(d.num)));
     if(enL)v.append(el('p',{class:'ltr',dir:'auto'},enL));
     if(arL)v.append(el('p',{class:'ar bc',lang:'ar'},arL));
@@ -4626,7 +4634,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (b.langs.length < 2 || b.trtabs) return box;
     box.append(el('span', {class: 'cs lchl'}, (TRL[ui] || TRL.en) + ':'));
     b.langs.filter(l => l !== 'ar').forEach(l => { const on = cur.includes(l);
-      box.append(el('button', {class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), on: {click: () => { setSel(on ? cur.filter(x => x !== l) : [...cur, l]); redraw(); }}}, (on ? '✓ ' : '') + (LNAME[l] || l))); });
+      box.append(el('button', {class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), on: {click: () => { setSel(on ? cur.filter(x => x !== l) : [...cur, l]); redraw(); }}}, (on ? '✓ ' : '') + ((b.trn && (b.trn[l] || (l === 'ur' && b.trn.ur))) || LNAME[l] || l))); });
     return box;
   }
   // small tab with the translator's name above a translation: «ترجمہ: name» (book.trn = {lang: name})
@@ -4636,7 +4644,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const tint = (node, g) => { const cat = window.GRADECAT ? window.GRADECAT(g) : '', gt = String(g || '').replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, ''); if (!cat || !gt) return node;
     const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); while (tw.nextNode()) { const t = tw.currentNode, i = t.nodeValue.indexOf(gt); if (i >= 0) { const sp = el('span', {class: 'gc gc-' + cat}, gt), after = t.splitText(i); after.nodeValue = after.nodeValue.slice(gt.length); t.parentNode.insertBefore(sp, after); break; } } return node; };
   const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : '')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
-  const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
+  const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   function hobj(b, n, lang) {
@@ -4791,8 +4799,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (su) { if (!c.querySelector('.babbox')) c.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, su[4])); c.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, su[1])); } }
     }
     if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
-    c.append(el('div', {class: 'top'}, el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : (lang ? String(own && !b.abno ? pn : n) : fmtN(own && !b.abno ? pn : n))), printed,
-      b.jami && b.jami[n] ? el('a', {class: 'btn', href: '#/h/' + b.jami[n], style: 'margin-inline-start:auto'}, T('cJami')(fmtN(b.jami[n]))) : null,
+    // a translated sub-book of the Jami: the big number is the Jami's own number (opens that hadith in the full Jami); the book's own number sits above it in a small circle
+    const jx = b.jami && b.jami[n];
+    if (jx) c.append(el('div', {class: 'bkcirc'}, el('a', {class: 'bkc', href: '#/s/' + b.key + '/n/' + n}, note ? '٭' : (lang ? String(own && !b.abno ? pn : n) : fmtN(own && !b.abno ? pn : n))))); 
+    c.append(el('div', {class: 'top'}, jx ? el('a', {class: 'big jn', href: '#/h/' + jx, on: {click: e => { e.preventDefault(); const h = '#/h/' + jx; if (window.hbOpen) window.hbOpen('jamik', h); else { try { localStorage.book = 'jamik'; } catch (x) {} location.hash = h; } }}}, fmtN(jx)) : el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : (lang ? String(own && !b.abno ? pn : n) : fmtN(own && !b.abno ? pn : n))), printed,
       // the library copy of a book that also exists as an Urdu-translated book: one button per matching hadith of that book (matched by the words of the hadith)
       ...(b.xr && b.xr.m[n] != null ? [].concat(b.xr.m[n]).slice(0, 3).map((m, k) => el('a', {class: 'btn', href: '#/s/' + b.xr.key + '/n/' + m, style: k ? '' : 'margin-inline-start:auto'}, ({ur: 'اردو ترجمہ (مولانا عبدالصمد ریالوی) — نمبر ' + fmtN(m), ar: 'الترجمة الأردية — رقم ' + fmtN(m), en: 'Urdu translation (Abdul Samad Rialwi) — no. ' + fmtN(m)})[ui] || ('Urdu translation — ' + fmtN(m)))) : [])));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
@@ -4807,8 +4817,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
-      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
-    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(d.grade)) || 'x'), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade);
+      sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'cursor:pointer;color:var(--accent);font-weight:600', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
+    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? (g => /[\ue000-\ue009]/.test(d.grade) ? g : window.GRADETINT(g, d.grade))(el('p', {class: 'cs agrade' + (/[\ue000-\ue009]/.test(d.grade) ? ' jtk' : ''), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])]))) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade);
       if (b.tkby) c.append(el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: ui, dir: DIR(ui)}, T('pTakh') + ' ' + (b.tkby[ui] || b.tkby.ur || '')), gEl)); else c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
@@ -4909,7 +4919,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const xr0 = row(b, lang || 'ar', n), xx = xr0 && xr0[3] && !Array.isArray(xr0[3]) ? xr0[3] : null, xa = (row(b, 'ar', n) || [])[3], xa0 = xa && !Array.isArray(xa) ? xa : {};
     const xe = xx && xx.e || xa0.e || '', xb = xx && (xx.b || xx.f) || xa0.b || '';
     const hasMore = !!(xe || xb || foot);
-    const text = more => [bname(b) + (note ? '' : ' — ' + n + (b.an[n] ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', d.grade ? d.grade : '', xx && xx.k ? '\n' + T('pTakh') + ':\n' + xx.k : '', '', lang && d.content.translation ? d.content.translation[lang][0] : '',
+    const jnT = b.jami && b.jami[n], jfN = ({ur: 'الجامع الکامل', ar: 'الجامع الكامل', bn: 'আল-জামি আল-কামিল', hi: 'अल-जामिउल कामिल', gu: 'અલ-જામિઉલ કામિલ'}[ui] || 'Al-Jami al-Kamil'),
+      text = more => [jnT ? jnT + '/' + n : bname(b) + (note ? '' : ' — ' + n + (b.an[n] && String(b.an[n]) !== String(n) ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', (d.grade ? d.grade : '') + (jnT ? (d.grade ? ' ' : '') + jfN + ' (' + jnT + ').' : ''), xx && xx.k ? '\n' + T('pTakh') + ':\n' + xx.k : '', '', lang && d.content.translation ? d.content.translation[lang][0] : '',
       more && xe ? '\n' + T('pExpl') + ':\n' + xe : '', more && xb ? '\n' + T('pBen') + ':\n' + String(xb).replace(/^§\s*فوائد\s*$/gm, '') : '', more && foot ? '\n' + foot : ''].join('\n').replace(/^§\s*/gm, '').replace(/\n{3,}/g, '\n\n').trim();
     acts.append(bm, window.CMP ? CMP.button({k: b.key, n}) : '',
       el('button', {class: 'ab', type: 'button', title: T('listen'), 'aria-label': T('listen'), on: {click: () => LISTEN.playHadiths([{d, node: c}])}}, icon('listen')),
@@ -5057,6 +5068,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const gradeCat = g => { if (!g || typeof g !== 'string') return ''; const t = g.replace(/[\u064b-\u0652\u0670]/g, '').replace(/[أإآ]/g, 'ا').replace(/ی/g, 'ي').replace(/ک/g, 'ك').replace(/ہ/g, 'ه'); let best = '', pos = 1e9;
     for (const [c, r] of GRADES) { const m = t.search(r); if (m >= 0 && m < pos) { pos = m; best = c; } } return best; };
   window.GRADECAT = gradeCat;
+  // only the ruling word itself («حسن», «صحيح» ...) takes the ruling colour; the rest of the takhrij keeps the normal colour
+  window.GRADETINT = (node, g) => { const g0 = String(g || ''), m = g0.match(/^\s*([^:：\n]{2,30})[:：]/) || (g0.trim().length <= 30 && g0.trim() ? [0, g0.trim()] : null); if (!m) return node; const gt = m[1].trim(), cat = gradeCat(gt); if (!cat) return node;
+    const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); while (tw.nextNode()) { const t = tw.currentNode, i = t.nodeValue.indexOf(gt); if (i >= 0) { const sp = el('span', {class: 'gc gc-' + cat}, gt), after = t.splitText(i); after.nodeValue = after.nodeValue.slice(gt.length); t.parentNode.insertBefore(sp, after); break; } } return node; };
   function makePool(b, ns, lang, words, md, gr) {
     const test = modeTest(md, words), multi = md === 'exact' && words.length > 1, gOk = r => !gr || (r && gradeCat(r[2]) === gr);
     const p = {b, ok: [], pos: 0, more: true, total: null};
@@ -6242,7 +6256,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const c = el('article', {class: 'card cmpcard'});
     c.append(el('div', {class: 'top'}, el('b', {class: 'cmph'}, x.title), extra || '', el('span', {class: 'sp'}),
       x.href ? el('a', {class: 'btn', href: x.href}, T('cmpOpen')) : ''));
-    if (x.grade) c.append(el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(x.grade)) || 'x'), lang: 'ar'}, x.grade));
+    if (x.grade) c.append(window.GRADETINT(el('p', {class: 'cs agrade', lang: 'ar'}, x.grade), x.grade));
     return c;
   }
 
@@ -6700,7 +6714,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function hadithBox(h) {
     const c = el('article', {class: 'card'});
     c.append(el('div', {class: 'mt ar', lang: 'ar'}, el('p', {}, ...rich(h.ar, 'ar'))));
-    if (h.tk || h.g) c.append(el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(h.tk || h.g)) || 'x'), lang: 'ar', dir: 'rtl'}, h.tk || h.g));
+    if (h.tk || h.g) c.append(window.GRADETINT(el('p', {class: 'cs agrade', lang: 'ar', dir: 'rtl'}, h.tk || h.g), h.tk || h.g));
     const t = trOfH(h); if (t) c.append(el('div', {class: 'tr'}, trP(t, ui, ui)));
     c.append(el('div', {class: 'acts'}, el('a', {class: 'btn', href: '#/h/' + h.n}, T('srcJami') + ' ' + NUM(h.n)), el('span', {class: 'sp'}),
       ...shareBtns(() => withLink(h.ar + (t ? '\n\n' + t : '') + '\n— ' + T('srcJami') + ' ' + h.n, '#/h/' + h.n))));
@@ -7374,6 +7388,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       surahs: 'सूरतें', para: 'पारा', ruku: 'रुकू', findAyah: 'आयत खोजें', qsearch: 'खोज', qbm: 'बुकमार्क', trans: 'अनुवाद', settings: 'सेटिंग', resume: 'क़ुरआन वहीं से पढ़ें',
       filter: 'सूरत का नाम या नंबर', meccan: 'मक्की', medinan: 'मदनी', ayahs: n => n + ' आयतें', paraN: n => 'पारा ' + n, rukuN: n => 'रुकू ' + n, surahN: n => 'सूरह ' + n,
       selectTr: 'अनुवाद चुनें', recite: 'तिलावत सुनें', tafsir: 'तफ़सीर', surahShort: 'सूरह', onlyAya: 'केवल आयत', ayaTr: 'आयत अनुवाद सहित', copyAll: 'सब कॉपी करें',
+      ayaTrTaf: 'आयत, अनुवाद और तफ़सीर',
       copyRange: 'आयतें कॉपी / साझा करें', copyRangeNote: 'सूरह और आयतें चुनें (जैसे अल-बक़रा 25 से 35), फिर केवल आयतें या अनुवाद सहित।', hFrom: 'आयत से', hTo: 'आयत तक',
       hifz: 'हिफ़्ज़ — दोहराव', start: 'शुरू करें', viewMode: 'क़ुरआन कैसे दिखाएँ',
       cBooks: 'हदीस की अन्य किताबें', cOnlyAr: 'केवल अरबी', cGrade: 'दर्जा', cOpen: 'किताब में खोलें', cLangMissing: 'इस किताब का यह अनुवाद उपलब्ध नहीं।', cBabs: 'अध्याय', cSection: 'किताब',
@@ -7398,6 +7413,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       surahs: 'સૂરતો', para: 'પારો', ruku: 'રુકૂ', findAyah: 'આયત શોધો', qsearch: 'શોધ', qbm: 'બુકમાર્ક', trans: 'અનુવાદ', settings: 'સેટિંગ', resume: 'કુરઆન ત્યાંથી વાંચો',
       filter: 'સૂરતનું નામ અથવા નંબર', meccan: 'મક્કી', medinan: 'મદની', ayahs: n => n + ' આયતો', paraN: n => 'પારો ' + n, rukuN: n => 'રુકૂ ' + n, surahN: n => 'સૂરહ ' + n,
       selectTr: 'અનુવાદ પસંદ કરો', recite: 'તિલાવત સાંભળો', tafsir: 'તફસીર', surahShort: 'સૂરહ', onlyAya: 'ફક્ત આયત', ayaTr: 'આયત અનુવાદ સાથે', copyAll: 'બધું કૉપી કરો',
+      ayaTrTaf: 'આયત, અનુવાદ અને તફસીર',
       copyRange: 'આયતો કૉપી / શેર કરો', copyRangeNote: 'સૂરહ અને આયતો પસંદ કરો (જેમ કે અલ-બકરહ 25 થી 35), પછી ફક્ત આયતો અથવા અનુવાદ સાથે.', hFrom: 'આયતથી', hTo: 'આયત સુધી',
       hifz: 'હિફ્ઝ — પુનરાવર્તન', start: 'શરૂ કરો', viewMode: 'કુરઆન કેવી રીતે બતાવવું',
       cBooks: 'હદીસની અન્ય કિતાબો', cOnlyAr: 'ફક્ત અરબી', cGrade: 'દરજ્જો', cOpen: 'કિતાબમાં ખોલો', cLangMissing: 'આ કિતાબનો આ અનુવાદ ઉપલબ્ધ નથી.', cBabs: 'પ્રકરણ', cSection: 'કિતાબ',
@@ -7422,6 +7438,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       surahs: 'Sourates', para: 'Juz', ruku: 'Rukû‘', findAyah: 'Trouver un verset', qsearch: 'Recherche', qbm: 'Favoris', trans: 'Traductions', settings: 'Réglages', resume: 'Reprendre la lecture du Coran',
       filter: 'Nom ou numéro de la sourate', meccan: 'Mecquoise', medinan: 'Médinoise', ayahs: n => n + ' versets', paraN: n => 'Juz ' + n, rukuN: n => 'Rukû‘ ' + n, surahN: n => 'Sourate ' + n,
       selectTr: 'Choisir les traductions', recite: 'Écouter la récitation', tafsir: 'Tafsir', surahShort: 'Sourate', onlyAya: 'Verset seul', ayaTr: 'Verset avec traduction', copyAll: 'Tout copier',
+      ayaTrTaf: 'Verset, traduction et tafsir',
       copyRange: 'Copier / partager des versets', copyRangeNote: 'Choisissez la sourate et les versets (par ex. al-Baqara 25 à 35), puis l’arabe seul ou avec la traduction.', hFrom: 'Du verset', hTo: 'Au verset',
       hifz: 'Mémorisation — répétition', start: 'Commencer', viewMode: 'Affichage du Coran',
       cBooks: 'Autres livres de hadith', cOnlyAr: 'Arabe seulement', cGrade: 'Degré', cOpen: 'Ouvrir dans le livre', cLangMissing: "Cette traduction n'est pas disponible pour ce livre.", cBabs: 'chapitres', cSection: 'Livre',
@@ -7481,6 +7498,7 @@ Object.assign(I.bn, {
   uplift: 'বিশেষ উর্দু কণ্ঠ (অনলাইন)',
   upFail: 'বিশেষ কণ্ঠটি পাওয়া যাচ্ছে না; ফোনের কণ্ঠ ব্যবহার করা হচ্ছে।',
   trVoice: 'অনুবাদসহ তিলাওয়াত (প্রতি আয়াতের পর)',
+  ayaTrTaf: 'আয়াত, অনুবাদ ও তাফসীর',
   copyRange: 'আয়াত কপি / শেয়ার করুন',
   copyRangeNote: 'সূরা ও আয়াত বেছে নিন (যেমন: আল-বাকারা ২৫ থেকে ৩৫), তারপর শুধু আরবি অথবা অনুবাদসহ নিন।',
   hsTile: 'হাদীস অনুসন্ধান (মান)',
