@@ -395,6 +395,7 @@ body.withplayer .resume.float{display:none}
 .qar.sm{display:block;font-size:calc(var(--qar)*.8)}
 .qar.mom{text-align:center}
 .qtr{font-size:var(--qtr);margin:.2rem 0 .5rem}
+.intaf{margin:.5rem 0 .2rem;padding:.5rem .7rem;border-inline-start:3px solid var(--accent,#2e7d5b);background:rgba(46,125,91,.06);border-radius:8px}.intaf:empty{display:none}
 .qtr.ur{font-family:var(--urdu);line-height:2.25}
 .qtr.en{font-family:var(--serif);line-height:1.7}
 .qtr.ar{font-family:var(--arabic);line-height:2;font-size:calc(var(--qtr)*1.1)}.qtr.bn{line-height:1.8}
@@ -3047,7 +3048,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qnobm: 'ابھی کوئی آیت محفوظ نہیں۔ آیت کے ساتھ بک مارک کا نشان دبائیں۔', ayahOf: 'آیتِ قرآنی', hadithOf: 'حدیثِ نبوی', openIt: 'کھولیں',
     qsearchPh: 'آیت کا لفظ لکھیں، مثلاً: نحن نقص', searchIn: 'منتخب تراجم اور عربی متن میں', netAudio: 'تلاوت کے لیے انٹرنیٹ چاہیے۔',
     audioErr: 'یہ آڈیو نہیں چل سکی۔ انٹرنیٹ یا دوسرا قاری آزمائیں۔', recite: 'تلاوت سنیں', jami: 'تلخیص الجامع الکامل', tuhfa: 'شرح تحفۃ المتقین',
-    thisChapter: 'یہ باب', bmHadith: 'محفوظ احادیث', bmQuran: 'محفوظ آیات', searchHadith: 'حدیث تلاش', start: 'شروع', tafsir: 'تفسیر', tafsirs: 'تفاسیر', tafsirOf: r => 'آیت ' + r + ' کی تفسیر', noTafsir: 'اس آیت کی تفسیر اس کتاب میں الگ سے نہیں دی گئی۔', tafsirMissing: 'یہ تفاسیر ابھی کسی اوپن سورس ماخذ میں نہیں ملیں:', surahShort: 'سورت', paraShort: 'پارہ', chapShort: 'باب', onlyAya: 'صرف آیت', ayaTr: 'آیت مع ترجمہ', results: 'نتائج کی تعداد', copyAll: 'سب کاپی کریں', moreRes: n => 'مزید ' + n + ' نتائج — الفاظ بڑھا کر تلاش محدود کریں'});
+    thisChapter: 'یہ باب', bmHadith: 'محفوظ احادیث', bmQuran: 'محفوظ آیات', searchHadith: 'حدیث تلاش', start: 'شروع', tafsir: 'تفسیر', tafsirs: 'تفاسیر', tafsirOf: r => 'آیت ' + r + ' کی تفسیر', noTafsirSel: 'بغیر تفسیر', noTafsir: 'اس آیت کی تفسیر اس کتاب میں الگ سے نہیں دی گئی۔', tafsirMissing: 'یہ تفاسیر ابھی کسی اوپن سورس ماخذ میں نہیں ملیں:', surahShort: 'سورت', paraShort: 'پارہ', chapShort: 'باب', onlyAya: 'صرف آیت', ayaTr: 'آیت مع ترجمہ', results: 'نتائج کی تعداد', copyAll: 'سب کاپی کریں', moreRes: n => 'مزید ' + n + ' نتائج — الفاظ بڑھا کر تلاش محدود کریں'});
   Object.assign(I.en, {quran: 'The Holy Quran', home: 'Home', hadithTab: 'Hadith', surahs: 'Surahs', para: 'Parah', ruku: 'Ruku', findAyah: 'Find Ayah',
     qsearch: 'Search', qbm: 'Bookmarks', audio: 'Audio', trans: 'Translations', settings: 'Settings', resume: 'Resume Quran Reading',
     filter: 'Filter Surah list by number or name', meccan: 'Meccan', medinan: 'Medinan', ayahs: n => n + ' Verses', paraN: n => 'Parah ' + n, rukuN: n => 'Ruku ' + n,
@@ -3058,7 +3059,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qnobm: 'No ayah bookmarked yet. Tap the bookmark icon next to an ayah.', ayahOf: 'Ayah of the moment', hadithOf: 'Hadith of the moment', openIt: 'Open',
     qsearchPh: 'Type words of an ayah, e.g. نحن نقص', searchIn: 'in the selected translations and the Arabic text', netAudio: 'Recitation needs internet.',
     audioErr: 'This audio could not play. Check internet or try another reciter.', recite: 'Listen to recitation', jami: 'Talkhis Al-Jame Al-Kamil', tuhfa: 'Sharh Tuhfat al-Muttaqin',
-    thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirs: 'Tafsirs', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
+    thisChapter: 'This chapter', bmHadith: 'Saved hadith', bmQuran: 'Saved ayahs', searchHadith: 'Search hadith', start: 'Start', tafsir: 'Tafsir', tafsirs: 'Tafsirs', tafsirOf: r => 'Tafsir of ayah ' + r, noTafsirSel: 'No tafsir', noTafsir: 'This tafsir has no separate comment on this ayah.', tafsirMissing: 'Not yet found in an open source:', surahShort: 'Surah', paraShort: 'Parah', chapShort: 'Chapter', onlyAya: 'Only Aya', ayaTr: 'Aya with Translation', results: 'Results', copyAll: 'Copy all', moreRes: n => n + ' more results — add words to narrow the search'});
 
   Object.assign(I.ur, {qsearchS: 'اس سورت میں: آیت نمبر یا الفاظ', qsSurah: 'اس سورت میں تلاش', qsNoAyah: n => 'اس سورت میں آیت نمبر ' + n + ' نہیں ہے۔', qsGoAyah: 'آیت کھولیں'});
   Object.assign(I.en, {qsearchS: 'In this surah: ayah number or words', qsSurah: 'Search in this surah', qsNoAyah: n => 'This surah has no ayah number ' + n + '.', qsGoAyah: 'Open ayah'});
@@ -3152,7 +3153,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   /* ---------- settings ---------- */
   const SMIN = 10, SMAX = 80;
   { const MT = {ur: 'مصحف', ar: 'المصحف', en: 'Mushaf', bn: 'মুসহাফ', hi: 'मुसहफ़', gu: 'મુસહફ', fr: 'Mushaf'}; Object.keys(MT).forEach(l => { if (I[l]) I[l].mushafTile = MT[l]; }); }
-  const QS = {tr: ['ur_junagarhi'], mode: 'pages', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: true,
+  const QS = {tr: ['ur_junagarhi'], mode: 'pages', ar: 30, trs: 19, speed: 30, reciter: 'sudais', trAudio: false, font: 'naskh', rasm: 'uthmani', tajweed: true, tafOn: false,
     hifz: {s: 1, from: 1, to: 7, ayahRep: 3, rangeRep: 1, gap: 0}};
   try { Object.assign(QS, JSON.parse(localStorage.qset || '{}')); } catch (e) {}
   QS.speed = Math.max(SMIN, Math.min(SMAX, QS.speed || 30));
@@ -3820,6 +3821,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const qp = el('p', {class: 'qar', lang: 'ar'}, ...ar(), ' ', ayahNum(a)); qp.addEventListener('click', e => onArTap(e, qp, s, a, i)); c.append(qp);
         c.append(el('div', {class: 'vno'}, el('span', {}, (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)) + '  ·  ' + a + '/' + Q.meta.surahs[s - 1][4])));
         eds.forEach(e => c.append(el('div', {class: 'tbl'}, eds.length > 1 ? el('span', {class: 'trname'}, edLabel(e)) : null, trText(e.key, s, a))));
+        if (QS.tafOn && QS.tafsir) c.append(inlineTafsir(s, a, i));
         c.append(ayahActs(i));
         v.append(c); R.nodes.set(s + ',' + a, c);
       }
@@ -3829,6 +3831,24 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     v.append(nav); setTimeout(showTime, 50);
     if (top >= 0) { const p = R.verses[top], node = p && R.nodes.get(p + ''); if (node) node.scrollIntoView({block: 'start'}); }
     watchLast();
+  }
+  // the chosen tafsir, shown right under the translation of each ayah (a tafsir covers a group of ayahs: it shows once, at the first ayah of its group)
+  function inlineTafsir(s, a, i) {
+    const box = el('div', {class: 'intaf'}), key = QS.tafsir;
+    (async () => {
+      try {
+        if (!Q.tafsirs) await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js')));
+        const t = Q.tafsirs.list.find(x => x.key === key); if (!t) { box.remove(); return; }
+        await needTafsir(key, s);
+        const g = ((Q.taf[key] || {})[s] || []).find(x => x[0] <= a && a <= x[1]); if (!g) { box.remove(); return; }
+        const pv = R.verses[i - 1];
+        if (!(a === g[0] || !(pv && pv[0] === s && pv[1] >= g[0]))) { box.remove(); return; }
+        const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
+        box.append(el('span', {class: 'trname'}, T('tafsir') + ' — ' + (LTR() ? t.en : t.ur) + ' (' + rng + ')'),
+          ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
+      } catch (e) { box.remove(); }
+    })();
+    return box;
   }
   function ayahActs(i) {
     const [s, a] = R.verses[i], key = s + ':' + a;
@@ -4307,16 +4327,18 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // the tafsirs, listed separately below the translations: the chosen one opens with the «Tafsir» button of each ayah
     if (!Q.tafsirs) { try { await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js'))); } catch (e) {} }
     const tl = (Q.tafsirs && Q.tafsirs.list) || [], tcur = tl.some(t => t.key === QS.tafsir) ? QS.tafsir : (tl.find(t => t.lang === ui) || tl.find(t => t.lang === 'ur') || tl[0] || {}).key; let tsel = tcur;
-    const trows = [];
+    const trows = [], none = el('input', {type: 'radio', name: 'tafpick'}); none.checked = !QS.tafOn; let tafOff = !QS.tafOn;
+    none.addEventListener('change', () => { tafOff = true; });
+    trows.push(el('label', {class: 'srow chk'}, none, el('span', {dir: 'auto'}, T('noTafsirSel'))));
     ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui)).forEach(l => tl.filter(t => t.lang === l).forEach(t => {
-      const r = el('input', {type: 'radio', name: 'tafpick'}); r.checked = t.key === tcur; r.addEventListener('change', () => { tsel = t.key; });
+      const r = el('input', {type: 'radio', name: 'tafpick'}); r.checked = QS.tafOn && t.key === tcur; r.addEventListener('change', () => { tsel = t.key; tafOff = false; });
       trows.push(el('label', {class: 'srow chk'}, r, el('span', {dir: 'auto'}, LTR() ? t.en : t.ur)));
     }));
     const OL = {ur: 'دوسری زبانوں کے تراجم', ar: 'تراجم بلغات أخرى', en: 'Other languages', bn: 'অন্যান্য ভাষা', hi: 'अन्य भाषाएँ', gu: 'અન્ય ભાષાઓ', fr: 'Autres langues'};
     const more = orows.length ? [el('details', {class: 'moretr', open: Q.meta.editions.some(e => chosen.has(e.key) && e.lang !== ui) ? '' : null}, el('summary', {class: 'grp'}, OL[ui] || OL.en), ...orows)] : [];
     const allRows = tl.length ? [el('p', {class: 'grp'}, T('selectTr'))].concat(rows, more, [el('p', {class: 'grp'}, T('tafsir'))], trows) : rows.concat(more);
     sheet(T('selectTr'), allRows, [[T('reset'), () => { chosen.clear(); chosen.add('ur_junagarhi'); boxes.forEach(([e, c]) => c.checked = chosen.has(e.key)); return false; }],
-      [T('done'), () => { if (tsel) QS.tafsir = tsel; QS.tr = Q.meta.editions.filter(e => chosen.has(e.key)).map(e => e.key); QS.trBy[ui] = QS.tr.slice(); qsave(); if (redraw && R) showReader(R.kind, R.n, (R.verses[firstVisible()] || [])[1]); else if (location.hash === '' || location.hash === '#/') route(); }]]);
+      [T('done'), () => { if (tsel) QS.tafsir = tsel; QS.tafOn = !tafOff && !!QS.tafsir; QS.tr = Q.meta.editions.filter(e => chosen.has(e.key)).map(e => e.key); QS.trBy[ui] = QS.tr.slice(); qsave(); if (redraw && R) showReader(R.kind, R.n, (R.verses[firstVisible()] || [])[1]); else if (location.hash === '' || location.hash === '#/') route(); }]]);
   }
 
   /* ---------- reader settings ---------- */
@@ -6328,7 +6350,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qsearchPh: 'اكتب كلمات الآية، مثل: نحن نقص', searchIn: 'في التراجم المختارة والنص العربي', netAudio: 'التلاوة تحتاج إلى الإنترنت.',
     audioErr: 'تعذّر تشغيل هذا الصوت. تحقق من الإنترنت أو جرّب قارئًا آخر.', recite: 'استمع إلى التلاوة', jami: 'تلخيص الجامع الكامل', tuhfa: 'شرح تحفة المتقين',
     thisChapter: 'هذا الباب', bmHadith: 'الأحاديث المحفوظة', bmQuran: 'الآيات المحفوظة', searchHadith: 'البحث في الحديث', start: 'ابدأ', tafsir: 'التفسير',
-    tafsirOf: r => 'تفسير الآية ' + r, noTafsir: 'لا يوجد لهذه الآية تعليق مستقل في هذا التفسير.', tafsirMissing: 'لم توجد بعد في مصدر مفتوح:',
+    tafsirOf: r => 'تفسير الآية ' + r, noTafsirSel: 'بدون تفسير', noTafsir: 'لا يوجد لهذه الآية تعليق مستقل في هذا التفسير.', tafsirMissing: 'لم توجد بعد في مصدر مفتوح:',
     surahShort: 'سورة', paraShort: 'جزء', chapShort: 'باب', onlyAya: 'الآية فقط', ayaTr: 'الآية مع الترجمة', copyAll: 'انسخ الكل', moreRes: n => n + ' نتيجة أخرى — زد الكلمات لتضييق البحث',
     viewMode: 'طريقة عرض القرآن', pagesMode: 'مصحف المدينة (صفحات)', rasm: 'الرسم', rasmU: 'العثماني — مصحف المدينة', rasmI: 'الهندي الباكستاني',
     tajweed: 'ألوان التجويد (بالرسم العثماني)', tjLegend: 'دليل ألوان التجويد',
@@ -6389,7 +6411,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     qsearchPh: 'আয়াতের শব্দ লিখুন, যেমন: نحن نقص', searchIn: 'বাছাইকৃত অনুবাদ ও আরবি পাঠে', netAudio: 'তিলাওয়াতের জন্য ইন্টারনেট লাগবে।',
     audioErr: 'এই অডিও চালানো যায়নি। ইন্টারনেট দেখুন বা অন্য ক্বারী চেষ্টা করুন।', recite: 'তিলাওয়াত শুনুন', jami: 'তালখীস আল-জামি আল-কামিল', tuhfa: 'শরহে তুহফাতুল মুত্তাকীন',
     thisChapter: 'এই অধ্যায়', bmHadith: 'সংরক্ষিত হাদীস', bmQuran: 'সংরক্ষিত আয়াত', searchHadith: 'হাদীস খুঁজুন', start: 'শুরু', tafsir: 'তাফসীর',
-    tafsirOf: r => 'আয়াত ' + r + '-এর তাফসীর', noTafsir: 'এই তাফসীরে এই আয়াতের আলাদা ব্যাখ্যা নেই।', tafsirMissing: 'এগুলো এখনো উন্মুক্ত উৎসে পাওয়া যায়নি:',
+    tafsirOf: r => 'আয়াত ' + r + '-এর তাফসীর', noTafsirSel: 'তাফসীর ছাড়া', noTafsir: 'এই তাফসীরে এই আয়াতের আলাদা ব্যাখ্যা নেই।', tafsirMissing: 'এগুলো এখনো উন্মুক্ত উৎসে পাওয়া যায়নি:',
     surahShort: 'সূরা', paraShort: 'পারা', chapShort: 'অধ্যায়', onlyAya: 'শুধু আয়াত', ayaTr: 'আয়াত ও অনুবাদ', copyAll: 'সব কপি করুন', moreRes: n => 'আরও ' + n + 'টি ফলাফল — শব্দ বাড়িয়ে খোঁজ সীমিত করুন',
     viewMode: 'কুরআন দেখার ধরন', pagesMode: 'মদীনার মুসহাফ (পৃষ্ঠা)', rasm: 'লিপি', rasmU: 'উসমানী — মদীনার মুসহাফ', rasmI: 'ইন্দো-পাক',
     tajweed: 'তাজবীদের রং (উসমানী লিপিতে)', tjLegend: 'তাজবীদের রঙের ব্যাখ্যা',
@@ -7539,7 +7561,7 @@ Object.assign(I.hi, {
   thisChapter: 'यह अध्याय',
   searchHadith: 'हदीस खोजें',
   tafsirOf: r => 'आयत ' + r + ' की तफ़सीर',
-  noTafsir: 'इस आयत की तफ़सीर इस किताब में अलग से नहीं दी गई।',
+  noTafsirSel: 'बिना तफ़सीर', noTafsir: 'इस आयत की तफ़सीर इस किताब में अलग से नहीं दी गई।',
   tafsirMissing: 'ये तफ़सीरें अभी किसी ओपन सोर्स स्रोत में नहीं मिलीं:',
   paraShort: 'पारा',
   chapShort: 'अध्याय',
@@ -7728,7 +7750,7 @@ audioErr: 'આ ઑડિયો વાગી શક્યો નહીં. ઇન
 thisChapter: 'આ બાબ',
 searchHadith: 'હદીસ શોધો',
 tafsirOf: r => 'આયત ' + r + ' ની તફસીર',
-noTafsir: 'આ તફસીરમાં આ આયત પર અલગ ટિપ્પણી નથી.',
+noTafsirSel: 'તફસીર વિના', noTafsir: 'આ તફસીરમાં આ આયત પર અલગ ટિપ્પણી નથી.',
 tafsirMissing: 'ઓપન સોર્સમાં હજુ મળ્યું નથી:',
 paraShort: 'પારો',
 chapShort: 'બાબ',
@@ -7917,7 +7939,7 @@ Object.assign(I.fr, {
   thisChapter: 'Ce chapitre',
   searchHadith: 'Rechercher un hadith',
   tafsirOf: r => 'Tafsir du verset ' + r,
-  noTafsir: "Ce tafsir n'a pas de commentaire distinct sur ce verset.",
+  noTafsirSel: 'Sans tafsir', noTafsir: "Ce tafsir n'a pas de commentaire distinct sur ce verset.",
   tafsirMissing: "Pas encore trouvés dans une source libre :",
   paraShort: 'Juz',
   chapShort: 'Chap.',
