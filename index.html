@@ -154,6 +154,7 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 /* headings in Jameel Noori Kasheeda (Urdu interface, Jameel chosen) */
 html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){font-family:var(--urduhead)}
 .shfoot{margin:.6rem 0 .1rem;padding:.45rem .4rem 0;border-top:1px dashed color-mix(in srgb,var(--maroon) 45%,transparent);text-align:center;color:var(--maroon);font-family:var(--urdu);line-height:1.8;font-size:.68em;opacity:.92}.shfoot .far{font-family:var(--arabic);font-size:1.12em;line-height:1.7}.sref{font-family:var(--arabic);font-size:.78rem;margin:.1rem 0 .3rem}.sref a{color:var(--accent);text-decoration:none}.shfoot p{margin:0}.hbsub{color:var(--maroon)}
+.ayn{display:inline-flex;align-items:center;justify-content:center;min-width:1.5em;height:1.5em;box-sizing:border-box;border:1.2px solid currentColor;border-radius:50%;font:600 .62em/1 var(--urdu);margin:0 .3em;vertical-align:middle;direction:ltr;unicode-bidi:isolate;color:var(--maroon);padding:0 .15em}
 .qayah{font-family:"Scheherazade New","Noto Naskh Arabic","Amiri",serif;direction:rtl;unicode-bidi:isolate;font-size:1.08em;color:var(--maroon);line-height:2.2}
 .ltr{direction:ltr;text-align:left;font:.95rem/1.5 var(--serif);color:var(--muted);margin:.2rem 0}
 .bc{font-size:1.15rem;line-height:1.9;color:var(--muted);margin:.2rem 0}
@@ -325,7 +326,7 @@ body.withplayer .resume.float{display:none}
 @keyframes tkright{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
-.agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--tkc)}
+.agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--ink)}
 .rjhero h2{font:700 1.3rem/1.9 var(--urduhead,var(--serif));color:var(--accent);margin:.2rem .2rem .6rem;text-align:center}.rjmaster .rjfrom{font:600 .78rem/1.4 system-ui;color:var(--muted,#7a7468);text-align:center;margin-bottom:.2rem}
 .rjtable{border:1px solid var(--line,#d9d2c3);border-radius:12px;overflow:hidden;margin:.2rem 0 .7rem}.rjrow{display:flex;gap:.8rem;padding:.5rem .9rem;border-top:1px solid var(--line,#e6e0d2);font:1.05rem/1.9 var(--arabic)}.rjrow:first-child{border-top:0}.rjk{flex:0 0 7.5rem;color:var(--muted,#7a7468);font-weight:600}.rjv{flex:1}
 .rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
@@ -1203,12 +1204,21 @@ function rich(text,lang){
   if(text&&/[\ue000\ue001\ue004-\ue009]/.test(text)){const out=[];text.split(/\ue000([^\ue001]*)\ue001?/).forEach((seg,i)=>{if(!seg)return;seg=seg.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');
     if(i%2)out.push(el('span',{class:'red'},...rich0(seg,lang)));else out.push(...rich0(seg,lang));});return out;}
   return rich0(text,lang);}
+/* verse numbers inside ﴿ … ﴾ (۰۰۱ or 1 before the waqf mark): in a bracket with several verses each inner number is a small circle, the number of the last verse is not shown; copy gives (1) (2) */
+const AYR=/([ؕ-ؚۖ-ۜ]*)\s*([۰-۹٠-٩]+)\s*([ؕ-ؚۖ-ۜ]*)/g;
+const AYN=d=>parseInt(d.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-0x6f0),10);
+function ayDig(n){const s=String(n);return ui==='ar'?s.replace(/\d/g,c=>String.fromCharCode(0x660+(+c))):s;}
+function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];let i=0,m;AYR.lastIndex=0;
+  while((m=AYR.exec(seg))){const n=AYN(m[2]),rest=seg.slice(AYR.lastIndex).replace(/[\s﴾]+/g,'');out.push(seg.slice(i,m.index)+m[1]+m[3]);i=AYR.lastIndex;if(!n||!rest)continue;out.push(mk(n));}
+  out.push(seg.slice(i));return out;}
+function AYCP(t){return t&&t.indexOf('﴿')>=0?t.replace(/﴿[^﴾]*﴾/g,v=>ayFix(v,n=>' ('+n+') ').join('')):t;}
 function rich0(text,lang){
   const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?((TASH.test(w)||/[يكةىأإٱ]/.test(w))&&!/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9]/.test(w)):ARL.test(w);   /* an Urdu word (فتویٰ، تعالیٰ، سیّدنا …) stays in the Urdu font even with a shadda or marks */
   if(other&&!ARL.test(text))return [text];
   text.split(/(﴿[^﴾]*(?:﴾|$)|\{[^{}]{2,}\}|«[^»]*»)/).forEach(seg=>{
     if(!seg)return;
-    if(seg[0]==='﴿'||(seg[0]==='{'&&ARL.test(seg))){out.push(el('span',{class:'qayah',lang:'ar'},seg));return;}
+    if(seg[0]==='﴿'){out.push(el('span',{class:'qayah',lang:'ar'},...ayFix(seg,n=>el('span',{class:'ayn ud'},ayDig(n)))));return;}
+    if(seg[0]==='{'&&ARL.test(seg)){out.push(el('span',{class:'qayah',lang:'ar'},seg));return;}
     if(seg[0]==='«'){out.push(lang==='ur'||(other&&ARL.test(seg))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
     if(lang==='ar'){out.push(seg);return;}
     let run=[],plain=[];
@@ -1281,9 +1291,9 @@ function copyPick(btn,has,go){
   setTimeout(()=>document.addEventListener('click',function f(){m.remove();document.removeEventListener('click',f);},{once:true}),0);
 }
 window.copyPick=copyPick;
-function withLink(t,h){t=CLN(t);return (t||'').trim()+'\n\n📲 '+T('brand')+': '+appLink(h);}
+function withLink(t,h){t=CLN(AYCP(t));return (t||'').trim()+'\n\n📲 '+T('brand')+': '+appLink(h);}
 async function copyText(s){
-  s=CLN(s);
+  s=CLN(AYCP(s));
   try{await navigator.clipboard.writeText(s);return true}catch(e){}
   const ta=document.createElement('textarea');ta.value=s;ta.style.cssText='position:fixed;opacity:0';document.body.append(ta);ta.select();
   let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();return ok;
