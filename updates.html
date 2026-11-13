@@ -40,7 +40,7 @@ fetch('news.json').then(function(r){return r.json()}).then(function(N){
     var a=document.createElement('article'),d=document.createElement('time');d.textContent=n.d;a.append(d);
     var h=document.createElement('h2');h.textContent=(n.t&&(n.t[ui]||n.t.en||n.t.ur))||'';a.append(h);
     var is=(n.i&&(n.i[ui]||n.i.en||n.i.ur))||[],u=document.createElement('ul');
-    is.forEach(function(x){var li=document.createElement('li');li.textContent=x;u.append(li)});a.append(u);
+    is.forEach(function(x,ix){var li=document.createElement('li'),h=n.l&&n.l[ix];if(h){var A=document.createElement('a');A.href='./'+h;A.textContent=x;li.append(A)}else li.textContent=x;u.append(li)});a.append(u);
     L.append(a);
   });
 }).catch(function(){document.getElementById('list').textContent='…'});
