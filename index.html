@@ -13,7 +13,7 @@
 .tklab{flex:none;font-size:.82rem;font-weight:700;padding:.05rem .65rem;border-radius:99px;color:#8a5a12;background:color-mix(in srgb,#c98a1b 18%,transparent)}
 html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
 @media (prefers-color-scheme:dark){.tklab{color:#f0c46c}}
-.trrow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.45rem 0 .3rem;padding-top:.45rem;border-top:1px dashed color-mix(in srgb,var(--accent) 30%,transparent)}
+.trrow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.45rem 0 .3rem;padding-top:.45rem;border-top:1px dashed color-mix(in srgb,var(--tkc) 30%,transparent)}
 .trtabs{display:contents}.trlab{font-size:.85rem;color:var(--muted,#888)}
 .trbtn{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);padding:.1rem .75rem;border-radius:99px;line-height:1.7}
 .trbtn.on{background:var(--accent);color:#fff}.trbtn.static{cursor:default}
@@ -44,7 +44,7 @@ html[lang=ur] .trrow .trbtn,html[lang=ur] .trrow .trlab{font-size:.92rem}
 /* takhrij in the style of the full Jami: ruling and the matching reference coloured by the markers, the rest plain */
 
 /* takhrij of the Jami and its sub-books: a calm box with a coloured edge; plain references in the normal ink, their numbers green, the special ones red / blue / orange / purple */
-.card .tk.ar,#view>p.tk.ar,.agrade.jtk{background:color-mix(in srgb,var(--accent) 6%,transparent);border-inline-start:3px solid var(--accent);border-radius:10px;padding:.55rem .85rem;margin:.7rem 0;line-height:2.05;color:var(--ink)}
+.card .tk.ar,#view>p.tk.ar,.agrade.jtk{background:color-mix(in srgb,var(--tkc) 6%,transparent);border-inline-start:3px solid var(--tkc);border-radius:10px;padding:.55rem .85rem;margin:.7rem 0;line-height:2.05;color:var(--ink)}
 .card .tk.ar .rlink,#view>p.tk.ar .rlink,.agrade.jtk .rlink{font-weight:700;border-bottom:1px dotted currentColor;text-decoration:none}
 @media (prefers-color-scheme:dark){.rlink{color:#5fd08f}}
 a.hn,.hn{color:#a4262c;font-weight:700;text-decoration:none;font-family:var(--arabic);font-size:1.02em}
@@ -81,9 +81,9 @@ a.btn.jfull{text-decoration:none;color:var(--accent);font-weight:600;background:
 @font-face{font-family:"Mehr Nastaliq Web";font-display:swap;size-adjust:105%;src:local("Mehr Nastaliq Web"),url("fonts/MehrNastaliqWeb.woff2") format("woff2")}
 @font-face{font-family:"Alvi Lahori Nastaleeq";font-display:swap;size-adjust:122%;src:local("Alvi Lahori Nastaleeq"),local("Alvi Nastaleeq"),url("fonts/AlviLahoriNastaleeq.woff2") format("woff2")}
 :root{--urduhead:"Jameel Noori Kasheeda","Jameel Noori Nastaleeq","Gulzar",serif;--urdu:"Jameel Noori Nastaleeq","Gulzar","Noto Nastaliq Urdu","Noto Naskh Arabic",serif;--arabic:"Amiri","Scheherazade New","Noto Naskh Arabic","Traditional Arabic",serif;--quran:"Amiri Quran","Amiri","Scheherazade New",serif;--serif:Georgia,"Times New Roman",serif;--sans:system-ui,"Segoe UI",Roboto,Arial,sans-serif}
-:root{--paper:#f3f6fa;--card:#fff;--ink:#16222c;--muted:#5d6b75;--sanad:#6b7d88;--line:#e1e6ec;--accent:#2f7fc0;--bar:#2f7fc0;--wash:#e8f1f9;--mark:#f6e7a8;--maroon:#8b1a2b;--page:#fffdf5;--shadow:0 1px 8px rgba(20,40,70,.10)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0f161b;--card:#18222a;--ink:#e8eceb;--muted:#9aa8b0;--sanad:#8fa1ab;--line:#2b3840;--accent:#74b6e6;--bar:#1d4f78;--wash:#1e3037;--mark:#5a4d16;--maroon:#ec8f9c;--page:#161d22;--shadow:0 1px 8px rgba(0,0,0,.4)}}
-:root[data-theme="dark"]{--paper:#0f161b;--card:#18222a;--ink:#e8eceb;--muted:#9aa8b0;--sanad:#8fa1ab;--line:#2b3840;--accent:#74b6e6;--bar:#1d4f78;--wash:#1e3037;--mark:#5a4d16;--maroon:#ec8f9c;--page:#161d22;--shadow:0 1px 8px rgba(0,0,0,.4)}
+:root{--tkc:#2f7fc0;--paper:#f3f6fa;--card:#fff;--ink:#16222c;--muted:#5d6b75;--sanad:#6b7d88;--line:#e1e6ec;--accent:#2f7fc0;--bar:#2f7fc0;--wash:#e8f1f9;--mark:#f6e7a8;--maroon:#8b1a2b;--page:#fffdf5;--shadow:0 1px 8px rgba(20,40,70,.10)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--tkc:#74b6e6;--paper:#0f161b;--card:#18222a;--ink:#e8eceb;--muted:#9aa8b0;--sanad:#8fa1ab;--line:#2b3840;--accent:#74b6e6;--bar:#1d4f78;--wash:#1e3037;--mark:#5a4d16;--maroon:#ec8f9c;--page:#161d22;--shadow:0 1px 8px rgba(0,0,0,.4)}}
+:root[data-theme="dark"]{--tkc:#74b6e6;--paper:#0f161b;--card:#18222a;--ink:#e8eceb;--muted:#9aa8b0;--sanad:#8fa1ab;--line:#2b3840;--accent:#74b6e6;--bar:#1d4f78;--wash:#1e3037;--mark:#5a4d16;--maroon:#ec8f9c;--page:#161d22;--shadow:0 1px 8px rgba(0,0,0,.4)}
 :root{box-sizing:border-box;padding-bottom:env(safe-area-inset-bottom,0px)}
 html{background:var(--paper);scroll-padding-top:calc(env(safe-area-inset-top,0px) + 4rem)}
 *{box-sizing:border-box}
@@ -325,7 +325,7 @@ body.withplayer .resume.float{display:none}
 @keyframes tkright{from{transform:translateX(-100%)}to{transform:translateX(0)}}
 @media (prefers-reduced-motion:reduce){.tick .tk{animation:none;padding:0 1rem !important}.tick{white-space:normal;text-align:center}}
 .note.foot{text-align:center;order:9;margin:1.4rem 0 .4rem}
-.agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--accent)}
+.agrade{font-family:var(--arabic);font-size:1.02rem;line-height:1.8;color:var(--tkc)}
 .rjhero h2{font:700 1.3rem/1.9 var(--urduhead,var(--serif));color:var(--accent);margin:.2rem .2rem .6rem;text-align:center}.rjmaster .rjfrom{font:600 .78rem/1.4 system-ui;color:var(--muted,#7a7468);text-align:center;margin-bottom:.2rem}
 .rjtable{border:1px solid var(--line,#d9d2c3);border-radius:12px;overflow:hidden;margin:.2rem 0 .7rem}.rjrow{display:flex;gap:.8rem;padding:.5rem .9rem;border-top:1px solid var(--line,#e6e0d2);font:1.05rem/1.9 var(--arabic)}.rjrow:first-child{border-top:0}.rjk{flex:0 0 7.5rem;color:var(--muted,#7a7468);font-weight:600}.rjv{flex:1}
 .rjrank{display:inline-block;font:700 1rem/1.7 var(--arabic);padding:0 .8rem;border-radius:999px;border:1px solid}.rjrank.good{color:#0a6b3a;background:rgba(10,107,58,.1)}.rjrank.warn{color:#9a6200;background:rgba(200,130,0,.12)}.rjrank.bad{color:#a4161a;background:rgba(200,30,30,.1)}
@@ -1128,7 +1128,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=bc0fa76fc4", "data/d2.js?h=ad6518de54", "data/d3.js?h=74ca057683", "data/d4.js?h=e3f1e8b215", "data/d5.js?h=518b81bbca", "data/d6.js?h=bf634093c2", "data/d7.js?h=ef9c678867", "data/d8.js?h=724c9c6972", "data/d9.js?h=1f61a9cd63", "data/d10.js?h=8d22605d72"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44ac425330", "data/d2.js?h=09931162c1", "data/d3.js?h=16bb1545af", "data/d4.js?h=d9173eca4f", "data/d5.js?h=66a1cea61d", "data/d6.js?h=c2cc140c8f", "data/d7.js?h=f925864f5b", "data/d8.js?h=560d6cc504", "data/d9.js?h=c60cfc40ea", "data/d10.js?h=8b01e14a67"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
 </script>
 <script>
 const I={
@@ -1438,7 +1438,7 @@ function hadithCard(d,scope){
   const fb=el('div',{class:'refbox fullbox',hidden:true});
   c.append(el('div',{class:'top'},gradeNode(d.grade)));
   // the number stands in front of the Arabic text, plain and red like the printed Jami: «12345- عن ...» (English digits; Arabic digits in the Arabic interface)
-  const hn=el('span',{class:'hn',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:X('full'),on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},(ui==='ar'?NUM(d.num):String(d.num))+' -');
+  const hn=el('span',{class:'hn',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:X('full'),on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},(ui==='ar'?NUM(d.num):String(d.num))+'-');
   const mt=el('div',{class:'mt ar',lang:'ar'});
   d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(sanadEl(d));pe.append(...rich(p,'ar'));if(i===0&&!d.sanad)linkSanadDom(pe,d);if(i===0)pe.prepend(hn,' ');mt.append(pe);});{const rn=repNode(d);if(rn)mt.append(rn);}
   {const tb=fullTabs(d,mt,fb);if(tb)c.append(tb);}
@@ -1580,7 +1580,7 @@ async function showBookList(cat,aut,authors,topics){
    const ik=rows.findIndex(r=>r.key==='jamik'),ij=rows.findIndex(r=>r.key==='jami');if(ik>=0&&ij>=0&&ik>ij){const x=rows.splice(ik,1)[0];rows.splice(ij,0,x);}}
   const subjRows=[];const takeSubj=()=>{};   // Seerah, Fazail, Fitan, Tuhfa stay in the list (they were hidden and could not be found)
   const nJ=rows.length;
-  colls.forEach(c=>rows.push({lg:c.langs,tr:ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui),key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
+  colls.forEach(c=>rows.push({jm:c.jami?Math.min(...(Array.isArray(c.jami)?c.jami:Object.values(c.jami)).map(Number)):0,lg:c.langs,tr:ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui),key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
   takeSubj();
   {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Talkhis Al-Jami al-Kamil kitab list
   {const OR=["hifzhadith","bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "najm", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh12397", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='تلخيص الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
@@ -1591,6 +1591,20 @@ async function showBookList(cat,aut,authors,topics){
   {const h=rows.slice(0,nJ),t=rows.slice(nJ).map((x,i)=>[x,i]).sort((a,b)=>(a[0].tr?0:1)-(b[0].tr?0:1)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...h,...t);}   // after Al-Jami al-Kamil and its books: all the translated books, then the others
   {const h=rows.slice(0,nJ),t=rows.slice(nJ),seen=new Set(),out=[],au=r=>Array.isArray(r.au)&&r.au[0];   // inside each category (and translated / not) all the books of one author stand together, at the place of his first book
    t.forEach(r=>{const a=au(r);if(!a){out.push(r);return;}const k=(r.tr?1:0)+'|'+r.cat+'|'+a;if(seen.has(k))return;seen.add(k);out.push(...t.filter(x=>au(x)===a&&!!x.tr===!!r.tr&&x.cat===r.cat));});rows.length=0;rows.push(...h,...out);}
+  {  // Al-Adab al-Ali exists as two books (Urdu / English+Bengali): only the one of the reader's language is listed, never both
+    const drop=ui==='ur'||ui==='ar'?'adabaalien':'adabaali';
+    for(let i=rows.length-1;i>=0;i--)if(rows[i].key===drop&&rows.some(x=>x.key!==drop&&/^adabaali/.test(x.key)))rows.splice(i,1);
+  }
+  if(ui!=='ar'){   // order: Al-Jami al-Kamil, Talkhis, translated hadith books (Bukhari, Muslim, the Sunan), books taken from Al-Jami in the order of the Jami, then the other translated books and sharhs
+    const SUN=['bukhari','muslim','abudawud','tirmidhi','nasai','ibnmajah','malik','darimi'];
+    const top=['jamik','jami'].map(k=>rows.find(r=>r.key===k)).filter(Boolean);
+    const sun=SUN.map(k=>rows.find(r=>r.key===k&&r.tr)).filter(Boolean);
+    const sub=rows.filter(r=>r.jm&&r.tr&&!top.includes(r)&&!sun.includes(r)).sort((x,y)=>x.jm-y.jm);
+    const used=new Set([...top,...sun,...sub]);
+    const rest=rows.filter(r=>!used.has(r)).sort((x,y)=>(y.key==='tuhfa')-(x.key==='tuhfa'));
+    const tr1=rest.filter(r=>r.tr||r.key==='tuhfa'),oth=rest.filter(r=>!r.tr&&r.key!=='tuhfa');
+    rows.length=0;rows.push(...top,...sun,...sub,...tr1,...oth);
+  }
   rows.forEach((r,i)=>{r.no=i+1;});
   const RC=window.RB&&RB.on?await RB.catalog():null;
   const AUS=new Map();rows.concat(subjRows).forEach(r=>{if(Array.isArray(r.au)&&r.au[0]!=='aslaf'){const o=AUS.get(r.au[0])||{a:r.au,n:0};o.n++;AUS.set(r.au[0],o);}});
@@ -1826,7 +1840,8 @@ const URDU_NAMES_UR=[['jameel','جمیل نوری نستعلیق'],['mehr','مہ
 const URDU_NAMES_AR=[['jameel','جميل نوري نستعليق'],['mehr','مهر نستعليق'],['alvi','علوي نستعليق'],['gulzar','غولزار نستعليق'],['noto','نوتو نستعليق']];
 const URDU_NAMES_LAT=[['jameel','Jameel Noori Nastaleeq'],['mehr','Mehr Nastaleeq'],['alvi','Alvi Nastaleeq'],['gulzar','Gulzar Nastaleeq'],['noto','Noto Nastaliq']];
 const urduNames=()=>ui==='ur'?URDU_NAMES_UR:ui==='ar'?URDU_NAMES_AR:URDU_NAMES_LAT;
-function applyLook(){const h=document.documentElement;h.dataset.color=LOOK.color;h.style.setProperty('--urdu',URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel);h.style.setProperty('--urduhead',LOOK.urdu==='jameel'?'"Jameel Noori Kasheeda",'+URDU_FONTS.jameel:(URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel));h.dataset.theme=LOOK.mode==='auto'?(darkQ&&darkQ.matches?'dark':'light'):LOOK.mode;
+function applyLook(){const h=document.documentElement;h.dataset.color=(/^#\/q(\/|$)/.test(location.hash)?'blue':LOOK.color);h.style.setProperty('--urdu',URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel);h.style.setProperty('--urduhead',LOOK.urdu==='jameel'?'"Jameel Noori Kasheeda",'+URDU_FONTS.jameel:(URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel));h.dataset.theme=LOOK.mode==='auto'?(darkQ&&darkQ.matches?'dark':'light'):LOOK.mode;
+window.addEventListener("hashchange",()=>{try{applyLook()}catch(e){}});
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(h).getPropertyValue('--bar').trim()||'#2f7fc0';}
 if(darkQ&&darkQ.addEventListener)darkQ.addEventListener('change',()=>{if(LOOK.mode==='auto')applyLook();});
 applyLook();
@@ -4651,13 +4666,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the ruling of a hadith in colour: sahih/hasan green, da'if orange, mawdu' red
   const tint = (node, g) => { const cat = window.GRADECAT ? window.GRADECAT(g) : '', gt = String(g || '').replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, ''); if (!cat || !gt) return node;
     const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); while (tw.nextNode()) { const t = tw.currentNode, i = t.nodeValue.indexOf(gt); if (i >= 0) { const sp = el('span', {class: 'gc gc-' + cat}, gt), after = t.splitText(i); after.nodeValue = after.nodeValue.slice(gt.length); t.parentNode.insertBefore(sp, after); break; } } return node; };
+  // Jami sub-books: the takhrij names only the book and the number («رواه البخاري (7089)، ومسلم (2359)»), never the book-chapter («في الفتن») of the six books; separate works (الأدب المفرد، الكبرى، الشمائل ...) keep their name
+  const TKN = x => x.replace(/[أإآٱ]/g, 'ا').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
+  const TK_KEEP = new RegExp('^(?:' + ['الأدب المفرد', 'التاريخ', 'خلق أفعال', 'الكبرى', 'الاكبري', 'السنن الكبرى', 'الشمائل', 'شائله', 'عمل اليوم', 'العلل', 'جزء', 'خصائص', 'الكنى', 'الموطأ', 'الضعفاء', 'القراءة خلف', 'رفع اليدين', 'الزهد'].map(TKN).join('|') + ')');
+  const TKCLEAN = (b, g) => b && b.jami && typeof g === 'string' ? g.replace(/(البخاري|مسلم|أبو داود|أبي داود|الترمذي|النسائي|ابن ماجه|ابن ماجة|مالك|الدارمي)\s+في\s+([^()\d،:\ue000-\ue0ff]{2,45}?)(\s*[\ue000-\ue0ff]?\s*\()/g, (m, a, x, c) => TK_KEEP.test(TKN(x.trim())) ? m : a + c) : g;
   const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : '')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   function hobj(b, n, lang) {
     const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null, e = row(b, 'en', n);
-    return {num: n, sanad: '', matn: [a ? a[1] : ''], grade: b.parts ? ((t && t[2]) || (a && a[2]) || '') : ((e && e[2]) || (t && t[2]) || (a && a[2]) || ''), content: t ? {translation: {[lang]: [t[1]]}} : {},
+    return {num: n, sanad: '', matn: [a ? a[1] : ''], grade: TKCLEAN(b, b.parts ? ((t && t[2]) || (a && a[2]) || '') : ((e && e[2]) || (t && t[2]) || (a && a[2]) || '')), content: t ? {translation: {[lang]: [t[1]]}} : {},
       part_en: bname(b), chapter_en: '', takhrij_en: ''};
   }
   // search hits in red (like the Quran search): wrap whole words that match a query word (also with ال / و in front)
@@ -4812,8 +4831,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (jx) c.append(el('div', {class: 'bkcirc'}, el('a', {class: 'bkc', href: '#/s/' + b.key + '/n/' + n}, note ? '٭' : (ui === 'ar' ? NUM(own && !b.abno ? pn : n) : String(own && !b.abno ? pn : n))))); 
     // the number stands in front of the Arabic text, plain and red, like the printed Jami: «12345- عن ...» (English digits; Arabic digits in the Arabic interface)
     const hnTxt = x => ui === 'ar' ? NUM(x) : String(x), ownNo = (own && !b.abno ? pn : n);
-    const hnEl = note ? null : jx ? el('a', {class: 'hn jn', href: '#/h/' + jx, on: {click: e => { e.preventDefault(); const h = '#/h/' + jx; if (window.hbOpen) window.hbOpen('jamik', h); else { try { localStorage.book = 'jamik'; } catch (x) {} location.hash = h; } }}}, hnTxt(jx) + ' -')
-      : el('a', {class: 'hn', href: '#/s/' + b.key + '/n/' + n}, hnTxt(ownNo) + ' -');
+    const hnEl = note ? null : jx ? el('a', {class: 'hn jn', href: '#/h/' + jx, on: {click: e => { e.preventDefault(); const h = '#/h/' + jx; if (window.hbOpen) window.hbOpen('jamik', h); else { try { localStorage.book = 'jamik'; } catch (x) {} location.hash = h; } }}}, hnTxt(jx) + '-')
+      : el('a', {class: 'hn', href: '#/s/' + b.key + '/n/' + n}, hnTxt(ownNo) + '-');
     c.append(el('div', {class: 'top'}, note ? el('a', {class: 'big qnote', href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, '٭') : null, printed,
       // the library copy of a book that also exists as an Urdu-translated book: one button per matching hadith of that book (matched by the words of the hadith)
       ...(b.xr && b.xr.m[n] != null ? [].concat(b.xr.m[n]).slice(0, 3).map((m, k) => el('a', {class: 'btn', href: '#/s/' + b.xr.key + '/n/' + m, style: k ? '' : 'margin-inline-start:auto'}, ({ur: 'اردو ترجمہ (مولانا عبدالصمد ریالوی) — نمبر ' + fmtN(m), ar: 'الترجمة الأردية — رقم ' + fmtN(m), en: 'Urdu translation (Abdul Samad Rialwi) — no. ' + fmtN(m)})[ui] || ('Urdu translation — ' + fmtN(m)))) : [])));

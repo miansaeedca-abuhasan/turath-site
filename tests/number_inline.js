@@ -2,12 +2,12 @@ const {chromium}=require('playwright');(async()=>{const b=await chromium.launch(
 const go=async(ui,u,sel)=>{await p.addInitScript(u2=>{localStorage.ui=u2;localStorage.newsDay=String(new Date().toDateString())},ui);await p.goto('http://localhost:8765/'+u);await p.waitForSelector(sel,{timeout:40000});await p.waitForTimeout(2000)};
 await go('ur','#/s/seerah/n/5','.card .mt.ar');
 let r=await p.evaluate(()=>{const h=document.querySelector('.mt.ar p .hn');const pr=h&&h.parentElement;return {t:h&&h.textContent,first:pr&&pr.firstElementChild===h,col:h&&getComputedStyle(h).color,tr:[...document.querySelectorAll('.lchips .chip,.trrow .trbtn')].map(x=>getComputedStyle(x).fontFamily).join('|')}});
-if(!/^\d+ -$/.test(r.t||''))bad.push('seerah number not English digits inline: '+r.t);if(!r.first)bad.push('number not first in the Arabic text');if(r.col!=='rgb(164, 38, 44)')bad.push('number colour '+r.col);if(/Kasheeda/.test(r.tr))bad.push('translator tab uses the kasheeda font');
+if(!/^\d+-$/.test(r.t||''))bad.push('seerah number not English digits inline: '+r.t);if(!r.first)bad.push('number not first in the Arabic text');if(r.col!=='rgb(164, 38, 44)')bad.push('number colour '+r.col);if(/Kasheeda/.test(r.tr))bad.push('translator tab uses the kasheeda font');
 await p.goto('http://localhost:8765/#/h/13827');
 await p.evaluate(()=>{localStorage.book='jami'});
 await p.goto('http://localhost:8765/#/s/adabaali/n/1');await p.waitForSelector('.mt.ar .hn',{timeout:40000});
 r=await p.evaluate(()=>({c:(document.querySelector('.bkcirc .bkc')||{}).textContent,n:document.querySelector('.mt.ar .hn').textContent}));
-if(r.c!=='1'||r.n!=='13827 -')bad.push('adab '+JSON.stringify(r));
+if(r.c!=='1'||r.n!=='13827-')bad.push('adab '+JSON.stringify(r));
 await p.evaluate(()=>{localStorage.book='jamik'});await p.goto('http://localhost:8765/#/c/61/0');await p.waitForSelector('.card .mt.ar .hn',{timeout:40000});
-r=await p.evaluate(()=>{const h=document.querySelector('.card .mt.ar .hn');return h.textContent});if(!/^\d+ -$/.test(r))bad.push('jami chapter card number '+r);
+r=await p.evaluate(()=>{const h=document.querySelector('.card .mt.ar .hn');return h.textContent});if(!/^\d+-$/.test(r))bad.push('jami chapter card number '+r);
 console.log(bad.length?'FAIL '+bad.join('; '):'PASS number_inline');await b.close();process.exit(bad.length?1:0)})();
