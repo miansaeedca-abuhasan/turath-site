@@ -4,7 +4,7 @@ const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;c
 await p.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new Date().toDateString())});
 await p.goto('http://localhost:8765/#/s/bulughsaada/n/1');await p.waitForSelector('.card',{timeout:25000});await p.evaluate(()=>document.querySelectorAll('.sheetbg').forEach(n=>n.remove()));await p.waitForTimeout(2500);
 const t=await p.evaluate(()=>document.body.innerText);
-ck(/مَوْلُودٍ/.test(t),'arabic of hadith 1');ck(t.indexOf('تحقیق و تخریج')>t.indexOf('مَوْلُودٍ'),'takhrij after arabic');ck(/ابو ہریرہ/.test(t),'urdu translation');ck(/۱۳۵۹/.test(t),'takhrij in Urdu digits');
+ck(/مَوْلُودٍ/.test(t),'arabic of hadith 1');ck(t.indexOf('تحقیق و تخریج')>t.indexOf('مَوْلُودٍ'),'takhrij after arabic');ck(/ابو ہریرہ/.test(t),'urdu translation');ck(/1359/.test(t),'takhrij in English digits');
 const d=await p.evaluate(async()=>{const x=await fetch('coll/index.js').then(r=>r.text());const i=x.indexOf('"key":"bulughsaada"');return i>0&&/"count":1189/.test(x.slice(i,i+400000))});ck(d,'registered with 1189 hadith');
 ck(errs.length===0,'js errors '+errs[0]);
 await p.goto('http://localhost:8765/#/s/bulughsaada/n/685');await p.waitForTimeout(3000);

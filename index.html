@@ -155,6 +155,7 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 html[lang="ur"] :is(#t1,.grp,.gt,.srow2 .ct,.intro>summary,h1,h2,h3,.tcard .th){font-family:var(--urduhead)}
 .shfoot{margin:.6rem 0 .1rem;padding:.45rem .4rem 0;border-top:1px dashed color-mix(in srgb,var(--maroon) 45%,transparent);text-align:center;color:var(--maroon);font-family:var(--urdu);line-height:1.8;font-size:.68em;opacity:.92}.shfoot .far{font-family:var(--arabic);font-size:1.12em;line-height:1.7}.sref{font-family:var(--arabic);font-size:.78rem;margin:.1rem 0 .3rem}.sref a{color:var(--accent);text-decoration:none}.shfoot p{margin:0}.hbsub{color:var(--maroon)}
 .ayn{display:inline-flex;align-items:center;justify-content:center;min-width:1.5em;height:1.5em;box-sizing:border-box;border:1.2px solid currentColor;border-radius:50%;font:600 .62em/1 var(--urdu);margin:0 .3em;vertical-align:middle;direction:ltr;unicode-bidi:isolate;color:var(--maroon);padding:0 .15em}
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:pre}
 .qayah{font-family:"Scheherazade New","Noto Naskh Arabic","Amiri",serif;direction:rtl;unicode-bidi:isolate;font-size:1.08em;color:var(--maroon);line-height:2.2}
 .ltr{direction:ltr;text-align:left;font:.95rem/1.5 var(--serif);color:var(--muted);margin:.2rem 0}
 .bc{font-size:1.15rem;line-height:1.9;color:var(--muted);margin:.2rem 0}
@@ -383,7 +384,7 @@ body.withplayer .resume.float{display:none}
 .hbseg{display:flex;gap:.4rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.8rem 0 0}.hbseg a{flex:1;text-align:center;padding:.5rem;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:600}.hbseg a.on{background:var(--accent);color:#fff}
 .sau{display:block;font-size:.85rem;color:var(--accent);margin-top:.1rem}.hbrow{border-inline-start:4px solid var(--accent)}
 .aucard{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.85rem 1.1rem;margin-top:.55rem;text-decoration:none;color:var(--ink);border-inline-start:4px solid var(--accent)}.aucard:hover{background:var(--wash)}.aunm{font:700 1.15rem/1.4 var(--urduhead)}.aunm.ar{font-family:var(--arabic)}.aumeta{display:flex;flex-direction:column;align-items:flex-end;gap:.2rem;flex:none}.aupill{background:var(--wash);color:var(--accent);border-radius:999px;padding:.05rem .6rem;font-size:.8rem}
-.rbh{margin-top:.7rem}.rbhd{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.4rem}.rbno{font-weight:700;color:var(--accent)}.rbtxt{font-size:var(--har,24px);line-height:2.1;margin:0}.rbtxt a.rw{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}.rbtxt a.rw:hover{color:var(--accent)}.rbtxt .mt{background:var(--wash);border-radius:6px;padding:0 .2rem}.rbnav{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}.rbgo{width:8rem!important}.rbcp{font-size:.8rem;padding:.2rem .7rem}
+.rbh{margin-top:.7rem}.rbhd{display:flex;justify-content:flex-end;align-items:center;gap:.5rem;margin-bottom:.4rem}.rbno{font-weight:700;color:var(--accent)}.rbtxt{font-size:var(--har,24px);line-height:2.1;margin:0}.rbtxt a.rw{color:inherit;text-decoration:none;border-bottom:1px dotted var(--accent)}.rbtxt a.rw:hover{color:var(--accent)}.rbtxt .mt{background:var(--wash);border-radius:6px;padding:0 .2rem}.rbnav{display:flex;align-items:center;justify-content:space-between;gap:.5rem;margin:.8rem 0;flex-wrap:wrap}.rbgo{width:8rem!important}.rbcp{font-size:.8rem;padding:.2rem .7rem}
 #totop{position:fixed;z-index:60;bottom:9.6rem;inset-inline-end:.9rem;width:2.8rem;height:2.8rem;border-radius:50%;border:0;background:var(--accent);color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.25);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.92}#totop[hidden]{display:none}#totop svg{width:1.5rem;height:1.5rem;fill:currentColor}
 .catgrid{display:grid;gap:.7rem;margin-top:.7rem}.catcard{display:flex;align-items:center;gap:1rem;padding:.9rem 1.1rem;text-decoration:none;color:var(--ink);min-height:4.4rem}.catcard:hover{background:var(--wash)}.catico{flex:none;width:3.1rem;height:3.1rem;border-radius:50%;background:var(--wash);color:var(--accent);display:flex;align-items:center;justify-content:center}.catico svg{width:1.6rem;height:1.6rem;fill:currentColor}.catinfo{flex:1;display:flex;flex-direction:column;align-items:flex-start;text-align:start;gap:.15rem}.cattl{font:700 1.3rem/1.4 var(--urduhead)}.cattl.ar{font-family:var(--arabic)}.catn{font-size:.85rem;color:var(--muted)}
 .srow2{display:flex;align-items:center;gap:.8rem;padding:.8rem 1rem}
@@ -1457,7 +1458,7 @@ function hadithCard(d,scope){
     if(d.takhrij)String(d.takhrij).split('\n').filter(x=>x.trim()).forEach(x=>{const t=el('p',{class:'tk ar',lang:'ar',dir:'rtl',style:'color:inherit;font-size:1rem;line-height:2'});t.append(...refRich(x,d.num));c.append(t);});
     if(d.dr){const dr=drBlock(d);dr.open=true;c.append(dr);}}
   const tr=book==='jamik'?null:trOf(d);
-  if(tr){const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
+  if(tr){const TN={en:'Maulana Sudman Zarif Talha',bn:'মাওলানা সুদমান জারিফ তালহা'}[tr.lang];if(TN)c.append(el('div',{class:'trrow',lang:tr.lang,dir:DIR(tr.lang)},el('span',{class:'trlab'},T('pTr')+' :'),el('span',{class:'trbtn on static'},TN)));const box=el('div',{class:'tr'});tr.paras.forEach(t=>box.append(el('p',{class:tr.lang,lang:tr.lang,dir:DIR(tr.lang)},...rich(t,tr.lang))));c.append(box);}
   c.append(actions(d,scope,true));return c;
 }
 /* ---------- lists ---------- */
@@ -4680,7 +4681,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const TKN = x => x.replace(/[أإآٱ]/g, 'ا').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
   const TK_KEEP = new RegExp('^(?:' + ['الأدب المفرد', 'التاريخ', 'خلق أفعال', 'الكبرى', 'الاكبري', 'السنن الكبرى', 'الشمائل', 'شائله', 'عمل اليوم', 'العلل', 'جزء', 'خصائص', 'الكنى', 'الموطأ', 'الضعفاء', 'القراءة خلف', 'رفع اليدين', 'الزهد'].map(TKN).join('|') + ')');
   const TKCLEAN = (b, g) => b && b.jami && typeof g === 'string' ? g.replace(/(البخاري|مسلم|أبو داود|أبي داود|الترمذي|النسائي|ابن ماجه|ابن ماجة|مالك|الدارمي)\s+في\s+([^()\d،:\ue000-\ue0ff]{2,45}?)(\s*[\ue000-\ue0ff]?\s*\()/g, (m, a, x, c) => TK_KEEP.test(TKN(x.trim())) ? m : a + c) : g;
-  const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : '')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
+  const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
@@ -4861,7 +4862,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
       sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'cursor:pointer;color:var(--accent);font-weight:600', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
     else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? (g => /[\ue000-\ue009]/.test(d.grade) ? g : window.GRADETINT(g, d.grade))(el('p', {class: 'cs agrade' + (/[\ue000-\ue009]/.test(d.grade) ? ' jtk' : ''), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])]))) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade);
-      if (b.tkby) c.append(el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: ui, dir: DIR(ui)}, T('pTakh') + ' ' + (b.tkby[ui] || b.tkby.ur || '')), gEl)); else c.append(gEl); }
+      if (b.tkby) c.append(el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: ui, dir: DIR(ui)}, T('pTakh') + ' ' + (b.tkby[ui] || b.tkby.ur || ''), el('span', {class: 'vh'}, ': ')), gEl)); else c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
@@ -10374,7 +10375,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const cards = rows.map((h, i) => {
       const body = el('p', {class: 'rbtxt ar', lang: 'ar', dir: 'rtl'}, render(h[1]));
       const cp = el('button', {class: 'btn rbcp', type: 'button', on: {click: async () => { try { await navigator.clipboard.writeText(body.textContent + '\n\n— ' + r[1] + ' (' + (k * C.ch + i + 1) + ')'); cp.textContent = T.copied; setTimeout(() => cp.textContent = T.copy, 1500); } catch (e) {} }}}, T.copy);
-      return el('article', {class: 'card rbh', id: 'rbh' + (k * C.ch + i + 1)}, el('div', {class: 'rbhd'}, el('span', {class: 'rbno'}, T.hn(N(k * C.ch + i + 1))), cp), body);
+      body.prepend(el('span', {class: 'rbno hn'}, (ui === 'ar' ? ad(k * C.ch + i + 1) : String(k * C.ch + i + 1)) + '-'), ' ');
+      return el('article', {class: 'card rbh', id: 'rbh' + (k * C.ch + i + 1)}, el('div', {class: 'rbhd'}, cp), body);
     });
     v.replaceChildren(nav(), ...cards, nav(), el('p', {class: 'cs'}, T.note)); window.scrollTo(0, 0);
   }
@@ -10391,7 +10393,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   async function hit(bid, n) { const C = await cat(), k = Math.floor((n - 1) / C.ch), rows = await chunk(bid, k), h = rows[(n - 1) % C.ch]; return h ? {html: h[1], text: h[1].replace(/<[^>]+>/g, ' '), page: k} : null; }
   function hitCard(bid, n, h) {
     const T = L(), body = el('p', {class: 'rbtxt ar', lang: 'ar', dir: 'rtl'}, render(h.html));
-    return el('article', {class: 'card rbh'}, el('div', {class: 'rbhd'}, el('a', {class: 'rbno', href: '#/rb/b/' + bid + '/' + h.page + '#' + n}, T.hn(N(n)))), body);
+    body.prepend(el('a', {class: 'rbno hn', href: '#/rb/b/' + bid + '/' + h.page + '#' + n}, (ui === 'ar' ? ad(n) : String(n)) + '-'), ' ');
+    return el('article', {class: 'card rbh'}, body);
   }
   window.RB = {route, on: ON, isNew, hit, hitCard, catalog: () => cat().catch(() => null), rows: (C, rs) => bookRows(C, sortAu(C, rs), L()), match: (r, q) => BQM(q, r[1]), total: () => cat().then(C => ({b: C.b.length, h: C.b.reduce((a, r) => a + r[4], 0)})).catch(() => ({b: 0, h: 0})), title: () => L().title, count: () => CAT && CAT.then ? 0 : 0, preload: () => cat().then(C => C.b.length).catch(() => 0),
     parent: h => { let m; if ((m = h.match(/^#\/rb\/b\/(\d+)\/\d+$/))) return '#/rb/b/' + m[1]; if ((m = h.match(/^#\/rb\/b\/(\d+)$/))) return '#/hb/c/' + (window.__rbcat && window.__rbcat[m[1]] || ''); return '#/hb'; }};
