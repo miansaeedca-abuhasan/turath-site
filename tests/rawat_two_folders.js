@@ -1,0 +1,20 @@
+// Guard: narrators page = two folders only (register with name search; jarh books with own search); no news block
+const {chromium}=require('playwright');
+(async()=>{let bad=[];const b=await chromium.launch(),p=await b.newPage({viewport:{width:420,height:900}});
+p.on('pageerror',e=>bad.push('pageerror '+e.message));await p.addInitScript(()=>{localStorage.ui='ur'});
+const U='http://localhost:8765/';
+await p.goto(U+'#/s/rijal');await p.waitForTimeout(5000);
+let r=await p.evaluate(()=>({f:document.querySelectorAll('#list a.rjfolder').length,news:!!document.querySelector('#list .newsbox'),inp:!!document.querySelector('#list #rjq'),cards:document.querySelectorAll('#list a.srow2').length}));
+if(r.f!==2||r.news||r.inp||r.cards!==2)bad.push('landing '+JSON.stringify(r));
+await p.goto(U+'#/s/rijal/all');await p.waitForTimeout(6000);
+await p.fill('#rjnq','سفيان الثوري');await p.press('#rjnq','Enter');await p.waitForTimeout(4000);
+r=await p.evaluate(()=>({n:document.querySelectorAll('#list a.rjcd').length,hash:location.hash,t:document.querySelector('#list a.rjcd')&&document.querySelector('#list a.rjcd').innerText}));
+if(!(r.n>=1&&r.n<200)||!/n=/.test(r.hash)||!/سفيان/.test(r.t||''))bad.push('register search '+JSON.stringify(r));
+await p.goto(U+'#/s/rijal/jarh');await p.waitForTimeout(5000);
+await p.fill('#rjq','سفيان');await p.waitForTimeout(6000);
+r=await p.evaluate(()=>({t:document.querySelector('#list').innerText,lib:document.querySelectorAll('#list a.srow2').length,tk:!!document.querySelector('#list a[href="#/s/tahdhibkamal"]')}));
+if(r.tk)bad.push('jarh lists tahdhibkamal');if(r.lib<5)bad.push('jarh lib '+r.lib);
+await p.goto(U+'#/s/rijal?q='+encodeURIComponent('سفيان الثوري'));await p.waitForTimeout(6000);
+r=await p.evaluate(()=>document.querySelectorAll('#list a.rjcd, #list a.srow2, #list .card').length);
+if(r<1)bad.push('q link broken');
+console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');await b.close();process.exit(bad.length?1:0)})();
