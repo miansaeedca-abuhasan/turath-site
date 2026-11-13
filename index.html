@@ -3141,8 +3141,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     };
     sheet(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)),
       [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...arParts(s, a)), chips,
-       el('button', {class: 'btn lbtn', type: 'button', style: 'margin:.4rem 0', on: {click: () => { if (tparas.length) LISTEN.playTexts(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)), tparas, tlang, body); }}}, icon('listen'), T('listenPart')), body,
-       el('p', {class: 'note'}, T('tafsirMissing') + ' ' + Q.tafsirs.missing.join(LTR() ? ', ' : '، '))]);
+       el('button', {class: 'btn lbtn', type: 'button', style: 'margin:.4rem 0', on: {click: () => { if (tparas.length) LISTEN.playTexts(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)), tparas, tlang, body); }}}, icon('listen'), T('listenPart')), body]);
     draw();
   }
   const vi = (s, a) => Q.OFF[s] + a - 1;
