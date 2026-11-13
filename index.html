@@ -396,6 +396,7 @@ body.withplayer .resume.float{display:none}
 .qar.mom{text-align:center}
 .qtr{font-size:var(--qtr);margin:.2rem 0 .5rem}
 .intaf{margin:.5rem 0 .2rem;padding:.5rem .7rem;border-inline-start:3px solid var(--accent,#2e7d5b);background:rgba(46,125,91,.06);border-radius:8px}.intaf:empty{display:none}
+@media (max-width:640px){.intaf{margin-inline:-.9rem;padding:.55rem .65rem;border-radius:6px}.intaf .qtr{margin:.25rem 0 .55rem}.tafbody{margin-inline:-.35rem}}
 .qtr.ur{font-family:var(--urdu);line-height:2.25}
 .qtr.en{font-family:var(--serif);line-height:1.7}
 .qtr.ar{font-family:var(--arabic);line-height:2;font-size:calc(var(--qtr)*1.1)}.qtr.bn{line-height:1.8}
@@ -3067,14 +3068,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   Object.assign(I.en, {qsearchS: 'In this surah: ayah number or words', qsSurah: 'Search in this surah', qsNoAyah: n => 'This surah has no ayah number ' + n + '.', qsGoAyah: 'Open ayah'});
   if (I.ar) Object.assign(I.ar, {qsearchS: 'في هذه السورة: رقم الآية أو كلمات', qsSurah: 'بحث في هذه السورة', qsNoAyah: n => 'ليس في هذه السورة آية رقم ' + n, qsGoAyah: 'افتح الآية'});
   ['bn', 'hi', 'gu', 'fr'].forEach(l => { if (I[l]) Object.assign(I[l], {qsearchS: {bn: 'এই সূরায়: আয়াত নম্বর বা শব্দ', hi: 'इस सूरह में: आयत नंबर या शब्द', gu: 'આ સૂરહમાં: આયત નંબર અથવા શબ્દો', fr: 'Dans cette sourate : numéro ou mots'}[l], qsSurah: {bn: 'এই সূরায় খুঁজুন', hi: 'इस सूरह में खोजें', gu: 'આ સૂરહમાં શોધો', fr: 'Chercher dans cette sourate'}[l], qsNoAyah: n => ({bn: 'এই সূরায় আয়াত ' + n + ' নেই।', hi: 'इस सूरह में आयत ' + n + ' नहीं है।', gu: 'આ સૂરહમાં આયત ' + n + ' નથી.', fr: 'Pas de verset ' + n + '.'}[l]), qsGoAyah: {bn: 'আয়াত খুলুন', hi: 'आयत खोलें', gu: 'આયત ખોલો', fr: 'Ouvrir le verset'}[l]}); });
-  Object.assign(I.ur, {copyRange: 'آیات کاپی / شیئر کریں', copyRangeNote: 'سورت اور آیات کی حد چنیں (مثلاً سورۃ البقرہ آیت 25 سے 35 تک)، پھر صرف آیات یا ترجمہ کے ساتھ۔', mushaf: 'مصحف (مسلسل متن)', viewMode: 'قرآن دیکھنے کا انداز', pagesMode: 'مصحف مدینہ (صفحات)', rasm: 'رسم الخط', rasmU: 'عثمانی — مصحف مدینہ', rasmI: 'انڈو پاک',
+  Object.assign(I.ur, {ayaTrTaf: 'آیت، ترجمہ اور تفسیر', copyRange: 'آیات کاپی / شیئر کریں', copyRangeNote: 'سورت اور آیات کی حد چنیں (مثلاً سورۃ البقرہ آیت 25 سے 35 تک)، پھر صرف آیات یا ترجمہ کے ساتھ۔', mushaf: 'مصحف (مسلسل متن)', viewMode: 'قرآن دیکھنے کا انداز', pagesMode: 'مصحف مدینہ (صفحات)', rasm: 'رسم الخط', rasmU: 'عثمانی — مصحف مدینہ', rasmI: 'انڈو پاک',
     tajweed: 'تجوید کے رنگ (عثمانی رسم الخط میں)', tjLegend: 'تجوید کے رنگوں کی وضاحت',
     tjNames: ['ہمزۂ وصل', 'لامِ شمسی', 'نہ پڑھا جانے والا حرف', 'مدِّ طبعی (۲ حرکات)', 'مدِّ عارض / لین (۲، ۴، ۶)', 'مدِّ متصل (۴، ۵)', 'مدِّ منفصل (۴، ۵)', 'مدِّ لازم (۶)', 'غنہ', 'اخفاء', 'اخفائے شفوی', 'ادغام مع الغنہ', 'ادغام بلا غنہ', 'ادغامِ شفوی', 'ادغامِ متجانسین', 'ادغامِ متقاربین', 'اقلاب', 'قلقلہ'],
     hifz: 'حفظ — تکرار سے تلاوت', hifzNote: 'سورت اور آیات چنیں، ہر آیت کتنی بار دہرانی ہے وہ دبائیں، پھر شروع کریں۔',
     hMore: 'مزید ترتیبات (پوری حد دہرانا، وقفہ، قاری)', hFrom: 'آیت سے', hTo: 'آیت تک', hAyahRep: 'ہر آیت کتنی بار', hAyahRepHint: 'ایک ہی آیت کے لیے «سے» اور «تک» میں ایک ہی نمبر لکھیں', hRangeRep: 'پورا حصہ کتنی بار', hRangeRepHint: 'منتخب آیات ترتیب سے پڑھنے کے بعد دوبارہ شروع سے',
     hGap: 'ہر بار کے بعد وقفہ (سیکنڈ)', hRepN: (a, b) => 'تکرار ' + a + '/' + b, hRoundN: (a, b) => 'دور ' + a + '/' + b,
     previewAudio: 'Claude کے اس لنک میں باہر کی ویب سائٹ سے تلاوت کی آواز چلانے کی اجازت نہیں۔ اپنی ویب سائٹ اور ایپ میں تلاوت چلے گی۔', hifzNoSurah: 'حفظ کی تکرار کے لیے آیت وار تلاوت والا قاری منتخب کریں۔', hifzDone: 'تکرار مکمل ہوگئی'});
-  Object.assign(I.en, {copyRange: 'Copy / share ayahs', copyRangeNote: 'Choose the surah and the ayahs (e.g. al-Baqarah 25 to 35), then the Arabic only or with the translation.', mushaf: 'Mushaf (flowing text)', viewMode: 'How to show the Quran', pagesMode: 'Madinah Mushaf (pages)', rasm: 'Script', rasmU: 'Uthmani — Madinah Mushaf', rasmI: 'Indo-Pak',
+  Object.assign(I.en, {ayaTrTaf: 'Ayah, translation and tafsir', copyRange: 'Copy / share ayahs', copyRangeNote: 'Choose the surah and the ayahs (e.g. al-Baqarah 25 to 35), then the Arabic only or with the translation.', mushaf: 'Mushaf (flowing text)', viewMode: 'How to show the Quran', pagesMode: 'Madinah Mushaf (pages)', rasm: 'Script', rasmU: 'Uthmani — Madinah Mushaf', rasmI: 'Indo-Pak',
     tajweed: 'Tajweed colours (Uthmani script)', tjLegend: 'Tajweed colour guide',
     tjNames: ['Hamzat al-wasl', 'Lam shamsiyyah', 'Silent letter', 'Natural madd (2)', "Madd 'arid / leen (2, 4, 6)", 'Madd muttasil (4, 5)', 'Madd munfasil (4, 5)', 'Madd lazim (6)', 'Ghunnah', 'Ikhfa', 'Ikhfa shafawi', 'Idgham with ghunnah', 'Idgham without ghunnah', 'Idgham shafawi', 'Idgham mutajanisayn', 'Idgham mutaqaribayn', 'Iqlab', 'Qalqalah'],
     hifz: 'Hifz — repeat recitation', hifzNote: 'Choose the surah and ayahs, tap how many times each ayah repeats, then Start.',
@@ -3128,7 +3129,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const LG = ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui)).map(l => [l, T('langs')[l], T('langs')[l]]);
     const chips = el('select', {class: 'tafsel', 'aria-label': T('tafsir')}), body = el('div', {class: 'tafbody'});
     LG.forEach(([l, u, e]) => { const ts = list.filter(t => t.lang === l); if (!ts.length) return;
-      const g = el('optgroup', {label: u}); ts.forEach(t => g.append(el('option', {value: t.key}, LTR() ? t.en : t.ur))); chips.append(g); });
+      const g = el('optgroup', {label: u}); ts.forEach(t => g.append(el('option', {value: t.key}, tafNm(t)))); chips.append(g); });
     chips.addEventListener('change', () => { key = chips.value; QS.tafsir = key; qsave(); draw(); });
     let tparas = [], tlang = 'ur';
     const draw = async () => {
@@ -3151,6 +3152,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const verse = (k, s, a) => (Q.data[k] || [])[vi(s, a)] || '';
   const sName = s => { const m = Q.meta.surahs[s - 1]; return LTR() ? m[0] : m[1]; };
   const edLabel = e => LTR() ? e.en : e.ur;
+  // a tafsir's name always says its language in brackets (Urdu / Arabic ...), like «تفسیر ابنِ کثیر (اردو)»
+  const TLN = {ur: {ur: 'اردو', ar: 'عربی', en: 'انگریزی', bn: 'بنگلہ', hi: 'ہندی', gu: 'گجراتی', fr: 'فرانسیسی'}, ar: {ur: 'أردو', ar: 'عربي', en: 'إنجليزي', bn: 'بنغالي', hi: 'هندي', gu: 'غوجاراتي', fr: 'فرنسي'}};
+  const tafNm = t => { if (LTR()) return t.en; const n = String(t.ur || ''); return /[)）]\s*$/.test(n) || !(TLN[ui] || TLN.ur)[t.lang] ? n : n + ' (' + (TLN[ui] || TLN.ur)[t.lang] + ')'; };
 
   /* ---------- settings ---------- */
   const SMIN = 10, SMAX = 80;
@@ -3374,7 +3378,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     await need(['ar_uthmani']);
     if (!Q.tafsirs) await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js')));
     const list = Q.tafsirs.list, m = h.match(/^#\/q\/tafsir(?:\/([A-Za-z0-9_]+))?(?:\/(\d+))?/), key = m && m[1], sn = m && m[2] ? +m[2] : 0;
-    const nameOf = t => LTR() ? t.en : t.ur, dirOf = l => l === 'ur' || l === 'ar' ? 'rtl' : 'ltr';
+    const nameOf = t => tafNm(t), dirOf = l => l === 'ur' || l === 'ar' ? 'rtl' : 'ltr';
     const t = key && list.find(x => x.key === key);
     if (!t) {
       bar(TFS(), '', true); v.replaceChildren();
@@ -3735,9 +3739,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const from = num(C.from), to = num(C.to);
     const sync = () => { const n = Q.meta.surahs[sel.value - 1][4]; from.max = to.max = n; if (+from.value > n) from.value = 1; if (+to.value > n || +to.value < 1) to.value = n; };
     sel.addEventListener('change', () => { from.value = 1; to.value = Math.min(10, Q.meta.surahs[sel.value - 1][4]); sync(); }); sync();
-    let mode = C.mode;
+    const withTaf = !!(QS.tafOn && QS.tafsir);   // a tafsir is open in the reader: it can be copied too
+    let mode = C.mode === 'tf' && !withTaf ? 'tr' : C.mode;
     const seg = el('div', {class: 'seg', role: 'group'});
-    const drawSeg = () => seg.replaceChildren(...[['aya', T('onlyAya')], ['tr', T('ayaTr')]].map(([k, l]) =>
+    const drawSeg = () => seg.replaceChildren(...[['aya', T('onlyAya')], ['tr', T('ayaTr')]].concat(withTaf ? [['tf', T('ayaTrTaf')]] : []).map(([k, l]) =>
       el('button', {type: 'button', class: 'segb', 'aria-pressed': String(k === mode), on: {click: () => { mode = k; drawSeg(); }}}, l)));
     drawSeg();
     const row = (l, x) => el('label', {class: 'srow'}, el('span', {}, l), x);
@@ -3745,11 +3750,14 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const s = +sel.value, n = Q.meta.surahs[s - 1][4], cl = (x, a, b) => Math.max(a, Math.min(b, Math.round(+x || a)));
       const f = cl(from.value, 1, n), t = cl(to.value, f, n);
       QS.copyR = {s, from: f, to: t, mode}; qsave();
-      if (mode === 'tr') await need(QS.tr);
+      if (mode === 'tr' || mode === 'tf') await need(QS.tr);
+      let tfT = null; if (mode === 'tf') { if (!Q.tafsirs) await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js'))); tfT = Q.tafsirs.list.find(x => x.key === QS.tafsir); if (tfT) await needTafsir(tfT.key, s); }
       const out = [sName(s) + ' (' + NUM(s) + ') : ' + NUM(f) + (t > f ? '–' + NUM(t) : ''), ''];
       for (let a = f; a <= t; a++) {
         out.push(verse(AK(), s, a) + ' ﴿' + ad(a) + '﴾');
-        if (mode === 'tr') { QS.tr.forEach(k => { const v = verse(k, s, a); if (v) out.push(v + ' (' + NUM(a) + ')'); }); out.push(''); }
+        if (mode === 'tr' || mode === 'tf') { QS.tr.forEach(k => { const v = verse(k, s, a); if (v) out.push(v + ' (' + NUM(a) + ')'); });
+          if (tfT) { const g = ((Q.taf[tfT.key] || {})[s] || []).find(x => x[0] <= a && a <= x[1]); if (g && (a === g[0] || a === f)) { out.push('', T('tafsir') + ' — ' + tafNm(tfT) + ' (' + (g[0] === g[1] ? NUM(g[0]) : NUM(g[0]) + '–' + NUM(g[1])) + '):', g[2].replace(/<[^>]+>/g, '').replace(/[\ue000-\uf8ff]/g, '').trim()); } }
+          out.push(''); }
       }
       return withLink(out.join('\n'), '#/q/s/' + s + '/' + f);
     };
@@ -3846,7 +3854,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         const pv = R.verses[i - 1];
         if (!(a === g[0] || !(pv && pv[0] === s && pv[1] >= g[0]))) { box.remove(); return; }
         const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
-        box.append(el('span', {class: 'trname'}, T('tafsir') + ' — ' + (LTR() ? t.en : t.ur) + ' (' + rng + ')'),
+        box.append(el('span', {class: 'trname'}, T('tafsir') + ' — ' + tafNm(t) + ' (' + rng + ')'),
           ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
       } catch (e) { box.remove(); }
     })();
@@ -4334,7 +4342,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     trows.push(el('label', {class: 'srow chk'}, none, el('span', {dir: 'auto'}, T('noTafsirSel'))));
     ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr'].sort((x, y) => (y === ui) - (x === ui)).forEach(l => tl.filter(t => t.lang === l).forEach(t => {
       const r = el('input', {type: 'radio', name: 'tafpick'}); r.checked = QS.tafOn && t.key === tcur; r.addEventListener('change', () => { tsel = t.key; tafOff = false; });
-      trows.push(el('label', {class: 'srow chk'}, r, el('span', {dir: 'auto'}, LTR() ? t.en : t.ur)));
+      trows.push(el('label', {class: 'srow chk'}, r, el('span', {dir: 'auto'}, tafNm(t))));
     }));
     const OL = {ur: 'دوسری زبانوں کے تراجم', ar: 'تراجم بلغات أخرى', en: 'Other languages', bn: 'অন্যান্য ভাষা', hi: 'अन्य भाषाएँ', gu: 'અન્ય ભાષાઓ', fr: 'Autres langues'};
     const more = orows.length ? [el('details', {class: 'moretr', open: Q.meta.editions.some(e => chosen.has(e.key) && e.lang !== ui) ? '' : null}, el('summary', {class: 'grp'}, OL[ui] || OL.en), ...orows)] : [];
@@ -4627,7 +4635,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the ruling of a hadith in colour: sahih/hasan green, da'if orange, mawdu' red
   const tint = (node, g) => { const cat = window.GRADECAT ? window.GRADECAT(g) : '', gt = String(g || '').replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, ''); if (!cat || !gt) return node;
     const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT); while (tw.nextNode()) { const t = tw.currentNode, i = t.nodeValue.indexOf(gt); if (i >= 0) { const sp = el('span', {class: 'gc gc-' + cat}, gt), after = t.splitText(i); after.nodeValue = after.nodeValue.slice(gt.length); t.parentNode.insertBefore(sp, after); break; } } return node; };
-  const tkRow = (kl, L) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
+  const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : '')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
@@ -4800,7 +4808,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;
     if (src && d.grade) { const sb = bookOf(src[0]), h = '#/s/' + src[0] + '/n/' + src[1];
       sref = (el('p', {class: 'cs sref', lang: 'ar', dir: 'rtl'}, ...(() => { const ls = String(d.grade).split('\n'), lk = ls.pop(); return [...ls.flatMap(t => [t, el('br')]), el('span', {class: 'srefl', role: 'link', tabindex: '0', style: 'text-decoration:underline;cursor:pointer;color:var(--accent)', on: {click: () => { if (sb && sb.ext) window.open(sb.ext + h, '_blank', 'noopener'); else location.hash = h; }}}, /^مصدر/.test(lk) ? lk : '(' + lk + ')')]; })())); }
-    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(d.grade)) || 'x'), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade); c.append(gEl); }
+    else if (d.grade) { gEl = /[\u0621-\u064a]/.test(d.grade) && !/[ٹڈڑںےۓ]/.test(d.grade) ? el('p', {class: 'cs agrade gc gc-' + ((window.GRADECAT && window.GRADECAT(d.grade)) || 'x'), lang: 'ar', dir: 'rtl'}, ...String(d.grade).split('\n').flatMap((t, i) => [...(i ? [el('br')] : []), ...(window.refRich ? refRich(t) : [t])])) : el('p', {class: 'cs'}, T('cGrade') + ': ' + d.grade);
+      if (b.tkby) c.append(el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: ui, dir: DIR(ui)}, T('pTakh') + ' ' + (b.tkby[ui] || b.tkby.ur || '')), gEl)); else c.append(gEl); }
     if (b.parts) {
       // متفرق احادیث: translation, explanation (شرح) and benefits (فوائد), each under its own heading, in the chosen language
       // (with no language chosen: the Arabic explanation and benefits)
@@ -4814,7 +4823,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (x && x.t) c.insertBefore(el('p', {class: 'ptitle ' + L, lang: L, dir: DIR(L)}, x.t), c.children[1]);
       // the same order in every book: the Arabic, then the verification and takhrij right below it, then the translation
       if (x && x.k) { const kl = x.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
-        bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, L), d.grade) : paraEl(t, L)), L)); }
+        bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, L), d.grade) : paraEl(t, L)), L, b)); }
       if (lang && rr) bx().append(trRow(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
       if (lang && rr && x && x.fn) c.append(el('div', {class: 'tr pfnbox', lang: L, dir: DIR(L)}, ...x.fn.split('\n').filter(t => t.trim()).map(t => FM(el('p', {class: 'pfn', lang: L, dir: DIR(L)}, t)))));
       addExtras();
@@ -4841,7 +4850,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const xo = l => { const r = row(b, l, n); return r && r[3] && !Array.isArray(r[3]) ? r[3] : null; };
       const kx = TL.map(xo).find(x => x && x.k);
       const tb = el('div', {class: 'tbox'}); c.append(tb);
-      if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); tb.append(tkRow(kl.map(t => paraEl(t, 'ur')), 'ar')); if (gEl) gEl.remove(); }
+      if (kx) { const kl = kx.k.split('\n').filter(t => t.trim()); tb.append(tkRow(kl.map(t => paraEl(t, 'ur')), 'ar', b)); if (gEl) gEl.remove(); }
       const nmOf = o => o ? (o[ui] || o.ur || '') : '';
       const SP = [];   // one panel per translation: {id, l, text, nm, x}
       TL.forEach(l => { const r = row(b, l, n), x = xo(l);
@@ -4870,7 +4879,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       // the takhrij typed as a note «(1) مسند أحمد …»: heading «تحقیق و تخریج», then «grade: references» in one paragraph, no note number, and no matching number in the translation
       const tkNum = xf && !Array.isArray(xf) && xf.k ? (xf.k.match(/^\s*\((\d+)\)/) || [])[1] : null;
       if (tkNum) { const kl = xf.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
-        bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, lang), d.grade) : paraEl(t, lang)), lang)); }
+        bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, lang), d.grade) : paraEl(t, lang)), lang, b)); }
       const noTk = t => tkNum ? t.replace(new RegExp('\\s*\\(' + tkNum + '\\)\\s*$'), '') : t;
       bx().append(trRow(b, lang), el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras();
       if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => /(^|\n)\(\d+\)/.test(xf.f) ? FN2(paraEl(t, lang)) : paraEl(t, lang)), lang}])); }
@@ -7444,7 +7453,7 @@ Object.assign(I.ar, {
   uplift: 'صوت أردي خاص (عبر الإنترنت)',
   upFail: 'الصوت الخاص غير متاح؛ سيتم استخدام صوت الهاتف.',
   trVoice: 'التلاوة مع الترجمة (بعد كل آية)',
-  copyRange: 'نسخ / مشاركة الآيات',
+  ayaTrTaf: 'الآية والترجمة والتفسير', copyRange: 'نسخ / مشاركة الآيات',
   copyRangeNote: 'اختر السورة والآيات (مثلًا: البقرة ٢٥ إلى ٣٥)، ثم اختر النص العربي فقط أو مع الترجمة.',
   hsTile: 'البحث في الحديث (الدرجات)',
   hsTitle: 'البحث في الحديث — مع الدرجات',

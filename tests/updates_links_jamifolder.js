@@ -13,5 +13,5 @@ const {chromium}=require('playwright');let bad=[];const fs=require('fs');
  const r=await p.evaluate(()=>({h:location.hash,t:document.querySelector('#list').innerText}));
  if(r.h!=='#/hb/a/jami')bad.push('tile hash '+r.h);if(!/الادب العالی/.test(r.t)||!/صحیح سیرت مصطفی/.test(r.t))bad.push('folder content');
  await p.goto('http://localhost:8765/#/s/adabaali');await p.waitForTimeout(6000);
- const t2=await p.evaluate(()=>document.body.innerText);if(!/محمد صادق محی الدین/.test(t2))bad.push('translator name in Adab card');
+ const t2=await p.evaluate(()=>document.body.innerText);if(!/محمد صادق عمری/.test(t2))bad.push('translator name in Adab card');
  console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');await b.close();process.exit(bad.length?1:0)})();
