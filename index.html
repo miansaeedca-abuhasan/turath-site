@@ -1577,6 +1577,17 @@ const LGN={ur:{ar:'عربی',ur:'اردو',en:'انگریزی',bn:'بنگلہ',h
 const hbLg=lg=>{if(!lg)return[];const L=['ar'];if(ui!=='ar'&&ui!=='en'&&lg.includes(ui))L.push(ui);if(ui==='en'){if(lg.includes('en'))L.push('en')}else if(lg.includes('en'))L.push('en');return L};
 const auNm=a=>ui==='ur'?a[2]:ui==='ar'?a[1]:a[3];
 const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):auNm(a)+(a[4]?' '+deathTxt(a[4]):'');
+
+/* the Seerah and the Fazail-e-Sahaba tiles: a list that starts with our own book (by the method of the muhaddithin) and goes on with the other books on the subject */
+const SEC_KEYS={seerah:['seerah','raheeq','sh23833','sh9862','dalail','sh9241','sh1342','shamail'],sahaba:['fazail','fadailahmad','sh6601','sh8238','sh9434','sh597','sh23100','sh13178','sh10490','sh9767']};
+async function showSection(kind){
+  const box=$('#list');box.replaceChildren();bar(kind==='seerah'?T('seerahT'):T('navFazail'),'',false);
+  const colls=await COLL.list().catch(()=>[]),by=new Map(colls.map(c=>[c.key,c]));
+  const rows=SEC_KEYS[kind].map(k=>by.get(k)).filter(Boolean);
+  rows.forEach((c,i)=>{const lg=hbLg(c.langs),nm=EN()?c.en:ui==='ar'?c.ar:(c.ur||c.en);
+    box.append(el('a',{class:'card srow2 hbrow',href:'#/s/'+c.key,'data-k':c.key},el('span',{class:'snum'},ui==='ar'?ad(i+1):String(i+1)),
+      el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},nm,lg.length>1?el('span',{class:'hblg'},' ('+lg.map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null),ui==='ur'&&c.ar&&c.ar!==nm?el('span',{class:'sar',lang:'ar'},c.ar):'')));});
+}
 async function showBookList(cat,aut,authors,topics){
   const box=$('#list');box.replaceChildren();bar(cat?hbCatName(cat):'',  '',false);
   const cnt=await hbCounts(),colls=await COLL.list().catch(()=>[]);
@@ -1924,11 +1935,11 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':/^#\/q(\/|$)/.test(h)?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':/^#\/q(\/|$)/.test(h)?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')||h.startsWith('#/sec/sahaba')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')||h.startsWith('#/sec/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of Talkhis al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
-  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/s/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/s/fazail','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['sh','#/s/shadharat','gem',T('navSh')]];
+  const items=[['q','#/q','read',T('navQuran')],['b','#/hb','hadith',T('hadithTab')],['se','#/sec/seerah','seerah',NX[0]],['home','#/','home',T('home')],['fz','#/sec/sahaba','sahaba',T('navFazail')],['dua','#/k/54','dua',NX[1],toJami],['ul','#/s/rijal','gem',({ur:'موسوعۃ الرواۃ',ar:'موسوعة الرواة',en:'Narrators Encyclopedia',bn:'রাবী বিশ্বকোষ',hi:'रावी विश्वकोश',gu:'રાવી વિશ્વકોશ',fr:'Encyclopédie des narrateurs'})[ui]||'Narrators Encyclopedia']];
   const tabClick=x=>x[4]||(/^#\/s\//.test(x[1])?(ev=>{const h=location.hash;if(h.startsWith(x[1]+'/')||h===x[1]){ev.preventDefault();location.hash=/\?idx/.test(h)?x[1]:x[1]+'?idx';}}):null);
   $('#bnav').replaceChildren(...items.map(x=>el('a',{href:x[1],class:x[0]==='home'?'navhome':null,'aria-current':x[0]===sec?'page':null,on:tabClick(x)?{click:tabClick(x)}:null},el('span',{class:'nico'},icon(x[2])),el('span',{},x[3]))));return sec;}
 $('#hsbtn').addEventListener('click',async()=>{const m=location.hash.match(/^#\/s\/([^/?]+)/);if(m&&window.COLL&&COLL.bookSearch){try{if(await COLL.bookSearch(m[1]))return;}catch(e){}}location.hash='#/hs';});
@@ -2184,7 +2195,7 @@ function route(){
   if(!/^#\/h\//.test(h))HONE=false;if(/^#\/h\/-?\d+\?one/.test(h))HONE=true;
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
   const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
-  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa'&&!!window.SHOW_QA,hb=h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
+  const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa'&&!!window.SHOW_QA,sx=h.match(/^#\/sec\/(seerah|sahaba)$/),hb=!!sx||h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
   if(ow)OWNER.route();
@@ -2197,6 +2208,7 @@ function route(){
   else if(td)TODAY.route(h);
   else if(quran)QURAN.route(h);
   else if(sc)COLL.route(h);
+  else if(sx)showSection(sx[1]);
   else if(hb)showBookList((h.match(/^#\/hb\/c\/(\d+)/)||[])[1],(h.match(/^#\/hb\/a\/([a-z0-9]+)/)||[])[1],h==='#/hb/a',h==='#/hb/t');
   else if(gs)COLL.showSearch();
   else if(hs)COLL.showHadithSearch();
@@ -3461,7 +3473,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('img:quran', T('quran'), '#/q'), tile('img:tafsir', TFS(), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
       tile('img:saved_hadith', T('bmHadith'), '#/bm'), tile('img:saved_ayat', T('bmQuran'), '#/q/bm'),
       tile('img:hadith_books', T('hbBooks'), '#/hb'),
-      tile('img:seerah', T('seerahT'), '#/s/seerah'), tile('img:sahaba', T('navFazail'), '#/s/fazail'),
+      tile('img:seerah', T('seerahT'), '#/sec/seerah'), tile('img:sahaba', T('navFazail'), '#/sec/sahaba'),
       tile('img:siyar_salaf', T('navSalaf'), '#/s/siyar'), tile('img:shadharat', T('navShFull'), '#/s/shadharat'),
       tile('img:rijal_search', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
       tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:tarbiyat', ({ur: 'تربیہ', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
