@@ -42,8 +42,14 @@ html[lang=ur] .trrow .trbtn,html[lang=ur] .trrow .trlab{font-size:.92rem}
 .shkt{display:flex;align-items:center;gap:.4rem;color:#8a6508}.shki{font-size:.9rem}
 .shks{margin:.2rem 0 .45rem}.shkn{display:flex;flex-wrap:wrap;gap:.4rem}
 /* takhrij in the style of the full Jami: ruling and the matching reference coloured by the markers, the rest plain */
-.agrade.jtk{color:var(--muted)}
-a.big.jn{text-decoration:none}
+
+/* takhrij of the Jami and its sub-books: a calm box with a coloured edge; plain references in the normal ink, their numbers green, the special ones red / blue / orange / purple */
+.card .tk.ar,#view>p.tk.ar,.agrade.jtk{background:color-mix(in srgb,var(--accent) 6%,transparent);border-inline-start:3px solid var(--accent);border-radius:10px;padding:.55rem .85rem;margin:.7rem 0;line-height:2.05;color:var(--ink)}
+.card .tk.ar .rlink,#view>p.tk.ar .rlink,.agrade.jtk .rlink{font-weight:700;border-bottom:1px dotted currentColor;text-decoration:none}
+@media (prefers-color-scheme:dark){.rlink{color:#5fd08f}}
+a.hn,.hn{color:#a4262c;font-weight:700;text-decoration:none;font-family:var(--arabic);font-size:1.02em}
+@media (prefers-color-scheme:dark){a.hn,.hn{color:#ff8a80}}
+.trrow .trbtn,.lchips .chip{font-family:var(--urdu)!important;font-weight:400}
 .bkcirc{display:flex;margin:.1rem 0 .2rem}.bkc{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:1.9rem;height:1.9rem;padding:0 .4rem;border:1.5px solid var(--accent);border-radius:50%;font:700 .85rem/1 var(--sans);color:var(--accent);text-decoration:none}
 a.btn.jfull{text-decoration:none;color:var(--accent);font-weight:600;background:var(--wash)}.srefl{text-decoration:none!important}
 </style>
@@ -650,7 +656,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .wplay{background:var(--card);border:1px solid var(--line);color:var(--accent);border-radius:50%;width:2.8rem;height:2.8rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .wplay.on{background:var(--accent);color:#fff}.wnav{display:flex;justify-content:space-between;gap:.5rem;margin:.6rem 0}.wnav .btn[disabled]{opacity:.4}
 .wcred{font-size:.72rem;margin-top:.6rem}.ayah .qar,.mushaf .mv{cursor:pointer}
-.rlink{color:var(--accent,#0b5d4b);text-decoration:none;border-bottom:1px dotted currentColor;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
+.rlink{color:#1b7a46;text-decoration:none;border-bottom:1px dotted currentColor;cursor:pointer;font-weight:600}.rinl{font-size:.97rem}
 .mh{color:var(--muted,#7a7a7a)}.red{color:#c00000}.blue,.rlink.blue{color:#0b86c6;text-decoration-color:#0b86c6}.orange,.rlink.orange{color:#d9730d;text-decoration-color:#d9730d}.purple,.rlink.purple{color:#8a3fc7;text-decoration-color:#8a3fc7}.lafznote.np{color:#8a3fc7}.lafznote.nb{color:#0b86c6}.lafznote.no{color:#d9730d}.rlink.red{color:#c00000;text-decoration-color:#c00000}.chip.lafz{border:1.5px solid #c00000;color:#c00000;font-weight:700}.lafznote{font-size:.85rem;color:#c00000;margin:.1rem 0 .4rem}.saw{color:#c00000}html[data-theme=dark] .red,html[data-theme=dark] .saw{color:#ff6b6b}
 @media (prefers-color-scheme:dark){:root:not([data-theme=light]) .red,:root:not([data-theme=light]) .saw{color:#ff6b6b}}
 #view p.bc,#view .hd,#view h3.grp{font-weight:700;color:var(--accent,#0b5d4b)}#view p.ar.bc{font-size:1.2rem;line-height:1.9}
@@ -1430,9 +1436,11 @@ function linkSanadDom(root,d){try{const T=root.textContent;let sn=(window.COLL&&
 function hadithCard(d,scope){
   const c=el('article',{class:'card'});
   const fb=el('div',{class:'refbox fullbox',hidden:true});
-  c.append(el('div',{class:'top'},el('span',{class:'big',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:X('full'),on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},fmt(d.num)),gradeNode(d.grade)));
+  c.append(el('div',{class:'top'},gradeNode(d.grade)));
+  // the number stands in front of the Arabic text, plain and red like the printed Jami: «12345- عن ...» (English digits; Arabic digits in the Arabic interface)
+  const hn=el('span',{class:'hn',style:(d.refs&&d.refs.length)?'cursor:pointer':'',title:X('full'),on:{click:async()=>{if(!(d.refs&&d.refs.length))return;if(!fb.hidden){fb.hidden=true;return;}fb.hidden=false;await fullHadith(d,fb);}}},(ui==='ar'?NUM(d.num):String(d.num))+' -');
   const mt=el('div',{class:'mt ar',lang:'ar'});
-  d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(sanadEl(d));pe.append(...rich(p,'ar'));if(i===0&&!d.sanad)linkSanadDom(pe,d);mt.append(pe);});{const rn=repNode(d);if(rn)mt.append(rn);}
+  d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&d.sanad)pe.append(sanadEl(d));pe.append(...rich(p,'ar'));if(i===0&&!d.sanad)linkSanadDom(pe,d);if(i===0)pe.prepend(hn,' ');mt.append(pe);});{const rn=repNode(d);if(rn)mt.append(rn);}
   {const tb=fullTabs(d,mt,fb);if(tb)c.append(tb);}
   c.append(mt,fb);
   if(book==='jamik'){/* the full Jami reads like the book: hadith, then its takhrij paragraphs, then the detailed study */
@@ -4801,8 +4809,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (b.trtabs && ui !== 'ar') { const r0 = row(b, b.langs.includes(ui) ? ui : 'ur', n), tt = r0 && r0[3] && !Array.isArray(r0[3]) && r0[3].t; if (tt) c.append(el('div', {class: 'babtr', lang: ui, dir: DIR(ui)}, tt)); }
     // a translated sub-book of the Jami: the big number is the Jami's own number (opens that hadith in the full Jami); the book's own number sits above it in a small circle
     const jx = b.jami && b.jami[n];
-    if (jx) c.append(el('div', {class: 'bkcirc'}, el('a', {class: 'bkc', href: '#/s/' + b.key + '/n/' + n}, note ? '٭' : (lang ? String(own && !b.abno ? pn : n) : fmtN(own && !b.abno ? pn : n))))); 
-    c.append(el('div', {class: 'top'}, jx ? el('a', {class: 'big jn', href: '#/h/' + jx, on: {click: e => { e.preventDefault(); const h = '#/h/' + jx; if (window.hbOpen) window.hbOpen('jamik', h); else { try { localStorage.book = 'jamik'; } catch (x) {} location.hash = h; } }}}, fmtN(jx)) : el('a', {class: 'big' + (note ? ' qnote' : ''), href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, note ? '٭' : (lang ? String(own && !b.abno ? pn : n) : fmtN(own && !b.abno ? pn : n))), printed,
+    if (jx) c.append(el('div', {class: 'bkcirc'}, el('a', {class: 'bkc', href: '#/s/' + b.key + '/n/' + n}, note ? '٭' : (ui === 'ar' ? NUM(own && !b.abno ? pn : n) : String(own && !b.abno ? pn : n))))); 
+    // the number stands in front of the Arabic text, plain and red, like the printed Jami: «12345- عن ...» (English digits; Arabic digits in the Arabic interface)
+    const hnTxt = x => ui === 'ar' ? NUM(x) : String(x), ownNo = (own && !b.abno ? pn : n);
+    const hnEl = note ? null : jx ? el('a', {class: 'hn jn', href: '#/h/' + jx, on: {click: e => { e.preventDefault(); const h = '#/h/' + jx; if (window.hbOpen) window.hbOpen('jamik', h); else { try { localStorage.book = 'jamik'; } catch (x) {} location.hash = h; } }}}, hnTxt(jx) + ' -')
+      : el('a', {class: 'hn', href: '#/s/' + b.key + '/n/' + n}, hnTxt(ownNo) + ' -');
+    c.append(el('div', {class: 'top'}, note ? el('a', {class: 'big qnote', href: '#/s/' + b.key + '/n/' + n, style: 'text-decoration:none'}, '٭') : null, printed,
       // the library copy of a book that also exists as an Urdu-translated book: one button per matching hadith of that book (matched by the words of the hadith)
       ...(b.xr && b.xr.m[n] != null ? [].concat(b.xr.m[n]).slice(0, 3).map((m, k) => el('a', {class: 'btn', href: '#/s/' + b.xr.key + '/n/' + m, style: k ? '' : 'margin-inline-start:auto'}, ({ur: 'اردو ترجمہ (مولانا عبدالصمد ریالوی) — نمبر ' + fmtN(m), ar: 'الترجمة الأردية — رقم ' + fmtN(m), en: 'Urdu translation (Abdul Samad Rialwi) — no. ' + fmtN(m)})[ui] || ('Urdu translation — ' + fmtN(m)))) : [])));
     const arParas = (d.matn[0] || '').split('\n').filter(t => t.trim());
@@ -4813,6 +4825,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       else c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar')))); }
     // the narrators of the isnad are coloured names inside the text (companions in green); a tap opens the narrator in the encyclopedia
     if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail' && b.key !== 'hifzhadith') { c.querySelectorAll('.mt.ar').forEach(mtEl => { try { linkSanadDom(mtEl, {refs: [{key: b.key, n, number: n}]}); } catch (e) {} }); }
+    if (hnEl) { const m0 = c.querySelector('.mt.ar'), p0 = m0 && (m0.querySelector('p') || m0); if (p0) p0.prepend(hnEl, ' '); }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
     const src0 = (row(b, 'ar', n) || [])[3], src = Array.isArray(src0) ? src0 : null; let sref = null, gEl = null;

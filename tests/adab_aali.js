@@ -20,7 +20,7 @@ await pg.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new
 await pg.goto('http://localhost:8765/index.html#/s/adabaali/n/1');await pg.waitForSelector('.card .mt.ar',{timeout:30000});
 ck((await pg.evaluate(()=>document.getElementById('t1').textContent))==='الادب العالی','title');
 const t=await pg.evaluate(()=>document.querySelector('.card').innerText);ck(/مکارم اخلاق کی تکمیل/.test(t),'urdu translation');ck(/رواه أحمد/.test(t),'takhrij of the book');
-ck(await pg.evaluate(()=>!!document.querySelector('.card a.big.jn[href^="#/h/"]')),'link to Jami hadith');
+ck(await pg.evaluate(()=>!!document.querySelector('.card a.hn.jn[href^="#/h/"]')),'link to Jami hadith');
 await pg.goto('http://localhost:8765/index.html#/s/adabaali/5');await pg.waitForSelector('.card .mt.ar',{timeout:30000});
 ck(await pg.evaluate(()=>!!document.querySelector('.card .qnote')),'verse note shown with star');
 await br.close();console.log(bad?'FAILED':'OK');process.exit(bad?1:0)})();
