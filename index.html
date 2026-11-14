@@ -843,9 +843,17 @@ function ENGINE(){
 
   const byNum = new Map(D.hadith.map(h => [h.num, h]));
   const extBy = new Map(D.external.map(e => [e.book + '|' + e.num, e]));
+  // full texts come in chunks of 200 hadith (data/h/<k>.js); a language layer (bn…) is kept and put back on a hadith when its chunk arrives
+  const HL = window.TURATH_HL, LAYERS = {}, CHL = {}; let ALLP = null;
+  const putLayer = (l, n, o) => { const h = byNum.get(+n); if (!h) return; for (const k in o.c) (h.content[k] = h.content[k] || {})[l] = o.c[k]; Object.assign(h, o.f); };
+  window.TURATH_CHUNK = (c, recs) => recs.forEach(r => { const h = byNum.get(r.num); if (!h) return; Object.assign(h, r, {refs: h.refs}); h._ok = true; for (const l in LAYERS) if (LAYERS[l][r.num]) putLayer(l, r.num, LAYERS[l][r.num]); });
+  const needChunk = c => CHL[c] || (CHL[c] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'data/h/' + c + '.js?h=' + HL.h[c]; s.onload = ok; s.onerror = () => { delete CHL[c]; no(new Error('chunk ' + c)); }; document.head.append(s); }));
+  const ensure = n => { const h = byNum.get(+n); return !h || h._ok ? Promise.resolve() : needChunk(h._c); };
+  const ensureAll = () => ALLP || (ALLP = (async () => { for (let c = 0; c < HL.h.length; c += 4) await Promise.all(HL.h.slice(c, c + 4).map((_, i) => needChunk(c + i))); })().catch(e => { ALLP = null; throw e; }));
+  window.needHadith = ensure; window.needFull = ensureAll;
   const real = D.hadith.filter(h => !h.demo).sort((a, b) => a.num - b.num);
-  const hasLayer = h => Object.keys(h.tuhfa).length > 0;
-  const hasJami = h => h.demo || Object.keys(h.content).length > 0;
+  const hasLayer = h => !!h._t || Object.keys(h.tuhfa).length > 0;
+  const hasJami = h => h.demo || !!h._j || Object.keys(h.content).length > 0;
   const contentOf = (h, book) => book === 'tuhfa' ? h.tuhfa : h.content;
   const textsOf = (h, book) => {
     const a = [];
@@ -1087,6 +1095,7 @@ function ENGINE(){
       if (m) { const key = resolveBook(m[1]); if (key) D.hadith.forEach(h => { if (h.refs.some(r => r.key === key && r.number === +m[2])) res.push(rowOf(h, 'jami', {fields: ['ref']})); }); }
       let total = res.length;
       if (!res.length) {
+        if (book === 'jami' || book === 'tuhfa') await ensureAll();
         if (book === 'jami') await jamiReady(); else if (book === 'tuhfa') await tuhfaReady();
         res = await search(t, book, q.mode, q.lang); total = res.total || res.length;
       }
@@ -1102,7 +1111,7 @@ function ENGINE(){
       const all = D.external.filter(e => e.book === book).sort((a, b) => a.num - b.num);
       return {results: all.slice(off, off + lim).map(e => ({book, num: e.num, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: []})), total: all.length};
     }
-    if (path.startsWith('hadith/')) { const h = byNum.get(+path.slice(7)); return h ? inLang(hadithObj(h, q.book === 'tuhfa' ? 'tuhfa' : 'jami'), tl) : {error: 'not found'}; }
+    if (path.startsWith('hadith/')) { await ensure(+path.slice(7)); const h = byNum.get(+path.slice(7)); return h ? inLang(hadithObj(h, q.book === 'tuhfa' ? 'tuhfa' : 'jami'), tl) : {error: 'not found'}; }
     if (path === 'ref') { const e = extBy.get(q.book + '|' + q.num); return e ? {matn: e.matn} : {error: 'not found'}; }
     if (path === 'ext') {
       const e = extBy.get(q.book + '|' + q.num); if (!e) return {error: 'not found'};
@@ -1114,14 +1123,13 @@ function ENGINE(){
   };
   // a translation language's layer (data/bn1.js …) is loaded the first time its book is opened
   const LOADED = {};
-  window.TURATH_LANG = (l, obj) => { for (const n in obj) { const h = byNum.get(+n); if (!h) continue; const o = obj[n];
-    for (const k in o.c) (h.content[k] = h.content[k] || {})[l] = o.c[k]; Object.assign(h, o.f); } };
+  window.TURATH_LANG = (l, obj) => { LAYERS[l] = obj; for (const n in obj) putLayer(l, n, obj[n]); };
   function needLang(l) {
     const files = (D.langfiles || {})[l]; if (!files || !files.length) return Promise.resolve();
     return LOADED[l] || (LOADED[l] = Promise.all(files.map(src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); })))
       .then(() => { jIdx = null; jIdxP = null; }));
   }
-  setTimeout(() => { jamiReady().catch(() => {}); }, 1500);
+  window.warmSearch = () => ensureAll().then(() => jamiReady()).catch(() => {});   // text + word index for searching, built in small steps (never one long freeze)
   window.localApi = async function (u) {
     const m = u.match(/([?&]book=)jami_(\w+)/);
     if (!m) return realApi(u, null);
@@ -1133,7 +1141,10 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44ac425330", "data/d2.js?h=09931162c1", "data/d3.js?h=16bb1545af", "data/d4.js?h=d9173eca4f", "data/d5.js?h=66a1cea61d", "data/d6.js?h=c2cc140c8f", "data/d7.js?h=f925864f5b", "data/d8.js?h=560d6cc504", "data/d9.js?h=c60cfc40ea", "data/d10.js?h=8b01e14a67"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q"))window.needData()},{capture:true,once:false});
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const s=document.createElement("script");s.src="data/hl.js?h=40b4b2f4fd";s.onload=()=>{try{const HL=window.TURATH_HL,R=window.TURATH_REFS||{},M=window.TURATH_META||{};
+/* light records (numbers, chapters, first line); the full text of 200 hadith at a time comes from data/h/<k>.js when one is opened or a search needs it */
+const st=HL.r.map((r,i)=>{const h=Object.assign({num:r[0],demo:!!r[1]},HL.t[r[2]]);if(r[3]!==null)h.grade=r[3];h.matn=[r[4]];h.content={};h.tuhfa={};h.refs=R[r[0]]||[];h._j=r[5]&1;h._t=(r[5]>>1)&1;h._c=Math.floor(i/HL.n);h._ok=false;return h;});
+window.TURATH_DATA=Object.assign({},M,{hadith:st});}catch(e){}ok();};s.onerror=()=>ok();document.body.append(s);}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};const warm=()=>window.localApi("list?limit=1").then(()=>window.warmSearch&&window.warmSearch()).catch(()=>{});addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q,#gsq,.gsq"))warm()},{capture:true});addEventListener("hashchange",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});addEventListener("load",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});
 </script>
 <script>
 const I={
@@ -6680,10 +6691,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (cnt) { const n = (((dn * 40503) >>> 0) % cnt) + 1, [tr, ar] = await Promise.all([COLL.text('mutafarriq', ui, n), COLL.text('mutafarriq', 'ar', n)]);
         if (tr && ar) return {tr, ar, lang: ui, ref: COLL.name('mutafarriq') + ' ' + n, href: '#/s/mutafarriq/n/' + n}; }
     }
-    if (window.needData) await window.needData();
-    const D = window.TURATH_DATA, pool = D ? D.hadith.filter(h => !h.demo && h.matn && h.matn.length && (ui === 'ar' || ui === 'bn' || ((h.content || {}).translation || {}).en)) : [];
+    await api('list?limit=1');   // the light list of Jami hadith; the one chosen hadith is then loaded with its 200 neighbours
+    const D = window.TURATH_DATA, pool = D ? D.hadith.filter(h => !h.demo && h._j) : [];
     if (!pool.length) return null;
-    let h = pool[((dn * 2246822519) >>> 0) % pool.length];
+    let h = null;
+    for (let t = 0; t < 8 && !h; t++) { const c = pool[(((dn + t * 7919) * 2246822519) >>> 0) % pool.length]; await window.needHadith(c.num); if (c.matn && c.matn.length && (ui === 'ar' || ui === 'bn' || ((c.content || {}).translation || {}).en)) h = c; }
+    if (!h) return null;
     if (ui === 'bn') { const d = await api('hadith/' + h.num + '?book=jami_bn'); if (d && !d.error) h = d; }   // the Bangla layer
     const trs = (h.content || {}).translation || {}, tr = ui === 'ar' ? '' : (trs[ui] || (['hi', 'gu', 'fr'].includes(ui) ? trs.en : null) || []).join(' ');
     return {tr, ar: h.matn.join(' '), lang: ui !== 'ar' && !trs[ui] ? 'en' : ui, ref: T('srcJami') + ' ' + NUM(h.num), href: '#/h/' + h.num};

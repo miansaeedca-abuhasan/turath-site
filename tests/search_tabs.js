@@ -24,7 +24,7 @@ for(const [ui,word] of [['ur','نماز'],['en','prayer']]){
  ck(JSON.stringify(g)===JSON.stringify(['sahih','sahih','sahih','sahih','daif','daif','sahih','mawdu','sahih','','']),'grade classes '+g);
  ck(await p.$$eval('.gsgrade .segb',x=>x.length)===4,'four ruling buttons');
  const nuke=()=>p.evaluate(()=>document.querySelectorAll('.sheetbg,[class*=install]').forEach(n=>n.remove()));
- await nuke();await p.click('.gstab[data-tab="ar"]');await nuke();await p.evaluate(()=>{const f=document.querySelector('.gsflt');if(f)f.open=true});await p.click('.gsgrade [data-g="daif"]');await p.fill('#gsq','من كذب علي متعمدا');await p.click('.gsgo');await p.waitForTimeout(9000);
+ await nuke();await p.click('.gstab[data-tab="ar"]');await nuke();await p.evaluate(()=>{const f=document.querySelector('.gsflt');if(f)f.open=true});await p.click('.gsgrade [data-g="daif"]');await p.fill('#gsq','من كذب علي متعمدا');await p.click('.gsgo');await p.waitForSelector('.gsres summary',{timeout:90000}).catch(()=>{});await p.waitForTimeout(1500);
  const heads=await p.$$eval('.gsres summary',x=>x.map(s=>s.textContent));
  ck(heads.length>0,'weak hadith found '+heads.length);
  ck(!heads.some(h=>/تلخیص|تلخيص|Talkhis/.test(h)),'Talkhis (all sahih/hasan) is left out of the weak list');
