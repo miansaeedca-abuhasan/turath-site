@@ -37,7 +37,8 @@ def main():
     for f in sorted(glob.glob('tools/salaf/add/*.json')):
         for P in json.load(open(f,encoding='utf8')):
             first=n+1;sid=len(sec)+1
-            if P.get('head'): heads.append([sid,P['head'][0],P['head'][1]])
+            rep=P.get('replace')   # a person who already has a short entry in the book: the detailed text takes over THAT section (same place, same title); the old short rows are no longer part of any section
+            if P.get('head') and not rep: heads.append([sid,P['head'][0],P['head'][1]])
             S=segs(row(P['row']));PG=locate(S)
             for para in P['paras']:
                 sg=para['s'];fr=para.get('from',{});txt=' '.join(clean(cutfrom(S[i],fr[str(i)]) if str(i) in fr else S[i]) for i in sg)
@@ -45,7 +46,9 @@ def main():
                 n+=1
                 ar2.append([n,txt,label(pg),['sh10906',P['row']]]);ur2.append([n,para['ur']])
                 kind+='0'
-            sec.append([sid,P['ur'],first,n,P['ar']])
+            if rep:
+                o=[x for x in sec if x[0]==rep][0];o[2]=first;o[3]=n
+            else: sec.append([sid,P['ur'],first,n,P['ar']])
     old=glob.glob('coll/siyar_ar_2_*.js')+glob.glob('coll/siyar_ur_2_*.js')
     for o in old: os.remove(o)
     files={}
