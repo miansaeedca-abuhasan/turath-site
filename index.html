@@ -1123,7 +1123,7 @@ function ENGINE(){
   };
   // a translation language's layer (data/bn1.js …) is loaded the first time its book is opened
   const LOADED = {};
-  window.TURATH_LANG = (l, obj) => { LAYERS[l] = obj; for (const n in obj) putLayer(l, n, obj[n]); };
+  window.TURATH_LANG = (l, obj) => { LAYERS[l] = Object.assign(LAYERS[l] || {}, obj); for (const n in obj) putLayer(l, n, obj[n]); };
   function needLang(l) {
     const files = (D.langfiles || {})[l]; if (!files || !files.length) return Promise.resolve();
     return LOADED[l] || (LOADED[l] = Promise.all(files.map(src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); })))
