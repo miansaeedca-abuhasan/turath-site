@@ -5102,7 +5102,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     box.append(el('div', {class: 'bkshare'}, el('button', {class: 'btn', type: 'button', 'aria-label': T('share'), on: {click: async () => { const t = withLink(bname(b) + (subOf(b) ? '\n' + subOf(b) : ''), '#/s/' + b.key); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); }}}, icon('share'), ' ' + T('share'))));
     // a prose book (a book of chapters, not of hadith): the search box speaks of words only, not of hadith numbers
     const PPH = {ur: 'اس کتاب میں الفاظ تلاش کریں', ar: 'ابحث في هذا الكتاب', en: 'Search in this book', bn: 'এই বইয়ে খুঁজুন', hi: 'इस किताब में खोजें', gu: 'આ પુસ્તકમાં શોધો', fr: 'Rechercher dans ce livre'};
-    const sPh = b.prose ? (PPH[ui] || PPH.en) : T('cSecSearch');
+    const SPH = {ur: 'اس کتاب میں: شخصیت کا نام یا الفاظ', ar: 'في هذا الكتاب: اسم العلم أو كلمات', en: 'In this book: a name or words'};
+    const sPh = b.key === 'siyar' ? (SPH[ui] || PPH[ui] || PPH.en) : b.key === 'shadharat' ? (PPH[ui] || PPH.en) : b.prose ? (PPH[ui] || PPH.en) : T('cSecSearch');
     const f = el('input', {type: 'search', class: 'filter', placeholder: sPh, 'aria-label': sPh, id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
@@ -5171,13 +5172,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const startBtn = b.sections && b.sections.length ? el('a', {class: 'btn lbtn readstart', href: '#/s/' + b.key + '/' + b.sections[0][0]}, icon('read'), ' ', T('readStart')) : '';
     /* one search bar for the whole book: a number opens that hadith, words list the hadith; «# number» switches the bar to the number keypad */
     const NB = {ur: ['نمبر سے', 'حدیث نمبر لکھیں'], ar: ['بالرقم', 'اكتب رقم الحديث'], en: ['By number', 'Type the hadith number'], bn: ['নম্বর দিয়ে', 'হাদীস নম্বর লিখুন'], hi: ['नंबर से', 'हदीस नंबर लिखें'], gu: ['નંબરથી', 'હદીસ નંબર લખો'], fr: ['Par numéro', 'Saisir le numéro du hadith']}[ui] || ['By number', 'Type the hadith number'];
-    const numBtn = el('button', {class: 'btn lbtn bknum', type: 'button', 'aria-pressed': 'false', on: {click: () => { const on = numBtn.getAttribute('aria-pressed') !== 'true'; numBtn.setAttribute('aria-pressed', String(on)); f.inputMode = on ? 'numeric' : 'search'; f.placeholder = on ? NB[1] : sPh; f.value = ''; run(); f.focus(); }}}, '# ' + NB[0]);
+    const numBtn = el('button', {class: 'btn lbtn bknum', type: 'button', 'aria-pressed': 'false', on: {click: () => { const on = numBtn.getAttribute('aria-pressed') !== 'true'; numBtn.setAttribute('aria-pressed', String(on)); f.inputMode = on ? 'numeric' : 'search'; f.placeholder = on ? ((b.key === 'siyar' || b.key === 'shadharat') && ui === 'ur' ? 'پیراگراف نمبر لکھیں' : NB[1]) : sPh; f.value = ''; run(); f.focus(); }}}, '# ' + NB[0]);
     // total of the hadith, written in advance in light colour (Muslim: two numberings, e.g. 3033/7610); the numbering of this site is named where the book has no printed numbers
     const NT = {ur: ['کل احادیث', 'ترقیم تراث خيرالقرون'], ar: ['مجموع الأحاديث', 'ترقيم تراث خير القرون'], en: ['Total hadith', 'Turath Khair al-Quroon numbering']}[ui] || ['Total hadith', 'ترقیم تراث خيرالقرون'];
     const noteN = b.nn ? Object.keys(b.nn).length : 0, tot = (b.count || 0) - noteN;
     let totTxt = String(tot); if (b.abno || b.key === 'muslim') { const mx = Math.max(0, ...Object.values(b.an || {}).map(x => parseInt(x, 10) || 0)); if (mx) totTxt = mx + '/' + tot; }
     const ours = OURS;
-    const hintEl = b.prose ? '' : el('div', {class: 'fbhint'}, NT[0] + ': ' + (ui === 'ur' ? totTxt : totTxt), ours ? ' · ' + NT[1] : '');
+    const hintEl = (b.prose || b.key === 'siyar' || b.key === 'shadharat') ? '' : el('div', {class: 'fbhint'}, NT[0] + ': ' + (ui === 'ur' ? totTxt : totTxt), ours ? ' · ' + NT[1] : '');
     box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
     secs();
   }
@@ -6137,7 +6138,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the search button of the top bar, inside an open book: hadith number, words (all / any) or a whole sentence, in this book only
   async function bookSearch(key) {
     const b = bookOf(key) || (await index()).find(x => x.key === key); if (!b || b.ext) return false;
-    const lang = getLang(b), inp = el('input', {type: 'search', class: 'filter', placeholder: T('cSecSearch').replace(/\s*\(.*\)\s*$/, ''), 'aria-label': T('cSecSearch'), style: 'width:100%'});
+    const lang = getLang(b), inp = el('input', {type: 'search', class: 'filter', placeholder: (key === 'siyar' && ui === 'ur') ? 'اس کتاب میں: شخصیت کا نام یا الفاظ' : T('cSecSearch').replace(/\s*\(.*\)\s*$/, ''), 'aria-label': T('cSecSearch'), style: 'width:100%'});
     const res = el('div', {class: 'bsres'}); let tm, run;
     const bar = modeBar(() => { if (inp.value.trim()) run(); });
     const secOf = n => (b.sections || []).find(s => s[2] <= n && n <= s[3]);
