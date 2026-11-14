@@ -850,6 +850,7 @@ function ENGINE(){
   const needChunk = c => CHL[c] || (CHL[c] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = 'data/h/' + c + '.js?h=' + HL.h[c]; s.onload = ok; s.onerror = () => { delete CHL[c]; no(new Error('chunk ' + c)); }; document.head.append(s); }));
   const ensure = n => { const h = byNum.get(+n); return !h || h._ok ? Promise.resolve() : needChunk(h._c); };
   const ensureAll = () => ALLP || (ALLP = (async () => { for (let c = 0; c < HL.h.length; c += 4) await Promise.all(HL.h.slice(c, c + 4).map((_, i) => needChunk(c + i))); })().catch(e => { ALLP = null; throw e; }));
+  const ensureMany = ids => Promise.all([...new Set(ids.map(id => byNum.get(id)).filter(h => h && !h._ok).map(h => h._c))].map(needChunk));
   window.needHadith = ensure; window.needFull = ensureAll;
   const real = D.hadith.filter(h => !h.demo).sort((a, b) => a.num - b.num);
   const hasLayer = h => !!h._t || Object.keys(h.tuhfa).length > 0;
@@ -908,11 +909,32 @@ function ENGINE(){
   const tuhfaReady = () => tIdx ? Promise.resolve() : (tIdxP || (tIdxP = buildIndexAsync(D.hadith.filter(hasLayer).map(h => [h.num, textsOf(h, 'tuhfa')])).then(i => { tIdx = i; })));
   const extIndex = b => eIdx[b] || (eIdx[b] = buildIndex(D.external.filter(e => e.book === b).map(e => [e.num, [['ext', e.matn]]])));
 
-  function postings(I, t, exact) {
-    const keys = (exact || t.length < 3) ? (I.idx.has(t) ? [t] : []) : [...I.idx.keys()].filter(k => k.startsWith(t));
+  // prebuilt word index (data/ix, built by tools/mkindex.js): a search loads only the buckets of the words typed, never the book text
+  const IX = {B: {}, P: null}, BUCKETS = (t) => { let h = 0; for (const c of [...t].slice(0, 2).join('')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % IX.M.nb; };
+  const needIXM = () => IX.P || (IX.P = new Promise((ok, no) => { if (window.TURATH_IXM) { IX.M = window.TURATH_IXM; return ok(); }
+    const s = document.createElement('script'); s.src = 'data/ix/m.js?h=41ca0e6bdf'; s.onload = () => { IX.M = window.TURATH_IXM; ok(); }; s.onerror = () => { IX.P = null; no(new Error('index')); }; document.head.append(s); }));
+  const getBucket = (fam, b) => { const k = fam + '/' + b; return IX.B[k] || (IX.B[k] = fetch('data/ix/' + k + '.bin?h=' + IX.M.h[fam][b]).then(r => { if (!r.ok) throw new Error('ix'); return r.arrayBuffer(); }).then(buf => {
+    const hl = new DataView(buf).getUint32(0, true), hd = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, hl)));
+    hd.pos = new Map(hd.t.map((t, i) => [t, i])); hd.u8 = new Uint8Array(buf, 4 + hl); return hd; }).catch(e => { delete IX.B[k]; throw e; })); };
+  const decodeTok = (hd, i) => {
+    const u = hd.u8; let p = hd.o[i]; const rd = () => { let n = 0, m = 1, b; do { b = u[p++]; n += (b & 127) * m; m *= 128; } while (b & 128); return n; };
+    const out = new Map(); let id = 0;
+    for (let c = hd.c[i]; c > 0; c--) { id += rd(); const o = {}; for (let nf = rd(); nf > 0; nf--) { const f = IX.M.fields[rd()]; o[f] = rd(); } out.set(id - 2, o); }
+    return out;
+  };
+  const famsOf = book => book === 'tuhfa' ? ['tuhfa'] : ['jami'].concat(Object.keys(LAYERS).filter(l => IX.M.N[l]));
+  const jamiI = book => ({N: IX.M.N[book === 'tuhfa' ? 'tuhfa' : 'jami'], async get(t, exact) {
+    const km = new Map(), b = BUCKETS(t);
+    for (const fam of famsOf(book)) { const hd = await getBucket(fam, b);
+      const ks = exact ? (hd.pos.has(t) ? [t] : []) : hd.t.filter(k => k.startsWith(t));
+      for (const k of ks) { const m = decodeTok(hd, hd.pos.get(k)), T = km.get(k);
+        if (!T) km.set(k, m); else for (const [id, o] of m) { const x = T.get(id); if (!x) T.set(id, o); else for (const f in o) x[f] = (x[f] || 0) + o[f]; } } }
+    return km; }});
+  const extI = b => { const X = extIndex(b); return {N: X.N, async get(t, exact) { const ks = exact ? (X.idx.has(t) ? [t] : []) : [...X.idx.keys()].filter(k => k.startsWith(t)); return new Map(ks.map(k => [k, X.idx.get(k)])); }}; };
+  async function postings(I, t, exact) {
     const out = new Map();
-    for (const k of keys) {
-      const m = I.idx.get(k), idf = Math.log(1 + I.N / m.size);
+    for (const [, m] of await I.get(t, exact || t.length < 3)) {
+      const idf = Math.log(1 + I.N / m.size);
       for (const [id, o] of m) {
         let r = out.get(id); if (!r) out.set(id, r = {score: 0, fields: new Set()});
         for (const f in o) { r.score += (W[f] || 1) * (1 + Math.log(o[f])) * idf; r.fields.add(f); }
@@ -920,8 +942,8 @@ function ENGINE(){
     }
     return out;
   }
-  function query(I, tk, op, scale, exact) {
-    const lists = tk.map(t => postings(I, t, exact));
+  async function query(I, tk, op, scale, exact) {
+    const lists = await Promise.all(tk.map(t => postings(I, t, exact)));
     const ids = op === 'and' ? [...lists[0].keys()].filter(id => lists.every(l => l.has(id)))
                              : [...new Set(lists.flatMap(l => [...l.keys()]))];
     return ids.map(id => {
@@ -956,13 +978,15 @@ function ENGINE(){
     mode = mode || 'all'; if (!['ar', 'ur', 'en'].includes(lang) || book !== 'jami') lang = null; EXACT = mode !== 'similar';
     const tk = toks(q.replace(/[&+،,]/g, ' ')); if (!tk.length) return [];
     const ext = book !== 'jami' && book !== 'tuhfa';
-    const I = ext ? extIndex(book) : book === 'tuhfa' ? tuhfaIndex() : jamiIndex();
+    if (!ext) await needIXM();
+    const I = ext ? extI(book) : jamiI(book);
     const hits = new Map();
     const put = r => { const o = hits.get(r.id); if (!o || r.score > o.score) hits.set(r.id, {score: r.score, fields: new Set([...(o ? o.fields : []), ...r.fields])}); else r.fields.forEach(f => o.fields.add(f)); };
     if (tk.some(t => !t)) return [];
-    query(I, tk, 'and', 1, mode !== 'similar').forEach(put);
-    if (mode === 'similar' && hits.size < 5 && tk.length > 1) query(I, tk.filter(t => !STOP.has(t)).length ? tk.filter(t => !STOP.has(t)) : tk, 'or', 0.5).forEach(put);
+    (await query(I, tk, 'and', 1, mode !== 'similar')).forEach(put);
+    if (mode === 'similar' && hits.size < 5 && tk.length > 1) (await query(I, tk.filter(t => !STOP.has(t)).length ? tk.filter(t => !STOP.has(t)) : tk, 'or', 0.5)).forEach(put);
     let ids = [...hits.keys()].sort((a, b) => hits.get(b).score - hits.get(a).score);
+    if (!ext && ((mode === 'exact' && tk.length > 1) || lang)) await ensureMany(ids);   // the full text of the candidates only
     if (mode === 'exact' && tk.length > 1) {            // keep only those where the words stand together, in this order
       const phrase = ' ' + tk.join(' ') + ' ';
       const keep = [];
@@ -987,10 +1011,11 @@ function ENGINE(){
     if (mode !== 'similar') ids.sort((a, b) => a - b);  // in book order
     if (book === 'tuhfa') ids = ids.filter(id => hasLayer(byNum.get(id)));
     const total = ids.length;
+    if (!ext) await ensureMany(ids.slice(0, 100));   // snippets for the rows on screen; later rows show the first line
     const rows = ids.slice(0, 300).map(id => {
       const f = [...hits.get(id).fields].sort();
       if (ext) { const e = extBy.get(book + '|' + id); return {book, num: id, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: snippet(e.matn, tk)}; }
-      const h = byNum.get(id), t = bestText(lang ? textsLang(h, book, lang) : textsOf(h, book), tk);
+      const h = byNum.get(id), t = h._ok ? bestText(lang ? textsLang(h, book, lang) : textsOf(h, book), tk) : h.matn[0];
       return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk) : [], lang: lang || ''});
     });
     rows.total = total; return rows;
@@ -1095,8 +1120,6 @@ function ENGINE(){
       if (m) { const key = resolveBook(m[1]); if (key) D.hadith.forEach(h => { if (h.refs.some(r => r.key === key && r.number === +m[2])) res.push(rowOf(h, 'jami', {fields: ['ref']})); }); }
       let total = res.length;
       if (!res.length) {
-        if (book === 'jami' || book === 'tuhfa') await ensureAll();
-        if (book === 'jami') await jamiReady(); else if (book === 'tuhfa') await tuhfaReady();
         res = await search(t, book, q.mode, q.lang); total = res.total || res.length;
       }
       return {results: res, total, semantic: false};
@@ -1129,7 +1152,13 @@ function ENGINE(){
     return LOADED[l] || (LOADED[l] = Promise.all(files.map(src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.append(s); })))
       .then(() => { jIdx = null; jIdxP = null; }));
   }
-  window.warmSearch = () => ensureAll().then(() => jamiReady()).catch(() => {});   // text + word index for searching, built in small steps (never one long freeze)
+  // used by tests/prebuilt_index.js: the prebuilt index must say what an index built here from the full text says
+  window.__ixCheck = async toks_ => { await needIXM(); await ensureAll(); const R = buildIndex(D.hadith.filter(hasJami).map(h => [h.num, textsOf(h, 'jami')])), I = jamiI('jami'), bad = [];
+    for (const t of toks_) { const m = R.idx.get(t), km = await I.get(t, true), n = km.get(t);
+      const sum = x => x ? [...x].map(([id, o]) => id + ':' + Object.keys(o).sort().map(f => f + o[f]).join(',')).sort().join(';') : '';
+      if (sum(m) !== sum(n)) bad.push(t); }
+    return {bad, N: R.N, nM: IX.M.N.jami, tokens: R.idx.size}; };
+  window.warmSearch = () => needIXM().catch(() => {});   // the small index manifest; the word buckets come with the words typed
   window.localApi = async function (u) {
     const m = u.match(/([?&]book=)jami_(\w+)/);
     if (!m) return realApi(u, null);
@@ -1833,6 +1862,7 @@ function drawModes(){const box=$('#hmode');if(!box)return;const m=/&/.test($('#q
   box.replaceChildren(...[['all',T('mAll')],['exact',T('mExact')],['similar',T('mSimilar')]].map(([k,l])=>el('button',{type:'button',class:'segb','aria-pressed':String(k===m),on:{click:()=>{try{localStorage.hsmode=k}catch(e){}drawModes();if($('#q').value.trim())showHome();}}},l)));}
 let timer;
 async function showHome(){
+  const MYRUN=window.__hrun=(window.__hrun||0)+1;   // a slower older search must never paint over a newer one
   drawModes();$('#q').placeholder=T('phIn')(curBookName());
   loadToc().then(ks=>{const bo=BOOKS.find(x=>x.key===book),t=ks.reduce((a,k)=>a+k.count,0)+((book==='jami'||book==='jamik'||(bo&&bo.kind==='lang'))?6:0);if($('#q'))$('#q').placeholder=T('phIn')(curBookName())+' ('+t+')';}).catch(()=>{});
   const q=$('#q').value.trim(),box=$('#list');
@@ -1842,8 +1872,9 @@ async function showHome(){
   const qn=q?toNum(q):null;let hasNum=false;
   if(qn!=null&&qn>0&&(book==='jami'||book==='jamik'||TL())){box.append(numLink(qn));hasNum=true;}
   else if(q&&(book==='jami'||book==='jamik'||TL())){try{const ks=await loadToc(),hit=ks.filter(k=>BQM(BQN(q),(k.en||'')+' '+(k.ar||''))).slice(0,6);
-    if(hit.length)box.append(...hit.map(k=>el('a',{class:'card srow2',href:'#/k/'+k.no},el('span',{class:'snum'},EN()?k.no:ad(k.no)),el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},EN()?k.en:k.ar),el('span',{class:'cs'},rng(kitNums(k))+'  ،  '+T('count')(k.count))))));}catch(e){}}
+    if(MYRUN!==window.__hrun)return;if(hit.length)box.append(...hit.map(k=>el('a',{class:'card srow2',href:'#/k/'+k.no},el('span',{class:'snum'},EN()?k.no:ad(k.no)),el('span',{class:'sinfo'},el('span',{class:'ct',dir:'auto'},EN()?k.en:k.ar),el('span',{class:'cs'},rng(kitNums(k))+'  ،  '+T('count')(k.count))))));}catch(e){}}
   const d=await api(q?'search?q='+encodeURIComponent(q)+'&book='+bk+'&mode='+HMODE():'list?limit=40&book='+bk);
+  if(MYRUN!==window.__hrun)return;
   if(!q){box.append(el('p',{class:'note'},T('count')(d.total)));
     let shown=d.results.length;d.results.forEach(r=>box.append(row(r)));
     const more=el('button',{class:'btn more',type:'button',on:{click:async()=>{const x=await api('list?limit=40&offset='+shown+'&book='+bk);x.results.forEach(r=>box.insertBefore(row(r),more));shown+=x.results.length;if(shown>=d.total)more.remove();}}},T('more'));
@@ -1862,7 +1893,7 @@ async function showBookmarks(){
   for(const x of a){if(String(x.b).startsWith('c:')){const c=await COLL.bookmarkCard(x.b,x.n);if(c)box.append(c);continue;}
     const d=await api('hadith/'+x.n+'?book='+x.b);if(!d.error)box.append(hadithCard(d,x.b));}
 }
-$('#q').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{if(location.hash!=='#/b'){location.hash='#/b';}else showHome();},250);});
+$('#q').addEventListener('input',()=>{clearTimeout(timer);timer=setTimeout(()=>{if(location.hash!=='#/b'){location.hash='#/b';}else showHome();},120);});
 /* ---------- interface language / books ---------- */
 function fillBooks(){
   const sel=$('#book');sel.replaceChildren(...BOOKS.map(b=>el('option',{value:b.key},bookName(b))));
@@ -4610,6 +4641,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     setHzReciter: k => { QS.hzRec = k; qsave(); },
     ayahUrlBy: (k, s, a) => ayahUrl(RECITERS.find(r => r.k === k) || RECITERS[0], s, a),
     ayahText: (s, a) => verse('ar_uthmani', s, a),
+    // the translation shown under an ayah on the «تکرار» screen: the interface language (Urdu when the interface is Arabic); ready() first, then text(s, a)
+    repTr: async () => { const k = trForUi() || (QS.tr || [])[0] || 'ur_junagarhi'; await need([k]); const e = Q.meta.editions.find(x => x.key === k), l = e ? e.lang : 'ur';
+      return {text: (s, a) => verse(k, s, a), lang: l, dir: l === 'ur' || l === 'ar' ? 'rtl' : 'ltr'}; },
     surahs: () => Q.meta.surahs,
     sName,
     async verseTexts() { await need(['ar_uthmani']); return {t: Q.data.ar_uthmani, sa, surah: s => Q.meta.surahs[s - 1]}; },
@@ -8844,13 +8878,13 @@ Object.assign(I.fr, {
       due: 'اليوم', dueIn: n => 'بعد ' + UD(n) + ' أيام', late: n => 'متأخر ' + UD(n) + ' أيام', step: n => 'المرحلة ' + UD(n), hear: 'استمع', say: 'سمّع', recall: 'استظهار', done: 'تم اليوم', hard: 'كان صعبًا', planHelp: 'يعود كل درس بعد ١ و٢ و٤ و٧ و١٤ و٣٠ و٦٠ يومًا. وإن كان صعبًا عاد غدًا.', fail: 'تعذّر تحميل نص القرآن. تحقق من الإنترنت.'}
   };
 
-  Object.assign(S.ur, {ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
+  Object.assign(S.ur, {trOpt: 'دکھائیں', trOff: 'صرف آیات', trOn: 'ترجمہ کے ساتھ', ayahTimes: 'ہر آیت کتنی بار', sectTimes: 'پورا حصہ کتنی بار', moreSet: 'مزید ترتیبات', pauseSec: 'وقفہ (سیکنڈ)', reciterL: 'قاری', play: 'سنیں', stop: 'روکیں', wordHint: 'کسی لفظ پر دبائیں تو وہ لفظ سنائی دے گا',
     prog: (a, k, K, r, R) => 'آیت ' + a + ' — بار ' + k + '/' + K + (R > 1 ? ' — حصہ ' + r + '/' + R : ''), errAudio: 'آواز نہیں چل سکی۔ انٹرنیٹ دیکھیں۔', wordFail: 'اس لفظ کی آواز نہیں چل سکی۔', done2: 'مکمل ہو گیا',
     openChrome: 'کروم میں کھولیں', micApp: 'اگر آپ ایپ میں ہیں تو فون کی سیٹنگ میں جا کر ایپ کو مائیکروفون کی اجازت دیں، یا اسی سائٹ کو کروم میں کھولیں۔', startNew: 'شروع کریں', again2: 'دوبارہ'});
-  Object.assign(S.en, {ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
+  Object.assign(S.en, {trOpt: 'Show', trOff: 'Ayahs only', trOn: 'With translation', ayahTimes: 'Each ayah, times', sectTimes: 'Whole part, times', moreSet: 'More settings', pauseSec: 'Pause (seconds)', reciterL: 'Reciter', play: 'Play', stop: 'Stop', wordHint: 'Tap a word to hear that word',
     prog: (a, k, K, r, R) => 'Ayah ' + a + ' — time ' + k + '/' + K + (R > 1 ? ' — round ' + r + '/' + R : ''), errAudio: 'The audio could not play. Check the internet.', wordFail: 'That word could not be played.', done2: 'Finished',
     openChrome: 'Open in Chrome', micApp: 'If you are in the app, open the phone settings and allow the microphone for the app, or open this site in Chrome.', startNew: 'Start', again2: 'Again'});
-  Object.assign(S.ar, {ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
+  Object.assign(S.ar, {trOpt: 'العرض', trOff: 'الآيات فقط', trOn: 'مع الترجمة', ayahTimes: 'تكرار كل آية', sectTimes: 'تكرار المقطع كله', moreSet: 'إعدادات أخرى', pauseSec: 'وقفة (ثوانٍ)', reciterL: 'القارئ', play: 'تشغيل', stop: 'إيقاف', wordHint: 'اضغط على كلمة لتسمعها',
     prog: (a, k, K, r, R) => 'الآية ' + UD(a) + ' — المرة ' + UD(k) + '/' + UD(K) + (R > 1 ? ' — الدورة ' + UD(r) + '/' + UD(R) : ''), errAudio: 'تعذّر تشغيل الصوت. تحقق من الإنترنت.', wordFail: 'تعذّر تشغيل هذه الكلمة.', done2: 'تم',
     openChrome: 'افتح في كروم', micApp: 'إن كنت داخل التطبيق فاسمح له بالمايكروفون من إعدادات الهاتف، أو افتح الموقع في كروم.', startNew: 'ابدأ', again2: 'مرة أخرى'});
   const DIARY = {t: {ur: 'حفظ ڈائری (استاد، والدین اور پرنسپل کے لیے)', ar: 'دفتر الحفظ (للمعلم وولي الأمر والمدير)', en: 'Hifz diary (for teachers, parents and principals)'},
@@ -8989,14 +9023,18 @@ Object.assign(I.fr, {
     page(note('…'));
     try { await ready(); } catch (e) { return page(note(L().fail)); }
     const s = clampN(q.get('s'), 1, 114), n = Qn().surahs()[s - 1][4], f = clampN(q.get('f') || 1, 1, n), t = clampN(q.get('t') || Math.min(n, f + 6), f, n);
-    const RP = Object.assign({a: 3, r: 1, g: 0}, get('rep', {})); RP.rec = Qn().hzReciter();
+    const RP = Object.assign({a: 3, r: 1, g: 0, tr: 0}, get('rep', {})); RP.rec = Qn().hzReciter();
     let token = 0, playing = false;
     const status = E('p', {class: 'cs hzstat'}, L().wordHint);
     const playBtn = E('button', {type: 'button', class: 'hzgo wide hzplay'}, L().play);
     const text = E('div', {class: 'hzayah', 'data-keeph': '1', lang: 'ar', dir: 'rtl'}), spans = {};
     for (let a = f; a <= t; a++) { const box = E('span', {class: 'hzay', 'data-a': a}); ayahWords(s, a).forEach((w, i) => { box.append(E('span', {class: 'hzw tap', on: {click: ev => wordTap(a, i + 1, ev.currentTarget)}}, ...w.parts), ' '); }); box.append(aya(a), ' '); text.append(box); spans[a] = box; }
-    const mark = a => { Object.values(spans).forEach(x => x.classList.remove('cur')); if (a && spans[a]) { spans[a].classList.add('cur'); spans[a].scrollIntoView({block: 'center', behavior: 'smooth'}); } };
-    const setPlaying = v => { playing = v; playBtn.textContent = v ? L().stop : L().play; playBtn.classList.toggle('stop', v); if (!v) mark(0); };
+    // one ayah at a time (the one being recited), with its translation when chosen
+    const trBox = E('p', {class: 'qtr hzTr'}); let TRX = null, shown = f;
+    const view = a => { shown = a; text.replaceChildren(spans[a]); Object.values(spans).forEach(x => x.classList.toggle('cur', x === spans[a])); trBox.hidden = !RP.tr || !TRX; if (TRX) { trBox.lang = TRX.lang; trBox.dir = TRX.dir; trBox.textContent = TRX.text(s, a); } };
+    const mark = a => { if (a && spans[a]) view(a); };
+    const loadTr = async () => { if (!RP.tr || TRX) return view(shown); try { TRX = await Qn().repTr(); } catch (e) { TRX = null; RP.tr = 0; } view(shown); };
+    const setPlaying = v => { playing = v; playBtn.textContent = v ? L().stop : L().play; playBtn.classList.toggle('stop', v); };
     const playUrl = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
     const stopAll = () => { token++; stopAudio(); setPlaying(false); };
     window.__hzStop = stopAll;
@@ -9016,13 +9054,15 @@ Object.assign(I.fr, {
       if (tk === token) { status.textContent = L().done2; setPlaying(false); logToday(); }
     }
     playBtn.addEventListener('click', () => { if (playing) stopAll(); else run(); });
-    const save = () => put('rep', {a: RP.a, r: RP.r, g: RP.g});
+    const save = () => put('rep', {a: RP.a, r: RP.r, g: RP.g, tr: RP.tr});
     const eachIn = numBox(RP.a, 1, 100), sectIn = numBox(RP.r, 1, 100), gapIn = numBox(RP.g, 0, 30);
     eachIn.addEventListener('input', () => { RP.a = clampN(eachIn.value, 1, 100); save(); }); sectIn.addEventListener('input', () => { RP.r = clampN(sectIn.value, 1, 100); save(); }); gapIn.addEventListener('input', () => { RP.g = clampN(gapIn.value, 0, 30); save(); });
     const recSel = E('select', {'aria-label': L().reciterL, class: 'hzin hzselect'}); Qn().reciters().forEach(r => recSel.append(E('option', {value: r.k}, r.label))); recSel.value = RP.rec; recSel.addEventListener('change', () => { RP.rec = recSel.value; Qn().setHzReciter(RP.rec); });
-    const extra = [tileF('replay', L().ayahTimes, eachIn, '#c0762c'), tileF('event', L().sectTimes, sectIn, '#8a4fb3'), tileF('timer', L().pauseSec, gapIn, '#5c7284'), tileF('speaker', L().reciterL, recSel, '#1d7f4e')];
+    const trSeg = E('div', {class: 'seg', role: 'group'}), drawSeg = () => trSeg.replaceChildren(...[[0, L().trOff], [1, L().trOn]].map(([v, lb]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(!!RP.tr === !!v), on: {click: async () => { RP.tr = v; save(); drawSeg(); await loadTr(); }}}, lb))); drawSeg();
+    const extra = [tileF('eye', L().trOpt, trSeg, '#2b7bb9'), tileF('replay', L().ayahTimes, eachIn, '#c0762c'), tileF('event', L().sectTimes, sectIn, '#8a4fb3'), tileF('timer', L().pauseSec, gapIn, '#5c7284'), tileF('speaker', L().reciterL, recSel, '#1d7f4e')];
     const fc = formCard(s, f, t, (ss, a, b) => { stopAll(); reload('rep', ss, a, b); }, extra, null, true);
-    page(fc.node, E('div', {class: 'card'}, E('div', {class: 'hzstage2'}, playBtn, status), text));
+    view(f); loadTr();
+    page(fc.node, E('div', {class: 'card'}, E('div', {class: 'hzstage2'}, playBtn, status), text, trBox));
   }
   /* ---------- hub ---------- */
   function showHub() {
@@ -10089,7 +10129,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     if (IDX) return IDX;
     // chunks load in sequence because each script answers through the same global callback
     IDX = await load('idb/idx.js', 'NIDX'); MAP = new Map(IDX.d.map(r => [r[0], r]));
-    NORM = IDX.d.map(r => nrm(r[1] + ' ' + r[2] + ' ' + r[3])); return IDX;
+    return IDX;   // the normalised names (NORM) are made only when the name search needs them
   }
   let chain = Promise.resolve();
   function chunk(id) {
@@ -10173,7 +10213,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       IDX.d.forEach((r, i) => {
         if (fcat && cat(r) !== fcat) return;
         if (tb && r[5] !== tb) return;
-        if (toks.length) { const s = NORM[i]; for (const t of toks) if (!s.includes(t)) return; }
+        if (toks.length) { const s = (NORM || (NORM = IDX.d.map(r => nrm(r[1] + ' ' + r[2] + ' ' + r[3]))))[i]; for (const t of toks) if (!s.includes(t)) return; }
         res.push(i);
       });
       if (!toks.length) res.sort((a, b) => IDX.d[b][8] - IDX.d[a][8]);                    // no query: the narrators with the most hadith first
