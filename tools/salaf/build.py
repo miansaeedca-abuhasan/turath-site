@@ -14,6 +14,12 @@ CLEAN=[(r'\s*\*+\s*(\([^)\d]*\))?',' '),(r'\s*\([\d٠-٩]+[)»]\s*',' '),(r'\s*\
 def clean(t):
     for a,b in CLEAN: t=re.sub(a,b,t)
     return re.sub(r'\s+([،:؛.])',r'\1',re.sub(r'\s{2,}',' ',t)).strip()
+def cutfrom(text,sub):
+    # drop everything before `sub` (written without vowel marks) - used to trim a chain of narrators from the start of a sentence
+    keep=[(i,c) for i,c in enumerate(text) if not re.match(r'[\u064b-\u0652\u0670]',c)]
+    flat=''.join(c for i,c in keep);k=flat.find(sub)
+    if k<0: raise SystemExit('cut text not found: '+sub)
+    return text[keep[k][0]:]
 def L(p):
     t=open(p,encoding='utf8').read();return json.loads(t[t.index('",[')+2:t.rindex(')')])
 def label(pg):
@@ -34,7 +40,7 @@ def main():
             if P.get('head'): heads.append([sid,P['head'][0],P['head'][1]])
             S=segs(row(P['row']));PG=locate(S)
             for para in P['paras']:
-                sg=para['s'];txt=' '.join(clean(S[i]) for i in sg)
+                sg=para['s'];fr=para.get('from',{});txt=' '.join(clean(cutfrom(S[i],fr[str(i)]) if str(i) in fr else S[i]) for i in sg)
                 pg=[PG[i] for i in sg]
                 n+=1
                 ar2.append([n,txt,label(pg),['sh10906',P['row']]]);ur2.append([n,para['ur']])

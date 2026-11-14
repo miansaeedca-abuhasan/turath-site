@@ -5197,6 +5197,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     await needAll(b, 'ar'); if (lang) await needAll(b, lang);
     const hits = [], test = modeTest(mode || 'all', q);
     for (const [n, r] of C.data[b.key + '|ar'] || []) { const tr = lang ? row(b, lang, n) : null; if (test(r[1]) || (tr && test(tr[1]))) hits.push(n); }
+    // «The Salaf» is a book of biographies: a search by a person's name lists that person's own entry first, then every other place he is mentioned
+    if (b.key === 'siyar' && b.sections && q.length) {
+      const own = new Set(); b.sections.forEach(s => { if (s[2] && allIn((s[1] || '') + ' ' + (s[4] || ''), q)) for (let n = s[2]; n <= s[3]; n++) own.add(n); });
+      if (own.size) return hits.filter(n => own.has(n)).concat(hits.filter(n => !own.has(n)));
+    }
     return hits;
   }
   /* ---------- the search of the two search pages (the books of this site): the word index narrows down the books, the text is read only
