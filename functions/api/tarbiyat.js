@@ -31,7 +31,16 @@ const SCHEMA = [
   'CREATE INDEX IF NOT EXISTS t_kid_fam ON t_kid (fam)', 'CREATE INDEX IF NOT EXISTS t_act_fam ON t_act (fam)',
 ];
 let ready = false;
-async function init(db) { if (ready) return; await db.batch(SCHEMA.map(s => db.prepare(s))); ready = true; }
+// a child's age (years), sex ('b' boy / 'g' girl) and «bal» (reached puberty, set by the parents) decide how strict the prayer rows are; added to old tables once
+async function init(db) {
+  if (ready) return; await db.batch(SCHEMA.map(s => db.prepare(s)));
+  for (const c of ['age INTEGER', "sex TEXT DEFAULT ''", 'bal INTEGER DEFAULT 0', "sfrom TEXT DEFAULT ''"]) { try { await db.prepare('ALTER TABLE t_kid ADD COLUMN ' + c).run(); } catch (e) { /* already there */ } }
+  ready = true;
+}
+const ageOf = v => { const n = parseInt(v, 10); return isNaN(n) || n < 0 || n > 25 ? null : n; };
+const stageOf = (age, bal) => bal ? 'bal' : age == null ? '' : age < 7 ? 'u7' : age <= 10 ? 'm' : 'o';
+const dayStr = ms => new Date(ms).toISOString().slice(0, 10);
+const sexOf = v => v === 'g' ? 'g' : v === 'b' ? 'b' : '';
 
 async function sweep(db) {
   const now = Date.now(), m = await db.prepare("SELECT v FROM t_meta WHERE k='sweep'").first();
@@ -74,7 +83,7 @@ async function snapshot(db, u) {
     const m = await db.prepare('SELECT COALESCE(MAX(pos),0)+1 AS p FROM t_act WHERE fam=?').bind(u.fam).first();
     await db.prepare('INSERT INTO t_act (fam,name,kind,pos,grp,akey,fri) VALUES (?,?,?,?,?,?,?)').bind(u.fam, '', a[1], m.p, a[2], a[0], a[3]).run();
   }
-  const kids = (await db.prepare('SELECT id, name FROM t_kid WHERE fam=? ' + (u.kid ? 'AND id=? ' : '') + 'ORDER BY id').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || [];
+  const kids = (await db.prepare('SELECT id, name, age, sex, bal, sfrom FROM t_kid WHERE fam=? ' + (u.kid ? 'AND id=? ' : '') + 'ORDER BY id').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || [];
   const acts = (await db.prepare('SELECT id, name, kind, grp, akey AS key, fri FROM t_act WHERE fam=? AND off=0 ORDER BY pos, id').bind(u.fam).all()).results || [];
   const reminds = ((await db.prepare('SELECT r.kid, r.day FROM t_remind r JOIN t_kid k ON k.id=r.kid WHERE k.fam=? ' + (u.kid ? 'AND r.kid=? ' : '') + 'ORDER BY r.ts').bind(...(u.kid ? [u.fam, u.kid] : [u.fam])).all()).results || []).map(r => [r.kid, r.day]);
   return {role: u.kid ? 'child' : 'parent', family: u.fname, me: u.kid || null, kids, acts, reminds};
@@ -95,13 +104,13 @@ export async function onRequest(ctx) {
     if (a === 'create') {
       if (!(await guard(db, 'c' + ip))) return json({error: 'slow'}, 429);
       const fname = str(b.family, 40) || 'ہمارا گھر';
-      const kids = (Array.isArray(b.kids) ? b.kids : []).map(k => str(k, 30)).filter(Boolean).slice(0, 8);
+      const kids = (Array.isArray(b.kids) ? b.kids : []).map(k => (k && typeof k === 'object') ? {n: str(k.n, 30), a: ageOf(k.a), s: sexOf(k.s)} : {n: str(k, 30), a: null, s: ''}).filter(k => k.n).slice(0, 8);
       if (!kids.length) return json({error: 'kids'}, 400);
       await fail(db, 'c' + ip); // creating is limited too (12 per 15 minutes per address)
       const pc = await newCode(db, 't_fam', 'pcode', 8);
       const fam = (await db.prepare('INSERT INTO t_fam (name,pcode,created,last_active) VALUES (?,?,?,?)').bind(fname, await sha(pc), now, now).run()).meta.last_row_id;
       const out = [];
-      for (const k of kids) { const cc = await newCode(db, 't_kid', 'ccode', 6); const id = (await db.prepare('INSERT INTO t_kid (fam,name,ccode,created) VALUES (?,?,?,?)').bind(fam, k, await sha(cc), now).run()).meta.last_row_id; out.push({id, name: k, code: cc}); }
+      for (const k of kids) { const cc = await newCode(db, 't_kid', 'ccode', 6); const id = (await db.prepare('INSERT INTO t_kid (fam,name,ccode,created,age,sex,sfrom) VALUES (?,?,?,?,?,?,?)').bind(fam, k.n, await sha(cc), now, k.a, k.s, dayStr(now)).run()).meta.last_row_id; out.push({id, name: k.n, code: cc}); }
       for (let i = 0; i < DEFAULT_ACTS.length; i++) await db.prepare('INSERT INTO t_act (fam,name,kind,pos,grp,akey,fri) VALUES (?,?,?,?,?,?,?)').bind(fam, '', DEFAULT_ACTS[i][1], i, DEFAULT_ACTS[i][2], DEFAULT_ACTS[i][0], DEFAULT_ACTS[i][3]).run();
       const token = code(32); await db.prepare('INSERT INTO t_sess (token,fam,kid,exp) VALUES (?,?,NULL,?)').bind(token, fam, now + SESS).run();
       return json({ok: 1, ...(await snapshot(db, {fam, kid: null, fname})), token, parentCode: pc, kids: out});
@@ -137,6 +146,13 @@ export async function onRequest(ctx) {
       const today = Math.floor(now / DAY), d = dnum(day);
       if (d > today + 1) return json({error: 'future'}, 400);
       if (u.kid && d < today - 2) return json({error: 'old'}, 403);        // a child can fill today and yesterday (the page enforces the exact local days; the server allows one extra day for time zones); a parent can fix any day
+      if (act === 0) {   // «رخصت»: a grown-up girl's days of exemption (act 0 is no activity; such a day is not counted and costs no minus point); she or her parents set it
+        const G = await db.prepare("SELECT 1 FROM t_kid WHERE id=? AND fam=? AND sex='g' AND bal=1").bind(kid, u.fam).first(); if (!G) return json({error: 'bad'}, 400);
+        if (n === 0) await db.prepare('DELETE FROM t_mark WHERE kid=? AND act=0 AND day=?').bind(kid, day).run();
+        else await db.prepare('INSERT INTO t_mark (kid,act,day,n) VALUES (?,0,?,1) ON CONFLICT(kid,act,day) DO UPDATE SET n=1').bind(kid, day).run();
+        await db.prepare('UPDATE t_fam SET last_active=? WHERE id=?').bind(now, u.fam).run();
+        return json({ok: 1});
+      }
       const A = await db.prepare('SELECT kind, fri, grp FROM t_act WHERE id=? AND fam=? AND off=0').bind(act, u.fam).first(), K = await db.prepare('SELECT 1 FROM t_kid WHERE id=? AND fam=?').bind(kid, u.fam).first();
       if (!A || !K) return json({error: 'bad'}, 400);
       if (A.fri && new Date(day + 'T00:00:00Z').getUTCDay() !== 5) return json({error: 'notfri'}, 400);
@@ -162,11 +178,16 @@ export async function onRequest(ctx) {
       const c = (await db.prepare('SELECT COUNT(*) n FROM t_kid WHERE fam=?').bind(u.fam).first()).n; if (c >= 8) return json({error: 'max'}, 400);
       const name = str(b.name, 30); if (!name) return json({error: 'bad'}, 400);
       const cc = await newCode(db, 't_kid', 'ccode', 6);
-      const id = (await db.prepare('INSERT INTO t_kid (fam,name,ccode,created) VALUES (?,?,?,?)').bind(u.fam, name, await sha(cc), now).run()).meta.last_row_id;
+      const id = (await db.prepare('INSERT INTO t_kid (fam,name,ccode,created,age,sex,sfrom) VALUES (?,?,?,?,?,?,?)').bind(u.fam, name, await sha(cc), now, ageOf(b.age), sexOf(b.sex), dayStr(now)).run()).meta.last_row_id;
       return json({ok: 1, id, name, code: cc});
     }
     const ownKid = async id => await db.prepare('SELECT id FROM t_kid WHERE id=? AND fam=?').bind(parseInt(id, 10), u.fam).first();
     if (a === 'kidcode') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); const cc = await newCode(db, 't_kid', 'ccode', 6); await db.prepare('UPDATE t_kid SET ccode=? WHERE id=?').bind(await sha(cc), k.id).run(); await db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id).run(); return json({ok: 1, code: cc}); }
+    if (a === 'kidinfo') { const k = await db.prepare('SELECT id, age, bal, sfrom FROM t_kid WHERE id=? AND fam=?').bind(parseInt(b.kid, 10), u.fam).first(); if (!k) return json({error: 'bad'}, 400);
+      const age = ageOf(b.age), bal = b.bal ? 1 : 0;
+      // the strictness (a missed prayer = minus point) counts only from the day after the rules for this child last changed, never backwards over old weeks
+      const sfrom = stageOf(age, bal) !== stageOf(k.age, k.bal) ? dayStr(now) : (k.sfrom || dayStr(now));
+      await db.prepare('UPDATE t_kid SET age=?, sex=?, bal=?, sfrom=? WHERE id=?').bind(age, sexOf(b.sex), bal, sfrom, k.id).run(); return json({ok: 1}); }
     if (a === 'kidname') { const k = await ownKid(b.kid), name = str(b.name, 30); if (!k || !name) return json({error: 'bad'}, 400); await db.prepare('UPDATE t_kid SET name=? WHERE id=?').bind(name, k.id).run(); return json({ok: 1}); }
     if (a === 'kiddel') { const k = await ownKid(b.kid); if (!k) return json({error: 'bad'}, 400); await db.batch([db.prepare('DELETE FROM t_mark WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_remind WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_sess WHERE kid=?').bind(k.id), db.prepare('DELETE FROM t_kid WHERE id=?').bind(k.id)]); return json({ok: 1}); }
     if (a === 'parentcode') { const pc = await newCode(db, 't_fam', 'pcode', 8); await db.prepare('UPDATE t_fam SET pcode=? WHERE id=?').bind(await sha(pc), u.fam).run(); await db.prepare('DELETE FROM t_sess WHERE fam=? AND kid IS NULL AND token<>?').bind(u.fam, str(b.token, 64)).run(); return json({ok: 1, code: pc}); }
