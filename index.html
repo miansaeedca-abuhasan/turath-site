@@ -5080,7 +5080,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const grouped = () => {
       const hs = b.heads, boxes = [];
       hs.forEach((h, i) => {
-        const to = i + 1 < hs.length ? hs[i + 1][0] : Infinity, mine = b.sections.filter(s => s[0] >= h[0] && s[0] < to);
+        const to = i + 1 < hs.length ? hs[i + 1][0] : Infinity, byH = hs[hs.length - 1][0] > b.sections.length, kk = s => byH ? s[2] : s[0], mine = b.sections.filter(s => kk(s) >= h[0] && kk(s) < to);   // heads may count hadith (Adab al-Ali) or sections
         const n = mine.reduce((a, s) => a + HN(b, s[2], s[3]), 0);
         const d = el('details', {class: 'card grpbox'}, el('summary', {}, el('span', {class: 'gt'}, (b.headsL && b.headsL[ui] && b.headsL[ui][i]) || h[1]), h[2] ? el('span', {class: 'ca', lang: 'ar'}, h[2]) : '', el('span', {class: 'cs'}, CNT(b)(fmtN(n)) + '، ' + fmtN(mine.length) + ' ' + T(b.key === 'shadharat' || b.key === 'siyar' ? 'cPeople' : 'cBabs'))));
         let filled = false;
