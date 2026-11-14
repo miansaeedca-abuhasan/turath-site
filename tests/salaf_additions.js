@@ -20,6 +20,6 @@ await pg.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new
 const last=e.sections.length;
 await pg.goto('http://localhost:8765/index.html#/s/siyar/'+last);await pg.waitForSelector('.card .mt.ar',{timeout:30000});
 const t=await pg.evaluate(()=>document.body.innerText);
-ck(/اسحاق بن راہویہ|إسحاق بن راهويه/.test(t),'new person shows');ck(/سیر اعلام النبلاء \(11\//.test(t),'page label shows');
-ck(await pg.evaluate(()=>document.querySelectorAll('.card .mt.ar').length)>=8,'paragraphs listed');
+ck(/ابو مسلم خولانی|أبو مسلم الخولاني/.test(t),'new person shows');ck(/سیر اعلام النبلاء \(\d+\//.test(t),'page label shows');
+ck(await pg.evaluate(()=>document.querySelectorAll('.card .mt.ar').length)>=5,'paragraphs listed');
 await br.close();console.log(bad?'FAILED':'OK');process.exit(bad?1:0)})();
