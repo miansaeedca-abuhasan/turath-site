@@ -10019,7 +10019,16 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       let dn = null; try { dn = new Intl.DisplayNames(['ur'], {type: 'region'}); } catch (e) {}
       const known = r.c.reduce((s, x) => s + x[1], 0);
       const rows = r.c.map(([cc, n]) => [cc === 'XX' ? 'نامعلوم ملک' : ((dn && dn.of(cc)) || cc), n]); if (r.n > known) rows.push(['پرانے زائرین (ملک معلوم نہیں)', r.n - known]);
-      wrap.replaceChildren(el('h3', {style: 'text-align:center'}, 'کل زائرین: ' + r.n.toLocaleString('en-US')),
+      const use = el('div', {class: 'card', style: 'padding:.5rem;margin:.4rem 0;text-align:center'}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
+      const nf = n => Number(n).toLocaleString('en-US');
+      Promise.all([
+        fetch('api/tarbiyat', {method: 'POST', cache: 'no-store', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({a: 'famstats'})}).then(x => x.ok ? x.json() : null).catch(() => null),
+        fetch('api/diary?stats', {cache: 'no-store'}).then(x => x.ok ? x.json() : null).catch(() => null)]).then(([t, d]) => {
+        use.replaceChildren(
+          el('div', {}, el('b', {}, 'تربیہ میں خاندان: ' + (t ? nf(t.families) : '—')), t ? el('span', {class: 'note'}, ' (بچے: ' + nf(t.kids) + '، پچھلے 7 دن میں فعال: ' + nf(t.active7) + ')') : null),
+          el('div', {style: 'margin-top:.3rem'}, el('b', {}, 'حفظ ڈائری سے مستفید ادارے: ' + (d ? nf(d.institutions) : '—')), d ? el('span', {class: 'note'}, ' (پچھلے 30 دن میں فعال: ' + nf(d.active30) + '، اساتذہ: ' + nf(d.teachers) + '، والدین: ' + nf(d.parents) + '، طلبہ: ' + nf(d.students) + ')') : null));
+      });
+      wrap.replaceChildren(use, el('h3', {style: 'text-align:center'}, 'کل زائرین: ' + r.n.toLocaleString('en-US')),
         el('div', {class: 'vcountries', style: 'display:grid;max-width:none'}, ...rows.map((x, i) => el('div', {}, x[0].startsWith('پرانے') ? '' : el('span', {class: 'vn'}, String(i + 1)), el('span', {class: 'vt'}, x[0] + ': ' + x[1])))));
     });
     return wrap;
@@ -10033,6 +10042,22 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       wrap.replaceChildren(el('p', {class: 'note'}, 'حفظ ڈائری کے دستخط شدہ اقرار نامے (ثبوت)۔ کل: ' + r.list.length),
         ...r.list.map(x => el('div', {class: 'card', style: 'padding:.4rem;margin:.25rem 0'}, el('b', {dir: 'ltr'}, x.serial + ' · ' + d(x.ts)), el('div', {}, x.signer + ' — ' + x.inst_name), el('div', {dir: 'ltr'}, x.email + ' · ' + x.kids + ' · v' + x.ver + ' · ' + (x.code || '')))));
     }).catch(() => { wrap.replaceChildren(el('p', {class: 'note'}, 'فہرست نہیں مل سکی۔')); });
+    return wrap;
+  }
+
+  function tabMsgs() {
+    const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
+    const post = o => fetch('api/tarbiyat', {method: 'POST', cache: 'no-store', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(o)}).then(r => r.ok ? r.json() : null).catch(() => null);
+    const KIND = {s: 'تجویز', c: 'شکایت', r: 'بہتری / نتیجہ'};
+    const draw = () => post({a: 'msglist'}).then(r => {
+      if (!r || !r.list) { wrap.replaceChildren(el('p', {class: 'note'}, 'پیغامات نہیں مل سکے۔')); return; }
+      wrap.replaceChildren(el('p', {class: 'note'}, 'تربیہ کے والدین کے نجی پیغامات (کسی خاندان سے جڑے نہیں؛ صرف آپ کو دکھائی دیتے ہیں)۔ کل: ' + r.list.length),
+        ...r.list.map(x => el('div', {class: 'card', style: 'padding:.5rem;margin:.3rem 0'},
+          el('b', {dir: 'ltr'}, new Date(x.ts).toISOString().slice(0, 10)), el('span', {}, ' · ' + (KIND[x.kind] || '') + (x.who ? ' · ' + x.who : '')),
+          el('div', {style: 'white-space:pre-wrap;margin:.3rem 0'}, x.txt),
+          el('button', {onclick: () => { if (confirm('یہ پیغام مٹا دیں؟')) post({a: 'msgdel', id: x.id}).then(draw); }}, 'مٹائیں'))));
+    });
+    draw();
     return wrap;
   }
 
@@ -10066,7 +10091,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return wrap;
   }
 
-  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
   function panel(v) {
     v.replaceChildren();
     const body = el('div', {}), tabs = el('div', {style: 'display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;margin:.4rem 0'});
