@@ -774,6 +774,7 @@ a.card .ct{color:var(--ink)}
 @media (min-aspect-ratio:3/4){#splv{object-fit:contain;width:auto;height:auto;max-width:min(100%,1000px);max-height:92vh;-webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%)}}
 #splskip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);color:#e9d7a1;border:1px solid rgba(233,215,161,.45);border-radius:20px;padding:6px 20px;font:15px system-ui,sans-serif;cursor:pointer}
 </style>
+<script src="data/meta.js?h=4d3adf69db"></script>
 <script>try{var q=new URLSearchParams(location.search).get('hl');if(q&&/^(ur|en|ar|bn|hi|gu|fr)$/.test(q))localStorage.ui=q}catch(e){}</script>
 <script>
 (function(){
@@ -1132,7 +1133,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44ac425330", "data/d2.js?h=09931162c1", "data/d3.js?h=16bb1545af", "data/d4.js?h=d9173eca4f", "data/d5.js?h=66a1cea61d", "data/d6.js?h=c2cc140c8f", "data/d7.js?h=f925864f5b", "data/d8.js?h=560d6cc504", "data/d9.js?h=c60cfc40ea", "data/d10.js?h=8b01e14a67"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};addEventListener("load",()=>setTimeout(()=>window.needData(),3500));
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const fs=["data/d1.js?h=44ac425330", "data/d2.js?h=09931162c1", "data/d3.js?h=16bb1545af", "data/d4.js?h=d9173eca4f", "data/d5.js?h=66a1cea61d", "data/d6.js?h=c2cc140c8f", "data/d7.js?h=f925864f5b", "data/d8.js?h=560d6cc504", "data/d9.js?h=c60cfc40ea", "data/d10.js?h=8b01e14a67"];let left=fs.length;fs.forEach(f=>{const s=document.createElement("script");s.src=f;s.async=false;s.onload=s.onerror=()=>{if(!--left)ok();};document.body.append(s);});}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q"))window.needData()},{capture:true,once:false});
 </script>
 <script>
 const I={
@@ -1998,7 +1999,7 @@ const RAL2=(()=>{const seen={},o=[];RALIAS.concat([["الروياني في مس�
 const rxCh=c=>c===' '?'\\s+':({'ا':'[اأإآ]','ي':'[يى]','ه':'[هة]'}[c]||c.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));
 const RALRX=RAL2.map(a=>[...a[0]].map(rxCh).join('[\\u064b-\\u065f\\u0670\\u0640]*')+'[\\u064b-\\u065f\\u0670\\u0640]*').join('|');
 const RRE=new RegExp('(?<=^|[\\s،,.:؛(«"“–\\-]|[\\s،(]و|^و|[\\s،(]ف)('+RALRX+')(["”»]?(?:\\s+أيضا[ًا]?)?(?:\\s+(?:في|فى)\\s+[^()،.:؛\\d\\ue000\\ue001]{1,45}?)?\\s*)([\\ue000\\ue001\\ue004\\ue006\\ue008]?)\\(([^()]{1,48})\\)([\\ue001\\ue005\\ue007\\ue009]?)','g');
-const RBN=(k,n)=>((window.TURATH_DATA||{}).rbfix||{})[k+'|'+n]||parseInt(n,10);
+const RBN=(k,n)=>(TD().rbfix||{})[k+'|'+n]||parseInt(n,10);
 const RKEY=Object.fromEntries(RAL2);
 const DIG10=t=>t.replace(/[٠-٩]/g,c=>'٠١٢٣٤٥٦٧٨٩'.indexOf(c));
 const MKS_=/[\ue000\ue001\ue004-\ue009]/g;
@@ -2011,11 +2012,11 @@ function refMk(key,n,red){const nm=+n;return el('a',{class:'rlink'+(red?' red':'
     box.append(el('b',{},(COLL.name(key)||key)+' ('+n+')'));if(!await COLL.refBox(key,nm,box,nm))box.append(el('p',{class:'note'},T('nobook')));}
   else box.remove();}}},'['+((window.COLL&&COLL.printed&&COLL.printed(key,nm))||n)+']');}
 // the exact hadith a reference of a Jami hadith points to (its own number in the book), when one printed number holds several hadith
-function refLinked(jn,key,n){try{const h=jn&&(window.TURATH_DATA.hadith||[]).find(x=>x.num===jn);const r=h&&(h.refs||[]).find(r=>r.key===key&&parseInt(r.number,10)===+n&&r.n);return r?r.n:undefined;}catch(e){return undefined;}}
+function refLinked(jn,key,n){try{const h=jn&&(window.TURATH_REFS?{refs:window.TURATH_REFS[jn]}:(window.TURATH_DATA.hadith||[]).find(x=>x.num===jn));const r=h&&(h.refs||[]).find(r=>r.key===key&&parseInt(r.number,10)===+n&&r.n);return r?r.n:undefined;}catch(e){return undefined;}}
 function refRich(t,jn){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg,jn));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
   const out=[];let last=0;RRE.lastIndex=0;let m;
   while((m=RRE.exec(t))){const key=RKEY[NK(m[1])];if(!key||!window.COLL)continue;const bn=m[1];
-    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm?((window.TURATH_DATA||{}).mkrow||{})[hm[1]+'/'+hm[2]]:(key==='hakim'&&jn?((window.TURATH_DATA||{}).hkrow||{})[jn+'|'+inner.replace(/\s+/g,'')]:0);if(!row)continue;
+    const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm?(TD().mkrow||{})[hm[1]+'/'+hm[2]]:(key==='hakim'&&jn?(TD().hkrow||{})[jn+'|'+inner.replace(/\s+/g,'')]:0);if(!row)continue;
       if(m.index>last)out.push(...rich(t.slice(last,m.index),'ar'));out.push(m[1].replace(/\ue010[^\ue011]*\ue011/g,'')+m[2]+'(');const cl0=pr[0]&&pr[0].cl;
       out.push(el('a',{class:'rlink'+(cl0?' '+cl0:''),href:'#',title:T('cmpRefs'),on:{click:async e=>{e.preventDefault();const p=e.target.closest('p')||e.target.parentNode;
         let box=p.nextElementSibling;if(!(box&&box.classList.contains('rinl')&&box.dataset.k===key+inner)){box=el('div',{class:'refbox rinl','data-k':key+inner});p.after(box);
@@ -2061,7 +2062,7 @@ function lafzRefs(t){const out=new Set();if(!t)return out;RRE.lastIndex=0;let m;
   if(document.body)go();else addEventListener('DOMContentLoaded',go);})();
 /* ---------- مفصل دراسة الحديث: the full scholarly study of Talkhis al-Jami al-Kamil after the takhrij (loaded when opened) ---------- */
 const DRL={};window.TURATH_DR=o=>Object.assign(window.DRDATA=window.DRDATA||{},o);
-function drLoad(num){const f=(window.TURATH_DATA&&TURATH_DATA.drfiles||[]).find(x=>num>=x[0]&&num<=x[1]);if(!f)return Promise.resolve();
+function drLoad(num){const f=(TD().drfiles||[]).find(x=>num>=x[0]&&num<=x[1]);if(!f)return Promise.resolve();
   return DRL[f[2]]||(DRL[f[2]]=new Promise((ok,no)=>{const s=document.createElement('script');s.src=f[2];s.onload=ok;s.onerror=()=>{delete DRL[f[2]];no();};document.head.append(s);}));}
 function sanadChips(texts){const seen=new Set(),chips=[];
   texts.forEach(t=>{const pt=String(t).replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g,'');if(!/(?:حدثنا|أخبرنا|اخبرنا|حدثني|عن)\s/.test(pt))return;let sn=[];try{sn=COLL.sanad(pt)}catch(e){}if(sn.length<2)return;
@@ -2087,7 +2088,7 @@ async function showJrs(h){if(!window.JRS)await new Promise(ok=>{const s=document
 /* ---------- المدخل إلى الجامع الكامل (the book's introduction) ---------- */
 async function showMadkhal(){const v=$('#view');v.replaceChildren();bar(curBookName(),'المدخل إلى الجامع الكامل',true);
   v.append(el('p',{class:'note'},'…'));
-  if(!window.MADKHAL)await new Promise(ok=>{window.TURATH_MADKHAL=x=>{window.MADKHAL=x;ok();};const s=document.createElement('script');s.src='data/madkhal.js?h='+(window.TURATH_DATA&&TURATH_DATA.mkh||'');s.onerror=ok;document.head.append(s);});
+  if(!window.MADKHAL)await new Promise(ok=>{window.TURATH_MADKHAL=x=>{window.MADKHAL=x;ok();};const s=document.createElement('script');s.src='data/madkhal.js?h='+(TD().mkh||'');s.onerror=ok;document.head.append(s);});
   // a printed-book page: title page, contents, then the text with centred chapter headings, hanging numbers and a signature line (no stretched words)
   const M=(window.MADKHAL||[]).filter((r,i)=>i>0),heads=M.map((r,i)=>[r,i]).filter(([r])=>r[0].startsWith('Heading')&&!/^شجرة/.test(r[1])&&r[1]!=='بسم الله الرحمن الرحيم');
   const root=el('article',{class:'mdk',lang:'ar',dir:'rtl'});
@@ -5351,7 +5352,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const box = $('#list'); box.replaceChildren();
     let pre0 = null; try { pre0 = sessionStorage.gspre; } catch (e) {}
     if (!pre0 && keepShow(box, 's')) return;
-    const jamL = ['ur', 'en', 'bn'].concat((window.TURATH_DATA && TURATH_DATA.langs) || []);
+    const jamL = ['ur', 'en', 'bn'].concat(TD().langs || []);
     let rb = []; try { const K = window.RB && RB.on ? await RB.catalog() : null; if (K) K.b.slice().sort((x, y) => (K.a[x[3]] ? K.a[x[3]][1] || 9999 : 9999) - (K.a[y[3]] ? K.a[y[3]][1] || 9999 : 9999)).forEach(r => rb.push({key: 'rb' + r[0], name: r[1] + (K.a[r[3]] ? ' — ' + K.a[r[3]][0] : ''), count: r[4]})); } catch (e) {}
     const booksFor = t => t === 'topic' ? [{key: 'jami', name: T('jamiName'), count: 16552}].concat(C.idx.filter(b => !b.ext && b.sections && b.sections.length).map(b => ({key: b.key, name: bname(b), count: b.count}))) :
       ((t === 'ar' || jamL.includes(t)) ? [{key: 'jami', name: T('jamiName'), count: 16552}] : [])
@@ -6170,7 +6171,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     async item(key, printed, n) {
       await index(); const b = bookOf(key); if (!b) return null;
       if (b.ext) return {title: bname(b), ext: b.ext};
-      const k = n || ((window.TURATH_DATA || {}).collfix || {})[key + '|' + printed] || (C.rev[key] && C.rev[key][printed]) || +printed;
+      const k = n || (TD().collfix || {})[key + '|' + printed] || (C.rev[key] && C.rev[key][printed]) || +printed;
       await needRange(b, 'ar', k, k); if (b.langs.includes('en')) await needRange(b, 'en', k, k);
       const r = row(b, 'ar', k); if (!r) return null;
       const e = row(b, 'en', k);
@@ -6208,7 +6209,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // reference chip in a Jami hadith (e.g. «مسلم 1907»): show that hadith from the book, by its printed number
     async refBox(key, printed, box, linked) {
       await index(); const b = bookOf(key); if (!b) return false;
-      if (!linked) linked = ((window.TURATH_DATA || {}).collfix || {})[key + '|' + printed];
+      if (!linked) linked = (TD().collfix || {})[key + '|' + printed];
       if (b.ext) { box.append(el('p', {class: 'note'}, T('cExt')), el('a', {class: 'btn lbtn', href: b.ext + '#/s/' + b.key, target: '_blank', rel: 'noopener'}, T('cOpenExt'))); return true; }
       const lang = getLang(b), an = b.an || {};
       // a printed (Abd al-Baqi) number can hold several hadith (Muslim 1442 → 1442.01 …): show all of them, each with both numberings
