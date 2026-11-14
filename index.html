@@ -4733,7 +4733,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const TKN = x => x.replace(/[أإآٱ]/g, 'ا').replace(/[\u064B-\u065F\u0670\u0640]/g, '');
   const TK_KEEP = new RegExp('^(?:' + ['الأدب المفرد', 'التاريخ', 'خلق أفعال', 'الكبرى', 'الاكبري', 'السنن الكبرى', 'الشمائل', 'شائله', 'عمل اليوم', 'العلل', 'جزء', 'خصائص', 'الكنى', 'الموطأ', 'الضعفاء', 'القراءة خلف', 'رفع اليدين', 'الزهد'].map(TKN).join('|') + ')');
   const TKCLEAN = (b, g) => b && b.jami && typeof g === 'string' ? g.replace(/(البخاري|مسلم|أبو داود|أبي داود|الترمذي|النسائي|ابن ماجه|ابن ماجة|مالك|الدارمي)\s+في\s+([^()\d،:\ue000-\ue0ff]{2,45}?)(\s*[\ue000-\ue0ff]?\s*\()/g, (m, a, x, c) => TK_KEEP.test(TKN(x.trim())) ? m : a + c) : g;
-  const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...kl));
+  // the takhrij runs on as ONE paragraph (the references one after the other), never one line per reference
+  const tkJoin = kl => { if (kl.length < 2) return kl; const p = kl[0]; kl.slice(1).forEach(q => { p.append(' ', ...[...q.childNodes]); }); return [p]; };
+  const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...tkJoin(kl)));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
@@ -4930,7 +4932,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (x && x.k) { const kl = x.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
         bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, L), d.grade) : paraEl(t, L)), L, b)); }
       if (lang && rr) bx().append(trRow(b, L), el('div', {class: 'tr'}, ...rr[1].split('\n').filter(t => t.trim()).map(P)));
-      if (lang && rr && x && x.fn) c.append(el('div', {class: 'tr pfnbox', lang: L, dir: DIR(L)}, ...x.fn.split('\n').filter(t => t.trim()).map(t => FM(el('p', {class: 'pfn', lang: L, dir: DIR(L)}, t)))));
+      if (lang && rr && x && x.fn) c.append(...proseFnBox([0, '', 0, {fn: x.fn}], L));   // the notes of a hadith run together as one paragraph in one box (same as Ar-Raheeq)
       addExtras();
       // explanation and benefits in the chosen language; when that translation has none, the Arabic ones
       const ra = (row(b, 'ar', n) || [])[3] || {}, part = k => x && x[k] ? [x[k], L] : ra[k] ? [ra[k], 'ar'] : null;
