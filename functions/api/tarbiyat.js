@@ -2,7 +2,7 @@
 // One family = one parent code + one code per child. A child's code can only mark that child's own boxes and see that child's own results.
 // Privacy: no e-mail, no surname needed; the owner of the site can read nothing about families. A family idle for 3 weeks is removed; a new family that marks nothing for 5 days is removed; a family that used the chart in week 1 but not in week 2 or not in week 3 is removed when week 3 ends.
 const json = (o, s = 200) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store'}});
-const DAY = 86400000, SESS = 1 * DAY, IDLE = 21 * DAY;
+const DAY = 86400000, SESS = 1 * DAY, IDLE = 28 * DAY;
 const enc = new TextEncoder();
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 const AL = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';

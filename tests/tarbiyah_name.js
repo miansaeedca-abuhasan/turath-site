@@ -4,6 +4,8 @@ const t=fs.readFileSync('tarbiyat.html','utf8'),ix=fs.readFileSync('index.html',
 if(!/<title>تربیہ —/.test(t))bad.push('page title');
 if(!/id="ttl">تربیہ</.test(t))bad.push('page heading');
 if(!t.includes('(مرتب: بنت یوسف عفی اللہ عنہا)'))bad.push('compiler credit');
-if(/(^|[^؀-ۿ])تربیت([^؀-ۿ]|$)/.test(t))bad.push('old name still in page');
+// the founder's own message to parents (PMSG) uses the ordinary word «تربیت» (upbringing); everything else must say «تربیہ»
+const tt=t.replace(/const PMSG=[\s\S]*?function parentMsg/,'function parentMsg');
+if(/(^|[^؀-ۿ])تربیت([^؀-ۿ]|$)/.test(tt))bad.push('old name still in page');
 if(!/ur: 'تربیہ', ar: 'التربية'/.test(ix))bad.push('home tile');
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');process.exit(bad.length?1:0);
