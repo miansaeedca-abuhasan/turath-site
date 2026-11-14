@@ -12,7 +12,7 @@ async function open(book,num){const p=await b.newPage({viewport:{width:420,heigh
  await p.goto('http://localhost:8765/#/h/'+num);await p.waitForSelector('article, .card',{timeout:25000});await p.waitForTimeout(5000);
  const r=await p.evaluate(()=>({box:/قارن بمصادره/.test(document.body.innerText)?1:0,txt:(document.querySelector('.shhold')||{textContent:''}).textContent.slice(0,200),red:document.querySelectorAll('p.tk .rlink.red').length,links:document.querySelectorAll('p.tk .rlink').length}));await p.close();return r}
 {const r=await open('jami',9121);ck(r.links>0,'9121 reference is a link in the takhrij: '+r.links);ck(r.box>0,'9121 shows its book box: '+JSON.stringify(r))}
-ck(/الهيثم بن كليب/.test(fs.readFileSync(__dirname+'/../coll/sh1503_ar_5_99e48e.js','utf8').split('[3689,')[1].slice(0,300)),'sh1503 row 3689 is the Haytham narration');
+ck(/الهيثم بن كليب/.test(fs.readFileSync(__dirname+'/../coll/'+fs.readdirSync(__dirname+'/../coll').find(f=>/^sh1503_ar_5_/.test(f)),'utf8').split('[3689,')[1].slice(0,300)),'sh1503 row 3689 is the Haytham narration');
 ck(/اصطلحوا/.test(fs.readFileSync(__dirname+'/../coll/sh23833_ar_1_4cbb57.js','utf8').split('[1929,')[1].slice(0,300).replace(/[\u064b-\u0652]/g,'')),'sh23833 row 1929 is the standard-bearer narration');
 const r=await open('jami',3635);ck(r.red===0,'3635 not red: '+r.red);
 ck(!errs.length,'js errors '+errs[0]);console.log(bad?'FAIL':'PASS refs_linked');await b.close();process.exit(bad?1:0)})()

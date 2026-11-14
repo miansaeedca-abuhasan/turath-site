@@ -4909,6 +4909,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       else c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar')))); }
     // the narrators of the isnad are coloured names inside the text (companions in green); a tap opens the narrator in the encyclopedia
     if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail' && b.key !== 'hifzhadith') { c.querySelectorAll('.mt.ar').forEach(mtEl => { try { linkSanadDom(mtEl, {refs: [{key: b.key, n, number: n}]}); } catch (e) {} }); }
+    // notes (حواشی) of an Arabic library book: the marks in the text become small blue circles and the notes of the hadith / paragraph run on as one paragraph in one box right under it (the Ar-Raheeq style, the same in every book)
+    { const rar = row(b, 'ar', n) || [], fxr = rar[3] && !Array.isArray(rar[3]) && rar[3].fn ? rar : null;
+      if (fxr && window.fnm) { c.querySelectorAll('.mt.ar').forEach(m => window.fnm(m)); c.append(...proseFnBox(fxr, 'ar')); } }
     if (hnEl) { const m0 = c.querySelector('.mt.ar'), p0 = m0 && (m0.querySelector('p') || m0); if (p0) p0.prepend(hnEl, ' '); }
     // grade / takhrij (e.g. «صحیح: رواہ البخاری ...») right below the Arabic hadith
     // a source reference with a link to the book (row[3] = [book, number]; a book kept in the other link opens there)
