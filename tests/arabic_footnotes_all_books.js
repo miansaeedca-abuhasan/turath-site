@@ -7,4 +7,6 @@ p.on('pageerror',e=>bad.push('pageerror '+e.message));await p.addInitScript(()=>
 await p.goto('http://localhost:8765/#/s/sh9863/n/22');await p.waitForTimeout(6000);
 const a=await p.evaluate(()=>{const m=[...document.querySelectorAll('.mt.ar sup.fnm')].map(s=>s.textContent);let dup=0;for(let i=1;i<m.length;i++)if(m[i]===m[i-1])dup++;return{m:m.length,dup,run:document.querySelectorAll('.pfnrun').length}});
 if(a.m<5)bad.push('few marks '+a.m);if(a.dup)bad.push('doubled circles '+a.dup);if(a.run!==1)bad.push('notes box '+a.run);
+for(const [k,n] of [['sh23764',300],['sh8658',16]]){await p.goto('http://localhost:8765/#/s/'+k+'/n/'+n);await p.waitForTimeout(5000);
+const q=await p.evaluate(()=>({m:document.querySelectorAll('.mt.ar sup.fnm').length,run:document.querySelectorAll('.pfnrun').length}));if(q.m<1||q.run!==1)bad.push(k+' '+JSON.stringify(q))}
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS');await b.close();process.exit(bad.length?1:0)})();
