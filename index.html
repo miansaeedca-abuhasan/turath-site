@@ -9082,8 +9082,20 @@ Object.assign(I.fr, {
     const trBox = E('p', {class: 'qtr hzTr'}); let TRX = null, shown = f;
     const view = a => { shown = a; text.replaceChildren(spans[a]); Object.values(spans).forEach(x => x.classList.toggle('cur', x === spans[a])); trBox.hidden = !RP.tr || !TRX; if (TRX) { trBox.lang = TRX.lang; trBox.dir = TRX.dir; trBox.textContent = TRX.text(s, a); } };
     const mark = a => { if (a && spans[a]) view(a); };
-    const loadTr = async () => { if (!RP.tr || TRX) return view(shown); try { TRX = await Qn().repTr(); } catch (e) { TRX = null; RP.tr = 0; } view(shown); };
-    const setPlaying = v => { playing = v; playBtn.textContent = v ? L().stop : L().play; playBtn.classList.toggle('stop', v); };
+    const loadTr = async () => { if (!RP.tr || TRX) return view(shown); try { TRX = await Qn().repTr(); } catch (e) { TRX = null; RP.tr = 0; save(); drawSeg(); toastMsg(L().fail); } view(shown); if (TRX && !playing) trBox.scrollIntoView({block: 'nearest', behavior: 'smooth'}); };
+    let paused = false, trk = 0;
+    const bigBtn = E('button', {type: 'button', class: 'hzbigp', 'aria-label': L().stop}), closeBtn = E('button', {type: 'button', class: 'hzx', 'aria-label': L().stop}, '✕');
+    const stage = E('div', {class: 'hzctl', hidden: true}, bigBtn, closeBtn);
+    const drawBig = () => { bigBtn.textContent = paused ? '▶' : '❚❚'; };
+    const setPlaying = v => { playing = v; paused = false; playBtn.hidden = v; stage.hidden = !v; if (window.__hzForm) window.__hzForm.hidden = v; text.classList.toggle('hzlive', v); drawBig(); if (!v) { trk++; text.querySelectorAll('.hzcur').forEach(x => x.classList.remove('hzcur')); } };
+    bigBtn.addEventListener('click', () => { if (!AUD) return; paused = !paused; if (paused) AUD.pause(); else AUD.play().catch(() => {}); drawBig(); });
+    closeBtn.addEventListener('click', () => stopAll());
+    // the word being recited is lit: the ayah's time shared between its words by their length
+    const track = (a, au) => {
+      const ws = [...spans[a].querySelectorAll('.hzw')], wt = ws.map(w => Math.max(2, NORM(w.textContent).length)), tot = wt.reduce((x, y) => x + y, 0), my = ++trk;
+      const tick = () => { if (my !== trk) return; const d = au.duration; if (d && isFinite(d) && tot) { const x = Math.min(0.999, au.currentTime / d) * tot; let c = 0, i = 0; for (; i < wt.length - 1; i++) { c += wt[i]; if (x < c) break; } ws.forEach((w, j) => w.classList.toggle('hzcur', j === i)); } if (!au.ended) requestAnimationFrame(tick); };
+      tick();
+    };
     const playUrl = url => new Promise(res => { stopAudio(); const au = new Audio(url); AUD = au; au.onended = () => res('end'); au.onerror = () => res('err'); au.play().catch(() => res('err')); });
     const stopAll = () => { token++; stopAudio(); setPlaying(false); };
     window.__hzStop = stopAll;
@@ -9097,7 +9109,7 @@ Object.assign(I.fr, {
       const tk = ++token; setPlaying(true);
       for (let r = 1; r <= RP.r; r++) for (let a = f; a <= t; a++) for (let k = 1; k <= RP.a; k++) {
         if (tk !== token) return; mark(a); status.textContent = L().prog(UD(a), UD(k), UD(RP.a), UD(r), UD(RP.r));
-        if (await playUrl(Qn().ayahUrlBy(RP.rec, s, a)) === 'err') { if (tk === token) { status.textContent = L().errAudio; setPlaying(false); } return; }
+        const pr = playUrl(Qn().ayahUrlBy(RP.rec, s, a)); track(a, AUD); if (await pr === 'err') { if (tk === token) { status.textContent = L().errAudio; setPlaying(false); } return; }
         if (tk !== token) return; if (RP.g) { await sleep(RP.g * 1000); if (tk !== token) return; }
       }
       if (tk === token) { status.textContent = L().done2; setPlaying(false); logToday(); }
@@ -9111,7 +9123,8 @@ Object.assign(I.fr, {
     const extra = [tileF('eye', L().trOpt, trSeg, '#2b7bb9'), tileF('replay', L().ayahTimes, eachIn, '#c0762c'), tileF('event', L().sectTimes, sectIn, '#8a4fb3'), tileF('timer', L().pauseSec, gapIn, '#5c7284'), tileF('speaker', L().reciterL, recSel, '#1d7f4e')];
     const fc = formCard(s, f, t, (ss, a, b) => { stopAll(); reload('rep', ss, a, b); }, extra, null, true);
     view(f); loadTr();
-    page(fc.node, E('div', {class: 'card'}, E('div', {class: 'hzstage2'}, playBtn, status), text, trBox));
+    window.__hzForm = fc.node;
+    page(fc.node, E('div', {class: 'card hzstagecard'}, E('div', {class: 'hzstage2'}, playBtn, stage, status), text, trBox));
   }
   /* ---------- hub ---------- */
   function showHub() {
@@ -9449,7 +9462,7 @@ Object.assign(I.fr, {
   }
   const css = E('style', {}, `
 .hz{display:flex;flex-direction:column;gap:.2rem;padding-bottom:5rem}
-.hzfgrid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}.hzfield.span2{grid-column:1/-1}
+.hzfgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem}.hzfgrid>*{min-width:0}.hzfield .seg{width:100%}.hzfield .segb{flex:1;padding:.25rem .4rem;font-size:.9rem}.hzctl{display:flex;align-items:center;justify-content:center;gap:1rem;margin:.2rem 0 .5rem}.hzctl[hidden]{display:none}.hzbigp{width:4.2rem;height:4.2rem;border-radius:50%;border:4px solid var(--accent);background:transparent;color:var(--accent);font-size:1.5rem;cursor:pointer}.hzx{width:2.4rem;height:2.4rem;border-radius:50%;border:0;background:var(--wash,rgba(0,0,0,.07));color:var(--ink,inherit);font-size:1.1rem;cursor:pointer}.hzw.hzcur{background:rgba(224,168,45,.45);border-radius:8px}.hzayah.hzlive{line-height:2.1}.hzayah.hzlive .hzay{background:none;box-shadow:none}.hzstagecard .hzTr{font-size:1.15rem;line-height:1.7;text-align:start}.hzfield.span2{grid-column:1/-1}
 .hzfield{display:flex;flex-direction:column;gap:.15rem;padding:.55rem .8rem .6rem;border-radius:18px;background:color-mix(in srgb,var(--fc) 9%,var(--card));border:1.5px solid color-mix(in srgb,var(--fc) 28%,transparent);border-inline-start:6px solid var(--fc);transition:box-shadow .2s,border-color .2s}
 .hzfield:focus-within{border-color:var(--fc);box-shadow:0 0 0 4px color-mix(in srgb,var(--fc) 18%,transparent)}
 .hzfl{display:flex;align-items:center;gap:.4rem;color:var(--fc);font-size:.88rem;line-height:1.5}.hzfl b{font-weight:700}.hzfl svg{width:1.15rem;height:1.15rem;fill:currentColor;flex:none}
