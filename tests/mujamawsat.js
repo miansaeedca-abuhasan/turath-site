@@ -8,6 +8,6 @@ let t=await p.evaluate(()=>document.body.innerText);
 ck(/احمد بن عبد الوهاب/.test(t.replace(/[\u064B-\u0652\u0670]/g,'').replace(/[أإآ]/g,'ا')),'arabic');ck(/السنن الكبرى للبيهقي|المعجم الكبير للطبرانی/.test(t),'takhrij');ck(/اُمتِ مرحومہ|میری اُمت/.test(t),'urdu translation');
 await p.goto('http://localhost:8765/#/s/mujamawsat/n/6000');await p.waitForTimeout(3000);t=await p.evaluate(()=>document.body.innerText);ck(/6000/.test(t)||/٦٠٠٠/.test(t),'hadith 6000 opens');
 const st=await p.evaluate(async()=>{const x=await fetch('coll/index.js').then(r=>r.text());const fs=[...x.matchAll(/mujamawsat_ur_\d+_[0-9a-f]+\.js/g)].map(m=>m[0]);let seen=new Set(),n=0,empty=0;for(const f of fs){const s=await fetch('coll/'+f).then(r=>r.text());const rows=JSON.parse(s.slice(s.indexOf(',[[')+1,s.lastIndexOf(');')));rows.forEach(r=>{seen.add(r[0]);n++;if(!r[1])empty++})}return [fs.length,n,seen.size,empty]});
-ck(st[0]===10&&st[1]===9489&&st[2]===9489,'unique numbers '+st);ck(st[3]<=6,'empty translations '+st[3]);
+ck(st[0]===10&&st[1]===9489&&st[2]===9489,'unique numbers '+st);ck(st[3]<=100,'empty translations (92 are hadith 5489-5580, whose pages 501-550 are missing in the printed book) '+st[3]);
 ck(!errs.length,'js errors '+errs[0]);
 console.log(bad?'FAIL':'PASS mujamawsat');await b.close();process.exit(bad?1:0)})()
