@@ -1948,9 +1948,9 @@ const URDU_NAMES_AR=[['jameel','جميل نوري نستعليق'],['mehr','مه
 const URDU_NAMES_LAT=[['jameel','Jameel Noori Nastaleeq'],['mehr','Mehr Nastaleeq'],['alvi','Alvi Nastaleeq'],['gulzar','Gulzar Nastaleeq'],['noto','Noto Nastaliq']];
 const urduNames=()=>ui==='ur'?URDU_NAMES_UR:ui==='ar'?URDU_NAMES_AR:URDU_NAMES_LAT;
 function applyLook(){const h=document.documentElement;h.dataset.color=(/^#\/q(\/|$)/.test(location.hash)?'blue':LOOK.color);h.style.setProperty('--urdu',URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel);h.style.setProperty('--urduhead',LOOK.urdu==='jameel'?'"Jameel Noori Kasheeda",'+URDU_FONTS.jameel:(URDU_FONTS[LOOK.urdu]||URDU_FONTS.jameel));h.dataset.theme=LOOK.mode==='auto'?(darkQ&&darkQ.matches?'dark':'light'):LOOK.mode;
-window.addEventListener("hashchange",()=>{try{applyLook()}catch(e){}});
   const m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(h).getPropertyValue('--bar').trim()||'#2f7fc0';}
 if(darkQ&&darkQ.addEventListener)darkQ.addEventListener('change',()=>{if(LOOK.mode==='auto')applyLook();});
+window.addEventListener("hashchange",()=>{try{applyLook()}catch(e){}});
 applyLook();
 function appSettings(){
   const again=()=>{document.querySelectorAll('.sheetbg').forEach(x=>x.remove());appSettings();};
