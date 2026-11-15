@@ -1173,7 +1173,7 @@ function ENGINE(){
 window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const s=document.createElement("script");s.src="data/hl.js?h=40b4b2f4fd";s.onload=()=>{try{const HL=window.TURATH_HL,R=window.TURATH_REFS||{},M=window.TURATH_META||{};
 /* light records (numbers, chapters, first line); the full text of 200 hadith at a time comes from data/h/<k>.js when one is opened or a search needs it */
 const st=HL.r.map((r,i)=>{const h=Object.assign({num:r[0],demo:!!r[1]},HL.t[r[2]]);if(r[3]!==null)h.grade=r[3];h.matn=[r[4]];h.content={};h.tuhfa={};h.refs=R[r[0]]||[];h._j=r[5]&1;h._t=(r[5]>>1)&1;h._c=Math.floor(i/HL.n);h._ok=false;return h;});
-window.TURATH_DATA=Object.assign({},M,{hadith:st});}catch(e){}ok();};s.onerror=()=>ok();document.body.append(s);}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};const warm=()=>window.localApi("list?limit=1").then(()=>window.warmSearch&&window.warmSearch()).catch(()=>{});addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q,#gsq,.gsq"))warm()},{capture:true});addEventListener("hashchange",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});addEventListener("load",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});/* the hadith index (8 MB) is fetched quietly a few seconds after the page is up, so that opening a hadith book is one tap; skipped on data-saver and slow connections and in the diary / owner pages */addEventListener("load",()=>{setTimeout(()=>{try{const c=navigator.connection||{};if(c.saveData||/(^|-)2g$/.test(c.effectiveType||"")||/^#\/(hifz|owner|quiz|verify)/.test(location.hash))return;(window.requestIdleCallback||(f=>setTimeout(f,300)))(()=>{if(window.needData)window.needData().then(()=>window.hbWarm&&window.hbWarm()).catch(()=>{})})}catch(e){}},3500)});
+window.TURATH_DATA=Object.assign({},M,{hadith:st});}catch(e){}ok();};s.onerror=()=>ok();document.body.append(s);}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};const warm=()=>window.localApi("list?limit=1").then(()=>window.warmSearch&&window.warmSearch()).catch(()=>{});addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q,#gsq,.gsq"))warm()},{capture:true});addEventListener("hashchange",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});addEventListener("load",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});/* the hadith index (8 MB) is fetched quietly a few seconds after the page is up, so that opening a hadith book is one tap; skipped on data-saver and slow connections and in the diary / owner pages *//* lean = the phone is on mobile data / data-saver / a slow network: nothing is fetched in advance there (only what is opened) */window.LEAN=()=>{try{const c=navigator.connection;return !!(c&&(c.saveData||c.type==="cellular"||/^(slow-2g|2g|3g)$/.test(c.effectiveType||"")))}catch(e){return false}};addEventListener("load",()=>{setTimeout(()=>{try{if(window.LEAN&&window.LEAN()||/^#\/(hifz|owner|quiz|verify)/.test(location.hash))return;(window.requestIdleCallback||(f=>setTimeout(f,300)))(()=>{if(window.needData)window.needData().then(()=>window.hbWarm&&window.hbWarm()).catch(()=>{})})}catch(e){}},3500)});
 </script>
 <script>
 const I={
@@ -1685,7 +1685,7 @@ async function showBookList(cat,aut,authors,topics){
    const ik=rows.findIndex(r=>r.key==='jamik'),ij=rows.findIndex(r=>r.key==='jami');if(ik>=0&&ij>=0&&ik>ij){const x=rows.splice(ik,1)[0];rows.splice(ij,0,x);}}
   const subjRows=[];const takeSubj=()=>{};   // Seerah, Fazail, Fitan, Tuhfa stay in the list (they were hidden and could not be found)
   const nJ=rows.length;
-  colls.forEach(c=>rows.push({jm:c.jami?Math.min(...(Array.isArray(c.jami)?c.jami:Object.values(c.jami)).map(Number)):0,lg:c.langs,tr:ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui),key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+c.sections[0][0];}}));
+  colls.forEach(c=>rows.push({jm:c.jami?Math.min(...(Array.isArray(c.jami)?c.jami:Object.values(c.jami)).map(Number)):0,lg:c.langs,tr:ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui),key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+(c.sections?c.sections[0][0]:c.s0);}}));
   takeSubj();
   {const ai=rows.findIndex(r=>r.key==='atraf');if(ai>=0)rows.splice(ai,1);}   // the index of atraf is inside the Talkhis Al-Jami al-Kamil kitab list
   {const OR=["hifzhadith","bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "kubranasai", "ibnmajah", "malik", "sh28107", "darimi", "sh13122", "sh9771", "ahmad", "humaydi", "tayalisi", "ibnjad", "sh13159", "sh12520", "sarraj", "bazzar", "abdrazzaq", "sh9944", "ibnkhuzaymah", "ibnhibban", "hakim", "mujamkabir", "sh28171", "sh13068", "sh13162", "majma", "sh12862", "shuabiman", "amalyawm", "sh13132", "sh13016", "sh8970", "zuhd", "zuhdmubarak", "shamail", "adab", "kubrabayhaqi", "sh13071", "sh10480", "sh13170", "sh9196", "sh13160", "sh21570", "sh22804", "sh5635", "jamjawami", "lulu", "bulugh", "riyad", "najm", "mishkat", "sharhsunna", "mutafarriq", "hisn", "sh30108", "sh6847", "dalail", "sh10490", "sh9767", "sh23764", "sh10906", "sh12397", "sh4445", "sh146", "sh10495", "tarikhbukhari", "khaythama", "sh9082", "sh7351", "sh2170", "sh12579", "sh13041", "sh1692", "thiqat", "sh11428", "sh1581", "sh22367", "sh22547", "sh13061", "sh13011", "tawhid", "sh13023", "sh13035", "sh13045", "sh9200", "sh13043", "sunnaabdullah", "sh5930", "qadar", "sh11333", "sh13053", "sh9270", "sh9697", "sh13034", "sh1655", "sh2186", "sh7289", "sh131336", "sh236", "sh1719", "ibnrajab50", "shadharat", "siyar"];const FULLN={"bukhari": "الجامع المسند الصحيح المختصر من أمور رسول الله صلى الله عليه وسلم وسننه وأيامه", "muslim": "المسند الصحيح المختصر بنقل العدل عن العدل إلى رسول الله صلى الله عليه وسلم", "abudawud": "سنن أبي داود", "tirmidhi": "الجامع الكبير", "nasai": "المجتبى من السنن", "kubranasai": "السنن الكبرى للنسائي", "ibnmajah": "سنن ابن ماجه", "malik": "الموطأ للإمام مالك بن أنس", "sh28107": "رواية يحيى بن يحيى الليثي", "darimi": "مسند الدارمي المعروف بسنن الدارمي", "sh13122": "سنن سعيد بن منصور", "sh9771": "سنن الدارقطني", "ahmad": "المسند للإمام أحمد بن حنبل", "humaydi": "مسند الحميدي", "tayalisi": "مسند أبي داود الطيالسي", "ibnjad": "مسند علي بن الجعد", "sh13159": "مسند إسحاق بن راهويه", "sh12520": "مسند أبي يعلى الموصلي", "sarraj": "مسند السراج", "bazzar": "البحر الزخار المعروف بمسند البزار", "abdrazzaq": "المصنف للإمام عبد الرزاق الصنعاني", "sh9944": "الكتاب المصنف في الأحاديث والآثار لابن أبي شيبة", "ibnkhuzaymah": "صحيح ابن خزيمة", "ibnhibban": "المسند الصحيح على التقاسيم والأنواع", "hakim": "المستدرك على الصحيحين للحاكم", "mujamkabir": "المعجم الكبير للطبراني", "sh28171": "المعجم الأوسط للطبراني", "sh13068": "المعجم الصغير للطبراني", "sh13162": "مسند الشاميين للطبراني", "majma": "مجمع الزوائد ومنبع الفوائد للهيثمي", "sh12862": "كشف الأستار عن زوائد البزار للهيثمي", "shuabiman": "شعب الإيمان للبيهقي", "amalyawm": "عمل اليوم والليلة للنسائي", "sh13132": "عمل اليوم والليلة لابن السني", "sh13016": "الدعاء للطبراني", "sh8970": "الدعوات الكبير للبيهقي", "zuhd": "الزهد للإمام أحمد بن حنبل", "zuhdmubarak": "الزهد والرقائق لعبد الله بن المبارك", "shamail": "الشمائل المحمدية للترمذي", "adab": "الأدب المفرد للبخاري"};rows.forEach((r,i)=>{if(r.key&&FULLN[r.key])r.full=FULLN[r.key];else if(!r.key&&i<nJ){r.full=r.ar;r.ar='تلخيص الجامع الكامل';}});const o=k=>{const i=OR.indexOf(k);return i<0?9999:i;};
@@ -2406,6 +2406,7 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   const upd=()=>{const t=tx().t;b.title=t;b.setAttribute('aria-label',t);};upd();
   b.addEventListener('click',()=>{upd();openHelp();});
 })();
+/* the page opens at once from the saved copy; when the server has a newer copy and the reader has not started yet, the page restarts once with it */if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',ev=>{try{if(ev.data&&ev.data.t==='upd'&&performance.now()<6000&&!sessionStorage.swr){sessionStorage.swr=1;location.reload()}}catch(e){}});
 if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.querySelector('link[rel=manifest]'))navigator.serviceWorker.register('sw.js').then(reg=>{const upd=()=>{if(document.getElementById('updbar'))return;try{const dd=new Date().toDateString();if(localStorage.updDay===dd)return;localStorage.updDay=dd;}catch(e){}const M={ur:['اپڈیٹ آگئی ہے: نئی کتب اور بہتریاں دیکھنے کے لیے ریفریش کریں','ریفریش کریں'],en:['An update is available: refresh to get the new books and improvements','Refresh'],ar:['يوجد تحديث جديد: حدّث الصفحة لترى الكتب والتحسينات','تحديث'],bn:['আপডেট এসেছে: নতুন গ্রন্থ ও উন্নতিগুলো পেতে রিফ্রেশ করুন','রিফ্রেশ করুন'],hi:['अपडेट उपलब्ध है: नई किताबें और सुधार पाने के लिए रिफ्रेश करें','रिफ्रेश करें'],gu:['અપડેટ ઉપલબ્ધ છે: નવાં પુસ્તકો અને સુધારા મેળવવા રિફ્રેશ કરો','રિફ્રેશ કરો'],fr:['Une mise à jour est disponible : actualisez pour obtenir les nouveaux livres et améliorations','Actualiser']}[ui]||['Update available','Refresh'];const b=document.createElement('div');b.id='updbar';b.style.cssText='position:fixed;left:8px;right:8px;bottom:74px;z-index:9999;background:#0b5d4b;color:#fff;border-radius:12px;padding:.6rem .9rem;display:flex;gap:.7rem;align-items:center;justify-content:space-between;box-shadow:0 4px 18px rgba(0,0,0,.3);font:15px/1.6 system-ui';b.append(document.createTextNode(M[0]));const x=document.createElement('button');x.textContent=M[1];x.style.cssText='background:#fff;color:#0b5d4b;border:0;border-radius:8px;padding:.35rem .8rem;font:600 14px system-ui;cursor:pointer';x.onclick=()=>location.reload();b.append(x);document.body.append(b);};reg.addEventListener('updatefound',()=>{const w=reg.installing;if(w)w.addEventListener('statechange',()=>{if(w.state==='installed'&&navigator.serviceWorker.controller)upd();});});try{reg.update();}catch(e){}}).catch(()=>{});
 </script>
 <script>
@@ -4739,6 +4740,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const load = async src => { try { return await load1(src); } catch (e) { try { return await load1(src + (src.includes('?') ? '&' : '?') + 'r=' + Date.now()); } catch (e2) { let st = '?'; try { st = (await fetch(src, {cache: 'no-store'})).status; } catch (e3) { st = 'net'; } window.LOADERR.push(src + ' [' + st + ']'); throw e2; } } };
   const once = (id, src) => C.loading[id] || (C.loading[id] = load(src).catch(e => { delete C.loading[id]; throw e; }));
   async function index() { if (!C.idx) await once('index', 'coll/index.js'); return C.idx; }
+  // the book lists need only the light copy (name, languages, count ...), 75 KB instead of the whole 2 MB index; the full index loads when a book is opened
+  window.COLITE = list => { C.lite = list; };
+  async function liteIndex() { if (C.idx) return C.idx; if (!C.lite) { try { await once('lite', 'coll/lite.js'); } catch (e) { return index(); } } return C.lite || index(); }
   const bookOf = k => (C.idx || []).find(b => b.key === k);
   async function needRange0(b, lang, from, to) {
     const fs = (b.files[lang] || []).filter(f => f[1] >= from && f[0] <= to);
@@ -6154,7 +6158,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (window.Notification && Notification.permission === 'granted' && navigator.serviceWorker) navigator.serviceWorker.ready.then(r => r.showNotification(L(last.t), {body: L(last.i)[0], icon: 'icon-192.png', tag: 'news-' + last.id, data: {url: '#/s/rijal'}})).catch(() => {});
   } catch (e) {} }, 3500);
 
-  (window.requestIdleCallback ? requestIdleCallback : fn => setTimeout(fn, 1500))(() => index().catch(() => {}), {timeout: 4000});
+  if (!(window.LEAN && LEAN())) (window.requestIdleCallback ? requestIdleCallback : fn => setTimeout(fn, 1500))(() => index().catch(() => {}), {timeout: 4000});
 
   // the search button of the top bar, inside an open book: hadith number, words (all / any) or a whole sentence, in this book only
   async function bookSearch(key) {
@@ -6238,7 +6242,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       }
       return showBook(b);
     },
-    async list() { return index(); },
+    async list() { return liteIndex(); },
+    async full() { return index(); },
     showSearch,
     showHadithSearch, hsEmbed: (q, out) => showHadithSearch({q, out}),
     dorarList: async q => { try { const r = await fetch('/api/dorar?q=' + encodeURIComponent(q) + '&page=1'); if (!r.ok) return null; return dorarParse((await r.json()).html || ''); } catch (e) { return null; } },
@@ -6864,6 +6869,20 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     el('h3', {class: 'mh'}, icon(ic), title), ...body, extra || null, el('span', {class: 'tmore'}, T('tMore'), ' ', icon(LTR() ? 'next' : 'prev')));
   const trP = (t, l, cls) => el('p', {class: (cls || 'mtr') + ' ' + l, lang: l, dir: rtl(l) ? 'rtl' : 'ltr'}, ...(typeof rich === 'function' && (l === 'ur') ? rich(t, l) : [t]));
   const clip = (t, n) => t.length > n ? t.slice(0, n).replace(/\s+\S*$/, '') + ' …' : t;
+  // today's ayah and hadith come ready-made in a small file per language and month (dc/<ui>_<n>.js): the home page then needs neither the whole Quran text nor the book index
+  // (made by tools/dcgen.js; when a day is missing, or the reader changed the Quran translation/script, the full data is used as before)
+  const DCP = {};
+  window.DCH = (u, k, d) => { DCP[u + '_' + k] = d; };
+  const qsDefault = () => { try { const q = JSON.parse(localStorage.qset || '{}'); return (!q.tr || (q.tr.length === 1 && q.tr[0] === (TR_DEF2[ui] || [])[0])) && (!q.rasm || q.rasm === 'uthmani') && !(q.trBy && q.trBy[ui] && q.trBy[ui].join() !== q.tr.join()); } catch (e) { return false; } };
+  const TR_DEF2 = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
+  async function dailyPre(dn) {
+    try {
+      const k = Math.floor(dn / 30), key = ui + '_' + k;
+      if (!DCP[key]) await new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = 'dc/' + key + '.js'; sc.onload = ok; sc.onerror = no; document.head.append(sc); });
+      const d = DCP[key] && DCP[key][dn]; if (!d) return null;
+      return {a: d.a && qsDefault() ? d.a : null, h: d.h ? Object.assign({pre: true}, d.h) : null};
+    } catch (e) { return null; }
+  }
   async function homeCards(box) {
     if (!box) return;
     const dn = dayNo(), an = adhkarNow(), m = an.m;
@@ -6881,8 +6900,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     duroodCard().then(c => { if (c) box.prepend(c); });
     // ayah and hadith (they need the Quran text / the book)
     const slotA = el('div'), slotH = el('div'); box.prepend(slotA, slotH);
-    QURAN.ayahOfDay(dn).then(a => { slotA.replaceChildren(card('read', T('tAyah'), [ui === 'ar' || !a.tr ? el('p', {class: 'qar mom', lang: 'ar'}, a.ar) : trP(a.tr, a.lang), el('p', {class: 'cs', style: 'text-align:center'}, a.ref)], a.href)); }).catch(() => {});
-    hadithOfDay(dn).then(h => { if (!h) return; slotH.replaceChildren(card('hadith', T('tHadith'), [ui === 'ar' || !h.tr ? trP(clip(h.ar, 260), 'ar', 'mar') : trP(clip(h.tr, 320), h.lang), el('p', {class: 'cs'}, h.ref)], h.href)); }).catch(() => {});
+    dailyPre(dn).then(P => { const a0 = P && P.a ? P.a : null; return a0 || QURAN.ayahOfDay(dn); }).then(a => { slotA.replaceChildren(card('read', T('tAyah'), [ui === 'ar' || !a.tr ? el('p', {class: 'qar mom', lang: 'ar'}, a.ar) : trP(a.tr, a.lang), el('p', {class: 'cs', style: 'text-align:center'}, a.ref)], a.href)); }).catch(() => {});
+    dailyPre(dn).then(P => P && P.h ? P.h : hadithOfDay(dn)).then(h => { if (!h) return; slotH.replaceChildren(card('hadith', T('tHadith'), [ui === 'ar' || !h.tr ? trP(h.pre ? h.ar : clip(h.ar, 260), 'ar', 'mar') : trP(h.pre ? h.tr : clip(h.tr, 320), h.lang), el('p', {class: 'cs'}, h.ref)], h.href)); }).catch(() => {});
   }
 
   /* ---------- pages: #/t/adhkar/m|e, #/t/nasiha[/i] ---------- */
@@ -7046,7 +7065,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // load early: the Urdu of these hadith is also shown on their own hadith page
   need().then(() => { if (ui === 'ur' && /^#\/h\/(\d+)/.test(location.hash) && DLY.hadith[+location.hash.split('/')[2]]) route(); }).catch(() => {});
   window.TODAY = {
-    homeCards, settingsRows, buildQueue,
+    homeCards, settingsRows, buildQueue, hadithOfDay: dn => hadithOfDay(dn), clipFor: clip,
     urOf: n => DLY && DLY.hadith[n] ? DLY.hadith[n].ur : (need().catch(() => {}), null),
     route(h) {
       if (/^#\/t\/durood/.test(h)) return showDurood();
@@ -10323,7 +10342,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       fact(T.birth, birth ? birth + ' ' + T.h : ''), fact(T.death, r[6] ? r[6] + ' ' + T.h : ''), fact(T.age, age), fact(T.live, live), fact(T.diedAt, diedAt), fact(T.rel, rel), fact(T.mawla, mawla), fact(T.tk, r[7] ? '[' + r[7] + ']' : '')].filter(Boolean);
     // a saying gets a reference only when its words were found in that book's entry on this narrator (idb/jsrc.js, built by matching the text)
     let SRC = null; try { SRC = await load('idb/jsrc.js', 'JSRC'); } catch (e) {}
-    try { if (window.COLL && COLL.list) await COLL.list(); } catch (e) {}   // the book names for the reference links come from the book index: wait for it, so the links are never missing
+    try { if (window.COLL && COLL.full) await COLL.full(); } catch (e) {}   // the book names for the reference links come from the book index: wait for it, so the links are never missing
     const refs = {}; ((SRC && SRC.d && SRC.d[id]) || []).forEach(([qi, bk, no]) => { refs[qi] = [SRC.keys[bk], no]; });
     const refEl = qi => { const x = refs[qi]; if (!x || !window.COLL || !COLL.rjName) return ''; const nm = COLL.rjName(x[0]); return nm ? el('a', {class: 'nref', lang: 'ar', dir: 'rtl', href: x[0] === 'tahdhibkamal' ? '#/s/rijal/' + x[1] : '#/s/' + x[0] + '/n/' + x[1]}, '(' + nm.replace(/[\u064b-\u0652]/g, '') + ' ' + x[1] + ')') : ''; };
     const J = jarh.length ? el('div', {class: 'njarh'}, ...jarh.map(([who, op], qi) => el('div', {class: 'nj'}, el('div', {class: 'njh', lang: 'ar', dir: 'rtl'}, who ? el('b', {class: 'nwho'}, who) : '', refEl(qi)), el('p', {class: 'ar', lang: 'ar', dir: 'rtl'}, op)))) : el('p', {class: 'cs'}, T.noJ);

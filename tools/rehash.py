@@ -35,3 +35,6 @@ try:
     open('offline.json','w',encoding='utf8').write(json.dumps(o,ensure_ascii=False,separators=(',',':')))
 except Exception as e: print('offline.json not updated',e)
 print('hashes refreshed')
+
+import subprocess as _sp,sys as _sys
+_sp.call([_sys.executable,os.path.join(os.path.dirname(os.path.abspath(__file__)),'mklite.py')])

@@ -1,9 +1,11 @@
-const C='turath-202611142357';
+const C='turath-202611150005';
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.webmanifest','icon-192.png'])))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C&&k!=='turath-daily'&&k!=='turath-off').map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);if(u.origin!==location.origin||u.pathname.startsWith('/api/'))return;
-const page=e.request.mode==='navigate'||/\/(index\.html)?$/.test(u.pathname)||/\/coll\/index\.js$|\/quran\/tafsir\/index\.js$|\/daily\.js$|\/ticker\.json$|\/offline\.json$/.test(u.pathname);
-if(page){e.respondWith((async()=>{const m=await caches.match(e.request);try{const r=await Promise.race([fetch(e.request),new Promise((_,j)=>setTimeout(j,3500))]);if(r&&r.ok){const cp=r.clone();caches.open(C).then(c=>c.put(e.request,cp));return r;}return m||r;}catch(x){return m||fetch(e.request);}})());return;}
+const page=e.request.mode==='navigate'||/\/(index\.html)?$/.test(u.pathname)||/\/coll\/(index|lite)\.js$|\/quran\/tafsir\/index\.js$|\/daily\.js$|\/dc\/[a-z]+_\d+\.js$|\/ticker\.json$|\/offline\.json$/.test(u.pathname);
+if(page){e.respondWith((async()=>{const cache=await caches.open(C),m=await cache.match(e.request);
+const upd=fetch(e.request).then(async r=>{if(r&&r.ok){const same=m&&((m.headers.get('etag')&&m.headers.get('etag')===r.headers.get('etag'))||(!m.headers.get('etag')&&m.headers.get('content-length')===r.headers.get('content-length')));await cache.put(e.request,r.clone());if(m&&!same&&(e.request.mode==='navigate'||/index\.html$/.test(u.pathname)))self.clients.matchAll({type:'window'}).then(ws=>ws.forEach(w=>w.postMessage({t:'upd'})));}return r;}).catch(()=>null);
+if(m){e.waitUntil(upd);return m;}const r=await upd;return r||new Response('offline',{status:503});})());return;}
 e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{if(res.ok){const cp=res.clone();caches.open(C).then(c=>c.put(e.request,cp));}return res;})));});
 
 // daily notifications: the app writes what to show into the 'turath-daily' cache; shown on Periodic Background Sync (or a test from the app)
