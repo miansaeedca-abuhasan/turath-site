@@ -10323,6 +10323,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
       fact(T.birth, birth ? birth + ' ' + T.h : ''), fact(T.death, r[6] ? r[6] + ' ' + T.h : ''), fact(T.age, age), fact(T.live, live), fact(T.diedAt, diedAt), fact(T.rel, rel), fact(T.mawla, mawla), fact(T.tk, r[7] ? '[' + r[7] + ']' : '')].filter(Boolean);
     // a saying gets a reference only when its words were found in that book's entry on this narrator (idb/jsrc.js, built by matching the text)
     let SRC = null; try { SRC = await load('idb/jsrc.js', 'JSRC'); } catch (e) {}
+    try { if (window.COLL && COLL.list) await COLL.list(); } catch (e) {}   // the book names for the reference links come from the book index: wait for it, so the links are never missing
     const refs = {}; ((SRC && SRC.d && SRC.d[id]) || []).forEach(([qi, bk, no]) => { refs[qi] = [SRC.keys[bk], no]; });
     const refEl = qi => { const x = refs[qi]; if (!x || !window.COLL || !COLL.rjName) return ''; const nm = COLL.rjName(x[0]); return nm ? el('a', {class: 'nref', lang: 'ar', dir: 'rtl', href: x[0] === 'tahdhibkamal' ? '#/s/rijal/' + x[1] : '#/s/' + x[0] + '/n/' + x[1]}, '(' + nm.replace(/[\u064b-\u0652]/g, '') + ' ' + x[1] + ')') : ''; };
     const J = jarh.length ? el('div', {class: 'njarh'}, ...jarh.map(([who, op], qi) => el('div', {class: 'nj'}, el('div', {class: 'njh', lang: 'ar', dir: 'rtl'}, who ? el('b', {class: 'nwho'}, who) : '', refEl(qi)), el('p', {class: 'ar', lang: 'ar', dir: 'rtl'}, op)))) : el('p', {class: 'cs'}, T.noJ);
