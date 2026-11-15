@@ -9044,7 +9044,7 @@ Object.assign(I.fr, {
   const clampN = (v, a, b) => Math.max(a, Math.min(b, Math.round(+v || a)));
   function reload(kind, s, f, t, extra) { const nh = href(kind, s, f, t, extra); try { history.replaceState(history.state, '', nh); } catch (e) { location.hash = nh; return; } route(nh); }
   // one field of the lesson form: a small coloured icon, the label and a plain box (no preset numbers; the child types them)
-  const tileF = (ic, label, ctl, color, span) => E('label', {class: 'hzfield' + (span ? ' span2' : ''), style: '--fc:' + color}, E('span', {class: 'hzfl'}, icon(ic), E('b', {}, label)), ctl);
+  const tileF = (ic, label, ctl, color, span) => E(ctl.classList && ctl.classList.contains('seg') ? 'div' : 'label', {class: 'hzfield' + (span ? ' span2' : ''), style: '--fc:' + color}, E('span', {class: 'hzfl'}, icon(ic), E('b', {}, label)), ctl);
   const numBox = (v, min, max) => E('input', {type: 'number', min: String(min), max: String(max), value: String(v), inputmode: 'numeric', class: 'hzin', placeholder: '–'});
   function formCard(s, f, t, onGo, fields, label, auto) {
     const sel = E('select', {'aria-label': L().surah, class: 'hzin hzselect'});
@@ -9057,7 +9057,7 @@ Object.assign(I.fr, {
     sync();
     if (auto) [sel, fi, ti].forEach(x => x.addEventListener('change', () => go()));
     return {get: () => ({s: +sel.value, f: clampN(fi.value, 1, n()), t: clampN(ti.value, clampN(fi.value, 1, n()), n())}), go,
-      node: E('div', {class: 'card hzform'}, label ? E('h3', {}, label) : null,
+      node: E('div', {class: 'card hzform' + (auto ? ' hzc' : '')}, label ? E('h3', {}, label) : null,
         E('div', {class: 'hzfgrid'}, tileF('hadith', L().surah, sel, '#17786e', true), tileF('layers', L().from, fi, '#2b7bb9'), tileF('list', L().to, ti, '#2b7bb9'), ...(fields || [])),
         auto ? null : E('button', {type: 'button', class: 'hzgo wide', on: {click: go}}, L().startNew))};
   }
@@ -9120,7 +9120,8 @@ Object.assign(I.fr, {
     const eachIn = numBox(RP.a, 1, 100), sectIn = numBox(RP.r, 1, 100), gapIn = numBox(RP.g, 0, 30);
     eachIn.addEventListener('input', () => { RP.a = clampN(eachIn.value, 1, 100); save(); }); sectIn.addEventListener('input', () => { RP.r = clampN(sectIn.value, 1, 100); save(); }); gapIn.addEventListener('input', () => { RP.g = clampN(gapIn.value, 0, 30); save(); });
     const recSel = E('select', {'aria-label': L().reciterL, class: 'hzin hzselect'}); Qn().reciters().forEach(r => recSel.append(E('option', {value: r.k}, r.label))); recSel.value = RP.rec; recSel.addEventListener('change', () => { RP.rec = recSel.value; Qn().setHzReciter(RP.rec); });
-    const trSeg = E('div', {class: 'seg', role: 'group'}), drawSeg = () => trSeg.replaceChildren(...[[0, L().trOff], [1, L().trOn]].map(([v, lb]) => E('button', {type: 'button', class: 'segb', 'aria-pressed': String(!!RP.tr === !!v), on: {click: async () => { RP.tr = v; save(); drawSeg(); await loadTr(); }}}, lb))); drawSeg();
+    const trSeg = E('div', {class: 'seg', role: 'group'}), trBtns = [[0, L().trOff], [1, L().trOn]].map(([v, lb]) => E('button', {type: 'button', class: 'segb', 'data-v': String(v), on: {click: async () => { RP.tr = v; save(); drawSeg(); await loadTr(); }}}, lb)), drawSeg = () => trBtns.forEach(b => b.setAttribute('aria-pressed', String(!!RP.tr === !!+b.dataset.v)));
+    trSeg.append(...trBtns); drawSeg();
     const extra = [tileF('eye', L().trOpt, trSeg, '#2b7bb9'), tileF('replay', L().ayahTimes, eachIn, '#c0762c'), tileF('event', L().sectTimes, sectIn, '#8a4fb3'), tileF('timer', L().pauseSec, gapIn, '#5c7284'), tileF('speaker', L().reciterL, recSel, '#1d7f4e')];
     const fc = formCard(s, f, t, (ss, a, b) => { stopAll(); reload('rep', ss, a, b); }, extra, null, true);
     view(f); loadTr();
@@ -9471,6 +9472,9 @@ Object.assign(I.fr, {
 .hzselect{font-size:1.05rem;text-align:start;font-family:inherit;appearance:auto}
 .hzgo.wide{display:block;width:100%;font-size:1.25rem;font-weight:700;padding:.7rem 1rem;margin:.2rem 0 .4rem;box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 35%,transparent)}.hzgo.wide.stop{background:#c0392b;box-shadow:0 6px 16px rgba(192,57,43,.3)}
 .hzfield .seg{margin:.3rem 0 0;justify-content:center}
+.hzc .hzfgrid{grid-template-columns:repeat(6,minmax(0,1fr));gap:.45rem}.hzc .hzfield{grid-column:span 2;padding:.3rem .6rem .4rem;border-radius:12px;border-inline-start-width:4px;gap:0}.hzc .hzfield.span2{grid-column:1/-1}.hzc .hzfgrid>.hzfield:nth-child(2),.hzc .hzfgrid>.hzfield:nth-child(3){grid-column:span 3}.hzc .hzfgrid>.hzfield:nth-child(4),.hzc .hzfgrid>.hzfield:nth-child(8){grid-column:1/-1}.hzc .hzfgrid>.hzfield:nth-child(n+5):nth-child(-n+7) .hzfl svg{display:none}.hzc .hzfgrid>.hzfield:nth-child(n+5):nth-child(-n+7) .hzfl{justify-content:center;text-align:center;min-height:2.1em}.hzc .hzfgrid>.hzfield:nth-child(n+5):nth-child(-n+7){padding-inline:.35rem}
+.hzc .hzfl{font-size:.78rem;line-height:1.3}.hzc .hzfl svg{width:.95rem;height:.95rem}.hzc .hzin{font-size:1.05rem;line-height:1.35;padding:0}.hzc .hzselect{font-size:.95rem}
+.hzc .hzfield .seg{margin:.2rem 0 0;width:100%;border-radius:10px;gap:0}.hzc .hzfield .segb{flex:1 1 0;min-width:0;white-space:normal;line-height:1.25;padding:.3rem .35rem;font-size:.85rem;text-align:center}
 .hzgo{display:inline-block;border:0;border-radius:999px;background:var(--accent);color:#fff;padding:.35rem 1.6rem;font:inherit;cursor:pointer;margin:.4rem .2rem;text-decoration:none}
 .hzrow{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin:.5rem 0}
 .hzayah{font-family:var(--quran);font-size:var(--qar,1.7rem);line-height:2.5;text-align:center;padding:.4rem .2rem}
