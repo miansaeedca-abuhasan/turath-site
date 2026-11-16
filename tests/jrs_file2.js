@@ -13,7 +13,7 @@ ck(!D.n.some(x=>x.h.includes(10403)&&!/تابع/.test(x.nm.ar)&&x.nm.ar==='عا�
 for(const n of [6648,3704,3819,2837,3975,8049,9143,9198]) ck(!D.n.some(x=>x.h.includes(n)&&x.nm.ar!=='نامعلوم صحابی'&&x.nm.ar!==''),'tabi\'i hadith '+n+' must stay unlinked: '+D.n.filter(x=>x.h.includes(n)).map(x=>x.nm.ar));
 ck(has(by('الزبير بن العوام'),8685),'8685 under Zubayr (user wrote it)');
 ck(has(by('أبو جحيفة'),2537)&&has(by('أبو جحيفة'),9399)&&has(by('أبو جحيفة'),15533),'Abu Juhayfah three hadith');
-const unk=D.n.find(x=>x.nm.ur==='نامعلوم صحابی');for(const n of [1341,1421,13826,11171,4244,12475,10027]) ck(has(unk,n),'unnamed group has '+n);
+const unk=D.n.find(x=>x.nm.ur==='نامعلوم صحابہ');for(const n of [1341,1421,13826,11171,4244,12475,10027]) ck(has(unk,n),'unnamed group has '+n);
 // the mixed «عبد الرحمن بن عثمان» group is split
 const ar=by('عبد الرحمن بن عثمان التيمي');ck(ar&&ar.h.includes(5952)&&!ar.h.includes(7025)&&!ar.h.includes(11986),'Abd al-Rahman b. Uthman not mixed');
 D.n.forEach(x=>{if(x.c!==x.h.length&&x.c<x.h.length)bad.push('count '+x.i);if(new Set(x.h).size!==x.h.length)bad.push('dup '+x.i)});
