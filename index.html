@@ -620,7 +620,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .qzhero{text-align:center}.qzhero h2{font-family:var(--urduhead);color:var(--accent);margin:.3rem 0}
 .qzbig .i{width:3.2rem;height:3.2rem;color:var(--accent)}
 .qzwho,.qzcat{display:flex;align-items:center;gap:.9rem;text-decoration:none;color:var(--ink)}
-.qzwi{font-size:2.4rem}.qzwho .ct,.qzcat .ct{font-size:1.25rem;font-family:var(--urduhead);color:var(--accent)}
+.qzwi{font-size:2.4rem}.qzfl{display:inline-block;width:3rem;height:3rem;flex:none}.qzwho .ct,.qzcat .ct{font-size:1.25rem;font-family:var(--urduhead);color:var(--accent)}
 .qzwho.qzwm{border-inline-start:6px solid #2a9d8f}
 .qzwho.qzwk{border-inline-start:6px solid #e0a526}.qzwho.qzwa{border-inline-start:6px solid var(--accent)}
 .qzlevels{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem}
@@ -1717,6 +1717,7 @@ async function showBookList(cat,aut,authors,topics){
     const tr1=rest.filter(r=>r.tr||r.key==='tuhfa'),oth=rest.filter(r=>!r.tr&&r.key!=='tuhfa');
     rows.length=0;rows.push(...top,...sun,...sub,...tr1,...oth);
   }
+  {const t=rows.map((x,i)=>[x,i]).sort((a,b)=>rk(a[0].cat)-rk(b[0].cat)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...t);}   // the list is shown grouped by kind (hadith books, then sciences, biographies ...): the numbers follow that very order, with no gaps
   rows.forEach((r,i)=>{r.no=i+1;});
   const RC=window.RB&&RB.on?await RB.catalog():null;
   const AUS=new Map();rows.concat(subjRows).forEach(r=>{if(Array.isArray(r.au)&&r.au[0]!=='aslaf'){const o=AUS.get(r.au[0])||{a:r.au,n:0};o.n++;AUS.set(r.au[0],o);}});
@@ -1738,16 +1739,16 @@ async function showBookList(cat,aut,authors,topics){
         const a=el('a',{class:'card catcard',href:'#/hb/c/'+id},el('span',{class:'catico'},icon('read')),
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
-      list.replaceChildren(...rows.slice(0,nJ).map(rowEl),g);return;}
-    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const mine=mineR.map(rowEl);
+      list.replaceChildren(...rows.slice(0,nJ).map(r=>rowEl(r)),g);return;}
+    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const allB0=!q&&!cat&&!aut,mine=mineR.map((r,i)=>rowEl(r,allB0||n!=null?r.no:i+1));   // inside a category / author the numbers run 1,2,3 ... of that list
     const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
     if(allB&&RC&&n==null){const out=[];for(let k=0;k<=5;k++){out.push(...mine.filter((_,i)=>rk(mineR[i].cat)===k));const g=rbAll.filter(x=>rk(+x[2])===k);if(g.length)out.push(...RB.rows(RC,g));}fillList(list,out);return;}
     const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
     fillList(list,[...mine,...extra]);};
-  const rowEl=r=>{
+  const rowEl=(r,dn)=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});if(r.key)a.dataset.k=r.key;
-      a.append(el('span',{class:'snum'},N(r.no)),
-        el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},EN()?r.en:ui==='ar'?r.ar:hbU(r),hbLg(r.lg).length>1?el('span',{class:'hblg'},' ('+hbLg(r.lg).map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),false&&r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),r.pub?el('span',{class:'cs hbpub'},({ur:'ناشر',ar:'الناشر',en:'Publisher',bn:'প্রকাশক',hi:'प्रकाशक',gu:'પ્રકાશક',fr:'Éditeur'}[ui]||'Publisher')+': '+(r.pub[ui]||(ui==='ar'?r.pub.ar:r.pub.en||r.pub.ur))):'',el('span',{class:'cs'},(r.key==='raheeq'?(n=>n+' '+({ur:'حصے',ar:'أجزاء',en:'parts'}[ui]||'parts')):T(r.key==='shadharat'?'cNas':'hbCount'))(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
+      a.append(el('span',{class:'snum'},N(dn==null?r.no:dn)),
+        el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},EN()?r.en:ui==='ar'?r.ar:hbU(r),hbLg(r.lg).length>1?el('span',{class:'hblg'},' ('+hbLg(r.lg).map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),false&&r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',r.sub?el('span',{class:'cs hbsub'},r.sub):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),r.pub&&!(r.pub.only&&!r.pub.only.includes(ui))?el('span',{class:'cs hbpub'},({ur:'ناشر',ar:'الناشر',en:'Publisher',bn:'প্রকাশক',hi:'प्रकाशक',gu:'પ્રકાશક',fr:'Éditeur'}[ui]||'Publisher')+': '+(r.pub[ui]||(ui==='ar'?r.pub.ar:r.pub.en||r.pub.ur))):'',el('span',{class:'cs'},(r.key==='raheeq'?(n=>n+' '+({ur:'حصے',ar:'أجزاء',en:'parts'}[ui]||'parts')):T(r.key==='shadharat'?'cNas':'hbCount'))(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
         ui==='ur'?el('span',{class:'sar',lang:'ar'},r.ar):'',
         el('button',{class:'ab',type:'button',title:T('hbResume'),'aria-label':T('hbResume'),on:{click:e=>{e.preventDefault();e.stopPropagation();r.resume();}}},icon('history')));
       return a;};
@@ -8556,11 +8557,18 @@ Object.assign(I.fr, {
     return el('p', {class: 'cs qzref'}, L().src + ': ', el('a', {href}, label));
   }
 
+  /* a small picture of flowers on the children's card (drawn here, no emoji) */
+  function flowers() {
+    const f = (x, y, r, c1, c2) => '<g transform="translate(' + x + ' ' + y + ')">' + [0, 72, 144, 216, 288].map(a => '<ellipse cx="0" cy="-' + r * .9 + '" rx="' + r * .55 + '" ry="' + r * .8 + '" fill="' + c1 + '" transform="rotate(' + a + ')"/>').join('') + '<circle r="' + r * .45 + '" fill="' + c2 + '"/></g>';
+    const w = el('span', {class: 'qzwi qzfl', 'aria-hidden': 'true'});
+    w.innerHTML = '<svg viewBox="0 0 64 64" width="100%" height="100%" focusable="false"><path d="M32 60V34M16 60V42M48 60V40" stroke="#4f9a63" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M32 52c-7-1-10-6-10-9 7 0 10 4 10 9zM16 56c6-1 9-5 9-8-6 0-9 3-9 8zM48 54c-6-1-9-5-9-8 6 0 9 3 9 8z" fill="#6bb77f"/>' + f(32, 24, 9, '#f06b8e', '#ffd54a') + f(16, 36, 7, '#ffb347', '#fff2b3') + f(48, 34, 7.5, '#b48be8', '#ffe27a') + '</svg>';
+    return w;
+  }
   /* ---------- 1: adults or children ---------- */
   function showStart() {
     bar(L().title, L().sub, true);
     page(el('div', {class: 'card qzhero'}, el('div', {class: 'qzbig'}, icon('quiz')), el('h2', {}, L().hero), el('p', {class: 'cs'}, L().intro(UD(15), UD(PER)))),
-      ...['k', 'm', 'a'].map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, el('span', {class: 'qzwi'}, w === 'k' ? '🧒' : w === 'm' ? '🎓' : '📖'),
+      ...['k', 'm', 'a'].map(w => el('a', {class: 'card qzwho qzw' + w, href: '#/quiz/' + w}, w === 'k' ? flowers() : el('span', {class: 'qzwi'}, w === 'm' ? '🎓' : '📖'),
         el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, L().who[w][0]), el('span', {class: 'cs'}, L().who[w][1])))));
   }
   /* ---------- 2: the categories ---------- */
@@ -8615,11 +8623,11 @@ Object.assign(I.fr, {
         el('p', {class: 'cs qzcount'}, L().qOf(UD(i + 1), UD(items.length))),
         el('div', {class: 'card qzq', lang, dir: DIR(lang)}, el('p', {class: 'qztext'}, ...R(it.q, lang)),
           el('div', {class: 'qzopts'}, ...it.opts.map((o, k) => el('button', {class: 'qzopt' + (ans[i] === o ? ' sel' : ''), type: 'button', on: {click: e => {
+            if (ans[i] != null) return;   // one choice only: once chosen, an answer cannot be changed
             ans[i] = o; e.currentTarget.parentNode.querySelectorAll('.qzopt').forEach(b => b.classList.remove('sel')); e.currentTarget.classList.add('sel');
             setTimeout(() => { if (i < items.length - 1) { i++; draw(); } else finish(); }, 350);
           }}}, el('span', {class: 'qzk'}, L().keys[k]), el('span', {}, ...R(o, lang)))))),
-        el('div', {class: 'qznav'}, i ? el('button', {class: 'btn', type: 'button', on: {click: () => { i--; draw(); }}}, L().prev) : el('span'),
-          ans[i] != null && i < items.length - 1 ? el('button', {class: 'btn', type: 'button', on: {click: () => { i++; draw(); }}}, L().next) : el('span')));
+        '');   // no Previous / Next buttons: each question is answered once and there is no way back to change it
       scrollTo(0, 0);
     };
     const finish = () => {
