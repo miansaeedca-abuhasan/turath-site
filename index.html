@@ -484,6 +484,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hsg.ggood b{color:#5fd38a}:root:not([data-theme="light"]) .hsg.gbad b{color:#ff6b6b}}
 .langlist{display:flex;flex-direction:column;gap:.35rem}
 .langitem{display:flex;justify-content:space-between;align-items:center;width:100%;padding:.7rem 1rem;border:1px solid var(--line,#ddd);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:1.05rem;cursor:pointer;text-align:start}
+.langitem .lgen{margin-inline-start:auto;margin-inline-end:.6rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#777);font-weight:500}
 .langitem[aria-pressed=true]{border-color:var(--accent);color:var(--accent);font-weight:600}
 .lchk{color:var(--accent)}
 .lglobe{display:flex;align-items:center;gap:.5rem}.lglobe .i{width:1.3rem;height:1.3rem;color:var(--accent)}
@@ -1980,11 +1981,12 @@ uiBook();
 async function loadBooks(){BOOKS=(await api('books')).books;applyUi();}
 $('#book').addEventListener('change',()=>{book=$('#book').value;try{localStorage.book=book}catch(e){}$('#q').value='';if(location.hash!=='#/b')location.hash='#/b';else showHome();});
 $('#lang').addEventListener('click',()=>appSettings());
+const LANG_EN={ur:'Urdu',ar:'Arabic',en:'English',bn:'Bangla',hi:'Hindi',gu:'Gujarati',fr:'French',ne:'Nepali'};
 const UI_LANGS=[['ur','اردو'],['ar','العربية'],['en','English'],['bn','বাংলা'],['hi','हिन्दी'],['gu','ગુજરાતી'],['fr','Français'],['ne','नेपाली']];
 function setUi(k){ui=k;try{localStorage.ui=k}catch(e){}uiBook();applyUi();route();}
 function langMenu(){
   const close=()=>document.querySelectorAll('.sheetbg').forEach(x=>x.remove());
-  sheet(T('uiLang'),[el('div',{class:'langlist'},...UI_LANGS.map(([k,l])=>el('button',{type:'button',class:'langitem',lang:k,'aria-pressed':String(k===ui),on:{click:()=>{close();if(k!==ui)setUi(k);}}},el('span',{},l),k===ui?el('span',{class:'lchk'},'✓'):'')))]);
+  sheet(T('uiLang'),[el('div',{class:'langlist'},...UI_LANGS.map(([k,l])=>el('button',{type:'button',class:'langitem',lang:k,'aria-pressed':String(k===ui),on:{click:()=>{close();if(k!==ui)setUi(k);}}},el('span',{},l),LANG_EN[k]&&LANG_EN[k]!==l?el('span',{class:'lgen',lang:'en',dir:'ltr'},LANG_EN[k]):'',k===ui?el('span',{class:'lchk'},'✓'):'')))]);
 }
 $('#uilang').addEventListener('click',langMenu);
 /* ---------- back: every screen except Home has it; it returns to where you came from, or one level up ---------- */
@@ -3330,7 +3332,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const qsave = () => { try { localStorage.qset = JSON.stringify(QS); } catch (e) {} applyVars(); };
   // Uthmani text (Madinah Mushaf) in the King Fahd Complex Hafs font; Indo-Pak text in Noto Naskh or Scheherazade (both draw every Indo-Pak sign)
   if (QS.font === 'amiri') QS.font = 'naskh';
-  { const ok = new Set(['ur_junagarhi','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','fr_hamidullah','pa_arif']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
+  { const ok = new Set(['ur_junagarhi','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','ne_ahlhadith','fr_hamidullah','pa_arif']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
     QS.tr = fx(QS.tr); if (!QS.tr.length) QS.tr = ['ur_junagarhi']; if (QS.trBy) Object.keys(QS.trBy).forEach(u => { QS.trBy[u] = fx(QS.trBy[u]); if (!QS.trBy[u].length) delete QS.trBy[u]; }); }
   if (QS.fontv !== 2) { QS.fontv = 2; if (!QS.font || QS.font === 'naskh') QS.font = 'indo'; }   // the Indo-Pak script now has its own real Indo-Pak font
   const FONTS = {indo: ['IndoPak Nastaleeq', 'Indo-Pak (Nastaleeq)'], naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
@@ -3347,7 +3349,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   applyVars();
   try { matchMedia('(orientation:landscape) and (max-height:520px)').addEventListener('change', applyVars); } catch (e) {}
   // each interface language keeps its own Quran translations (Arabic: none)
-  const TR_DEF = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
+  const TR_DEF = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], ne: ['ne_ahlhadith'], fr: ['fr_hamidullah'], ar: []};
   QS.trBy = QS.trBy || {};
   function trForLang() { if (QS.trUi === ui) return; if (QS.trUi) QS.trBy[QS.trUi] = QS.tr; else if (ui !== 'ar') { const own = QS.tr.filter(k => k.startsWith(ui)); if (own.length) QS.trBy[ui] = own; } QS.tr = (QS.trBy[ui] || TR_DEF[ui] || TR_DEF.ur).slice(); QS.trUi = ui; try { localStorage.qset = JSON.stringify(QS); } catch (e) {} }
   trForLang();
@@ -4038,7 +4040,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   async function ayahPoster(s, a) {
     // one translation per language: the one the reader has chosen for it, else the default of that language
-    const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', fr: 'fr_hamidullah', pa: 'pa_arif'}, keys = {};
+    const DEF = {ur: 'ur_junagarhi', en: 'en_sahih', bn: 'bn_zakaria', hi: 'hi_azizulhaq', gu: 'gu_alomari', ne: 'ne_ahlhadith', fr: 'fr_hamidullah', pa: 'pa_arif'}, keys = {};
     Object.keys(DEF).forEach(l => { keys[l] = QS.tr.find(k => k.startsWith(l + '_')) || DEF[l]; });
     await need([AK()].concat(Object.values(keys)));
     const clean = x => (x || '').replace(/<[^>]*>/g, '').trim(), last = Q.meta.surahs[s - 1][4], nm = Q.meta.surahs[s - 1];
@@ -4497,7 +4499,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     Q.meta.editions.filter(e => e.lang === 'ur').forEach(e => boxes.push([e, add(e)]));
     Q.meta.missing.forEach(e => add(e, true));
     Q.meta.editions.filter(e => e.lang === 'en').forEach(e => boxes.push([e, add(e)]));
-    ['bn', 'hi', 'gu', 'fr', 'pa'].forEach(lg => Q.meta.editions.filter(e => e.lang === lg).forEach(e => boxes.push([e, add(e)])));
+    ['bn', 'hi', 'gu', 'ne', 'fr', 'pa'].forEach(lg => Q.meta.editions.filter(e => e.lang === lg).forEach(e => boxes.push([e, add(e)])));
     // the tafsirs, listed separately below the translations: the chosen one opens with the «Tafsir» button of each ayah
     if (!Q.tafsirs) { try { await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js'))); } catch (e) {} }
     const tl = (Q.tafsirs && Q.tafsirs.list) || [], tcur = tl.some(t => t.key === QS.tafsir) ? QS.tafsir : (tl.find(t => t.lang === ui) || tl.find(t => t.lang === 'ur') || tl[0] || {}).key; let tsel = tcur;
@@ -6886,7 +6888,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const DCP = {};
   window.DCH = (u, k, d) => { DCP[u + '_' + k] = d; };
   const qsDefault = () => { try { const q = JSON.parse(localStorage.qset || '{}'); return (!q.tr || (q.tr.length === 1 && q.tr[0] === (TR_DEF2[ui] || [])[0])) && (!q.rasm || q.rasm === 'uthmani') && !(q.trBy && q.trBy[ui] && q.trBy[ui].join() !== q.tr.join()); } catch (e) { return false; } };
-  const TR_DEF2 = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], fr: ['fr_hamidullah'], ar: []};
+  const TR_DEF2 = {ur: ['ur_junagarhi'], en: ['en_sahih'], bn: ['bn_zakaria'], hi: ['hi_azizulhaq'], gu: ['gu_alomari'], ne: ['ne_ahlhadith'], fr: ['fr_hamidullah'], ar: []};
   async function dailyPre(dn) {
     try {
       const k = Math.floor(dn / 30), key = ui + '_' + k;
