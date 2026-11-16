@@ -484,7 +484,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hsg.ggood b{color:#5fd38a}:root:not([data-theme="light"]) .hsg.gbad b{color:#ff6b6b}}
 .langlist{display:flex;flex-direction:column;gap:.35rem}
 .langitem{display:flex;justify-content:space-between;align-items:center;width:100%;padding:.7rem 1rem;border:1px solid var(--line,#ddd);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;font-size:1.05rem;cursor:pointer;text-align:start}
-.langitem .lgen{margin-inline-start:auto;margin-inline-end:.6rem;font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted,#777);font-weight:500}
+.langitem .lgt{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;line-height:1.25}.langitem .lgen{font-size:.78rem;letter-spacing:.04em;color:var(--muted,#777);font-weight:500;font-family:system-ui,sans-serif}
 .langitem[aria-pressed=true]{border-color:var(--accent);color:var(--accent);font-weight:600}
 .lchk{color:var(--accent)}
 .lglobe{display:flex;align-items:center;gap:.5rem}.lglobe .i{width:1.3rem;height:1.3rem;color:var(--accent)}
@@ -1987,7 +1987,7 @@ const UI_LANGS=[['ur','اردو'],['ar','العربية'],['en','English'],['bn'
 function setUi(k){ui=k;try{localStorage.ui=k}catch(e){}uiBook();applyUi();route();}
 function langMenu(){
   const close=()=>document.querySelectorAll('.sheetbg').forEach(x=>x.remove());
-  sheet(T('uiLang'),[el('div',{class:'langlist'},...UI_LANGS.map(([k,l])=>el('button',{type:'button',class:'langitem',lang:k,'aria-pressed':String(k===ui),on:{click:()=>{close();if(k!==ui)setUi(k);}}},el('span',{},l),LANG_EN[k]&&LANG_EN[k]!==l?el('span',{class:'lgen',lang:'en',dir:'ltr'},LANG_EN[k]):'',k===ui?el('span',{class:'lchk'},'✓'):'')))]);
+  sheet(T('uiLang'),[el('div',{class:'langlist'},...UI_LANGS.map(([k,l])=>el('button',{type:'button',class:'langitem',lang:k,'aria-pressed':String(k===ui),on:{click:()=>{close();if(k!==ui)setUi(k);}}},el('span',{class:'lgt'},el('span',{},l),LANG_EN[k]&&LANG_EN[k]!==l?el('span',{class:'lgen',lang:'en',dir:'ltr'},LANG_EN[k]):''),k===ui?el('span',{class:'lchk'},'✓'):'')))]);
 }
 $('#uilang').addEventListener('click',langMenu);
 /* ---------- back: every screen except Home has it; it returns to where you came from, or one level up ---------- */
