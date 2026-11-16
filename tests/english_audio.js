@@ -19,7 +19,7 @@ await p.evaluate(()=>[...document.querySelectorAll('button.lbtn')].find(x=>x.tex
 ck(await p.evaluate(()=>document.querySelector('.enbar b').textContent)==='Chapter title','chapter starts with the title');
 // a hadith without audio gets no button
 // Book 2: hadith 22–446 play; word times exist for 22–100 (the rest play without highlighting); durations come from the real files
-ck(await p.evaluate(async()=>{await ENAUD.ready();return ENAUD.has(22)&&ENAUD.has(859)&&ENAUD.has(860)&&ENAUD.has(1071)&&!ENAUD.has(1072)&&ENAUD.has(21)}),'book 2 range to 1071');
-await p.goto('http://localhost:8765/#/h/1072');await p.waitForTimeout(500);await p.reload();await p.waitForTimeout(3500);
+ck(await p.evaluate(async()=>{await ENAUD.ready();return ENAUD.has(22)&&ENAUD.has(859)&&ENAUD.has(860)&&ENAUD.has(1102)&&!ENAUD.has(1103)&&ENAUD.has(21)}),'book 2 range to 1102');
+await p.goto('http://localhost:8765/#/h/1103');await p.waitForTimeout(500);await p.reload();await p.waitForTimeout(3500);
 ck(await p.evaluate(()=>![...document.querySelectorAll('.acts button')].some(x=>x.textContent==='🔊'&&!x.hidden)),'no button without audio');
 ck(!errs.length,'page errors '+errs);console.log(bad?'FAIL':'PASS english_audio');await b.close();process.exit(bad?1:0)})();

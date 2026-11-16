@@ -4,6 +4,10 @@ const {chromium}=require('playwright');const fs=require('fs');let bad=0;
 await p.goto('http://localhost:8765/#/s/muslim/n/37');await p.waitForTimeout(3000);
 const r=await p.evaluate(()=>{const o=rich('یہ فتویٰ ہے ان شاء اللہ تعالیٰ اور سیّدنا ابوبکر رَضِيَ اللَّهُ عَنْهُ','ur');return o.map(x=>x.nodeType===1?'['+x.className+':'+x.textContent+']':x).join('')});
 console.log(r);
+const r2=await p.evaluate(()=>{const o=rich('سیّدالاولین «و الآخرین» اُمت اندازِ «اِن» شاء اللہ «وَمَا مَدَحْتُ مَقَالَتِي» اور «العالمین»','ur');return o.map(x=>x.nodeType===1?'['+x.className+':'+x.textContent+']':x).join('')});
+console.log(r2);
+for(const w of ['سیّدالاولین','الآخرین','اُمت','اندازِ','اِن','العالمین']) if(new RegExp('\\[arq:[^\\]]*'+w).test(r2)){console.log('FAIL arabic font for',w);bad++;}
+if(!/\[arq:[^\]]*وَمَا/.test(r2)){console.log('FAIL vocalized «» phrase lost its Arabic font');bad++;}
 for(const w of ['فتویٰ','تعالیٰ','سیّدنا']) if(new RegExp('\\[arq:[^\\]]*'+w).test(r)){console.log('FAIL arabic font for',w);bad++;}
 if(!/\[arq:[^\]]*رَضِيَ/.test(r)){console.log('FAIL real Arabic lost its font');bad++;}
 await b.close();

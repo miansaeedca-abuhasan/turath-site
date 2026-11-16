@@ -1264,13 +1264,17 @@ function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];le
   out.push(seg.slice(i));return out;}
 function AYCP(t){return t&&t.indexOf('﴿')>=0?t.replace(/﴿[^﴾]*﴾/g,v=>ayFix(v,n=>' ('+n+') ').join('')):t;}
 function rich0(text,lang){
-  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?((TASH.test(w)||/[يكةىأإٱ]/.test(w))&&!/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9]/.test(w)):ARL.test(w);   /* an Urdu word (فتویٰ، تعالیٰ، سیّدنا …) stays in the Urdu font even with a shadda or marks */
+  const UL=/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9]/;
+  /* Urdu: a word is Arabic only when it is really vocalized (2 or more marks and about half its letters), or has an Arabic-only letter with a mark; an Urdu word with a single zer/pesh/zabar (اُمت، اندازِ، سیّدالاولین) stays in the Urdu font */
+  const tashN=w=>(w.match(/[\u064b-\u0652\u0670]/g)||[]).length,letN=w=>(w.match(/[\u0621-\u064a\u0671-\u06d3]/g)||[]).length;
+  const strongAr=w=>{if(UL.test(w))return false;const t=tashN(w);return (t>=2&&t>=letN(w)*.4)||(t>=1&&/[يكةىأإٱ]/.test(w));};
+  const out=[],other=lang!=='ur'&&lang!=='ar',isAr=w=>lang==='ur'?strongAr(w):ARL.test(w);   /* an Urdu word (فتویٰ، تعالیٰ، سیّدنا …) stays in the Urdu font even with a shadda or marks */
   if(other&&!ARL.test(text))return [text];
   text.split(/(﴿[^﴾]*(?:﴾|$)|\{[^{}]{2,}\}|«[^»]*»)/).forEach(seg=>{
     if(!seg)return;
     if(seg[0]==='﴿'){out.push(el('span',{class:'qayah',lang:'ar'},...ayFix(seg,n=>el('span',{class:'ayn ud'},ayDig(n)))));return;}
     if(seg[0]==='{'&&ARL.test(seg)){out.push(el('span',{class:'qayah',lang:'ar'},seg));return;}
-    if(seg[0]==='«'){out.push(lang==='ur'||(other&&ARL.test(seg))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
+    if(seg[0]==='«'){out.push((lang==='ur'?seg.split(/\s+/).some(strongAr):(other&&ARL.test(seg)))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
     if(lang==='ar'){out.push(seg);return;}
     let run=[],plain=[];
     const flushRun=()=>{if(run.length){out.push(el('span',{class:'arq',lang:'ar'},run.join('')));run=[];}};
