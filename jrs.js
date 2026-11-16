@@ -11,9 +11,9 @@
   const lang = () => { let u = 'en'; try { u = localStorage.ui || 'en'; } catch (e) {} return L[u] ? u : 'en'; };
   const T = () => L[lang()];
   /* the four Rightly-Guided Caliphs (k) and the other Companions of the ten given the good news of Paradise (t) that have their own entry; Abu Ubayda ibn al-Jarrah and Talha are not marked because their entries here are only "possible identifications" */
-  const TG = {10: 'k', 14: 'k', 59: 'k', 73: 'k', 17: 't', 81: 't', 82: 't', 86: 't', 113: 't'};
+  const TG = {'علي بن أبي طالب': 'k', 'عمر بن الخطاب': 'k', 'عثمان بن عفان': 'k', 'أبو بكر الصديق': 'k', 'سعد بن أبي وقاص': 't', 'الزبير بن العوام': 't', 'عبد الرحمن بن عوف': 't', 'سعيد بن زيد': 't', 'طلحة بن عبيد الله': 't', 'أبو عبيدة بن الجراح': 't'};
   const TGL = {ur: {k: '(خلیفہ راشد)', t: '(عشرہ مبشرہ)'}, ar: {k: '(خليفة راشد)', t: '(من العشرة المبشرين)'}, en: {k: '(Rightly-Guided Caliph)', t: '(One of the Ten Promised Paradise)'}};
-  const tag = (x, kind) => kind === 'n' && TG[x.i] ? el('small', {class: 'tg'}, TGL[lang()][TG[x.i]]) : null;
+  const tag = (x, kind) => kind === 'n' && TG[x.nm.ar] ? el('small', {class: 'tg'}, TGL[lang()][TG[x.nm.ar]]) : null;
   let DATA = null, P = null, inJrs = false;
   const LS = {};   /* list scroll position + search text, kept when a person opens an entry and comes back */
   window.addEventListener('hashchange', () => { if (!/^#\/j[rs](\/|$)/.test(location.hash)) { inJrs = false; delete LS.n; delete LS.s; } });
@@ -23,7 +23,7 @@
   }));
   const el = (t, a, ...k) => { const e = document.createElement(t); for (const n in a || {}) { if (n === 'on') for (const ev in a.on) e.addEventListener(ev, a.on[ev]); else if (a[n] != null && a[n] !== false) e.setAttribute(n, a[n]); } e.append(...k.filter(x => x != null)); return e; };
   const RD = {ur: ['رضی اللہ عنہ', 'رضی اللہ عنہا'], ar: ['رضي الله عنه', 'رضي الله عنها'], en: ['رضي الله عنه', 'رضي الله عنها']};
-  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + (x.i === 21 && l === 'ur' ? 'رضی اللہ عنہم' : RD[l][x.g === 'f' ? 1 : 0]); const o = x[l] || x.en; return x.sh && o.title.indexOf('—') < 0 ? o.title + ' — ' + (x.sh[l] || x.sh.en) : o.title; };
+  const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + (x.nm.ar === 'صحابي مبهم (غير مسمّى)' && l === 'ur' ? 'رضی اللہ عنہم' : RD[l][x.g === 'f' ? 1 : 0]); const o = x[l] || x.en; return x.sh && o.title.indexOf('—') < 0 ? o.title + ' — ' + (x.sh[l] || x.sh.en) : o.title; };
   const fmt = n => n.toLocaleString('en');
   const norm = s => (s || '').replace(/[ً-ٰٟۖ-ۭـ]/g, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ۃ/g, 'ه').replace(/[یے]/g, 'ي').replace(/ک/g, 'ك').replace(/ہ|ھ/g, 'ه').toLowerCase();
   const CSS = `

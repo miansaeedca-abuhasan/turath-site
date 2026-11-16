@@ -2,7 +2,7 @@
 // wrong numbers found by comparing the text (Abu Wail under Ubayy, Qays b. Asim under Abu Hurayra ...) stay out of the lists
 const {chromium,devices}=require('playwright');const fs=require('fs');
 const s=fs.readFileSync(__dirname+'/../data/jrs.js','utf8');const D=JSON.parse(s.slice(s.indexOf('(')+1,s.lastIndexOf(')')));let bad=0;
-const by=i=>D.n.find(x=>x.nm.ar===({1:'أبو هريرة',2:'أنس بن مالك',4:'عبد الله بن عباس',6:'جابر بن عبد الله',23:'أبي بن كعب',141:'أبو عبيدة'})[i]);
+const by=i=>D.n.find(x=>x.nm.ar===({1:'أبو هريرة',2:'أنس بن مالك',4:'عبد الله بن عباس',6:'جابر بن عبد الله',23:'أبي بن كعب',141:'أبو عبيدة بن الجراح'})[i]);
 const gone={1:[1504,7787,10303],2:[3636,4382],4:[2912,2949,13113],6:[5436,5825],23:[2034,3311,3632,7593,7984,9016,9023,11296,11804,11805,13308,13630,14572,15697,15815,8995,15454],141:[3980,4181,16502]};
 for(const k in gone)for(const n of gone[k])if(by(+k).h.includes(n)){console.log('FAIL wrong number back',k,n);bad++;}
 for(const x of D.n)if(x.c!==x.h.length){console.log('FAIL count',x.i);bad++;}
