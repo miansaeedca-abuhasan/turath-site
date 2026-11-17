@@ -18,4 +18,7 @@ if(!rows[0][1].includes('اس سورت کو فاتحہ اس لیے کہا جات
 let lead=0,mixed=0;rows.forEach(r=>{const L=r[1].split('\n');if(L[1]&&/^\s*[؟!،]/.test(L[1])&&!/^\.{4}/.test(L[1]))lead++;(r[1].match(/[\u0600-\u06ff]+/g)||[]).forEach(w=>{if(/[يك]/.test(w)&&/[ہےںکگیٹڈڑ]/.test(w))mixed++})});
 if(lead>0)bad.push('title-tail punct in body '+lead);if(mixed>25)bad.push('mixed yeh/kaf words '+mixed);
 if(/(?<![A-Za-z])[Sa](?=[؀-ۿ])/.test(T))bad.push('glued S/a glyph');
+// raw verse-number markers (۰۰N) must sit inside ﴿ ﴾ so the reader shows circle numbers; a few doubtful lines are tolerated
+let raw=0;rows.forEach(r=>r[1].split('\n').slice(1).forEach(l=>{if(/۰۰[۰-۹]/.test(l.replace(/﴿[^﴾]*﴾/g,'')))raw++}));
+if(raw>40)bad.push('raw verse numbers outside brackets '+raw);
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS tafsirnoor_full');process.exit(bad.length?1:0);
