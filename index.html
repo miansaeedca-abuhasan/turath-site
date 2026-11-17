@@ -3552,7 +3552,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       bar(TFS(), '', true); v.replaceChildren();
       const LG = ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr', 'ne'].sort((x, y) => (y === ui) - (x === ui));
       LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length) return;
-        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x))))); });
+        const extra = l === 'ur' ? [el('a', {class: 'card srow2 tfbook', href: '#/s/tafsirnoor'}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn', dir: 'auto'}, 'تفسیر نور الہدیٰ (اردو)'))] : [];
+        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x))))); });
       return;
     }
     if (!sn) {
