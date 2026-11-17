@@ -48,9 +48,9 @@ html[lang=ur] .jr .nmx,html[lang=ur] .jr .hero h2,html[lang=ur] .jr .tt{font-fam
 .jr .head .no{min-width:3rem;height:3rem;font-size:1.15rem}
 .jr .head .tt{font-size:1.35rem;font-weight:700;line-height:1.7;color:var(--ink)}
 .jr .head .by{font-size:.85rem;color:var(--accent)}
-.jr .tabs{display:flex;gap:.3rem;border-bottom:2px solid var(--line);margin:0 0 .9rem;overflow-x:auto}
-.jr .tabs button{flex:1 0 auto;font:inherit;font-size:1rem;padding:.6rem .9rem;border:0;background:none;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;white-space:nowrap}
-.jr .tabs button[aria-selected=true]{color:var(--accent);border-bottom-color:var(--accent);font-weight:700}
+.jr .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin:0 0 .9rem;overflow:hidden}
+.jr .tabs button{font:inherit;font-size:.86rem;line-height:1.35;padding:.5rem .15rem;border:1px solid var(--line);border-radius:999px;background:none;color:var(--muted);cursor:pointer;text-align:center;min-width:0;overflow-wrap:anywhere}
+.jr .tabs button[aria-selected=true]{color:#fff;background:var(--accent);border-color:var(--accent);font-weight:700}
 .jr .pane{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:1rem 1.1rem;box-shadow:var(--shadow)}
 .jr .pane p{margin:.2rem 0 .8rem;line-height:2.1;font-size:1.1rem}
 .jr .pane h3{margin:1rem 0 .3rem;font-size:1.1rem;color:var(--accent);padding-bottom:.2rem;border-bottom:1px solid var(--line)}
@@ -74,7 +74,7 @@ html[lang=ur] .jr .pane p{font-family:var(--urdu)}
  .jr .grid{grid-template-columns:1fr 1fr;gap:.7rem}
  .jr .it{padding:.85rem 1rem}
  .jr .kv{grid-template-columns:1fr 1fr;column-gap:1.6rem}.jr .kv div:nth-child(2){border-top:0}
- .jr .pane{padding:1.4rem 1.8rem}.jr .tabs button{flex:0 0 auto;padding:.7rem 1.6rem}
+ .jr .pane{padding:1.4rem 1.8rem}.jr .tabs button{font-size:1rem;padding:.6rem 1rem}
 }`;
   function style() { if (document.getElementById('jrcss')) return; const s = document.createElement('style'); s.id = 'jrcss'; s.textContent = CSS; document.head.append(s); }
 

@@ -446,6 +446,7 @@ body.withplayer .speedbox{bottom:calc(11.7rem + env(safe-area-inset-bottom,0px))
 html[lang=ur] .speedinfo{font:.95rem/1.8 var(--urdu)}
 .speedinfo b{color:var(--accent)}
 .speedbox .ib:hover{background:var(--wash)}
+html,body{overscroll-behavior-x:none}
 html.sheetopen,html.sheetopen body{overflow:hidden;overscroll-behavior:none}
 .sheet,.sbody{overscroll-behavior:contain}
 .sheetbg{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:1rem}
@@ -2203,7 +2204,7 @@ async function showHadith(num){
   }
   const g=gradeNode(d.grade);if(g)v.append(el('div',{style:'margin:.4rem 0'},g));
   const box=el('div',{class:'card'}),mt=el('div',{class:'mt ar',lang:'ar'}),hasSanad=!!d.sanad;
-  d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&hasSanad)pe.append(sanadEl(d));pe.append(...rich(p,'ar'));mt.append(pe);});{const rn=repNode(d);if(rn)mt.append(rn);}
+  d.matn.forEach((p,i)=>{const pe=el('p');if(i===0&&hasSanad)pe.append(sanadEl(d));pe.append(...rich(p,'ar'));if(i===0&&scope!=='tuhfa')pe.prepend(el('span',{class:'hn'},(ui==='ar'?NUM(d.num):String(d.num))+'-'),' ');mt.append(pe);});{const rn=repNode(d);if(rn)mt.append(rn);}
   {const fb2=el('div',{class:'refbox fullbox',hidden:true}),tb=fullTabs(d,mt,fb2);if(tb)box.append(tb);box.append(mt,fb2);}
   if(hasSanad){let hidden=false;try{hidden=localStorage.hideSanad==='1'}catch(e){}
     const b=el('button',{class:'btn',type:'button'});const sync=()=>{mt.querySelectorAll('.sanad').forEach(s=>s.style.display=hidden?'none':'');b.textContent=hidden?T('show'):T('hide');};
@@ -2254,8 +2255,8 @@ async function showHadith(num){
       v.insertBefore(modeBar,v.firstChild);}
   }catch(e){}})();
   {let x0=0,y0=0,t0=0,ok=false;
-    v.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();ok=e.touches.length===1&&!e.target.closest('.hsxn,.hgrid,input,textarea,select,.sheet');},{passive:true});
-    v.addEventListener('touchend',e=>{if(!ok)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)<80||Math.abs(dx)<Math.abs(dy)*2||Date.now()-t0>700)return;
+    v.addEventListener('touchstart',e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();ok=e.touches.length===1&&x0>40&&x0<innerWidth-40&&!e.target.closest('.hsxn,.hgrid,input,textarea,select,.sheet');},{passive:true});
+    v.addEventListener('touchend',e=>{if(!ok)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Math.abs(dx)<120||Math.abs(dx)<Math.abs(dy)*2.5||Date.now()-t0>600)return;
       const sel=window.getSelection&&String(getSelection());if(sel)return;goH(dx<0?d.next:d.prev);},{passive:true});}
   if(!isRestore){try{window.scrollTo({top:0,behavior:'instant'})}catch(e){scrollTo(0,0)}}
 }
@@ -5755,9 +5756,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     // flipping the page: a swipe to the left moves to the next hadith, to the right to the previous one (the same in every language)
     if (box._sw) { box.removeEventListener('touchstart', box._sw[0]); box.removeEventListener('touchend', box._sw[1]); }
     let sx = 0, sy = 0, st = 0, ok = false;
-    const ts = e => { const p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now(); ok = e.touches.length === 1 && !e.target.closest('input,textarea,select,table,pre,[data-noswipe]'); };
+    const ts = e => { const p = e.touches[0]; sx = p.clientX; sy = p.clientY; st = Date.now(); ok = e.touches.length === 1 && sx > 40 && sx < innerWidth - 40 && !e.target.closest('input,textarea,select,table,pre,[data-noswipe]'); };
     const te = e => { if (!ok) return; ok = false; const p = e.changedTouches[0], dx = p.clientX - sx, dy = p.clientY - sy;
-      if (Math.abs(dx) < 90 || Math.abs(dy) > Math.abs(dx) * .5 || Date.now() - st > 700) return;
+      if (Math.abs(dx) < 120 || Math.abs(dy) > Math.abs(dx) * .4 || Date.now() - st > 600) return;
       const fwd = dx < 0, to = fwd ? n + 1 : n - 1;
       if (to >= 1 && to <= b.count) location.hash = '#/s/' + b.key + '/n/' + to; };
     box.addEventListener('touchstart', ts, {passive: true}); box.addEventListener('touchend', te, {passive: true}); box._sw = [ts, te];
