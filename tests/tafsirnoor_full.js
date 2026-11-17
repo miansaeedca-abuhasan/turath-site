@@ -14,4 +14,8 @@ if((T.match(/[؀-ۿ]صلی اللہ علیہ وسلم/g)||[]).length)bad.push('s
 for(let i=0;i<30;i++){const s=e.sections[i];if(!(s[2]<=s[3]))bad.push('section '+i);if(i&&s[2]!==e.sections[i-1][3]+1)bad.push('gap at '+i);}
 if(e.sections[29][3]!==e.count)bad.push('last section end');
 if(!rows[0][1].includes('اس سورت کو فاتحہ اس لیے کہا جاتا ہے'))bad.push('first row text');
+// proofreading: no title-tail punctuation left at the start of a body, no mixed Arabic kaf/yeh inside Urdu words, no glued rahmat glyph
+let lead=0,mixed=0;rows.forEach(r=>{const L=r[1].split('\n');if(L[1]&&/^\s*[؟!،]/.test(L[1])&&!/^\.{4}/.test(L[1]))lead++;(r[1].match(/[\u0600-\u06ff]+/g)||[]).forEach(w=>{if(/[يك]/.test(w)&&/[ہےںکگیٹڈڑ]/.test(w))mixed++})});
+if(lead>0)bad.push('title-tail punct in body '+lead);if(mixed>25)bad.push('mixed yeh/kaf words '+mixed);
+if(/(?<![A-Za-z])[Sa](?=[؀-ۿ])/.test(T))bad.push('glued S/a glyph');
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS tafsirnoor_full');process.exit(bad.length?1:0);
