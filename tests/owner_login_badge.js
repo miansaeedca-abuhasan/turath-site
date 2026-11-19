@@ -1,0 +1,20 @@
+// founder login: English login page, eye button, founder badge after sign-in and gone after sign-out
+const {chromium}=require('playwright');
+(async()=>{const b=await chromium.launch();const p=await b.newPage();let bad=[];let signed=false;
+await p.route('**/api/owner*',r=>{const a=new URL(r.request().url()).searchParams.get('a');const j=o=>r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(o)});
+ if(a==='login'){signed=true;return j({ok:true,user:'abuhasan'})}if(a==='logout'){signed=false;return j({ok:true})}if(a==='me')return j({ok:signed,setup:true});return j({})});
+await p.goto('http://localhost:8765/#/owner');await p.waitForSelector('#ownerPwEye',{timeout:20000});
+const t=await p.evaluate(()=>document.querySelector('#ownerPwEye').closest('.card').innerText);
+if(/[؀-ۿ]/.test(t))bad.push('login card has Urdu/Arabic: '+t);
+if(!/Founder Login/.test(t)||!/Sign in/.test(t))bad.push('English labels missing');
+if(await p.$('#founderBadge'))bad.push('badge before login');
+const ty=()=>p.evaluate(()=>document.querySelector('#ownerPwEye').parentElement.querySelector('input').type);
+if(await ty()!=='password')bad.push('start not hidden');
+await p.click('#ownerPwEye');if(await ty()!=='text')bad.push('not shown');
+await p.fill('input[type=email]','abuhasan@example.com');await p.fill('#ownerPwEye >> xpath=../input','x');
+await p.click('text=Sign in');await p.waitForSelector('#founderBadge',{timeout:5000}).catch(()=>bad.push('no badge after login'));
+const bt=await p.evaluate(()=>(document.getElementById('founderBadge')||{}).textContent||'');
+if(!/Founder/.test(bt)||!/abuhasan/.test(bt))bad.push('badge text '+bt);
+await p.goto('http://localhost:8765/#/');await p.reload();await p.waitForSelector('#founderBadge',{timeout:8000}).catch(()=>bad.push('badge missing after reload'));
+signed=false;await p.reload();await p.waitForTimeout(1500);if(await p.$('#founderBadge'))bad.push('badge stays after session ended');
+console.log(bad.length?'FAIL '+bad.join('|'):'PASS owner_login_badge');await b.close();process.exit(bad.length?1:0)})();

@@ -46,7 +46,7 @@ export async function onRequest({request, env}) {
       await db.prepare("DELETE FROM owner_fail WHERE k = 'g'").run();
       const id = hex(crypto.getRandomValues(new Uint8Array(12))), exp = now + 12 * 3600000;
       const tok = id + '.' + exp + '.' + await hmac(env.OWNER_USERS + '|tk', id + '.' + exp);
-      return json({ok: true}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=43200; HttpOnly; Secure; SameSite=Strict'});
+      return json({ok: true, user: mail.split('@')[0]}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=43200; HttpOnly; Secure; SameSite=Strict'});
     }
     if (a === 'logout') return json({ok: true}, 200, {'Set-Cookie': 'tk_owner=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'});
     if (!(await authed(request, env))) return json({error: 'auth'}, 401);

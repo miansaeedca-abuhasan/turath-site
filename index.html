@@ -10062,6 +10062,26 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     ready = fetch('api/owner?a=pub', {cache: 'no-cache'}).then(r => r.ok ? r.json() : {}).then(j => { CFG = j && typeof j === 'object' ? j : {}; window.SITECFG = CFG; apply(); return CFG; }).catch(() => CFG);
     return ready;
   }
+  /* ---------- founder badge: shown on every page while a founder is signed in ---------- */
+  const FK = 'tk_founder';
+  const lsGet = () => { try { return localStorage.getItem(FK) || ''; } catch (e) { return ''; } };
+  const lsSet = n => { try { n ? localStorage.setItem(FK, n) : localStorage.removeItem(FK); } catch (e) {} };
+  function badge(name) {
+    let b = document.getElementById('founderBadge');
+    if (!name) { if (b) b.remove(); return; }
+    if (!b) {
+      b = el('a', {id: 'founderBadge', href: '#/owner', title: 'Founder', style: 'position:fixed;top:calc(env(safe-area-inset-top,0px) + 3px);left:6px;z-index:2147483000;display:flex;align-items:center;gap:.3rem;padding:.12rem .55rem;border-radius:999px;background:#0b5d3b;color:#fff;font:600 11px/1.5 system-ui,sans-serif;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.3);direction:ltr;opacity:.92'});
+      document.body.append(b);
+    }
+    b.textContent = '\u2605 Founder \u00b7 ' + name;
+  }
+  const mark = name => { lsSet(name); badge(name); };
+  const unmark = () => { lsSet(''); badge(''); };
+  (function () {
+    const n = lsGet(); if (!n) return;
+    const go = () => { badge(n); fetch('api/owner?a=me', {cache: 'no-store'}).then(r => r.json()).then(j => { if (!j.ok) unmark(); }).catch(() => {}); };
+    document.body ? go() : document.addEventListener('DOMContentLoaded', go);
+  })();
   const pick = o => o && typeof o === 'object' ? (o[ui] || o.en || o.ur || '') : '';
   const banner = v => {
     const slot = el('div', {}); v.append(slot);
@@ -10088,29 +10108,29 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   const say = (t, bad) => { msg.textContent = t; msg.style.color = bad ? '#b00' : '#080'; };
   const save = async (k, v) => {
     const r = await post('save', {k, v});
-    if (r.ok) { CFG[k] = v; say('محفوظ ہو گیا ✓ (زائرین کو ایک منٹ کے اندر نظر آئے گا)'); } else if (r.status === 401) { say('سیشن ختم ہو گیا، دوبارہ داخل ہوں۔', true); setTimeout(() => show(), 1200); } else say('محفوظ نہیں ہو سکا۔', true);
+    if (r.ok) { CFG[k] = v; say('محفوظ ہو گیا ✓ (زائرین کو ایک منٹ کے اندر نظر آئے گا)'); } else if (r.status === 401) { say('سیشن ختم ہو گیا، دوبارہ داخل ہوں۔', true); unmark(); setTimeout(() => show(), 1200); } else say('محفوظ نہیں ہو سکا۔', true);
     return !!r.ok;
   };
 
   function loginView(v, setup) {
     v.replaceChildren();
-    const em = inp('', 'ای میل', 'email'), pw = inp('', 'پاسورڈ', 'password');
+    const em = inp('', 'Email', 'email'), pw = inp('', 'Password', 'password');
     em.setAttribute('autocomplete', 'username'); pw.setAttribute('autocomplete', 'current-password');
     const go = async () => {
       say('…');
       const r = await post('login', {email: em.value, password: pw.value});
-      if (r.ok) { pw.value = ''; show(); } else say(r.error === 'locked' ? 'بہت زیادہ غلط کوششیں؛ پندرہ منٹ بعد آزمائیں۔' : r.error === 'setup' ? 'ابھی ای میل/پاسورڈ Cloudflare میں مقرر نہیں ہوئے۔' : 'ای میل یا پاسورڈ درست نہیں۔', true);
+      if (r.ok) { pw.value = ''; if (r.user) mark(r.user); show(); } else say(r.error === 'locked' ? 'Too many wrong attempts. Try again in 15 minutes.' : r.error === 'setup' ? 'Email and password are not set up yet in Cloudflare.' : 'Wrong email or password.', true);
     };
     pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
     const EYE = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
       EYEOFF = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>';
-    const eye = el('button', {type: 'button', id: 'ownerPwEye', 'aria-label': 'پاسورڈ دکھائیں', style: 'position:absolute;left:.4rem;top:50%;transform:translateY(-50%);background:none;border:0;padding:.3rem;cursor:pointer;color:#666;line-height:0'});
-    eye.innerHTML = EYE; pw.style.paddingLeft = '2.4rem';
-    eye.addEventListener('click', () => { const show = pw.type === 'password'; pw.type = show ? 'text' : 'password'; eye.innerHTML = show ? EYEOFF : EYE; eye.setAttribute('aria-label', show ? 'پاسورڈ چھپائیں' : 'پاسورڈ دکھائیں'); });
+    const eye = el('button', {type: 'button', id: 'ownerPwEye', 'aria-label': 'Show password', style: 'position:absolute;right:.4rem;top:50%;transform:translateY(-50%);background:none;border:0;padding:.3rem;cursor:pointer;color:#666;line-height:0'});
+    eye.innerHTML = EYE; pw.style.paddingRight = '2.4rem';
+    eye.addEventListener('click', () => { const show = pw.type === 'password'; pw.type = show ? 'text' : 'password'; eye.innerHTML = show ? EYEOFF : EYE; eye.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); });
     const pwWrap = el('div', {style: 'position:relative'}, pw, eye);
-    v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:1rem;max-width:420px;margin:.8rem auto'},
-      el('h2', {style: 'text-align:center;margin:.2rem 0 .6rem'}, 'بانی کا داخلہ'), em, pwWrap, el('div', {style: 'text-align:center;margin-top:.5rem'}, btn('داخل ہوں', go)), msg,
-      setup ? null : el('p', {class: 'note'}, 'ابھی ای میل اور پاسورڈ مقرر نہیں ہوئے؛ Cloudflare میں OWNER_USERS رکھیں۔')));
+    v.append(el('div', {class: 'card', dir: 'ltr', style: 'padding:1rem;max-width:420px;margin:.8rem auto;text-align:left'},
+      el('h2', {style: 'text-align:center;margin:.2rem 0 .6rem'}, 'Founder Login'), em, pwWrap, el('div', {style: 'text-align:center;margin-top:.5rem'}, btn('Sign in', go)), msg,
+      setup ? null : el('p', {class: 'note'}, 'Email and password are not set up yet. Add OWNER_USERS in Cloudflare.')));
   }
 
   function tabBanner() {
@@ -10236,13 +10256,13 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const open = ix => { [...tabs.children].forEach((b, j) => { b.style.fontWeight = j === ix ? '700' : '400'; b.style.outline = j === ix ? '2px solid var(--accent,#2a7)' : 'none'; }); msg.textContent = ''; body.replaceChildren(TABS[ix][1]()); };
     TABS.forEach((t, ix) => tabs.append(btn(t[0], () => open(ix))));
     v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
-      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'بانی پینل'), btn('خروج', async () => { await post('logout'); show(); })),
+      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'بانی پینل'), btn('خروج', async () => { await post('logout'); unmark(); show(); })),
       tabs, body, msg));
     open(0);
   }
 
   async function show() {
-    bar('بانی', '', true);
+    bar('Founder', '', true);
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, '…'));
     await load();
     const me = await get('me');
