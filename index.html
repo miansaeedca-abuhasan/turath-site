@@ -10064,22 +10064,26 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   }
   /* ---------- founder badge: shown on every page while a founder is signed in ---------- */
   const FK = 'tk_founder';
-  const lsGet = () => { try { return localStorage.getItem(FK) || ''; } catch (e) { return ''; } };
-  const lsSet = n => { try { n ? localStorage.setItem(FK, n) : localStorage.removeItem(FK); } catch (e) {} };
-  function badge(name) {
+  let ROLE = 'founder';
+  const lsGet = () => { try { return JSON.parse(localStorage.getItem(FK) || 'null'); } catch (e) { return null; } };
+  const lsSet = o => { try { o ? localStorage.setItem(FK, JSON.stringify(o)) : localStorage.removeItem(FK); } catch (e) {} };
+  function badge(o) {
     let b = document.getElementById('founderBadge');
-    if (!name) { if (b) b.remove(); return; }
+    if (!o || !o.n) { if (b) b.remove(); return; }
     if (!b) {
-      b = el('a', {id: 'founderBadge', href: '#/owner', title: 'Founder', style: 'position:fixed;top:calc(env(safe-area-inset-top,0px) + 3px);left:6px;z-index:2147483000;display:flex;align-items:center;gap:.3rem;padding:.12rem .55rem;border-radius:999px;background:#0b5d3b;color:#fff;font:600 11px/1.5 system-ui,sans-serif;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.3);direction:ltr;opacity:.92'});
+      b = el('a', {id: 'founderBadge', href: '#/owner', style: 'position:fixed;top:calc(env(safe-area-inset-top,0px) + 3px);left:6px;z-index:2147483000;display:flex;align-items:center;gap:.3rem;padding:.12rem .55rem;border-radius:999px;color:#fff;font:600 11px/1.5 system-ui,sans-serif;text-decoration:none;box-shadow:0 1px 4px rgba(0,0,0,.3);direction:ltr;opacity:.94'});
       document.body.append(b);
     }
-    b.textContent = '\u2605 Founder \u00b7 ' + name;
+    const ed = o.r === 'editor';
+    b.style.background = ed ? '#1d4f91' : '#0b5d3b'; b.title = ed ? 'Editor' : 'Founder';
+    b.textContent = (ed ? '\u270E Editor \u00b7 ' : '\u2605 Founder \u00b7 ') + o.n + (!ed && o.p ? ' \u00b7 ' + o.p + ' pending' : '');
+    if (!ed && o.p) b.style.background = '#b45309';
   }
-  const mark = name => { lsSet(name); badge(name); };
-  const unmark = () => { lsSet(''); badge(''); };
+  const mark = (name, role, pend) => { const o = {n: name, r: role === 'editor' ? 'editor' : 'founder', p: +pend || 0}; ROLE = o.r; lsSet(o); badge(o); };
+  const unmark = () => { lsSet(null); badge(null); };
   (function () {
-    const n = lsGet(); if (!n) return;
-    const go = () => { badge(n); fetch('api/owner?a=me', {cache: 'no-store'}).then(r => r.json()).then(j => { if (!j.ok) unmark(); }).catch(() => {}); };
+    const o = lsGet(); if (!o || !o.n) return;
+    const go = () => { badge(o); fetch('api/owner?a=me', {cache: 'no-store'}).then(r => r.json()).then(j => { if (!j.ok) unmark(); else mark(j.user || o.n, j.role, j.pending); }).catch(() => {}); };
     document.body ? go() : document.addEventListener('DOMContentLoaded', go);
   })();
   const pick = o => o && typeof o === 'object' ? (o[ui] || o.en || o.ur || '') : '';
@@ -10108,6 +10112,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   const say = (t, bad) => { msg.textContent = t; msg.style.color = bad ? '#b00' : '#080'; };
   const save = async (k, v) => {
     const r = await post('save', {k, v});
+    if (r.ok && r.pending) { say('تبدیلی بانی کو منظوری کے لیے بھیج دی گئی ✓ (منظوری کے بعد ہی سائٹ پر آئے گی)'); return false; }
     if (r.ok) { CFG[k] = v; say('محفوظ ہو گیا ✓ (زائرین کو ایک منٹ کے اندر نظر آئے گا)'); } else if (r.status === 401) { say('سیشن ختم ہو گیا، دوبارہ داخل ہوں۔', true); unmark(); setTimeout(() => show(), 1200); } else say('محفوظ نہیں ہو سکا۔', true);
     return !!r.ok;
   };
@@ -10119,7 +10124,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const go = async () => {
       say('…');
       const r = await post('login', {email: em.value, password: pw.value});
-      if (r.ok) { pw.value = ''; if (r.user) mark(r.user); show(); } else say(r.error === 'locked' ? 'Too many wrong attempts. Try again in 15 minutes.' : r.error === 'setup' ? 'Email and password are not set up yet in Cloudflare.' : 'Wrong email or password.', true);
+      if (r.ok) { pw.value = ''; if (r.user) mark(r.user, r.role, 0); show(); } else say(r.error === 'locked' ? 'Too many wrong attempts. Try again in 15 minutes.' : r.error === 'setup' ? 'Email and password are not set up yet in Cloudflare.' : 'Wrong email or password.', true);
     };
     pw.addEventListener('keydown', e => { if (e.key === 'Enter') go(); });
     const EYE = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1.5 12S5.5 5 12 5s10.5 7 10.5 7-4 7-10.5 7S1.5 12 1.5 12z"/><circle cx="12" cy="12" r="3"/></svg>',
@@ -10249,14 +10254,36 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return wrap;
   }
 
-  const TABS = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
-  function panel(v) {
+  const KN = {banner: 'اعلان', news: 'خبریں', ticker: 'چلتی پٹی', hide: 'چھپے ہوئے خانے', fixes: 'متن کی اصلاح'};
+  function tabPending() {
+    const wrap = el('div', {}, el('p', {class: 'note'}, 'ایڈیٹروں کی بھیجی ہوئی تبدیلیاں۔ آپ کے «منظور» دبانے سے پہلے ان میں سے کچھ بھی سائٹ پر نہیں آتا۔')), list = el('div', {}, '…');
+    wrap.append(list);
+    const refresh = async () => {
+      const r = await post('pending', {});
+      if (!r.list) { list.replaceChildren(el('p', {class: 'note'}, 'فہرست نہیں کھل سکی۔')); return; }
+      const b = lsGet(); if (b) mark(b.n, 'founder', r.list.length);
+      if (!r.list.length) { list.replaceChildren(el('p', {class: 'note'}, 'کوئی تبدیلی منظوری کی منتظر نہیں۔')); return; }
+      list.replaceChildren(...r.list.map(x => {
+        const d = new Date(x.t), when = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
+        let txt = ''; try { txt = JSON.stringify(x.v, null, 1); } catch (e) {}
+        const act = (a, ok) => async () => { const q = await post(a, {id: x.id}); if (q.ok) { if (a === 'approve') { CFG[x.k] = x.v; apply(); } say(ok); refresh(); } else say('نہیں ہو سکا۔', true); };
+        return el('div', {class: 'card', style: 'padding:.5rem;margin:.4rem 0'}, el('div', {style: 'font-weight:700'}, (KN[x.k] || x.k) + ' — ' + x.who), el('div', {class: 'note', dir: 'ltr', style: 'text-align:left'}, when),
+          el('pre', {dir: 'auto', style: 'white-space:pre-wrap;max-height:14rem;overflow:auto;margin:.3rem 0;font:inherit;font-size:.9em'}, txt.length > 3000 ? txt.slice(0, 3000) + ' …' : txt),
+          el('div', {style: 'display:flex;gap:.5rem'}, btn('منظور', act('approve', 'منظور ہو گیا، سائٹ پر آ گیا ✓')), btn('رد', act('reject', 'رد کر دیا گیا۔'))));
+      }));
+    };
+    refresh(); return wrap;
+  }
+  const TABS_ALL = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  function panel(v, me) {
+    me = me || {}; ROLE = me.role === 'editor' ? 'editor' : 'founder';
+    const TABS = ROLE === 'editor' ? TABS_ALL.filter(t => ['اعلان', 'خبریں', 'چلتی پٹی', 'متن کی اصلاح', 'ترتیبات'].includes(t[0])) : [['منظوری' + (me.pending ? ' (' + me.pending + ')' : ''), tabPending]].concat(TABS_ALL);
     v.replaceChildren();
     const body = el('div', {}), tabs = el('div', {style: 'display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;margin:.4rem 0'});
     const open = ix => { [...tabs.children].forEach((b, j) => { b.style.fontWeight = j === ix ? '700' : '400'; b.style.outline = j === ix ? '2px solid var(--accent,#2a7)' : 'none'; }); msg.textContent = ''; body.replaceChildren(TABS[ix][1]()); };
     TABS.forEach((t, ix) => tabs.append(btn(t[0], () => open(ix))));
     v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
-      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, 'بانی پینل'), btn('خروج', async () => { await post('logout'); unmark(); show(); })),
+      el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, ROLE === 'editor' ? 'ایڈیٹر پینل' : 'بانی پینل'), btn('خروج', async () => { await post('logout'); unmark(); show(); })),
       tabs, body, msg));
     open(0);
   }
@@ -10266,7 +10293,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const v = qv(); v.replaceChildren(el('p', {class: 'note'}, '…'));
     await load();
     const me = await get('me');
-    if (me.ok) panel(v); else loginView(v, me.setup);
+    if (me.ok) { if (me.user && lsGet()) mark(me.user, me.role, me.pending); panel(v, me); } else loginView(v, me.setup);
   }
 
   load();

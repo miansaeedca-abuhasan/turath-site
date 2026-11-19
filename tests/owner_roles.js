@@ -1,0 +1,26 @@
+// founder / editor roles: an editor's save waits for the founder's approval; only the founder approves; editors never pass isOwner
+const {DatabaseSync}=require('node:sqlite');
+(async()=>{const root=process.cwd();const mod=await import('file://'+root+'/functions/api/owner.js'),oa=await import('file://'+root+'/functions/_lib/owner_auth.js');
+let bad=[];const ok=(c,m)=>{if(!c)bad.push(m)};
+const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE counter (k TEXT PRIMARY KEY, n INTEGER)');
+const DB={prepare:q=>{const st=sql.prepare(q);let args=[];const o={bind:(...a)=>{args=a;return o},run:async()=>{st.run(...args);return {}},first:async()=>st.get(...args)||null,all:async()=>({results:st.all(...args)})};return o}};
+const env={DB,OWNER_USERS:JSON.stringify({'boss@x.com':'bosspass','ed@x.com':{password:'edpass',role:'editor'}})};
+const call=async(a,body,cookie,method)=>{const r=await mod.onRequest({request:new Request('http://x/api/owner?a='+a,{method:method||(body===undefined?'GET':'POST'),headers:{'Content-Type':'application/json',...(cookie?{Cookie:cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)}),env});const j=await r.json();const sc=r.headers.get('Set-Cookie');return {s:r.status,j,ck:sc?sc.split(';')[0]:null}};
+const L1=await call('login',{email:'boss@x.com',password:'bosspass'});ok(L1.j.ok&&L1.j.role==='founder','founder login '+JSON.stringify(L1.j));
+const L2=await call('login',{email:'ed@x.com',password:'edpass'});ok(L2.j.ok&&L2.j.role==='editor','editor login');
+const F=L1.ck,E=L2.ck;
+const reqOf=c=>new Request('http://x/',{headers:{Cookie:c}});
+ok(await oa.isOwner(reqOf(F),env),'founder isOwner');ok(!(await oa.isOwner(reqOf(E),env)),'editor must not be isOwner (diary/tarbiyat stay founder-only)');
+ok((await call('me',undefined,E)).j.role==='editor','me editor');
+const s1=await call('save',{k:'banner',v:{on:true,t:{en:'Hello'}}},E);ok(s1.j.ok&&s1.j.pending,'editor save pending '+JSON.stringify(s1));
+ok(!(await call('pub')).j.banner,'live site unchanged by editor');
+const me1=await call('me',undefined,F);ok(me1.j.pending===1&&me1.j.user==='boss','founder sees 1 pending '+JSON.stringify(me1.j));
+ok((await call('pending',{},E)).s===403,'editor cannot list pending');ok((await call('approve',{id:1},E)).s===403,'editor cannot approve');
+ok((await call('stats',undefined,E)).s===403,'editor no stats');
+const P=await call('pending',{},F);ok(P.j.list.length===1&&P.j.list[0].who==='ed@x.com'&&P.j.list[0].k==='banner','pending list');
+ok((await call('approve',{id:P.j.list[0].id},F)).j.ok,'approve');ok((await call('pub')).j.banner?.on===true,'live after approval');
+await call('save',{k:'ticker',v:{en:['x']}},E);const P2=await call('pending',{},F);await call('reject',{id:P2.j.list[0].id},F);
+ok(!(await call('pub')).j.ticker,'rejected change not live');ok((await call('pending',{},F)).j.list.length===0,'queue empty');
+ok((await call('save',{k:'banner',v:null},undefined)).s===401,'no cookie 401');
+const env2=JSON.parse(JSON.stringify({}));env.OWNER_USERS=JSON.stringify({'boss@x.com':'bosspass'});ok((await call('me',undefined,E)).j.ok===false,'removed editor loses access at once');
+console.log(bad.length?'FAIL '+bad.join(' | '):'PASS owner_roles');process.exit(bad.length?1:0)})();

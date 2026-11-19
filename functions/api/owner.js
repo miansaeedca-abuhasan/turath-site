@@ -6,12 +6,12 @@
 // Public part (a=pub): the site settings that visitors' browsers read (banner, news, ticker, hidden tiles, text corrections).
 // Private part: save settings, visitor numbers. Nothing else is stored; the password never leaves the server.
 const json = (o, s = 200, h = {}) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...h}});
-import {hmac, same, users, isOwner} from '../_lib/owner_auth.js';
+import {hmac, same, users, roleOf, makeToken, session} from '../_lib/owner_auth.js';
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-const authed = isOwner;
 const KEYS = {banner: 20000, news: 60000, ticker: 30000, hide: 4000, fixes: 120000};
 async function ensure(db) {
   await db.prepare('CREATE TABLE IF NOT EXISTS site_cfg (k TEXT PRIMARY KEY, v TEXT NOT NULL)').run();
+  await db.prepare('CREATE TABLE IF NOT EXISTS site_pending (id INTEGER PRIMARY KEY AUTOINCREMENT, k TEXT NOT NULL, v TEXT NOT NULL, who TEXT NOT NULL, t INTEGER NOT NULL)').run();
   await db.prepare('CREATE TABLE IF NOT EXISTS owner_fail (k TEXT PRIMARY KEY, n INTEGER NOT NULL, t INTEGER NOT NULL)').run();
 }
 
@@ -25,7 +25,11 @@ export async function onRequest({request, env}) {
       for (const r of (rs.results || [])) { try { o[r.k] = JSON.parse(r.v); } catch (e) {} }
       return json(o, 200, {'Cache-Control': 'public, max-age=60'});
     }
-    if (a === 'me') return json({ok: await authed(request, env), setup: Object.keys(users(env)).length > 0});
+    if (a === 'me') {
+      const s = await session(request, env), r = {ok: !!s, setup: Object.keys(users(env)).length > 0};
+      if (s) { r.role = s.role; r.user = s.user.split('@')[0]; if (s.role === 'founder') r.pending = (await db.prepare('SELECT COUNT(*) AS n FROM site_pending').first()).n; }
+      return json(r);
+    }
     if (request.method !== 'POST' && a !== 'stats') return json({error: 'method'}, 405);
     if (request.method === 'POST') {
       const o = request.headers.get('Origin');
@@ -44,21 +48,38 @@ export async function onRequest({request, env}) {
         return json({error: 'bad'}, 401);
       }
       await db.prepare("DELETE FROM owner_fail WHERE k = 'g'").run();
-      const id = hex(crypto.getRandomValues(new Uint8Array(12))), exp = now + 12 * 3600000;
-      const tok = id + '.' + exp + '.' + await hmac(env.OWNER_USERS + '|tk', id + '.' + exp);
-      return json({ok: true, user: mail.split('@')[0]}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=43200; HttpOnly; Secure; SameSite=Strict'});
+      const role = roleOf(env, mail) || 'editor', exp = now + 12 * 3600000, tok = await makeToken(env, role, mail, exp);
+      return json({ok: true, user: mail.split('@')[0], role}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=43200; HttpOnly; Secure; SameSite=Strict'});
     }
     if (a === 'logout') return json({ok: true}, 200, {'Set-Cookie': 'tk_owner=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'});
-    if (!(await authed(request, env))) return json({error: 'auth'}, 401);
+    const S = await session(request, env);
+    if (!S) return json({error: 'auth'}, 401);
+    const founder = S.role === 'founder';
+    if (a === 'pending' || a === 'approve' || a === 'reject') {
+      if (!founder) return json({error: 'forbidden'}, 403);
+      if (a === 'pending') { const rs = await db.prepare('SELECT id, k, v, who, t FROM site_pending ORDER BY id').all(); return json({list: (rs.results || []).map(x => ({id: x.id, k: x.k, v: JSON.parse(x.v), who: x.who, t: x.t}))}); }
+      const b = await request.json().catch(() => null), row = b && await db.prepare('SELECT k, v FROM site_pending WHERE id = ?').bind(+b.id).first();
+      if (!row) return json({error: 'gone'}, 404);
+      if (a === 'approve') await db.prepare('INSERT INTO site_cfg (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v').bind(row.k, row.v).run();
+      await db.prepare('DELETE FROM site_pending WHERE id = ?').bind(+b.id).run();
+      return json({ok: true});
+    }
     if (a === 'save') {
       const b = await request.json().catch(() => null);
       if (!b || !(b.k in KEYS)) return json({error: 'key'}, 400);
       const s = JSON.stringify(b.v === undefined ? null : b.v);
       if (s.length > KEYS[b.k]) return json({error: 'too big'}, 413);
+      if (!founder) {   // an editor never changes the live site: the change waits for the founder's approval
+        const n = (await db.prepare('SELECT COUNT(*) AS n FROM site_pending').first()).n;
+        if (n >= 100) return json({error: 'queue full'}, 429);
+        await db.prepare('INSERT INTO site_pending (k, v, who, t) VALUES (?, ?, ?, ?)').bind(b.k, s, S.user, Date.now()).run();
+        return json({ok: true, pending: true});
+      }
       await db.prepare('INSERT INTO site_cfg (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v').bind(b.k, s).run();
       return json({ok: true});
     }
     if (a === 'stats') {
+      if (!founder) return json({error: 'forbidden'}, 403);
       const r = await db.prepare("SELECT n FROM counter WHERE k = 'visits'").first();
       const rs = await db.prepare("SELECT k, n FROM counter WHERE k LIKE 'c:%' ORDER BY n DESC LIMIT 200").all();
       return json({n: r ? r.n : 0, c: (rs.results || []).map(x => [x.k.slice(2), x.n])});
