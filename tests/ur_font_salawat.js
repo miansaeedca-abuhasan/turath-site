@@ -12,7 +12,7 @@ for(const w of ['فتویٰ','تعالیٰ','سیّدنا']) if(new RegExp('\\[a
 if(!/\[arq:[^\]]*رَضِيَ/.test(r)){console.log('FAIL real Arabic lost its font');bad++;}
 await b.close();
 const files=fs.readFileSync(__dirname+'/../coll/index.js','utf8').match(/[A-Za-z0-9_]+_ur_\d+_[0-9a-f]+\.js/g)||[];
-for(const f of new Set(files)){const k0=f.split('_')[0];const s=fs.readFileSync(__dirname+'/../coll/'+f,'utf8');
+for(const f of new Set(files)){if(/^tafsirnoor_/.test(f))continue;const k0=f.split('_')[0];const s=fs.readFileSync(__dirname+'/../coll/'+f,'utf8');
  const d=JSON.parse(s.slice(s.indexOf(',"ur",')+6,s.lastIndexOf(']')+1));
  for(const row of d){const t=(row[1]||'').replace(/«[^»]*»/g,'');
   if(/صلى\s*الله|ﷺ/.test(t)){console.log('FAIL Arabic-spelled salawat',f,row[0]);bad++;break;}

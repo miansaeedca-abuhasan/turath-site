@@ -1263,10 +1263,13 @@ const AYR=/([ؕ-ؚۖ-ۜ]*)\s*([۰-۹٠-٩]+)\s*([ؕ-ؚۖ-ۜ]*)/g;
 const AYN=d=>parseInt(d.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-0x6f0),10);
 function ayDig(n){const s=String(n);return ui==='ar'?s.replace(/\d/g,c=>String.fromCharCode(0x660+(+c))):s;}
 function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];let i=0,m;AYR.lastIndex=0;
-  while((m=AYR.exec(seg))){const n=AYN(m[2]),rest=seg.slice(AYR.lastIndex).replace(/[\s﴾]+/g,'');out.push(seg.slice(i,m.index)+m[1]+m[3]);i=AYR.lastIndex;if(!n||!rest)continue;out.push(mk(n));}
+  while((m=AYR.exec(seg))){if(m[3]&&/^[\u0660-\u0669]+$/.test(m[2])){out.push(seg.slice(i,m.index)+m[1]+' '+m[3]);i=AYR.lastIndex;continue;}   /* an Arabic-Indic digit carrying a waqf mark (١ۙ ١ؕ) is the old Quran-font carrier of the mark, not a verse number */
+    const n=AYN(m[2]),rest=seg.slice(AYR.lastIndex).replace(/[\s﴾]+/g,'');out.push(seg.slice(i,m.index)+m[1]+m[3]);i=AYR.lastIndex;if(!n||!rest)continue;out.push(mk(n));}
   out.push(seg.slice(i));return out;}
 function AYCP(t){return t&&t.indexOf('﴿')>=0?t.replace(/﴿[^﴾]*﴾/g,v=>ayFix(v,n=>' ('+n+') ').join('')):t;}
 function rich0(text,lang){
+  /* the verse number at the end of a translated verse (⟦12⟧): a small circle in the verse colour, as in the printed book */
+  if(text&&text.indexOf('\u27e6')>=0){const o=[];text.split(/\u27e6(\d+)\u27e7/).forEach((sg,i)=>{if(i%2)o.push(el('span',{class:'ayn ud','data-n':sg},ayDig(+sg)));else if(sg)o.push(...rich0(sg,lang));});return o;}
   const UL=/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9]/;
   /* Urdu: a word is Arabic only when it is really vocalized (2 or more marks and about half its letters), or has an Arabic-only letter with a mark; an Urdu word with a single zer/pesh/zabar (اُمت، اندازِ، سیّدالاولین) stays in the Urdu font */
   const tashN=w=>(w.match(/[\u064b-\u0652\u0670]/g)||[]).length,letN=w=>(w.match(/[\u0621-\u064a\u0671-\u06d3]/g)||[]).length;
@@ -1358,7 +1361,7 @@ const APP_HOME='https://turathkhairalquroon.com/';
 function appLink(h){const host=location.hostname||'';const hosted=/^https?:$/.test(location.protocol)&&!/claude|anthropic|usercontent|localhost|^127\./.test(host);
   return hosted?location.origin+location.pathname.replace(/index\.html$/,'')+'?hl='+ui+(h||''):APP_HOME;}
 // colour / reference marks of the site's own text (private-use characters) must never reach a copy: other apps show them as boxes or little faces
-const CLN=t=>(t||'').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069]/g,'');
+const CLN=t=>(t||'').replace(/\s*\u27e6(\d+)\u27e7/g,' ($1)').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069]/g,'');
 window.CLN=CLN;
 // a small choice under the copy / share button: the hadith only, or with its fawaid / explanation / extra information
 function copyPick(btn,has,go){
