@@ -4,7 +4,7 @@ const {DatabaseSync}=require('node:sqlite');
 let bad=[];const ok=(c,m)=>{if(!c)bad.push(m)};
 const sql=new DatabaseSync(':memory:');sql.exec('CREATE TABLE counter (k TEXT PRIMARY KEY, n INTEGER)');
 const DB={prepare:q=>{const st=sql.prepare(q);let args=[];const o={bind:(...a)=>{args=a;return o},run:async()=>{st.run(...args);return {}},first:async()=>st.get(...args)||null,all:async()=>({results:st.all(...args)})};return o}};
-const env={DB,OWNER_USERS:JSON.stringify({'boss@x.com':'bosspass','ed@x.com':{password:'edpass',role:'editor'}})};
+const env={DB,OWNER_USERS:'{"boss@x.com":"bosspass"}',EDITOR_USERS:'{"ed@x.com":"edpass"},{"ed2@x.com":"pw2"},'};
 const call=async(a,body,cookie,method)=>{const r=await mod.onRequest({request:new Request('http://x/api/owner?a='+a,{method:method||(body===undefined?'GET':'POST'),headers:{'Content-Type':'application/json',...(cookie?{Cookie:cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)}),env});const j=await r.json();const sc=r.headers.get('Set-Cookie');return {s:r.status,j,ck:sc?sc.split(';')[0]:null}};
 const L1=await call('login',{email:'boss@x.com',password:'bosspass'});ok(L1.j.ok&&L1.j.role==='founder','founder login '+JSON.stringify(L1.j));
 const L2=await call('login',{email:'ed@x.com',password:'edpass'});ok(L2.j.ok&&L2.j.role==='editor','editor login');
@@ -22,5 +22,7 @@ ok((await call('approve',{id:P.j.list[0].id},F)).j.ok,'approve');ok((await call(
 await call('save',{k:'ticker',v:{en:['x']}},E);const P2=await call('pending',{},F);await call('reject',{id:P2.j.list[0].id},F);
 ok(!(await call('pub')).j.ticker,'rejected change not live');ok((await call('pending',{},F)).j.list.length===0,'queue empty');
 ok((await call('save',{k:'banner',v:null},undefined)).s===401,'no cookie 401');
-const env2=JSON.parse(JSON.stringify({}));env.OWNER_USERS=JSON.stringify({'boss@x.com':'bosspass'});ok((await call('me',undefined,E)).j.ok===false,'removed editor loses access at once');
+const L3=await call('login',{email:'ed2@x.com',password:'pw2'});ok(L3.j.ok&&L3.j.role==='editor','second editor (comma-separated blocks) can sign in');
+env.EDITOR_USERS='{"ed2@x.com":"pw2"}';ok((await call('me',undefined,E)).j.ok===false,'removed editor loses access at once');ok((await call('me',undefined,L3.ck)).j.ok===true,'other editor unaffected');
+env.EDITOR_USERS='';ok((await call('login',{email:'ed2@x.com',password:'pw2'})).j.ok!==true,'no editors: login refused');
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS owner_roles');process.exit(bad.length?1:0)})();

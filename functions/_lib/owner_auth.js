@@ -11,12 +11,17 @@ export async function same(a, b) {
   let d = 0; for (let i = 0; i < x.length; i++) d |= x.charCodeAt(i) ^ y.charCodeAt(i);
   return d === 0;
 }
-// OWNER_USERS value per e-mail: either "password" (= founder) or {"password": "...", "role": "founder" | "editor"}
-const pwOf = v => typeof v === 'string' ? v : (v && typeof v === 'object' && typeof v.password === 'string' ? v.password : '');
-const roleOfV = v => v && typeof v === 'object' && v.role === 'editor' ? 'editor' : 'founder';
-const parse = env => { try { const u = JSON.parse(env.OWNER_USERS || '{}'); return u && typeof u === 'object' ? u : {}; } catch (e) { return {}; } };
-export const users = env => { const u = parse(env), o = {}; for (const k in u) { const p = pwOf(u[k]); if (p) o[k.trim().toLowerCase()] = p; } return o; };
-export const roleOf = (env, mail) => { const u = parse(env); for (const k in u) if (k.trim().toLowerCase() === mail && pwOf(u[k])) return roleOfV(u[k]); return null; };
+// OWNER_USERS = founders, EDITOR_USERS = everyone else. Each is plain text like {"a@x.com":"password","b@x.com":"password"}
+// (several {...},{...} blocks separated by commas, and a trailing comma, are accepted too).
+const parse = txt => {
+  const t = String(txt || '').trim(); if (!t) return {};
+  let v; try { v = JSON.parse(t); } catch (e) { try { v = JSON.parse('[' + t.replace(/,\s*$/, '') + ']'); } catch (e2) { return {}; } }
+  const o = {}; for (const b of Array.isArray(v) ? v : [v]) if (b && typeof b === 'object') for (const k in b) if (typeof b[k] === 'string' && b[k]) o[k.trim().toLowerCase()] = b[k];
+  return o;
+};
+const FO = env => parse(env.OWNER_USERS), ED = env => parse(env.EDITOR_USERS);
+export const users = env => Object.assign({}, ED(env), FO(env));
+export const roleOf = (env, mail) => Object.prototype.hasOwnProperty.call(FO(env), mail) ? 'founder' : Object.prototype.hasOwnProperty.call(ED(env), mail) ? 'editor' : null;
 const toHex = s => hex(enc.encode(s)), fromHex = h => { try { return new TextDecoder().decode(new Uint8Array((h.match(/../g) || []).map(x => parseInt(x, 16)))); } catch (e) { return ''; } };
 // session cookie: id.exp.role.userhex.sig  (role f = founder, e = editor); the old 3-part form (id.exp.sig) counts as founder
 export async function makeToken(env, role, mail, exp) {
@@ -25,7 +30,7 @@ export async function makeToken(env, role, mail, exp) {
 }
 export async function session(req, env) {
   try {
-    if (!env.OWNER_USERS || !Object.keys(users(env)).length) return null;
+    if (!env.OWNER_USERS || !Object.keys(FO(env)).length) return null;
     const m = (req.headers.get('Cookie') || '').match(/(?:^|;\s*)tk_owner=([^;]+)/), p = m ? m[1].split('.') : [];
     if (p.length === 3) { if (!(+p[1] > Date.now())) return null; return (await same(await hmac(env.OWNER_USERS + '|tk', p[0] + '.' + p[1]), p[2])) ? {role: 'founder', user: ''} : null; }
     if (p.length !== 5 || !(+p[1] > Date.now()) || (p[2] !== 'e' && p[2] !== 'f')) return null;
