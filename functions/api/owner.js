@@ -2,11 +2,11 @@
 // Settings (Cloudflare Pages -> Settings -> Variables and Secrets), all set by the owner himself:
 //   OWNER_USERS = JSON text (encrypted secret): {"first@mail.com":"password one","second@mail.com":"password two"}
 //                 (each e-mail has its own password)
-// Login = an allowed e-mail + that e-mail's password; the server then gives a signed, HttpOnly cookie (12 hours).
+// Login = an allowed e-mail + that e-mail's password; the server then gives a signed, HttpOnly cookie (stays signed in until sign-out).
 // Public part (a=pub): the site settings that visitors' browsers read (banner, news, ticker, hidden tiles, text corrections).
 // Private part: save settings, visitor numbers. Nothing else is stored; the password never leaves the server.
 const json = (o, s = 200, h = {}) => new Response(JSON.stringify(o), {status: s, headers: {'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...h}});
-import {hmac, same, users, roleOf, makeToken, session} from '../_lib/owner_auth.js';
+import {hmac, same, users, roleOf, makeToken, session, sessionExpiry, SESSION_SECONDS} from '../_lib/owner_auth.js';
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 const KEYS = {banner: 20000, news: 60000, ticker: 30000, hide: 4000, fixes: 120000};
 async function ensure(db) {
@@ -48,8 +48,8 @@ export async function onRequest({request, env}) {
         return json({error: 'bad'}, 401);
       }
       await db.prepare("DELETE FROM owner_fail WHERE k = 'g'").run();
-      const role = roleOf(env, mail) || 'editor', exp = now + 12 * 3600000, tok = await makeToken(env, role, mail, exp);
-      return json({ok: true, user: mail.split('@')[0], role}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=43200; HttpOnly; Secure; SameSite=Strict'});
+      const role = roleOf(env, mail) || 'editor', tok = await makeToken(env, mail, sessionExpiry());
+      return json({ok: true, user: mail.split('@')[0], role}, 200, {'Set-Cookie': 'tk_owner=' + tok + '; Path=/; Max-Age=' + SESSION_SECONDS + '; HttpOnly; Secure; SameSite=Strict'});
     }
     if (a === 'logout') return json({ok: true}, 200, {'Set-Cookie': 'tk_owner=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Strict'});
     const S = await session(request, env);

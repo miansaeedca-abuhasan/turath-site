@@ -8,7 +8,7 @@ const MIME={'.html':'text/html;charset=utf-8','.png':'image/png','.js':'text/jav
 (async()=>{
  const mod=await import('file://'+root+'/functions/api/tarbiyat.js'),oa=await import('file://'+root+'/functions/_lib/owner_auth.js');
  const env={DB:d1(),OWNER_USERS:JSON.stringify({abu:'pw'})};
- const exp=Date.now()+3600000,cookie='tk_owner=x.'+exp+'.'+await oa.hmac(env.OWNER_USERS+'|tk','x.'+exp);
+ const exp=Date.now()+3600000,cookie='tk_owner='+await oa.makeToken(env,'abu',exp);
  const srv=http.createServer(async(q,s)=>{const u=q.url.split('?')[0];
   if(u==='/api/tarbiyat'){let body='';for await(const c of q)body+=c;const h={'CF-Connecting-IP':'1.2.3.4'};if(q.headers['x-owner'])h.Cookie=cookie;const r=await mod.onRequest({request:new Request('http://x/api/tarbiyat',{method:q.method,headers:h,body:q.method==='POST'?body:undefined}),env});s.writeHead(r.status,{'Content-Type':'application/json'});s.end(await r.text());return}
   const f=path.join(root,u==='/'?'index.html':u);if(!f.startsWith(root)||!fs.existsSync(f)||fs.statSync(f).isDirectory()){s.writeHead(404);s.end();return}

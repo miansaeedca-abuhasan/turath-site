@@ -23,22 +23,25 @@ const FO = env => parse(env.OWNER_USERS), ED = env => parse(env.EDITOR_USERS);
 export const users = env => Object.assign({}, ED(env), FO(env));
 export const roleOf = (env, mail) => Object.prototype.hasOwnProperty.call(FO(env), mail) ? 'founder' : Object.prototype.hasOwnProperty.call(ED(env), mail) ? 'editor' : null;
 const toHex = s => hex(enc.encode(s)), fromHex = h => { try { return new TextDecoder().decode(new Uint8Array((h.match(/../g) || []).map(x => parseInt(x, 16)))); } catch (e) { return ''; } };
-// session cookie: id.exp.role.userhex.sig  (role f = founder, e = editor); the old 3-part form (id.exp.sig) counts as founder
-export async function makeToken(env, role, mail, exp) {
-  const id = hex(crypto.getRandomValues(new Uint8Array(12))), body = id + '.' + exp + '.' + (role === 'editor' ? 'e' : 'f') + '.' + toHex(mail);
-  return body + '.' + await hmac(env.OWNER_USERS + '|tk', body);
+// Session cookie: id.exp.userhex.sig, signed with that person's OWN password. So it lasts until he signs out (the longest a browser keeps a cookie, about 400 days),
+// ends at once when his e-mail is removed or his password changes, and adding/removing other people never signs anyone else out.
+const LIFE = 400 * 86400000;
+export const SESSION_SECONDS = LIFE / 1000;
+export const sessionExpiry = () => Date.now() + LIFE;
+const secretOf = (env, mail) => { const F = FO(env), E = ED(env); return Object.prototype.hasOwnProperty.call(F, mail) ? F[mail] : Object.prototype.hasOwnProperty.call(E, mail) ? E[mail] : null; };
+export async function makeToken(env, mail, exp) {
+  const pw = secretOf(env, mail); if (pw === null) return '';
+  const body = hex(crypto.getRandomValues(new Uint8Array(12))) + '.' + exp + '.' + toHex(mail);
+  return body + '.' + await hmac(pw + '|tk', body);
 }
 export async function session(req, env) {
   try {
-    if (!env.OWNER_USERS || !Object.keys(FO(env)).length) return null;
     const m = (req.headers.get('Cookie') || '').match(/(?:^|;\s*)tk_owner=([^;]+)/), p = m ? m[1].split('.') : [];
-    if (p.length === 3) { if (!(+p[1] > Date.now())) return null; return (await same(await hmac(env.OWNER_USERS + '|tk', p[0] + '.' + p[1]), p[2])) ? {role: 'founder', user: ''} : null; }
-    if (p.length !== 5 || !(+p[1] > Date.now()) || (p[2] !== 'e' && p[2] !== 'f')) return null;
-    if (!(await same(await hmac(env.OWNER_USERS + '|tk', p.slice(0, 4).join('.')), p[4]))) return null;
-    const user = fromHex(p[3]);
-    // the role must still match the current OWNER_USERS (an editor made founder, or removed, takes effect at once)
-    const now = roleOf(env, user); if (!now || (now === 'editor') !== (p[2] === 'e')) return null;
-    return {role: now, user};
+    if (p.length !== 4 || !(+p[1] > Date.now())) return null;
+    const user = fromHex(p[2]), pw = secretOf(env, user), role = roleOf(env, user);
+    if (pw === null || !role) return null;   // removed accounts are out immediately
+    if (!(await same(await hmac(pw + '|tk', p.slice(0, 3).join('.')), p[3]))) return null;
+    return {role, user};
   } catch (e) { return null; }
 }
 // true only for a founder session (editors never pass)

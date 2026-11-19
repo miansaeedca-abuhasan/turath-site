@@ -24,5 +24,10 @@ ok(!(await call('pub')).j.ticker,'rejected change not live');ok((await call('pen
 ok((await call('save',{k:'banner',v:null},undefined)).s===401,'no cookie 401');
 const L3=await call('login',{email:'ed2@x.com',password:'pw2'});ok(L3.j.ok&&L3.j.role==='editor','second editor (comma-separated blocks) can sign in');
 env.EDITOR_USERS='{"ed2@x.com":"pw2"}';ok((await call('me',undefined,E)).j.ok===false,'removed editor loses access at once');ok((await call('me',undefined,L3.ck)).j.ok===true,'other editor unaffected');
+// sessions last until sign-out: a long-lived cookie, and adding/removing/ changing OTHER people never signs anyone out
+ok(+(L1.ck&&1)===1,'cookie');const exp=+decodeURIComponent(F.split('=')[1]).split('.')[1];ok(exp-Date.now()>300*86400000,'session lasts months, not hours');
+env.OWNER_USERS='{"boss@x.com":"bosspass"},{"boss2@x.com":"b2"}';ok((await call('me',undefined,F)).j.ok===true,'founder stays in after another founder is added');
+env.EDITOR_USERS='{"ed2@x.com":"pw2"},{"n1@x.com":"p1"}';ok((await call('me',undefined,F)).j.ok===true&&(await call('me',undefined,L3.ck)).j.ok===true,'adding an editor signs nobody out');
+env.EDITOR_USERS='{"ed2@x.com":"CHANGED"},{"n1@x.com":"p1"}';ok((await call('me',undefined,L3.ck)).j.ok===false,'password change ends that session');
 env.EDITOR_USERS='';ok((await call('login',{email:'ed2@x.com',password:'pw2'})).j.ok!==true,'no editors: login refused');
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS owner_roles');process.exit(bad.length?1:0)})();

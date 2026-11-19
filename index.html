@@ -10086,6 +10086,8 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const go = () => { badge(o); fetch('api/owner?a=me', {cache: 'no-store'}).then(r => r.json()).then(j => { if (!j.ok) unmark(); else mark(j.user || o.n, j.role, j.pending); }).catch(() => {}); };
     document.body ? go() : document.addEventListener('DOMContentLoaded', go);
   })();
+  // a removed account is signed out within a minute even on an open page (and at once on its next action)
+  setInterval(() => { if (!lsGet()) return; fetch('api/owner?a=me', {cache: 'no-store'}).then(r => r.json()).then(j => { if (!j.ok) { unmark(); if (location.hash === '#/owner') show(); } else if (lsGet()) mark(j.user || lsGet().n, j.role, j.pending); }).catch(() => {}); }, 60000);
   const pick = o => o && typeof o === 'object' ? (o[ui] || o.en || o.ur || '') : '';
   const banner = v => {
     const slot = el('div', {}); v.append(slot);
