@@ -4774,9 +4774,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   window.COLITE = list => { C.lite = list; };
   async function liteIndex() { if (C.idx) return C.idx; if (!C.lite) { try { await once('lite', 'coll/lite.js'); } catch (e) { return index(); } } return C.lite || index(); }
   const bookOf = k => (C.idx || []).find(b => b.key === k);
+  // a phone may still hold an older copy of coll/index.js (file names that no longer exist): when a data file cannot be loaded, the index is fetched fresh once and the new file names are used
+  async function freshIndex(b) { try { await load1('coll/index.js?r=' + Date.now()); const nb = bookOf(b.key); if (nb && nb !== b) { b.files = nb.files; b.sections = nb.sections; b.count = nb.count; } } catch (e) {} }
   async function needRange0(b, lang, from, to) {
     const fs = (b.files[lang] || []).filter(f => f[1] >= from && f[0] <= to);
-    await Promise.allSettled(fs.map(f => once(f[2], 'coll/' + f[2])));
+    const rs = await Promise.allSettled(fs.map(f => once(f[2], 'coll/' + f[2])));
+    if (rs.some(r => r.status === 'rejected') && !b._fresh) {
+      b._fresh = 1; await freshIndex(b);
+      const fs2 = (b.files[lang] || []).filter(f => f[1] >= from && f[0] <= to);
+      await Promise.allSettled(fs2.map(f => once(f[2], 'coll/' + f[2])));
+    }
   }
   // the primary translation language and any extra ones the reader switched on (Urdu + English ...) are loaded together
   async function needRange(b, lang, from, to) {
