@@ -13,7 +13,7 @@ W={};FIX=[]
 for f in zips:
     z=zipfile.ZipFile(f)
     for n in z.namelist():
-        if not n.endswith('.json'):continue
+        if not n.endswith('.json') or 'hadith_' not in n:continue   # chapter-title files (chapter_NNN) are not used here
         d=json.loads(z.read(n));num=int(d['number']);L=[[w['word'],round(w['start'],2),round(w['end'],2)] for w in d['words']]
         k=1
         while k<len(L):
