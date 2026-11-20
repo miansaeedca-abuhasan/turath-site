@@ -8,7 +8,7 @@ let splitRuns=0,firstRow=0;
 rows.forEach(r=>{const L=r[1].split('\n').slice(1);for(let k=0;k+1<L.length;k++)if(isA(L[k])&&isA(L[k+1])&&(NUM.test(L[k])||NUM.test(L[k+1])||/[﴿﴾]/.test(L[k]+L[k+1]))){splitRuns++;if(!firstRow)firstRow=r[0]}});
 if(splitRuns)bad.push('Arabic ayah block still cut into several paragraphs: '+splitRuns+' (first row '+firstRow+')');
 // the known example: Baqarah 270-271 (row 612): one Arabic paragraph, then one translation paragraph
-const L=rows[611][1].split('\n');const i=L.findIndex(x=>x.startsWith('﴿وَ مَاۤ اَنْفَقْتُمْ'));
+const L=rows[611][1].split('\n');const i=L.findIndex(x=>x.startsWith('﴿وَمَاۤ اَنْفَقْتُمْ'));
 if(i<0)bad.push('row 612 block missing');else{
  if(!/۰۰۲۷۱﴾$/.test(L[i])||!/۰۰۲۷۰/.test(L[i]))bad.push('row 612 block not whole');
  if(!/^اور تم کسی قسم کا خرچ/.test(L[i+1])||!/گناہ دور کر دے گا/.test(L[i+1])||!/خبر رکھتا ہے$/.test(L[i+1])||L.length!==i+2)bad.push('row 612 translation not one paragraph');}
