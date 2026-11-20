@@ -1694,6 +1694,7 @@ async function showBookList(cat,aut,authors,topics){
   {const JK={jamik:['الجامع الكامل','الجامع الکامل','Al-Jami al-Kamil'],jami:['تلخيص الجامع الكامل','تلخیص الجامع الکامل','Talkhis al-Jami al-Kamil']};
    rows.forEach(r=>{const t=JK[r.key];if(t){r.ar=t[0];r.ur=t[1];r.en=t[2];r.sub='الجامع الكامل في الحديث الصحيح الشامل (المرتب على أبواب الفقه)';r.auTxt='محمد عبد الله الأعظمي «المعروف بـالضياء» (ت 1441 ھ )';}});
    const ik=rows.findIndex(r=>r.key==='jamik'),ij=rows.findIndex(r=>r.key==='jami');if(ik>=0&&ij>=0&&ik>ij){const x=rows.splice(ik,1)[0];rows.splice(ij,0,x);}}
+  const JAMI_FOLDER_EXTRA=new Set(['silsila']);   // Urdu translated books that are not taken from Al-Jami but are listed in its «مترجم کتب» folder at the owner's request
   const subjRows=[];const takeSubj=()=>{};   // Seerah, Fazail, Fitan, Tuhfa stay in the list (they were hidden and could not be found)
   const nJ=rows.length;
   colls.forEach(c=>rows.push({jm:c.jami?Math.min(...(Array.isArray(c.jami)?c.jami:Object.values(c.jami)).map(Number)):0,lg:c.langs,tr:ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui),key:c.key,sub:c.sub?(ui==='ar'?(c.sub.ar||''):(c.sub[ui]||(ui==='ur'?c.sub.ur:(c.sub.en||'')))):'',grp:c.grp,au:c.author,pub:c.pub,ar_only:(c.langs||[]).length<2,en:c.en,ur:c.ur,ar:c.ar,n:c.count,ext:c.ext,open:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash='#/s/'+c.key;},resume:()=>{if(c.ext)return window.open(c.ext+'#/s/'+c.key,'_blank');location.hash=hbLast(c.key)||'#/s/'+c.key+'/'+(c.sections?c.sections[0][0]:c.s0);}}));
@@ -1744,7 +1745,7 @@ async function showBookList(cat,aut,authors,topics){
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
       list.replaceChildren(...rows.slice(0,nJ).map(r=>rowEl(r)),g);return;}
-    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const allB0=!q&&!cat&&!aut,mine=mineR.map((r,i)=>rowEl(r,allB0||n!=null?r.no:i+1));   // inside a category / author the numbers run 1,2,3 ... of that list
+    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut)||(aut==='jami'&&JAMI_FOLDER_EXTRA.has(r.key)))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const allB0=!q&&!cat&&!aut,mine=mineR.map((r,i)=>rowEl(r,allB0||n!=null?r.no:i+1));   // inside a category / author the numbers run 1,2,3 ... of that list
     const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
     if(allB&&RC&&n==null){const out=[];for(let k=0;k<=5;k++){out.push(...mine.filter((_,i)=>rk(mineR[i].cat)===k));const g=rbAll.filter(x=>rk(+x[2])===k);if(g.length)out.push(...RB.rows(RC,g));}fillList(list,out);return;}
     const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
