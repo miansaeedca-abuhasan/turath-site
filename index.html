@@ -378,6 +378,11 @@ body.withplayer .resume.float{display:none}
 .hbrow .ct.arname{font-family:var(--arabic);font-size:1.2rem}
 .totcard{text-align:center;padding:.8rem 1rem}.totn{font:700 1.35rem/1.8 var(--urdu);color:var(--accent)}.totnote{font-size:.8rem;opacity:.8}
 .atn{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.5rem}.atn .btn{min-width:3rem;text-align:center}.atx{font-size:1.25rem;line-height:2.2}
+/* Index of hadith openings (atraf): on the website (wide screens) the cards stand in a grid, 3 in a line on big screens, 2 on medium ones; the phone / app keeps its single column and sizes */
+@media (min-width:820px){#list div:has(>article.atraf){display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;align-items:stretch}#list div:has(>article.atraf)>*:not(.atraf){grid-column:1/-1}
+article.atraf{margin:0;display:flex;flex-direction:column;padding:.85rem 1rem .8rem;border:1px solid var(--line,#d9d2c3);border-radius:.9rem;transition:border-color .15s,box-shadow .15s}article.atraf:hover{border-color:var(--accent,#0b5d4b);box-shadow:0 2px 12px rgba(11,93,75,.12)}
+article.atraf .atx{font-size:1.12rem;line-height:2.1;flex:1 1 auto}article.atraf .atn{margin-top:.5rem;padding-top:.5rem;border-top:1px dashed var(--line,#d9d2c3)}}
+@media (min-width:1500px){#list div:has(>article.atraf){grid-template-columns:repeat(3,minmax(0,1fr))}}
 .hbgrp{margin:1.2rem .3rem .4rem;color:var(--accent);font-size:1.05rem}
 .tiles.t4{grid-template-columns:repeat(4,1fr)}
 .hbrow .sar{font-size:1.2rem;line-height:1.5;max-width:40%;text-align:end}
