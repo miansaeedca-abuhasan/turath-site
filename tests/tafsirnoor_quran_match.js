@@ -11,4 +11,6 @@ ck(/الْعٰلَمِيْنَۙ۰۰۱/.test(R(3))||/۰۰۱﴾/.test(R(3)),'Fati
 let ayahs=0,carrier=0;for(const t of Object.values(rows))for(const b of t.match(/﴿[^﴾]*﴾/g)||[]){ayahs++;if(/[ؐؑؒ]۰۰/.test(b))carrier++}
 ck(ayahs>25000,'ayah blocks count '+ayahs);
 ck(carrier<=35,'old font end-marks (ؒ ؑ) before ayah number: '+carrier);
+ck(/\(Law of Heritence\)/.test(R(3375)),'English words of the printed book stay (owner ruling: only emails and stray glyph letters are removed)');
+ck(!/@/.test(Object.values(rows).join('')+idx),'no e-mail address anywhere');
 if(bad)process.exit(1);console.log('PASS tafsirnoor_quran_match');
