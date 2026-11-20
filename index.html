@@ -5111,7 +5111,22 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (tkNum) { const kl = xf.k.split('\n').map(t => t.replace(/^\s*\(\d+\)\s*/, '')).filter(t => t.trim()); if (d.grade && kl.length) { kl[0] = String(d.grade).replace(/\s*\n\s*/g, ' ').replace(/[:：]\s*$/, '') + ': ' + kl[0]; if (gEl) gEl.remove(); }
         bx().append(tkRow(kl.map((t, i) => i === 0 && d.grade ? tint(paraEl(t, lang), d.grade) : paraEl(t, lang)), lang, b)); }
       const noTk = t => tkNum ? t.replace(new RegExp('\\s*\\(' + tkNum + '\\)\\s*$'), '') : t;
-      bx().append(trRow(b, lang), el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras();
+      if (xf && !Array.isArray(xf) && xf.u2 && b.trn2) {
+        // a second Urdu translation of the same book (its own translator, with his notes): two tabs, the choice is kept for the other hadith
+        const nmOf = o => o ? (o[ui] || o.ur || '') : '', SP = [{id: lang, text: d.content.translation[lang][0], nm: '', f: null}, {id: 'u2', text: xf.u2, nm: nmOf(b.trn2), f: xf.f2}];
+        let pref = ''; try { pref = localStorage['trtab_' + b.key] || ''; } catch (e) {}
+        const cur0 = SP.some(p => p.id === pref) ? pref : lang, wrap = el('div', {class: 'trwrap'}), bar = el('span', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
+        const show = id => { SP.forEach(p => { pan[p.id].hidden = p.id !== id; btn[p.id].classList.toggle('on', p.id === id); btn[p.id].setAttribute('aria-selected', String(p.id === id)); }); };
+        wrap._show = show;
+        SP.forEach(p => { const pn = el('section', {class: 'trpanel ' + p.id, lang, dir: DIR(lang), hidden: ''});
+          pn.append(el('div', {class: 'tr'}, ...p.text.split('\n').filter(t => t.trim()).map(t => paraEl(p.id === lang ? noTk(t) : t, lang))));
+          if (p.f) pn.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), by: p.nm ? (({ur: 'مترجم', ar: 'المترجم', en: 'Translator'})[ui] || 'Translator') + ': ' + p.nm : '', nodes: p.f.split('\n').filter(t => t.trim()).map(t => paraEl(t, lang)), lang}]));
+          pan[p.id] = pn; box.append(pn);
+          btn[p.id] = el('button', {class: 'trbtn ' + p.id, type: 'button', role: 'tab', lang, on: {click: () => { try { localStorage['trtab_' + b.key] = p.id; } catch (e) {} document.querySelectorAll('.trwrap').forEach(w => w._show && w._show(p.id)); }}}, p.nm || LNAME[lang] || lang);
+          bar.append(btn[p.id]); });
+        wrap.append(el('div', {class: 'trrow'}, el('span', {class: 'trlab'}, T('pTr') + ' :'), bar), box); bx().append(wrap); show(cur0); addExtras();
+      } else {
+      bx().append(trRow(b, lang), el('div', {class: 'tr'}, ...d.content.translation[lang][0].split('\n').filter(x => x.trim()).map(x => paraEl(noTk(x), lang)))); addExtras(); }
       if (xf && !Array.isArray(xf) && xf.f) c.append(...foldTabs(b, n, [{k: 'b', label: T('pBen'), nodes: xf.f.split('\n').filter(t => t.trim() && !/^§\s*فوائد\s*$/.test(t)).map(t => /(^|\n)\(\d+\)/.test(xf.f) ? FN2(paraEl(t, lang)) : paraEl(t, lang)), lang}])); }
     else if (lang) c.append(el('p', {class: 'note'}, b.key === 'hifzhadith' ? (HFM[ui] || HFM.en) : T('cLangMissing')));
     // footer of the compiler under each item (شذرات الذهب: Sahaba / Salaf; Fazail as-Sahaba: Sahaba)
