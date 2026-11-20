@@ -14,13 +14,13 @@ const r=await p.evaluate(async()=>{
  out.sym=/[ﷺﷻؓؒؑ]/.test(all);out.arDigit=(ur.map(r=>r[1]).join('')).match(/[٠-٩]/g)?.length||0;
  out.hazrat=(ur.map(r=>r[1]).join('')).match(/حضرت\s+\S+\s+رضی/g)?.length||0;
  out.dbl=ar.filter(r=>/\(\(|\)\)/.test(r[1])).length;out.nofull=ar.filter(r=>!/[.»۔؟!:]$/.test(r[1])).length;
- out.latin=ar.filter(r=>/[A-Za-z]/.test(r[1])).length;
+ out.latin=ar.filter(r=>/[A-Za-z]/.test(r[1])).length;out.latinUr=ur.filter(r=>/[A-Za-z@]/.test([r[1],...Object.values(r[3]||{})].join(' '))).length;
  out.first=ur[0][1].slice(0,40);out.firstAr=ar[0][1].slice(0,30);out.last=ur[ur.length-1][1].slice(0,30);
  out.wrong471=ur.filter(r=>/نبی کریم رضی اللہ عنہ/.test(r[1])).length;
  return out});
 ck(r.e.count===4117&&r.nar===4117&&r.nur===4117,'counts '+JSON.stringify([r.e.count,r.nar,r.nur]));
 ck(r.seq,'ids sequential');ck(!r.sym,'honorific symbols');ck(r.arDigit===0,'arabic-indic digits '+r.arDigit);ck(r.hazrat===0,'«حضرت X رضی» left '+r.hazrat);
-ck(r.dbl===0,'double brackets in Arabic');ck(r.nofull===0,'Arabic without full stop '+r.nofull);ck(r.latin===0,'latin in Arabic');ck(r.wrong471===0,'wrong honorific for the Prophet');
+ck(r.dbl===0,'double brackets in Arabic');ck(r.nofull===0,'Arabic without full stop '+r.nofull);ck(r.latin===0,'latin in Arabic');ck(r.latinUr===0,'English letters in Urdu text '+r.latinUr);ck(r.wrong471===0,'wrong honorific for the Prophet');
 ck(r.e.secs===28&&r.e.sec0[2]===1&&r.e.secN[3]===4117,'sections');
 ck(/^عبید اللہ بن مقسم/.test(r.first),'first row '+r.first);
 // the reader opens the first and the printed-471 hadith
