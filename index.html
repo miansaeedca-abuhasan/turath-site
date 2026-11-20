@@ -3350,7 +3350,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const qsave = () => { try { localStorage.qset = JSON.stringify(QS); } catch (e) {} applyVars(); };
   // Uthmani text (Madinah Mushaf) in the King Fahd Complex Hafs font; Indo-Pak text in Noto Naskh or Scheherazade (both draw every Indo-Pak sign)
   if (QS.font === 'amiri') QS.font = 'naskh';
-  { const ok = new Set(['ur_junagarhi','ur_kilani','ur_bhuttavi','ur_luqman','ur_hanif','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','ne_ahlhadith','fr_hamidullah','pa_arif']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
+  { const ok = new Set(['ur_junagarhi','ur_kilani','ur_bhuttavi','ur_luqman','ur_hanif','ur_jameel','ur_azad','en_translit','en_mubarakpuri','en_sahih','bn_zakaria','hi_azizulhaq','gu_alomari','ne_ahlhadith','fr_hamidullah','pa_arif']), fx = a => { a = (a || []).filter(k => ok.has(k)); return a; };
     QS.tr = fx(QS.tr); if (!QS.tr.length) QS.tr = ['ur_junagarhi']; if (QS.trBy) Object.keys(QS.trBy).forEach(u => { QS.trBy[u] = fx(QS.trBy[u]); if (!QS.trBy[u].length) delete QS.trBy[u]; }); }
   if (QS.fontv !== 2) { QS.fontv = 2; if (!QS.font || QS.font === 'naskh') QS.font = 'indo'; }   // the Indo-Pak script now has its own real Indo-Pak font
   const FONTS = {indo: ['IndoPak Nastaleeq', 'Indo-Pak (Nastaleeq)'], naskh: ['Noto Naskh Arabic', 'Noto Naskh'], sch: ['Scheherazade New', 'Scheherazade']};
