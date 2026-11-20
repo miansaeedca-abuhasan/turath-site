@@ -1261,6 +1261,8 @@ function rich(text,lang){
 /* verse numbers inside ﴿ … ﴾ (۰۰۱ or 1 before the waqf mark): in a bracket with several verses each inner number is a small circle, the number of the last verse is not shown; copy gives (1) (2) */
 const AYR=/([ؕ-ؚۖ-ۜ]*)\s*([۰-۹٠-٩]+)\s*([ؕ-ؚۖ-ۜ]*)/g;
 const AYN=d=>parseInt(d.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-0x6f0),10);
+/* surah names in the Urdu UI are written the Urdu way (التوبۃ، الفاتحۃ، المائدۃ), never with the Arabic ة ي ك ه */
+function SU(n){return ui==='ur'&&n?String(n).replace(/ة/g,'ۃ').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/ه/g,'ہ'):n;}
 function ayDig(n){const s=String(n);return ui==='ar'?s.replace(/\d/g,c=>String.fromCharCode(0x660+(+c))):s;}
 function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];let i=0,m;AYR.lastIndex=0;
   while((m=AYR.exec(seg))){if(m[3]&&/^[\u0660-\u0669]+$/.test(m[2])){out.push(seg.slice(i,m.index)+m[1]+' '+m[3]);i=AYR.lastIndex;continue;}   /* an Arabic-Indic digit carrying a waqf mark (١ۙ ١ؕ) is the old Quran-font carrier of the mark, not a verse number */
@@ -3323,7 +3325,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   const vi = (s, a) => Q.OFF[s] + a - 1;
   const verse = (k, s, a) => (Q.data[k] || [])[vi(s, a)] || '';
-  const sName = s => { const m = Q.meta.surahs[s - 1]; return LTR() ? m[0] : m[1]; };
+  const sName = s => { const m = Q.meta.surahs[s - 1]; return LTR() ? m[0] : SU(m[1]); };
   const edLabel = e => LTR() ? e.en : e.ur;
   // a tafsir's name always says its language in brackets (Urdu / Arabic ...), like «تفسیر ابنِ کثیر (اردو)»
   const TLN = {ur: {ur: 'اردو', ar: 'عربی', en: 'انگریزی', bn: 'بنگلہ', hi: 'ہندی', gu: 'گجراتی', fr: 'فرانسیسی'}, ar: {ur: 'أردو', ar: 'عربي', en: 'إنجليزي', bn: 'بنغالي', hi: 'هندي', gu: 'غوجاراتي', fr: 'فرنسي'}};
@@ -3565,7 +3567,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       bar(nameOf(t), '', true); v.replaceChildren();
       const f = el('input', {type: 'search', class: 'filter', placeholder: T('filter'), 'aria-label': T('filter')}), box = el('div');
       const draw = () => { const q = f.value.trim().toLowerCase().replace(/[ً-ْ]/g, '');
-        box.replaceChildren(...Q.meta.surahs.map((x, i) => [x, i + 1]).filter(([x, n]) => t.where[n] && (!q || String(n) === q || x[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || x[1].includes(q) || x[2].toLowerCase().includes(q)))
+        box.replaceChildren(...Q.meta.surahs.map((x, i) => [x, i + 1]).filter(([x, n]) => t.where[n] && (!q || String(n) === q || x[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || x[1].includes(q) || SU(x[1]).includes(q) || x[2].toLowerCase().includes(q)))
           .map(([x, n]) => el('a', {class: 'card srow2', href: '#/q/tafsir/' + t.key + '/' + n}, el('span', {class: 'snum'}, NUM(n)), el('span', {class: 'sn'}, sName(n))))); };
       f.addEventListener('input', draw); draw();
       v.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), f), box); return;
@@ -3705,7 +3707,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const list = el('div');
     const draw = () => {
       const q = f.value.trim().toLowerCase().replace(/[ً-ْ]/g, '');
-      list.replaceChildren(...Q.meta.surahs.map((m, i) => [m, i + 1]).filter(([m, n]) => !q || String(n) === q || m[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || m[1].includes(q) || m[2].toLowerCase().includes(q))
+      list.replaceChildren(...Q.meta.surahs.map((m, i) => [m, i + 1]).filter(([m, n]) => !q || String(n) === q || m[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || m[1].includes(q) || SU(m[1]).includes(q) || m[2].toLowerCase().includes(q))
         .map(([m, n]) => surahRow(m, n)));
     };
     f.addEventListener('input', draw); draw();
@@ -3716,7 +3718,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function surahRow(m, n) {
     const a = el('a', {class: 'card srow2', href: '#/q/s/' + n});
     a.append(el('span', {class: 'snum'}, NUM(n)),
-      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, LTR() ? m[0] : m[1]), el('span', {class: 'cs'}, (m[3] === 'M' ? T('meccan') : T('medinan')) + ' · ' + T('ayahs')(NUM(m[4])) + (LTR() ? '' : ' · ' + m[0]))),
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, LTR() ? m[0] : SU(m[1])), el('span', {class: 'cs'}, (m[3] === 'M' ? T('meccan') : T('medinan')) + ' · ' + T('ayahs')(NUM(m[4])) + (LTR() ? '' : ' · ' + m[0]))),
       el('span', {class: 'sar', lang: 'ar'}, m[1]),
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: e => { e.preventDefault(); location.hash = '#/q/s/' + n + '/1/play'; }}}, icon('play')));
     return a;
@@ -3888,7 +3890,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const H = Object.assign({s: 1, from: 1, to: 7, ayahRep: 3, rangeRep: 1, gap: 0}, QS.hifz);
     if (R && R.kind === 's' && H.s !== R.n) { H.s = R.n; H.from = 1; H.to = Q.meta.surahs[R.n - 1][4]; }
     const sel = el('select', {'aria-label': T('surahs')});
-    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
+    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : SU(m[1])))));
     sel.value = H.s;
     const num = (v, min, max) => el('input', {type: 'number', min: String(min), max: String(max), value: String(v), inputmode: 'numeric', class: 'hnum'});
     const from = num(H.from, 1, 286), to = num(H.to, 1, 286), ar = num(H.ayahRep, 1, 100), rr = num(H.rangeRep, 1, 100), gap = num(H.gap, 0, 30);
@@ -3922,7 +3924,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (pre) { C.s = pre.s; C.from = pre.from; C.to = pre.to; }
     else if (R && R.kind === 's' && C.s !== R.n) { C.s = R.n; C.from = 1; C.to = Math.min(10, Q.meta.surahs[R.n - 1][4]); }
     const sel = el('select', {'aria-label': T('surahs')});
-    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
+    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : SU(m[1])))));
     sel.value = C.s;
     const num = v => el('input', {type: 'number', min: '1', value: String(v), inputmode: 'numeric', class: 'hnum'});
     const from = num(C.from), to = num(C.to);
@@ -4498,7 +4500,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(T('audio'), T('quran'), true); await need([]);
     const v = qv(); v.replaceChildren();
     const sel = el('select', {'aria-label': T('surahs')});
-    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
+    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : SU(m[1])))));
     const last = lsGet('qlast', null); if (last) sel.value = last.s;
     v.append(el('div', {class: 'card'}, el('label', {class: 'srow'}, el('span', {}, T('surahs')), sel,
       el('button', {class: 'btn', type: 'button', on: {click: () => { location.hash = '#/q/s/' + sel.value + '/1/play'; }}}, icon('play'), ' ' + T('recite'))),
@@ -4561,7 +4563,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   async function findAyah() {
     await need([]);
     const sel = el('select', {'aria-label': T('surahs')}), num = el('input', {type: 'number', min: '1', value: '1', 'aria-label': T('ayahNo'), inputmode: 'numeric'});
-    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : m[1]))));
+    Q.meta.surahs.forEach((m, i) => sel.append(el('option', {value: i + 1}, (i + 1) + '. ' + (LTR() ? m[0] : SU(m[1])))));
     const sync = () => { num.max = Q.meta.surahs[sel.value - 1][4]; }; sel.addEventListener('change', sync); sync();
     sheet(T('findAyah'), [el('label', {class: 'srow'}, el('span', {}, T('surahs')), sel), el('label', {class: 'srow'}, el('span', {}, T('ayahNo')), num)],
       [[T('close'), null], [T('go'), () => { const a = Math.max(1, Math.min(+num.max, +num.value || 1)); location.hash = '#/q/s/' + sel.value + '/' + a; }]]);
@@ -5684,7 +5686,11 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   async function showSection(b, no) {
     const s = b.sections.find(x => String(x[0]) === String(no)), box = $('#list'); box.replaceChildren(); await needChap(b);
-    if (!s) { box.append(el('p', {class: 'note'}, T('nf'))); return; }
+    if (!s) {   // a remembered / old link to a chapter number the book (as registered now) does not have: open the book's first chapter instead of a dead end
+      const f0 = b.sections[0];
+      try { localStorage.removeItem('rd:' + b.key); } catch (e) {}
+      if (f0 && String(f0[0]) !== String(no)) { location.replace('#/s/' + b.key + '/' + f0[0]); return; }
+      box.append(el('p', {class: 'note'}, T('nf'))); return; }
     bar(fmtN(secNo(b, s)) + '. ' + secT(b, s), bname(b), true);
     bookShare(b);
     try { localStorage['rd:' + b.key] = s[0]; } catch (e) {}
