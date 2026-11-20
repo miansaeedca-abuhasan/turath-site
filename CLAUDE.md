@@ -56,6 +56,7 @@ Reminders: skip books already on the site (never replace existing ones with new 
 
 ## 5. Book list order (all UI languages — do not let it break again)
 al-Jami al-Kamil, Talkhis, then translated books in that language (Bukhari, Muslim, other Sunan in usual order), then Jami sub-books in their Jami order, then other translated books/sharhs; Arabic UI keeps the Arabic order. Books translated into the current UI language come first. Every book must be findable in its proper place (Seerah, Fitan, Fazail as-Sahabah, Sahaba books in the Sahaba folder). Newly added books go at the end. Book names in Urdu UI: Urdu script/Urdu font, no double names, Urdu on the right, Arabic on the left. Tafsir names always show language in brackets (اردو / عربی), Urdu tafsirs first, Urdu and Arabic versions separate entries.
+**«ذیلی مترجم کتب» (owner ruling, 19-11-2026)**: on the home of Al-Jami al-Kamil *and* of Talkhis the tile is called «ذیلی مترجم کتب» (not «مترجم کتب»). Its page (`#/hb/a/jami`) lists ONLY books taken from Al-Jami al-Kamil, and only those translated into the reader's UI language (Urdu UI: Urdu-translated ones). It never contains Al-Jami al-Kamil or Talkhis themselves, and never books that are not taken from Al-Jami (e.g. Silsila Sahiha, Darimi, Mu'jam). Test: `tests/silsila_in_translated_folder.js`. Main list «کتب حدیث»: Al-Jami al-Kamil, then Talkhis, then Bukhari and the other translated books of the same language, then Arabic etc.
 Tafsir Noor al-Huda (`tafsirnoor`, 15 vols / 30 paras / 8096 rows) is listed in the «تفاسیر» page (Urdu group, first) and opens the prose reader `#/s/tafsirnoor`.
 
 ## 6. «اپڈیٹس» (news) rules
@@ -69,6 +70,7 @@ One card per day (all books added that day in ONE card), one line per book (neve
 * Single open hadith keeps the bottom prev/next strip (number in the middle + 5–7 neighbours, English digits). Swipe prev/next only on single-hadith/page-order views (not on chapter lists or narrator tabs); going back returns to the same scroll place.
 * Quran: ornate ﴿ ﴾ only around real Arabic verses; no «(( ))» or « » inside references like [الأنعام: ٩٢]; in the Urdu translation «علیہ السلام» goes in normal brackets; Urdu app labels in Urdu words («مطالعہ کریں»); tafsir chosen shows under each ayah's translation (with «no tafsir» choice); tafsir boxes wide on phone.
 * Text rules: he once ruled «no dagger alif (کھڑی زبر) after yeh in Urdu text (تعالیٰ → تعالی, موسیٰ → موسی)» because it showed as a stray mark on his phone (not yet applied to Tafsir Noor al-Huda, which keeps the printed spelling — ask him before changing); no copy via right-click/browser menu (own selection bar only); copy/share never carries stray boxes/face symbols.
+* English words printed in a book (Quran Encyclopedia, Seerat Mustafa, Tafsir Noor al-Huda) STAY; remove only e-mail addresses and stray glyph letters.
 * Language rule: no mixing languages in any UI language; a translation shows in its own language.
 * Theme colour changes must not touch takhrij/hadith/translation/Quran colours.
 * Icons must fit their meaning and look worthy of an Islamic app. Visuals Islamic in style (no rainbows/balloons, nothing Shia-style).
