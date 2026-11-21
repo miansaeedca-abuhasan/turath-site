@@ -1287,7 +1287,7 @@ function rich0(text,lang){
     if(!seg)return;
     if(seg[0]==='﴿'){out.push(el('span',{class:'qayah',lang:'ar'},...ayFix(seg,n=>el('span',{class:'ayn ud'},ayDig(n)))));return;}
     if(seg[0]==='{'&&ARL.test(seg)){out.push(el('span',{class:'qayah',lang:'ar'},seg));return;}
-    if(seg[0]==='«'){out.push((lang==='ur'?seg.split(/\s+/).some(strongAr):(other&&ARL.test(seg)))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
+    if(seg[0]==='«'){const mk=seg[1]==='\u2060';if(mk)seg='«'+seg.slice(2);out.push((mk||(lang==='ur'?seg.split(/\s+/).some(strongAr):(other&&ARL.test(seg))))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
     if(lang==='ar'){out.push(seg);return;}
     let run=[],plain=[];
     const flushRun=()=>{if(run.length){out.push(el('span',{class:'arq',lang:'ar'},run.join('')));run=[];}};
@@ -1372,7 +1372,7 @@ const APP_HOME='https://turathkhairalquroon.com/';
 function appLink(h){const host=location.hostname||'';const hosted=/^https?:$/.test(location.protocol)&&!/claude|anthropic|usercontent|localhost|^127\./.test(host);
   return hosted?location.origin+location.pathname.replace(/index\.html$/,'')+'?hl='+ui+(h||''):APP_HOME;}
 // colour / reference marks of the site's own text (private-use characters) must never reach a copy: other apps show them as boxes or little faces
-const CLN=t=>(t||'').replace(/\s*\u27e6(\d+)\u27e7/g,' ($1)').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069]/g,'');
+const CLN=t=>(t||'').replace(/\s*\u27e6(\d+)\u27e7/g,' ($1)').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g,'').replace(/[\ue000-\uf8ff]/g,'').replace(/[\u200e\u202a-\u202e\u2066-\u2069\u2060]/g,'');
 window.CLN=CLN;
 // a small choice under the copy / share button: the hadith only, or with its fawaid / explanation / extra information
 function copyPick(btn,has,go){
