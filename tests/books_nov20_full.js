@@ -32,12 +32,12 @@ ck(!z.an['187']&&z.an['188']==='187'&&z.an['189']==='188','zuhd: printed 187 twi
 ck(q.an['478']==='477'&&q.an['982']==='981'&&!q.an['477'],'ishaq: printed 477 twice, last 981');
 ck(q.sections.length===39&&z.sections.length===73&&reg.find(x=>x.key==='fazailnasai').sections.length===82,'section counts');
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),h=fs.readFileSync(R+'index.html','utf8');
-const c=n[0];ck(c.id==='20261120a'&&c.keys.slice(0,4).join()===Object.keys(want).join(),'news card');
+const c=n.find(x=>x.id==='20261120a');ck(c&&c.id==='20261120a'&&c.keys.slice(0,4).join()===Object.keys(want).join(),'news card');
 ck(c.i.ur.length===c.keys.length&&Object.keys(want).every((k,i)=>c.i.ur[i].includes('('+want[k]+')')),'one line per book with count');
 ck(/"id":"20261120a"[^\n]*musnadishaq/.test(h),'news card in app list');
 const fz=reg.find(x=>x.key==='fazailnasai');
 ck(fz.trn.ur==='محمد احمد صدیق'&&fz.trn.en==='Muhammad Ahmad Siddiq','fazailnasai translator name');
-ck(!/النصری|Nasri/.test(JSON.stringify(n[0])+fs.readFileSync(R+'index.html','utf8').match(/"id":"20261120a"[^\n]*/)[0]),'news: old translator name gone');
+ck(!/النصری|Nasri/.test(JSON.stringify(n.find(x=>x.id==='20261120a'))+fs.readFileSync(R+'index.html','utf8').match(/"id":"20261120a"[^\n]*/)[0]),'news: old translator name gone');
 ck(!/\b(?:ديا|فرمايا|ركهيں|كهه)\b|صحابه کرام/.test(JSON.stringify(fz.intro)),'fazailnasai intro: no Arabic-letter spellings in Urdu words');
 ck(reg.every(x=>x.key!=='fazailnasai'||x.sections.every(sc=>!/[كيىة]|ه\b|الله/.test(sc[1].replace(/قرة/,'')))),'fazailnasai section titles: no Arabic-letter spellings');
 if(bad)process.exit(1);console.log('PASS books_nov20_full');

@@ -5,7 +5,7 @@ for(const f of fs.readdirSync(__dirname+'/../coll').filter(x=>/^tafsirnoor_ur_/.
   for(const m of t.matchAll(/[^\s"\[\],]*ـ[^\s"\[\],]*/g))if(!/[ً-ْٰۡ-ۭ]/.test(m[0])){ck(false,'plain tatweel '+m[0]);break}
 }
 (async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:1200,height:900}})).newPage();
-await p.addInitScript(()=>{try{localStorage.newsSeen='20261120a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.newsSeen='20261121a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
 await p.goto('http://localhost:8765/index.html#/s/tafsirnoor/n/2');await p.waitForTimeout(4500);
 const r=await p.evaluate(()=>{const q=[...document.querySelectorAll('.arq')],h=document.querySelector('h4.subh,.phead,.qe-sub');
  const bg=e=>e?getComputedStyle(e).backgroundColor:'';return{n:q.length,unb:q.filter(e=>!/^«.*»$/s.test(e.textContent.trim())&&!/^﴿/.test(e.textContent.trim())).length,bgs:[...new Set(q.map(bg))],head:h?getComputedStyle(h).backgroundImage.includes('gradient'):false}});
