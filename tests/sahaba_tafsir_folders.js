@@ -1,0 +1,18 @@
+// Fadail as-Sahaba (Nasai) also in the Sahaba folder (translated books first, «نئی» badge); Arabic tafsir books of the hadith category «تفسیر قرآن» also in the Tafsir folder; unknown book key refetches the registry
+const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
+(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1000,height:900}});
+await p.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new Date().toDateString())});
+await p.goto('http://localhost:8765/#/sec/sahaba');await p.waitForTimeout(3500);
+const rows=await p.evaluate(()=>[...document.querySelectorAll('a.hbrow')].map(a=>[a.getAttribute('href'),a.innerText]));
+const i=rows.findIndex(r=>r[0]==='#/s/fazailnasai');ck(i>=0,'nasai in sahaba folder');
+const firstUntr=rows.findIndex(r=>!/\(.*اُردو/.test(r[1].split('\n')[1]||r[1]));
+ck(i>=0&&rows.slice(0,i).every(r=>/اُردو/.test(r[1])),'translated books come before it');
+ck(i>=0&&/نئی/.test(rows[i][1]),'new badge');
+ck(rows.slice(i+1).filter(r=>r[0].startsWith('#/s/')).every(r=>!/اُردو/.test(r[1])),'untranslated after the translated');
+await p.goto('http://localhost:8765/#/q/tafsir');await p.waitForTimeout(5000);
+const rb=await p.evaluate(()=>[...document.querySelectorAll('a')].map(a=>a.getAttribute('href')).filter(h=>h&&h.startsWith('#/rb/b/')));
+ck(rb.length>=15,'Arabic tafsir books of the hadith category in the Tafsir folder: '+rb.length);
+await p.goto('http://localhost:8765/#/hb/c/5');await p.waitForTimeout(4000);
+const cat=await p.evaluate(()=>[...document.querySelectorAll('#list a')].map(a=>a.getAttribute('href')).filter(h=>h&&h.startsWith('#/rb/b/')));
+ck(cat.every(h=>rb.includes(h)),'every cat-5 Arabic tafsir book is in the Tafsir folder');
+await b.close();if(bad)process.exit(1);console.log('PASS sahaba_tafsir_folders')})();

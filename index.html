@@ -1686,14 +1686,15 @@ const auNm=a=>ui==='ur'?a[2]:ui==='ar'?a[1]:a[3];
 const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):auNm(a)+(a[4]?' '+deathTxt(a[4]):'');
 
 /* the Seerah and the Fazail-e-Sahaba tiles: a list that starts with our own book (by the method of the muhaddithin) and goes on with the other books on the subject */
-const SEC_KEYS={seerah:['seerah','raheeq','sh23833','sh9862','dalail','sh9241','sh1342','shamail'],sahaba:['fazail','fadailahmad','sh6601','sh8238','sh9434','sh597','sh23100','sh13178','sh10490','sh9767','sh12288','sh1110','sh21481','sh133','sh30089','sh30046','sh151153','sh20761','sh6347','sh9628','sh5802','sh26595','sh4151','sh608','sh1590','sh30044','sh11291']};
+const SEC_KEYS={seerah:['seerah','raheeq','sh23833','sh9862','dalail','sh9241','sh1342','shamail'],sahaba:['fazail','fadailahmad','sh6601','sh8238','sh9434','sh597','sh23100','sh13178','sh10490','sh9767','sh12288','sh1110','sh21481','sh133','sh30089','sh30046','sh151153','sh20761','sh6347','sh9628','sh5802','sh26595','sh4151','sh608','sh1590','sh30044','sh11291','fazailnasai']};
 async function showSection(kind){
   const box=$('#list');box.replaceChildren();bar(kind==='seerah'?T('seerahT'):T('navFazail'),'',false);
   const colls=await COLL.list().catch(()=>[]),by=new Map(colls.map(c=>[c.key,c]));
   const rows=SEC_KEYS[kind].map(k=>by.get(k)).filter(Boolean);
+  {const tr=c=>ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui);const o=rows.map((c,i)=>[c,i]).sort((a,b)=>(tr(a[0])?0:1)-(tr(b[0])?0:1)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...o);}   // books translated into the reader's language first
   rows.forEach((c,i)=>{const lg=hbLg(c.langs),nm=EN()?c.en:ui==='ar'?c.ar:(c.ur||c.en);
     box.append(el('a',{class:'card srow2 hbrow',href:'#/s/'+c.key,'data-k':c.key},el('span',{class:'snum'},ui==='ar'?ad(i+1):String(i+1)),
-      el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},nm,lg.length>1?el('span',{class:'hblg'},' ('+lg.map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null),ui==='ur'&&c.ar&&c.ar!==nm?el('span',{class:'sar',lang:'ar'},c.ar):'')));});
+      el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},nm,lg.length>1?el('span',{class:'hblg'},' ('+lg.map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(c.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),ui==='ur'&&c.ar&&c.ar!==nm?el('span',{class:'sar',lang:'ar'},c.ar):'')));});
 }
 // a long list (1,700 books) is put on the page in parts: the first rows appear at once, the rest follows in the next moments, so the page answers immediately
 function fillList(list,nodes){const tk=list.__fill=(list.__fill||0)+1,FIRST=60,PART=120;list.replaceChildren(...nodes.slice(0,FIRST));let i=FIRST;
@@ -3578,9 +3579,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (!t) {
       bar(TFS(), '', true); v.replaceChildren();
       const LG = ['ur', 'ar', 'en', 'bn', 'hi', 'gu', 'fr', 'ne'].sort((x, y) => (y === ui) - (x === ui));
+      let rbT = []; try { const RC = window.RB && RB.on ? await RB.catalog() : null; if (RC) rbT = RB.rows(RC, RC.b.filter(r => String(r[2]) === '5')); } catch (e) {}   // the Arabic tafsir books of the hadith-book category «Quran exegesis» also stand here (Arabic group)
       LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length) return;
         const extra = l === 'ur' ? [el('a', {class: 'card srow2 tfbook', href: '#/s/tafsirnoor'}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn', dir: 'auto'}, 'تفسیر نور الہدیٰ (اردو)'))] : [];
-        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x))))); });
+        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...ts.map(x => el('a', {class: 'card srow2', href: '#/q/tafsir/' + x.key}, el('span', {class: 'snum'}, icon('tafsir')), el('span', {class: 'sn' + (dirOf(x.lang) === 'rtl' ? '' : ' ltr'), dir: 'auto'}, nameOf(x)))), ...(l === 'ar' ? rbT : [])); });
       return;
     }
     if (!sn) {
@@ -6324,7 +6326,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (/^#\/s\/rijal\/all/.test(h)) { const nm3 = h.match(/[?&]n=([^&]*)/); const lm = h.match(/[?&]l=([^&]*)/), rm2 = h.match(/[?&]r=([^&]*)/); const bm2 = h.match(/[?&]b=([^&]*)/); return showRijalAll(lm ? decodeURIComponent(lm[1]) : '', rm2 ? decodeURIComponent(rm2[1]) : '', bm2 ? bm2[1] : '', nm3 ? decodeURIComponent(nm3[1]) : ''); }
       { const rm = h.match(/^#\/s\/rijal\/(\d+)/); if (rm) return showRijalMaster(+rm[1]); }
       if (/^#\/s\/rijal(?:\?|$)/.test(h)) { const qq = h.match(/[?&]q=([^&]*)/); const cc = h.match(/[?&]c=([^&]*)/); return showRijal(qq ? decodeURIComponent(qq[1]) : '', cc ? decodeURIComponent(cc[1]).split('|') : null); }
-      const m = h.match(/^#\/s\/([a-z0-9]+)(?:\/(n\/)?(\d+))?/), b = m && bookOf(m[1]);
+      const m = h.match(/^#\/s\/([a-z0-9]+)(?:\/(n\/)?(\d+))?/); let b = m && bookOf(m[1]);
+      if (m && !b) { try { await load1('coll/index.js?r=' + Date.now()); b = bookOf(m[1]); } catch (e) {} }   // an old copy of the registry does not know a newly added book: fetched fresh once
       if (!b) { $('#list').replaceChildren(el('p', {class: 'note'}, T('nf'))); return; }
       if (b.ext) { bar(bname(b), '', true); $('#list').replaceChildren(el('div', {class: 'card'}, el('p', {}, T('cExt')), el('a', {class: 'btn lbtn', href: b.ext + '#/s/' + b.key, target: '_blank', rel: 'noopener'}, T('cOpenExt')))); return; }
       if (m[2]) return showOne(b, +m[3]);

@@ -14,6 +14,10 @@
   Cache-Control: no-cache
 /coll/index.js
   Cache-Control: no-cache
+/coll/lite.js
+  Cache-Control: no-cache
+/offline.json
+  Cache-Control: no-cache
 /quran/tafsir/index.js
   Cache-Control: no-cache
 /fonts/*
