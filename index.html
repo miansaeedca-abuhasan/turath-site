@@ -148,6 +148,11 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
+.arq{background:rgba(244,196,48,.26);border-radius:.3em;padding:.04em .3em;-webkit-box-decoration-break:clone;box-decoration-break:clone}.arq.arq1{background:rgba(66,153,225,.24)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .arq{background:rgba(244,196,48,.2)}:root:not([data-theme="light"]) .arq.arq1{background:rgba(66,153,225,.28)}}
+:root[data-theme="dark"] .arq{background:rgba(244,196,48,.2)}:root[data-theme="dark"] .arq.arq1{background:rgba(66,153,225,.28)}
+.subh,.phead{border-bottom:0;padding-bottom:.5em;background:linear-gradient(90deg,transparent,#c59a35 12%,#ecd180 50%,#c59a35 88%,transparent) 0 100%/100% 2px no-repeat,linear-gradient(90deg,transparent,#d9b862 30%,#d9b862 70%,transparent) 0 calc(100% - 6px)/100% 1px no-repeat}
+
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
@@ -1274,6 +1279,8 @@ function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];le
     const n=AYN(m[2]),rest=seg.slice(AYR.lastIndex).replace(/[\s﴾]+/g,'');out.push(seg.slice(i,m.index)+m[1]+m[3]);i=AYR.lastIndex;if(!n||!rest)continue;out.push(mk(n));}
   out.push(seg.slice(i));return out;}
 function AYCP(t){return t&&t.indexOf('﴿')>=0?t.replace(/﴿[^﴾]*﴾/g,v=>ayFix(v,n=>' ('+n+') ').join('')):t;}
+/* Arabic inside Urdu (and other) text: a soft highlight band; a single Arabic word gets the blue one, a phrase the gold one (owner ruling 20-11-2026) */
+function ARQC(t){return String(t).replace(/[«»\u2060]/g,'').trim().split(/\s+/).filter(Boolean).length<2?'arq arq1':'arq';}
 function rich0(text,lang){
   /* the verse number at the end of a translated verse (⟦12⟧): a small circle in the verse colour, as in the printed book */
   if(text&&text.indexOf('\u27e6')>=0){const o=[];text.split(/\u27e6(\d+)\u27e7/).forEach((sg,i)=>{if(i%2)o.push(el('span',{class:'ayn ud','data-n':sg},ayDig(+sg)));else if(sg)o.push(...rich0(sg,lang));});return o;}
@@ -1287,10 +1294,10 @@ function rich0(text,lang){
     if(!seg)return;
     if(seg[0]==='﴿'){out.push(el('span',{class:'qayah',lang:'ar'},...ayFix(seg,n=>el('span',{class:'ayn ud'},ayDig(n)))));return;}
     if(seg[0]==='{'&&ARL.test(seg)){out.push(el('span',{class:'qayah',lang:'ar'},seg));return;}
-    if(seg[0]==='«'){const mk=seg[1]==='\u2060';if(mk)seg='«'+seg.slice(2);out.push((mk||(lang==='ur'?seg.split(/\s+/).some(strongAr):(other&&ARL.test(seg))))?el('span',{class:'arq',lang:'ar'},seg):seg);return;}
+    if(seg[0]==='«'){const mk=seg[1]==='\u2060';if(mk)seg='«'+seg.slice(2);out.push((mk||(lang==='ur'?seg.split(/\s+/).some(strongAr):(other&&ARL.test(seg))))?el('span',{class:ARQC(seg),lang:'ar'},seg):seg);return;}
     if(lang==='ar'){out.push(seg);return;}
     let run=[],plain=[];
-    const flushRun=()=>{if(run.length){out.push(el('span',{class:'arq',lang:'ar'},run.join('')));run=[];}};
+    const flushRun=()=>{if(run.length){out.push(el('span',{class:ARQC(run.join('')),lang:'ar'},run.join('')));run=[];}};
     const closeRun=()=>{const trail=[];while(run.length&&/^\s+$/.test(run[run.length-1]))trail.unshift(run.pop());flushRun();plain.push(...trail);};
     seg.split(/(\s+)/).forEach(w=>{
       if(w===''||/^\s+$/.test(w)){(run.length?run:plain).push(w);return;}

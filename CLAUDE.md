@@ -73,6 +73,9 @@ One card per day (all books added that day in ONE card), one line per book (neve
 * English words printed in a book (Quran Encyclopedia, Seerat Mustafa, Tafsir Noor al-Huda) STAY; remove only e-mail addresses and stray glyph letters.
 * Language rule: no mixing languages in any UI language; a translation shows in its own language.
 * Theme colour changes must not touch takhrij/hadith/translation/Quran colours.
+* **Arabic inside Urdu/other-language text (owner ruling 20-11-2026)**: keeps its « » brackets AND gets a soft highlight band (class `.arq`): gold for a phrase, blue for a single word (`.arq1`); never on Arabic UI text; copy/share carries only the text (no highlight, no symbols). Test: `tests/arabic_highlight_headings.js`.
+* **Headings inside running text** (`h4.subh`, `.phead`): gold double line under the heading (printed-book look, owner liked the Tafsir title line). An Islamic ornament before headings only after he picks one; it must be CSS-only so copy never carries it.
+* Stray tatweel (ـ) inside Urdu words (justification leftovers, e.g. «آیاتـ») is removed; Arabic words with harakat keep theirs.
 * Icons must fit their meaning and look worthy of an Islamic app. Visuals Islamic in style (no rainbows/balloons, nothing Shia-style).
 * Splash video: plays on first open, then not again for 3 hours. Resume rule: back to same place after app switch; after ~30 min idle opens main page with «جہاں چھوڑا تھا وہیں سے پڑھیں».
 * Hidden for now: «اسلام سوال و جواب».
