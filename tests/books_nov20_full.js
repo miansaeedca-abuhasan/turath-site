@@ -35,4 +35,8 @@ const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),h=fs.readFileSync(R+'i
 const c=n[0];ck(c.id==='20261120a'&&c.keys.slice(0,4).join()===Object.keys(want).join(),'news card');
 ck(c.i.ur.length===c.keys.length&&Object.keys(want).every((k,i)=>c.i.ur[i].includes('('+want[k]+')')),'one line per book with count');
 ck(/"id":"20261120a"[^\n]*musnadishaq/.test(h),'news card in app list');
+const fz=reg.find(x=>x.key==='fazailnasai');
+ck(fz.trn.ur==='محمد احمد صدیق'&&fz.trn.en==='Muhammad Ahmad Siddiq','fazailnasai translator name');
+ck(!/النصری|Nasri/.test(JSON.stringify(n[0])+fs.readFileSync(R+'index.html','utf8').match(/"id":"20261120a"[^\n]*/)[0]),'news: old translator name gone');
+ck(!/\b(?:ديا|فرمايا|ركهيں|كهه)\b|صحابه کرام/.test(JSON.stringify(fz.intro)),'fazailnasai intro: no Arabic-letter spellings in Urdu words');
 if(bad)process.exit(1);console.log('PASS books_nov20_full');
