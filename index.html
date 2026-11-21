@@ -150,6 +150,11 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
 .subh,.phead{border-bottom:0;padding-bottom:.5em;background:linear-gradient(90deg,transparent,#c59a35 12%,#ecd180 50%,#c59a35 88%,transparent) 0 100%/100% 2px no-repeat,linear-gradient(90deg,transparent,#d9b862 30%,#d9b862 70%,transparent) 0 calc(100% - 6px)/100% 1px no-repeat}
 
+/* heading ornaments (owner picked 20-11-2026): 1 = tafsir headings, 2 = hadith-book introductions (عرض ناشر، مقدمہ، تقریظ), 3 = sharh / fawaid / other headings of a hadith. CSS-only: never copied. */
+.tfq .subh::before,.tfq .phead::before,.intaf .subh::before,details.intro.tfq>summary::before{content:"\06DE";color:#c59a35;margin-inline-end:.5em;font-size:1.1em}
+details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{content:"\2726";color:#c59a35;margin-inline-end:.5em}
+.fpanel h4.subh::before,.tr h4.subh::before,.shtx h4.subh::before{content:"\2756";color:#c59a35;margin-inline-end:.5em}
+.bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
@@ -3592,12 +3597,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const nwOn = k => NWT[k] && Date.now() < new Date(NWT[k] + 'T00:00:00').getTime(), nwTxt = {ur: 'نئی', ar: 'جديد'}[ui] || 'New';
       const ROW = (href, name, au, cnt, nw, cls) => el('a', {class: 'card srow2 hbrow tfrow' + (cls ? ' ' + cls : ''), href}, el('span', {class: 'sinfo'}, el('span', {class: 'ct' + (ui === 'ar' ? ' arname' : ''), dir: 'auto'}, name, nw ? el('span', {class: 'newtag'}, nwTxt) : null), au ? el('span', {class: 'sau'}, au) : '', cnt ? el('span', {class: 'cs'}, cnt) : ''));
       const AH = n => ({ur: 'احادیث: ', ar: 'الأحاديث: ', en: 'Hadith: '}[ui] || 'Hadith: ') + NUM(n);
+      const AUG = {ar_ibnkathir: 'ibnkathir', ar_baghawi: 'baghawi', ar_durr: 'suyuti', ar_wajiz: 'wahidi'}, RBG = {116: 'tabari', 137: 'ibnabihatim', 128: 'baghawi', 235: 'wahidi'};
       const ARB = ui === 'ar' ? '' : ' (' + (({ur: 'عربی', en: 'Arabic', bn: 'আরবি', hi: 'अरबी', gu: 'અરબી', fr: 'arabe'})[ui] || 'Arabic') + ')';
       const split = nm => { const m = nm.match(/^(.*?)\s+[-—]\s+(.*?)\s*(\([^()]*\))?$/); return m ? [m[1] + (m[3] ? ' ' + m[3] : ''), m[2]] : [nm, '']; };
       LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length) return;
         const extra = l === 'ur' ? [ROW('#/s/tafsirnoor', 'تفسیر نور الہدیٰ (اردو)', '', '', nwOn('tafsirnoor'), 'tfbook')] : [];
-        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...ts.map(x => { const [n, au] = split(nameOf(x)); return ROW('#/q/tafsir/' + x.key, n, au, '', nwOn(x.key)); }),
-          ...(l === 'ar' ? [...shT.map(c => ROW('#/s/' + c.key, (ui === 'ar' ? c.ar : (c.ur || c.ar)) + ARB, c.author ? (ui === 'ar' ? c.author[1] : c.author[2] || c.author[1]) : '', c.count ? AH(c.count) : '', false)), ...(RC ? rbRows.map(r => RB.hubRow(RC, r, ARB)) : [])] : [])); });
+        const rowsL = ts.map(x => { const [n, au] = split(nameOf(x)); return [AUG[x.key] || x.key, ROW('#/q/tafsir/' + x.key, n, au, '', nwOn(x.key))]; });
+        if (l === 'ar') { shT.forEach(c => rowsL.push([c.author ? c.author[0] : c.key, ROW('#/s/' + c.key, (ui === 'ar' ? c.ar : (c.ur || c.ar)) + ARB, c.author ? (ui === 'ar' ? c.author[1] : c.author[2] || c.author[1]) : '', c.count ? AH(c.count) : '', false)])); if (RC) rbRows.forEach(r => rowsL.push([RBG[r[3]] || 'rb' + r[3], RB.hubRow(RC, r, ARB)]));
+          const gs = []; rowsL.forEach(x => { if (!gs.includes(x[0])) gs.push(x[0]); }); rowsL.sort((p, q) => gs.indexOf(p[0]) - gs.indexOf(q[0])); }   // one author's tafsirs stay together (stable order inside the author)
+        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...rowsL.map(x => x[1])); });
       return;
     }
     if (!sn) {
@@ -5232,7 +5240,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
     const iL = b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
-    const intro = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro'}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
+    const intro = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
     const bookAudio = () => { const rs = BA[b.key]; if (!rs) return [];
@@ -5784,7 +5792,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         await needRange(B, 'ar', at, to); if (lang) await needRange(B, lang, at, to); if (BKM) await needRange(B, BL, at, to);
         for (let n = at; n <= to; n++) {
           if (BKM) { const ur = row(B, BL, n); if (ur && ur[1]) { if (!PROSE && !hd) { hd = true; if (s[4]) list.append(el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, s[4])); if (s[1] && s[1] !== s[4] && !/^[A-Za-z]/.test(s[1])) list.append(el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, s[1])); }
-            list.append(B.key === 'qenc' && BL === 'ur' ? qencItem(ur, n) : el('div', {class: 'bkitem', lang: BL, dir: DIR(BL)}, PROSE ? '' : el('span', {class: 'bkn'}, fmtN(n)), ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, BL), ur)), ...proseFnBox(ur, BL))); got++; } }
+            list.append(B.key === 'qenc' && BL === 'ur' ? qencItem(ur, n) : el('div', {class: 'bkitem' + (HB_CAT[B.key] === 5 ? ' tfq' : ''), lang: BL, dir: DIR(BL)}, PROSE ? '' : el('span', {class: 'bkn'}, fmtN(n)), ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, BL), ur)), ...proseFnBox(ur, BL))); got++; } }
           else if (row(B, 'ar', n)) { window.__SECV = true; try { list.append(card(B, n, lang)); } finally { window.__SECV = false; } got++; } }
         at = to + 1;
       }
@@ -5807,7 +5815,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const box = $('#list'); box.replaceChildren();
     if (b.prose) { await needRange(b, 'ur', n, n); await needChap(b); const ur = row(b, 'ur', n), s0 = b.sections.find(x => x[2] <= n && n <= x[3]); bar(bname(b), '', true);
       if (s0) box.append(el('a', {class: 'grp', href: '#/s/' + b.key + '/' + s0[0], dir: 'auto'}, fmtN(secNo(b, s0)) + '. ' + secT(b, s0)));
-      box.append(ur && ur[1] && b.key === 'qenc' ? qencItem(ur, n) : ur && ur[1] ? el('div', {class: 'bkitem', lang: 'ur', dir: 'rtl'}, ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, 'ur'), ur)), ...proseFnBox(ur, 'ur')) : el('p', {class: 'note'}, T('cNotHere'))); return; }
+      box.append(ur && ur[1] && b.key === 'qenc' ? qencItem(ur, n) : ur && ur[1] ? el('div', {class: 'bkitem' + (HB_CAT[b.key] === 5 ? ' tfq' : ''), lang: 'ur', dir: 'rtl'}, ...ur[1].split('\n').filter(x => x.trim()).map(x => proseFn(paraEl(x, 'ur'), ur)), ...proseFnBox(ur, 'ur')) : el('p', {class: 'note'}, T('cNotHere'))); return; }
     const lang = getLang(b); await needRange(b, 'ar', n, n); if (lang) await needRange(b, lang, n, n); await needChap(b);
     const s = b.sections.find(x => !(x[5] && x[5].src) && x[2] <= n && n <= x[3]);
     bar(bname(b), T(b.key === 'shadharat' ? 'cNasNo' : b.key === 'siyar' ? 'cParaNo' : 'hadith')(fmtN(n)), true);

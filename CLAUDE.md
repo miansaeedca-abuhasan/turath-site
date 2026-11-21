@@ -75,7 +75,8 @@ One card per day (all books added that day in ONE card), one line per book (neve
 * Language rule: no mixing languages in any UI language; a translation shows in its own language.
 * Theme colour changes must not touch takhrij/hadith/translation/Quran colours.
 * **Arabic inside Urdu/other-language text (owner ruling 20-11-2026)**: always shows in « » (Arabic font), also when the book data has no brackets (the site adds them when displaying). NO highlight band: the yellow/blue highlights he once sent were his own selection-bar marks, not a request. Never on Arabic UI text; copy/share carries the text with « ». Test: `tests/arabic_highlight_headings.js`.
-* **Headings inside running text** (`h4.subh`, `.phead`): gold double line under the heading (printed-book look, owner liked the Tafsir title line). An Islamic ornament before headings only after he picks one; it must be CSS-only so copy never carries it.
+* **Headings inside running text** (`h4.subh`, `.phead`): gold double line under the heading (printed-book look, owner liked the Tafsir title line). Ornament before the heading, CSS-only `::before` (never copied), gold; owner's picks 21-11-2026: **۞ (no.1)** tafsir headings; **✦ (no.2)** hadith-book introductions (عرض ناشر، مقدمہ، تقریظ…); **❖ (no.3)** sharh / fawaid / other headings of a hadith; **❁ (no.5)** headings of the other prose books (Seerah, Raheeq, Siyar…). Test: `tests/heading_ornaments.js`.
+* **One author's tafsirs stand together** on the «تفاسیر» page (Arabic group grouped by author).
 * Stray tatweel (ـ) inside Urdu words (justification leftovers, e.g. «آیاتـ») is removed; Arabic words with harakat keep theirs.
 * Icons must fit their meaning and look worthy of an Islamic app. Visuals Islamic in style (no rainbows/balloons, nothing Shia-style).
 * Splash video: plays on first open, then not again for 3 hours. Resume rule: back to same place after app switch; after ~30 min idle opens main page with «جہاں چھوڑا تھا وہیں سے پڑھیں».
