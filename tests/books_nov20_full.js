@@ -14,7 +14,13 @@ for(const key in want){
   const txt=[];(function w(x){if(typeof x==='string')txt.push(x);else if(Array.isArray(x))x.forEach(w);else if(x&&typeof x==='object')Object.values(x).forEach(w)})([ar,ur]);const all=txt.join('\n');
   ck(!/[A-Za-z@#$]/.test(all),key+' no Latin letters/symbols in text');
   ck(!/[ﷺﷻؓؒؑ]/.test(all),key+' no honorific symbols');
-  ck(!/\(\(|\)\)/.test(all),key+' no (( )) left');
+  const ks=ur.filter(r=>r[3]&&r[3].k).map(r=>r[3].k);
+  ck(ks.length>0&&ks.every(k=>!/[۰-۹٠-٩]/.test(k)),key+' takhrij: English digits only');
+  ck(ks.every(k=>!/(^|[^ب])رقم\s*:/.test(k)&&!/(حدیث|حديث)\s*:\s*\d+\s*[،۔]?\s*$/.test(k.replace(/دیکھیے.*$/,''))),key+' takhrij: no "رقم: N" / "حدیث: N" left, uses book (N)');
+  ck(ks.some(k=>/\(\d+(\/\d+)?\)/.test(k)),key+' takhrij has book (number) style');
+  ck(!/[\u06f0-\u06f9]/.test(JSON.stringify(ur.map(r=>r[3]&&r[3].e))),key+' sharh numerals not Persian');
+  ck(!/علیصلى|صلی للہ|مالی صلى/.test(JSON.stringify(e.intro)),key+' no glued/damaged honorific in intro');
+  ck(!/\(\(/.test(all),key+' no (( left');
   ck(!/یٰ/.test(JSON.stringify(ur)),key+' no dagger alif after yeh in Urdu');
   ck(ar.every(r=>/[.؟!»]\s*$/.test(r[1])||/[.]\s*»?\s*$/.test(r[1])),key+' Arabic rows end with full stop');
   ck(e.sections[0][2]===1&&e.sections[e.sections.length-1][3]===want[key],key+' sections cover all');
