@@ -16,5 +16,9 @@ t=await open('/s/ibnkhuzaymahur?idx','عرض ناشر');
 ck(/عرض ناشر/.test(t)&&/حالات زندگی/.test(t),name+' ibn: intro blocks on the contents page');
 t=await open('/s/humaydiur?idx','تقریظ');
 ck(/تقریظ/.test(t)&&/امام حمیدی کے حالات/.test(t),name+' humaidi: intro blocks on the contents page');
+await p.getByText('راویوں کا تعارف').first().click();
+await p.waitForFunction(()=>/نام: عمر بن خطاب بن نفیل/.test(document.body.innerText),null,{timeout:20000}).catch(()=>{});
+t=await p.evaluate(()=>document.body.innerText);
+ck(/نام: عمر بن خطاب بن نفیل/.test(t)&&/سعید بن زید بن عمرو/.test(t),name+' humaidi: narrator introductions open on tap');
 await c.close()}
 await b.close();if(bad)process.exit(1);console.log('PASS ibnkhuzaymah_humaydi_open')})();

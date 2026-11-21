@@ -28,10 +28,15 @@ ck(/سیدنا ابوبکر صدیق رضی اللہ عنہ کی/.test(e.section
 ck(e.intro.map(x=>x[0]).join('|')==='عرض ناشر|تقریظ|امام حمیدی کے حالات|اختتامیہ','intro blocks');
 ck(e.intro.flatMap(x=>x[1]).filter(p=>/^﴿.*﴾ \[[^\]]+: \d+\]$/.test(p)).length>=2,'verses in ﴿ ﴾ with reference');
 ck(e.author[0]==='humaydi'&&e.trn.ur==='مولانا محمد احمد دلپذیر'&&e.langs.join()==='ar,ur','author/translator/langs');
-const html=fs.readFileSync(R+'index.html','utf8');ck(/"humaydiur":14/.test(html),'category set');
+const html=fs.readFileSync(R+'index.html','utf8');
+ck(/^coll\/humaydiur_intro_[0-9a-f]{6}\.js$/.test(e.introx)&&fs.existsSync(R+e.introx),'narrator introductions file');
+let NI;vm.runInNewContext(fs.readFileSync(R+e.introx,'utf8'),{COLLINTRO:(k,p)=>{NI=p}});
+ck(NI.filter(p=>p.startsWith('§')).length===181&&NI.filter(p=>p==='تعارف راوی حدیث').length>=70&&/سیدنا ابوبکر صدیق/.test(NI[0]),'181 narrator introductions in the lazy file');
+ck(!/\(\(/.test(NI.join('\n'))&&!/[A-Za-z❶-❿]/.test(NI.join('\n')),'no raw (( or Latin in them');
+ck(/"humaydiur":14/.test(html),'category set');
 const old=reg.find(x=>x.key==='humaydi');ck(old&&old.count===1359&&old.langs.join()==='ar','older Arabic entry humaydi untouched');
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0],ix=c.keys.indexOf(key);
 ck(c.id==='20261121a'&&ix>=0&&c.i.ur[ix].includes('(1334)')&&c.l[ix]==='#/s/'+key,'news line');
 ck(new RegExp('"id":"20261121a"[^\\n]*'+key).test(html),'news in app list');
-const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length,'offline group');
+const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length+1,'offline group (+ narrator introductions)');
 if(bad)process.exit(1);console.log('PASS humaydi_ur_full');
