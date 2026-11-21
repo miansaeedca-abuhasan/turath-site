@@ -44,4 +44,6 @@ ck(c.id==='20261121a'&&ix>=0&&c.i.ur[ix].includes('(663)')&&c.l[ix]==='#/s/'+key
 const last=c.i.ur.length-1;ck(c.l[last]==='https://play.google.com/store/apps/details?id=org.turath.salat'&&/صلاۃ خیرالقرون/.test(c.i.ur[last])&&/org\.turath\.salat/.test(fs.readFileSync(R+'index.html','utf8').split('getBadges')[1]),'Salat app: news line with its Play link + badge');
 ck(/"id":"20261121a"[^\n]*khalqafaalur/.test(fs.readFileSync(R+'index.html','utf8')),'news in app list');
 const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length,'offline group');
+ck(!/\[[^\]]*\]\]/.test(ar[0][1])&&/قال حدثني الليث؛ قال حدثني يونس\]،/.test(ar[550][1]),'row 552: only the printed closing bracket');
+ck(/\n?و\(٥\) إنْ قال قائل/.test(ar[529][1])&&!/و\[إن\] قال قائل/.test(ar[529][1]),'row 531: «و(٥) إنْ» as printed');
 if(bad)process.exit(1);console.log('PASS khalq_afaal_full');
