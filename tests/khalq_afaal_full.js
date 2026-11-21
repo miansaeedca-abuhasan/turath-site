@@ -40,7 +40,8 @@ ck(e.author[0]==='bukhari'&&e.trn.ur==='محمد زبیر شیخ'&&e.langs.join(
 ck(/"khalqafaalur":10/.test(fs.readFileSync(R+'index.html','utf8')),'category set');
 ck(reg.find(x=>x.key==='sh9697').count===239,'older Arabic Khalq (sh9697) untouched');
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0];
-ck(c.id==='20261121a'&&c.keys.join()===key&&c.i.ur.length===1&&c.i.ur[0].includes('(663)')&&c.l[0]==='#/s/'+key,'news line');
+ck(c.id==='20261121a'&&c.keys.join()===key&&c.i.ur.length===2&&c.i.ur[0].includes('(663)')&&c.l[0]==='#/s/'+key,'news line');
+ck(c.l[1]==='https://play.google.com/store/apps/details?id=org.turath.salat'&&/صلاۃ خیرالقرون/.test(c.i.ur[1])&&/org\.turath\.salat/.test(fs.readFileSync(R+'index.html','utf8').split('getBadges')[1]),'Salat app: news line with its Play link + badge');
 ck(/"id":"20261121a"[^\n]*khalqafaalur/.test(fs.readFileSync(R+'index.html','utf8')),'news in app list');
 const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length,'offline group');
 if(bad)process.exit(1);console.log('PASS khalq_afaal_full');
