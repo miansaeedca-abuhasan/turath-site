@@ -32,6 +32,6 @@ ck(/"musnadsarrajur":14/.test(fs.readFileSync(R+'index.html','utf8')),'category 
 ck(e.author[0]==='sarraj'&&e.trn.ur==='امان اللہ عاصم'&&e.langs.join()==='ar,ur','author/translator/langs');
 ck(reg.find(x=>x.key==='sarraj').count===1577,'existing Arabic Sarraj untouched');
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n.find(x=>x.id==='20261120a');
-ck(c.keys.includes(key)&&c.i.ur.length===c.keys.length&&c.l.includes('#/s/'+key)&&c.i.ur.at(-1).includes('(1578)'),'news line');
+ck(c.keys.includes(key)&&c.i.ur.length===c.keys.length&&c.l.includes('#/s/'+key)&&c.i.ur[c.keys.indexOf(key)].includes('(1578)'),'news line');
 ck(/"id":"20261120a"[^\n]*musnadsarrajur/.test(fs.readFileSync(R+'index.html','utf8')),'news in app list');
 if(bad)process.exit(1);console.log('PASS books_siraj_full');
