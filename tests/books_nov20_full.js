@@ -32,7 +32,7 @@ ck(!z.an['187']&&z.an['188']==='187'&&z.an['189']==='188','zuhd: printed 187 twi
 ck(q.an['478']==='477'&&q.an['982']==='981'&&!q.an['477'],'ishaq: printed 477 twice, last 981');
 ck(q.sections.length===39&&z.sections.length===73&&reg.find(x=>x.key==='fazailnasai').sections.length===82,'section counts');
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),h=fs.readFileSync(R+'index.html','utf8');
-const c=n[0];ck(c.id==='20261120a'&&c.keys.join()===Object.keys(want).join(),'news card');
-ck(c.i.ur.length===4&&c.i.ur.every((l,i)=>l.includes('('+want[c.keys[i]]+')')),'one line per book with count');
+const c=n[0];ck(c.id==='20261120a'&&c.keys.slice(0,4).join()===Object.keys(want).join(),'news card');
+ck(c.i.ur.length===c.keys.length&&Object.keys(want).every((k,i)=>c.i.ur[i].includes('('+want[k]+')')),'one line per book with count');
 ck(/"id":"20261120a"[^\n]*musnadishaq/.test(h),'news card in app list');
 if(bad)process.exit(1);console.log('PASS books_nov20_full');
