@@ -781,7 +781,7 @@ a.card .ct{color:var(--ink)}
 @media (min-aspect-ratio:3/4){#splv{object-fit:contain;width:auto;height:auto;max-width:min(100%,1000px);max-height:92vh;-webkit-mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%);mask-image:radial-gradient(ellipse 72% 74% at 50% 50%,#000 58%,transparent 100%)}}
 #splskip{position:absolute;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);background:rgba(0,0,0,.35);color:#e9d7a1;border:1px solid rgba(233,215,161,.45);border-radius:20px;padding:6px 20px;font:15px system-ui,sans-serif;cursor:pointer}
 </style>
-<script src="data/meta.js?h=4d3adf69db"></script>
+<script src="data/meta.js?h=93c0162909"></script>
 <script>try{var q=new URLSearchParams(location.search).get('hl');if(q&&/^(ur|en|ar|bn|hi|gu|fr)$/.test(q))localStorage.ui=q}catch(e){}</script>
 <script>
 (function(){
@@ -919,7 +919,7 @@ function ENGINE(){
   // prebuilt word index (data/ix, built by tools/mkindex.js): a search loads only the buckets of the words typed, never the book text
   const IX = {B: {}, P: null}, BUCKETS = (t) => { let h = 0; for (const c of [...t].slice(0, 2).join('')) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h % IX.M.nb; };
   const needIXM = () => IX.P || (IX.P = new Promise((ok, no) => { if (window.TURATH_IXM) { IX.M = window.TURATH_IXM; return ok(); }
-    const s = document.createElement('script'); s.src = 'data/ix/m.js?h=41ca0e6bdf'; s.onload = () => { IX.M = window.TURATH_IXM; ok(); }; s.onerror = () => { IX.P = null; no(new Error('index')); }; document.head.append(s); }));
+    const s = document.createElement('script'); s.src = 'data/ix/m.js?h=38c2d17829'; s.onload = () => { IX.M = window.TURATH_IXM; ok(); }; s.onerror = () => { IX.P = null; no(new Error('index')); }; document.head.append(s); }));
   const getBucket = (fam, b) => { const k = fam + '/' + b; return IX.B[k] || (IX.B[k] = fetch('data/ix/' + k + '.bin?h=' + IX.M.h[fam][b]).then(r => { if (!r.ok) throw new Error('ix'); return r.arrayBuffer(); }).then(buf => {
     const hl = new DataView(buf).getUint32(0, true), hd = JSON.parse(new TextDecoder().decode(new Uint8Array(buf, 4, hl)));
     hd.pos = new Map(hd.t.map((t, i) => [t, i])); hd.u8 = new Uint8Array(buf, 4 + hl); return hd; }).catch(e => { delete IX.B[k]; throw e; })); };
@@ -1177,7 +1177,7 @@ function ENGINE(){
 })();
 
 }
-window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const s=document.createElement("script");s.src="data/hl.js?h=f91fd2e041";s.onload=()=>{try{const HL=window.TURATH_HL,R=window.TURATH_REFS||{},M=window.TURATH_META||{};
+window.needData=(()=>{let p=null;return()=>p||(p=new Promise(ok=>{const s=document.createElement("script");s.src="data/hl.js?h=51c5f50c34";s.onload=()=>{try{const HL=window.TURATH_HL,R=window.TURATH_REFS||{},M=window.TURATH_META||{};
 /* light records (numbers, chapters, first line); the full text of 200 hadith at a time comes from data/h/<k>.js when one is opened or a search needs it */
 const st=HL.r.map((r,i)=>{const h=Object.assign({num:r[0],demo:!!r[1]},HL.t[r[2]]);if(r[3]!==null)h.grade=r[3];h.matn=[r[4]];h.content={};h.tuhfa={};h.refs=R[r[0]]||[];h._j=r[5]&1;h._t=(r[5]>>1)&1;h._c=Math.floor(i/HL.n);h._ok=false;return h;});
 window.TURATH_DATA=Object.assign({},M,{hadith:st});}catch(e){}ok();};s.onerror=()=>ok();document.body.append(s);}));})();window.ENGINE_READY=null;window.localApi=async u=>{if(u==='books'&&window.TURATH_META&&!window.TURATH_DATA)return {books:window.TURATH_META.booksList};if(!window.ENGINE_READY)window.ENGINE_READY=window.needData().then(()=>{if(!window.TURATH_DATA){window.NO_DATA=true;return async v=>{if(/^books/.test(v))return {books:[]};throw new Error("no data");};}ENGINE();return window.localApi;});return (await window.ENGINE_READY)(u);};/* the 50 MB of Jami text loads only when something needs it (search, a Jami page) or when the search box is touched */window.TD=()=>window.TURATH_DATA||window.TURATH_META||{};const warm=()=>window.localApi("list?limit=1").then(()=>window.warmSearch&&window.warmSearch()).catch(()=>{});addEventListener("pointerdown",e=>{if(e.target&&e.target.closest&&e.target.closest("#q,#gsq,.gsq"))warm()},{capture:true});addEventListener("hashchange",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});addEventListener("load",()=>{if(/^#\/(search|q)/.test(location.hash))warm()});/* the hadith index (8 MB) is fetched quietly a few seconds after the page is up, so that opening a hadith book is one tap; skipped on data-saver and slow connections and in the diary / owner pages *//* lean = the phone is on mobile data / data-saver / a slow network: nothing is fetched in advance there (only what is opened) */window.LEAN=()=>{try{const c=navigator.connection;return !!(c&&(c.saveData||c.type==="cellular"||/^(slow-2g|2g|3g)$/.test(c.effectiveType||"")))}catch(e){return false}};addEventListener("load",()=>{setTimeout(()=>{try{if(window.LEAN&&window.LEAN()||/^#\/(hifz|owner|quiz|verify)/.test(location.hash))return;(window.requestIdleCallback||(f=>setTimeout(f,300)))(()=>{if(window.needData)window.needData().then(()=>window.hbWarm&&window.hbWarm()).catch(()=>{})})}catch(e){}},3500)});
@@ -1666,6 +1666,9 @@ async function hbCounts(){if(HBC)return HBC;HBC={};
   if(HBC.jami)HBC.jami+=6;if(HBC.jamik)HBC.jamik+=6; // the printed book: 16546 numbered hadith and 6 with a sub-number (10345-1 ...)
   BOOKS.filter(b=>b.kind==='lang').forEach(b=>HBC[b.key]=HBC.jami);return HBC;}
 function hbOpen(key,h){book=key;try{localStorage.book=key}catch(e){}$('#book').value=key;$('#q').value='';location.hash=h||'#/b';}
+/* a reference to a hadith number (the «(4293، 4714)» repeats, the cited-by chips, the sub-books' Jami numbers …) always opens that hadith in al-Jami al-Kamil — from Jami and from Talkhis alike; the neighbour strip and number search stay in the book that is open */
+document.addEventListener('click',e=>{if(e.defaultPrevented||e.button||e.metaKey||e.ctrlKey||e.shiftKey)return;const a=e.target.closest&&e.target.closest('a[href^="#/h/"]');if(!a||a.closest('.hsxb,.hgrid,.numhit,.chips.hchips'))return;
+  const h=a.getAttribute('href');if(!/^#\/h\/\d+$/.test(h)||book==='jamik')return;e.preventDefault();hbOpen('jamik',h);},true);
 function hbLast(key){try{return localStorage['bl:'+key]||null}catch(e){return null}}
 // on the page of a book: «continue where you left off» when this book has a saved place
 function bookResume(key){const h=hbLast(key);if(!h||h===location.hash)return null;return el('a',{class:'resume bkresume',href:h,on:{click:()=>{if(key&&BOOKS.some(x=>x.key===key))switchBook(key);}}},icon('history'),T('hbResume'));}
@@ -2101,7 +2104,15 @@ function refMk(key,n,red){const nm=+n;return el('a',{class:'rlink'+(red?' red':'
   else box.remove();}}},'['+((window.COLL&&COLL.printed&&COLL.printed(key,nm))||n)+']');}
 // the exact hadith a reference of a Jami hadith points to (its own number in the book), when one printed number holds several hadith
 function refLinked(jn,key,n){try{const h=jn&&(window.TURATH_REFS?{refs:window.TURATH_REFS[jn]}:(window.TURATH_DATA.hadith||[]).find(x=>x.num===jn));const r=h&&(h.refs||[]).find(r=>r.key===key&&parseInt(r.number,10)===+n&&r.n);return r?r.n:undefined;}catch(e){return undefined;}}
-function refRich(t,jn){if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg,jn));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
+function refRich(t,jn){
+  /* «وفي التفسير \ue010bukhari\ue011(4592)»: the mark names the book of the numbers that follow (red / blue … marks may stand before the bracket) */
+  if(t&&/\ue010[^|\ue011]*\ue011/.test(t)){const RXK=/\ue010([^|\ue011]*)\ue011([\ue000\ue004\ue006\ue008]?)\(([^()]*)\)([\ue001\ue005\ue007\ue009]?)/g,CL={'\ue000':'red','\ue004':'blue','\ue006':'orange','\ue008':'purple'},o=[];let last=0,m;
+    while((m=RXK.exec(t))){if(m.index>last)o.push(...refRich(t.slice(last,m.index),jn));const key=m[1],g=CL[m[2]]||'';o.push('(');
+      m[3].split(/([،,])/).forEach(seg=>{const mk=(seg.match(/[\ue000\ue004\ue006\ue008]/)||[''])[0],cl=g||CL[mk]||'',c=seg.replace(MKS_,''),nn=(DIG10(c).match(/^\s*(\d+)\s*$/)||[])[1];
+        if(nn&&COLL.has(key)){const a=refMk(key,nn,cl==='red');a.textContent=c.trim();if(cl&&cl!=='red')a.classList.add(cl);o.push(a);}else if(nn){o.push(el('span',{class:cl==='red'?'red':cl},c));}else o.push(...rich(c,'ar'));});
+      o.push(')');last=m.index+m[0].length;}
+    if(last<t.length)o.push(...refRich(t.slice(last),jn));return o;}
+  if(t&&/\ue010/.test(t)){const o=[];t.split(/\ue010([^|\ue011]*)\|(\d+)\ue011/).forEach((seg,i,a)=>{if(i%3===0){if(seg)o.push(...refRich(seg,jn));}else if(i%3===1){o.push(' رقم ',refMk(seg,a[i+1],false));}});return o;}
   const out=[];let last=0;RRE.lastIndex=0;let m;
   while((m=RRE.exec(t))){const key=RKEY[NK(m[1])];if(!key||!window.COLL)continue;const bn=m[1];
     const inner=DIG10(m[4].replace(MKS_,'')),pr=refParts(m);if(/\//.test(inner)){const hm=key==='mujamkabir'&&inner.match(/^\s*(\d+)\s*\/\s*ح\s*(\d+)\s*$/),row=hm?(TD().mkrow||{})[hm[1]+'/'+hm[2]]:(key==='hakim'&&jn?(TD().hkrow||{})[jn+'|'+inner.replace(/\s+/g,'')]:0);if(!row)continue;
@@ -2214,7 +2225,7 @@ async function showHadith(num){
     if(enL)v.append(el('p',{class:'ltr',dir:'auto'},enL));
     if(arL)v.append(el('p',{class:'ar bc',lang:'ar'},arL));
   }else{
-    const urL=ui==='ar'?'':(d.part_ur||'')+(d.chapter_ur?(d.part_ur?' / ':'')+d.chapter_ur:''),enOk=ui!=='ar'&&enL&&(d.chapter_en||d.part_en);
+    const urL=ui==='ar'?'':(d.part_ur||'')+(d.chapter_ur?(d.part_ur?' / ':'')+d.chapter_ur:''),enOk=ui!=='ar'&&ui!=='ur'&&enL&&(d.chapter_en||d.part_en);   /* no English kitab/bab names in the Urdu UI (the Jami data has Arabic + English only) */
     v.append(el('p',{class:'ur',style:'color:var(--muted);margin:.2rem 0'},urL,urL?el('br'):null,T('hadith')(label(ui==='ar'?ad(d.num):d.num)),
       arL?el('br'):null,arL?el('span',{class:'ar',lang:'ar'},arL):null,enOk?el('br'):null,enOk?el('span',{class:'ltr',lang:'en'},enL):null));
   }
@@ -4858,9 +4869,16 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
+  // English grade lines of the Sunan books (Sahih (Al-Albani); Sahih (Zubair Ali Zai) …) in the words of the Urdu / Arabic interface
+  const GRW = [['Muhammad Muhyi Al-Din Abdul Hamid', 'محمد محیی الدین عبد الحمید', 'محمد محيي الدين عبد الحميد'], ['Muhammad Fouad Abd al-Baqi', 'محمد فؤاد عبد الباقی', 'محمد فؤاد عبد الباقي'], ['Ahmad Muhammad Shakir', 'احمد محمد شاکر', 'أحمد محمد شاكر'], ['Bashar Awad Maarouf', 'بشار عواد معروف', 'بشار عواد معروف'], ['Zubair Ali Zai', 'زبیر علی زئی', 'زبير علي زئي'], ['Shuaib Al Arnaut', 'شعیب الارنؤوط', 'شعيب الأرنؤوط'], ['Salim al-Hilali', 'سلیم ہلالی', 'سليم الهلالي'], ['Al-Albani', 'البانی', 'الألباني'], ['Abu Ghuddah', 'ابو غدہ', 'أبو غدة'], ['Darussalam', 'دار السلام', 'دار السلام'],
+    ['Isnaad Sahih', 'اسنادہ صحیح', 'إسناده صحيح'], ['Isnaad Hasan', 'اسنادہ حسن', 'إسناده حسن'], ['Sahih Isnaad', 'صحیح الاسناد', 'صحيح الإسناد'], ['Daif Isnaad', 'ضعیف الاسناد', 'ضعيف الإسناد'], ['Hasan Isnaad', 'حسن الاسناد', 'حسن الإسناد'], ['Hasan Sahih', 'حسن صحیح', 'حسن صحيح'], ['Sahih Lighairihi', 'صحیح لغیرہ', 'صحيح لغيره'], ['Hasan Lighairihi', 'حسن لغیرہ', 'حسن لغيره'], ['Sahih Hadith', 'صحیح حدیث', 'حديث صحيح'], ['Sahih Mutawatir', 'صحیح متواتر', 'صحيح متواتر'], ['Sahih Muquf', 'صحیح موقوف', 'صحيح موقوف'], ['Mauquf Sahih', 'صحیح موقوف', 'صحيح موقوف'], ['Mauquf Daif', 'ضعیف موقوف', 'ضعيف موقوف'], ['Sahih Maqtu', 'صحیح مقطوع', 'صحيح مقطوع'], ['Maqtu Sahih', 'صحیح مقطوع', 'صحيح مقطوع'], ['Daif Muquf', 'ضعیف موقوف', 'ضعيف موقوف'], ['Very Daif', 'سخت ضعیف', 'ضعيف جدا'],
+    ['Bukhari And Muslim', 'بخاری و مسلم', 'البخاري ومسلم'], ['Agreed Upon', 'متفق علیہ', 'متفق عليه'], ['Sahih Bukhari', 'صحیح بخاری', 'صحيح البخاري'], ['Sahih Muslim', 'صحیح مسلم', 'صحيح مسلم'], ['Through Last', 'تا آخر', 'إلى آخره'], ['Mukhtasar', 'مختصراً', 'مختصرا'], ['Witness', 'شاہد', 'شاهد'], ['After', 'بعد', 'بعد'], ['Mutawatir', 'متواتر', 'متواتر'], ['Muquf', 'موقوف', 'موقوف'], ['Maqtu', 'مقطوع', 'مقطوع'], ['Munkar', 'منکر', 'منكر'], ['Shadh', 'شاذ', 'شاذ'], ['Mawdu', 'موضوع', 'موضوع'], ['Daif', 'ضعیف', 'ضعيف'], ['Hasan', 'حسن', 'حسن'], ['Sahih', 'صحیح', 'صحيح']];
+  const GRL = g => { if (typeof g !== 'string' || !g || /[\u0600-\u06ff]/.test(g) || !/[A-Za-z]/.test(g) || (ui !== 'ur' && ui !== 'ar')) return g; const k = ui === 'ur' ? 1 : 2;
+    let x = g; GRW.forEach(w => { x = x.replace(new RegExp('(?<![A-Za-z])' + w[0].replace(/[-]/g, '\\-') + '(?![A-Za-z])', 'g'), w[k]); }); return x.replace(/;/g, ui === 'ur' ? '؛' : '؛').replace(/\s{2,}/g, ' ').trim(); };
+  window.GRL = GRL;
   function hobj(b, n, lang) {
-    const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null, e = row(b, 'en', n);
-    return {num: n, sanad: '', matn: [a ? a[1] : ''], grade: TKCLEAN(b, b.parts ? ((t && t[2]) || (a && a[2]) || '') : ((e && e[2]) || (t && t[2]) || (a && a[2]) || '')), content: t ? {translation: {[lang]: [t[1]]}} : {},
+    const a = row(b, 'ar', n), t = lang ? row(b, lang, n) : null, e = row(b, 'en', n), nonEn = ui === 'ur' || ui === 'ar';   // Urdu / Arabic interface: the Urdu or Arabic grade line first, never the English one
+    return {num: n, sanad: '', matn: [a ? a[1] : ''], grade: GRL(TKCLEAN(b, b.parts ? ((t && t[2]) || (a && a[2]) || '') : (nonEn ? ((t && t[2]) || (a && a[2]) || (e && e[2]) || '') : ((e && e[2]) || (t && t[2]) || (a && a[2]) || '')))), content: t ? {translation: {[lang]: [t[1]]}} : {},
       part_en: bname(b), chapter_en: '', takhrij_en: ''};
   }
   // search hits in red (like the Quran search): wrap whole words that match a query word (also with ال / و in front)
