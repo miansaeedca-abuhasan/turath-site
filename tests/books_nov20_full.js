@@ -39,4 +39,5 @@ const fz=reg.find(x=>x.key==='fazailnasai');
 ck(fz.trn.ur==='محمد احمد صدیق'&&fz.trn.en==='Muhammad Ahmad Siddiq','fazailnasai translator name');
 ck(!/النصری|Nasri/.test(JSON.stringify(n[0])+fs.readFileSync(R+'index.html','utf8').match(/"id":"20261120a"[^\n]*/)[0]),'news: old translator name gone');
 ck(!/\b(?:ديا|فرمايا|ركهيں|كهه)\b|صحابه کرام/.test(JSON.stringify(fz.intro)),'fazailnasai intro: no Arabic-letter spellings in Urdu words');
+ck(reg.every(x=>x.key!=='fazailnasai'||x.sections.every(sc=>!/[كيىة]|ه\b|الله/.test(sc[1].replace(/قرة/,'')))),'fazailnasai section titles: no Arabic-letter spellings');
 if(bad)process.exit(1);console.log('PASS books_nov20_full');
