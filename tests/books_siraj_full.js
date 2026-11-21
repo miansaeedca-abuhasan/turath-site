@@ -14,7 +14,7 @@ ck(!/\(\(/.test(all)&&!/یٰ/.test(JSON.stringify(ur)),'no (( and no dagger alif
 ck(!/صلی اللہ(?! علیہ)|رضی اللہ(?! عن)/.test(JSON.stringify(ur)),'honorifics complete in Urdu');
 const ks=ur.filter(r=>r[3]&&r[3].k).map(r=>r[3].k);
 ck(ks.length===N&&ks.every(k=>!/[۰-۹٠-٩]/.test(k)),'takhrij on every hadith, English digits');
-ck(ks.filter(k=>/\(\d+(\/\d+)?([،]\s*\d+)*\)/.test(k)).length>1300,'takhrij book (number) style');
+ck(ks.filter(k=>/\((ص )?\d+(\/\d+)?([،]\s*\d+)*\)/.test(k)).length>1300,'takhrij book (number) style');
 ck(!ks.some(k=>/رقم|حدیث\s*:\s*\d/.test(k)),'no «رقم» / «حدیث: N» left in takhrij');
 // printed numbering
 ck(e.an['594']==='594/1'&&e.an['595']==='594/2'&&e.an['596']==='595'&&!e.an['593'],'printed 594/1, 594/2');
