@@ -19,14 +19,22 @@ r=await post(AR+' اثنان');ck(r.status===429,'person limit after 2 new trans
 r=await post('hello world this is english text only');ck(r.status===400,'English text refused');
 gem=false;r=await post(AR+' ثالث','2.2.2.2');ck(r.status===502,'Gemini failure -> 502');
 ck(m.usable('نص عربي طويل جدا هنا','This is an English reply that is long enough to look like text'+' abc'.repeat(30))===false,'English answer is not usable');
+// other language
+r=await m.onRequest({request:new Request('https://x.test/api/htrans',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://x.test','CF-Connecting-IP':'9.9.9.9'},body:JSON.stringify({ar:AR,lang:'en'})}),env:{DB,GEMINI_API_KEY:'k'}});ck(r.status===502||r.status===200,'en request handled');
+ck(m.usable(AR,'Narrated by Umar: actions are judged by intentions.','en')===true&&m.usable(AR,AR,'en')===false,'English usable/unusable');
 // ---- the button in the hadith card
 const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:430,height:900}})).newPage();
-await p.addInitScript(()=>{try{localStorage.newsSeen='20261122a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.newsSeen='20261122a';localStorage.newsDay=new Date().toDateString();if(!localStorage.ui){localStorage.lang='ur';localStorage.ui='ur'}}catch(e){}});
 let posted=0;await p.route('**/api/htrans',async rt=>{posted++;await rt.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ur:'آزمائشی ترجمہ: اعمال کا دارومدار نیتوں پر ہے۔'})})});
-await p.goto('http://localhost:8765/index.html#/s/humaydi/n/5');await p.waitForSelector('.mt.ar',{timeout:30000});
+await p.goto('http://localhost:8765/index.html#/s/zuhd/n/5');await p.waitForSelector('.mt.ar',{timeout:30000});
 const has=await p.$('.gembtn');ck(!!has,'button on an Arabic-only hadith book');
-if(has){ck((await has.textContent()).trim()==='ترجمہ جیمنائی','button name');await has.click();await p.waitForSelector('.gembox .tr',{timeout:8000});const t=await p.textContent('.gembox');ck(/آزمائشی ترجمہ/.test(t)&&/مشینی/.test(t),'translation + machine note shown');ck(posted===1,'one request');await has.click();ck(await p.$eval('.gembox',e=>e.hidden),'second tap hides it');await has.click();ck(posted===1,'shown again without a new request')}
+if(has){ck((await has.textContent()).trim()==='AI ترجمہ','button name');await has.click();await p.waitForSelector('.gembox .tr',{timeout:8000});const t=await p.textContent('.gembox');ck(/آزمائشی ترجمہ/.test(t)&&/مشینی/.test(t)&&!/جیمنائی/.test(t),'translation + machine note shown, no «جیمنائی»');ck(posted===1,'one request');await has.click();ck(await p.$eval('.gembox',e=>e.hidden),'second tap hides it');await has.click();ck(posted===1,'shown again without a new request')}
+await p.goto('http://localhost:8765/index.html#/s/humaydi/n/5');await p.reload();await p.waitForSelector('.mt.ar',{timeout:30000});ck(!(await p.$('.gembtn')),'no button where a separate Urdu book exists (humaydi)');
 await p.goto('http://localhost:8765/index.html#/s/muslim/n/5');await p.waitForSelector('.mt.ar',{timeout:30000});ck(!(await p.$('.gembtn')),'no button on a book that already has an Urdu translation');
 await p.goto('http://localhost:8765/index.html#/s/tahdhibkamal/n/5');await p.waitForTimeout(2500);ck(!(await p.$('.gembtn')),'no button on a narrators book');
+// English UI: button in English, request carries lang en
+let body='';await p.unroute('**/api/htrans');await p.route('**/api/htrans',async rt=>{body=rt.request().postData();await rt.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ur:'Actions are judged by intentions.'})})});
+await p.evaluate(()=>{localStorage.lang='en';localStorage.ui='en'});await p.goto('http://localhost:8765/index.html#/s/zuhd/n/6');await p.reload();await p.waitForSelector('.mt.ar',{timeout:30000});
+const eb=await p.$('.gembtn');ck(!!eb&&(await eb.textContent()).trim()==='AI Translation','English button');if(eb){await eb.click();await p.waitForSelector('.gembox .tr',{timeout:8000});ck(/"lang":"en"/.test(body),'lang en sent');}
 await b.close();
 console.log(bad.length?'FAIL '+bad.join(' | '):'PASS gemini_translation');process.exit(bad.length?1:0)})();

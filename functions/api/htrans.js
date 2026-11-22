@@ -5,31 +5,38 @@ import {isOwner} from '../_lib/owner_auth.js';
 // Limits (only for NEW translations): HTRANS_USER per person per day (default 40), HTRANS_DAILY for the whole site (default 3000); the owner is not limited.
 const MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest'];
 const TIMEOUT = 50000;
-const PROMPT = 'You translate Arabic hadith and athar texts into Urdu for an Islamic library website. Translate the WHOLE text below (the chain of narrators too) faithfully into simple, fluent, idiomatic Urdu: add nothing, leave nothing out, no explanation, no commentary, no headings. Rules: (1) Write honorifics in full words: «رضی اللہ عنہ» / «رضی اللہ عنہا» / «رضی اللہ عنہما» / «رضی اللہ عنہم», «صلی اللہ علیہ وسلم», «علیہ السلام», «رحمہ اللہ» — never symbols such as ﷺ ؓ ؒ ؑ and never abbreviations. (2) Say «سیدنا» / «سیدہ» for Companions, not «حضرت». (3) Quoted speech goes in Urdu quotation marks ’’ ‘‘. (4) A Quran verse inside the text: write the verse in Arabic with its harakat between ﴿ ﴾ and then its Urdu translation. (5) Write in Urdu letters only (ک ی ہ ے), no English or Latin letters, no markdown, no numbering that is not in the source. (6) Keep the paragraphs of the source. Answer with the Urdu translation only.\n\nArabic text:\n';
+const LN = {ur: 'Urdu', en: 'English', bn: 'Bengali', hi: 'Hindi', gu: 'Gujarati', fr: 'French', ne: 'Nepali'};
+const SCRIPT = {ur: /[؀-ۿ]/g, bn: /[ঀ-৿]/g, hi: /[ऀ-ॿ]/g, ne: /[ऀ-ॿ]/g, gu: /[઀-૿]/g, en: /[A-Za-z]/g, fr: /[A-Za-zÀ-ÿ]/g};
+const SALAM = {ur: ' صلی اللہ علیہ وسلم', en: ' (peace be upon him)', fr: ' (paix et bénédictions sur lui)', bn: ' সাল্লাল্লাহু আলাইহি ওয়া সাল্লাম', hi: ' सल्लल्लाहु अलैहि वसल्लम', ne: ' सल्लल्लाहु अलैहि वसल्लम', gu: ' સલ્લલ્લાહુ અલયહિ વસલ્લમ'};
+const prompt = l => 'You translate Arabic hadith and athar texts into ' + LN[l] + ' for an Islamic library website. Translate the WHOLE text below (the chain of narrators too) faithfully into simple, fluent, idiomatic ' + LN[l] + ': add nothing, leave nothing out, no explanation, no commentary, no headings. Rules: (1) Write the honorifics for the Prophet, the Companions and the scholars in full words of ' + LN[l] + ', never with symbols such as ﷺ ؓ ؒ ؑ and never abbreviations. ' +
+  (l === 'ur' ? '(2) Write «رضی اللہ عنہ» / «رضی اللہ عنہا» / «رضی اللہ عنہما» / «رضی اللہ عنہم», «صلی اللہ علیہ وسلم», «علیہ السلام», «رحمہ اللہ»; say «سیدنا» / «سیدہ» for Companions, not «حضرت»; quoted speech goes in Urdu quotation marks ’’ ‘‘; write in Urdu letters only (ک ی ہ ے), no English or Latin letters. ' : '(2) Do not use Arabic-script words other than inside a Quran verse. ') +
+  '(3) A Quran verse inside the text: write the verse in Arabic with its harakat between ﴿ ﴾ and then its translation. (4) No markdown, no numbering that is not in the source. (5) Keep the paragraphs of the source. Answer with the translation only.\n\nArabic text:\n';
 const J = {'Content-Type': 'application/json', 'Cache-Control': 'no-store'};
 const err = (s, m, x) => new Response(JSON.stringify(Object.assign({error: m}, x || {})), {status: s, headers: J});
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 const sha = async s => hex(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)));
 const norm = s => String(s || '').replace(/[ً-ْٰـ]/g, '').replace(/\s+/g, ' ').trim();   // key = the letters of the text (harakat do not change the key)
 
-async function gem(env, model, text, ms) {
+async function gem(env, model, text, ms, lang) {
   const url = 'https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent';
   for (const think of [true, false]) {
     const gc = think ? {temperature: 0.2, thinkingConfig: {thinkingBudget: 0}} : {temperature: 0.2};
-    const r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY}, body: JSON.stringify({contents: [{parts: [{text: PROMPT + text}]}], generationConfig: gc}), signal: AbortSignal.timeout(ms || TIMEOUT)});
+    const r = await fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json', 'x-goog-api-key': env.GEMINI_API_KEY}, body: JSON.stringify({contents: [{parts: [{text: prompt(lang) + text}]}], generationConfig: gc}), signal: AbortSignal.timeout(ms || TIMEOUT)});
     if (r.status !== 400 || !think) return r;
   }
 }
 // tidy the answer: symbols the owner does not want, markdown marks, stray Latin letters
-export function clean(t) {
+export function clean(t, l) {
   return String(t || '').replace(/\r/g, '').replace(/^```[a-z]*\n?|```$/g, '').replace(/\*\*|__|^#+\s*/gm, '')
-    .replace(/ﷺ/g, ' صلی اللہ علیہ وسلم').replace(/\s*[ؓؒؑ]/g, '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
+    .replace(/ﷺ/g, SALAM[l || 'ur']).replace(/\s*[ؓؒؑ]/g, '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
-export function usable(ar, ur) {
-  const a = (ur.match(/[؀-ۿ]/g) || []).length;
+export function usable(ar, ur, l) {
+  l = l || 'ur';
+  const a = (ur.match(SCRIPT[l]) || []).length;
   if (a < 8 || ur.length > ar.length * 8 + 400) return false;
-  if ((ur.match(/[A-Za-z]/g) || []).length > Math.max(6, a * 0.03)) return false;     // an English answer / an apology is not a translation
-  return true;
+  if (l === 'ur') return (ur.match(/[A-Za-z]/g) || []).length <= Math.max(6, a * 0.03);     // an English answer / an apology is not a translation
+  const arl = (ur.match(/[؀-ۿ]/g) || []).length;           // an untouched Arabic answer is not a translation
+  return arl <= a * 0.3;
 }
 export async function onRequest(ctx) {
   try { return await handle(ctx); } catch (e) { return err(500, 'exception', {detail: String(e && e.message || e).slice(0, 160)}); }
@@ -43,11 +50,12 @@ async function handle({request, env}) {
   const u = new URL(request.url), origin = request.headers.get('Origin');
   if (origin && new URL(origin).host !== u.host) return err(403, 'origin');
   let b; try { b = await request.json(); } catch (e) { return err(400, 'body'); }
+  const lang = LN[b.lang] ? b.lang : 'ur';
   const ar = String(b.ar || '').replace(/\r/g, '').trim();
   const letters = (ar.match(/[ء-يٱ-ۓ]/g) || []).length;
   if (ar.length < 12 || ar.length > 9000 || letters < ar.replace(/\s/g, '').length * 0.5) return err(400, 'text');
   if (!env.DB) return err(503, 'no database');
-  const key = await sha(norm(ar));
+  const key = await sha((lang === 'ur' ? '' : lang + '|') + norm(ar));   // Urdu keeps the old key, so saved Urdu translations stay valid
   await env.DB.prepare('CREATE TABLE IF NOT EXISTS htrans (h TEXT PRIMARY KEY, ur TEXT NOT NULL, model TEXT, ts INTEGER)').run();
   const hit = await env.DB.prepare('SELECT ur FROM htrans WHERE h = ?').bind(key).first();
   if (hit) return new Response(JSON.stringify({ur: hit.ur, saved: true}), {headers: J});
@@ -72,11 +80,11 @@ async function handle({request, env}) {
   for (const m of [env.GEMINI_MODEL_TR || MODELS[0], MODELS[1]]) {
     const left = 85000 - (Date.now() - t0); if (left < 8000) break;
     try {
-      const r = await gem(env, m, ar, Math.min(TIMEOUT, left));
+      const r = await gem(env, m, ar, Math.min(TIMEOUT, left), lang);
       if (!r.ok) { last = 'status ' + r.status; continue; }
       const j = await r.json();
-      const t = clean(((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join(''));
-      if (usable(ar, t)) { ur = t; model = m; break; }
+      const t = clean(((((j.candidates || [])[0] || {}).content || {}).parts || []).map(p => p.text || '').join(''), lang);
+      if (usable(ar, t, lang)) { ur = t; model = m; break; }
       last = 'unusable answer';
     } catch (e) { last = String(e && e.message || e).slice(0, 60); }
   }

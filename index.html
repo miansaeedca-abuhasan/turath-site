@@ -4955,26 +4955,35 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...tkJoin(kl)));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
-  // ===== «ترجمہ جیمنائی»: the hadith books that have no Urdu translation get one on demand (owner 22-11-2026). The tap sends the Arabic text to /api/htrans; the answer is saved on the server, so the next reader gets it at once. =====
+  // ===== «AI ترجمہ»: the hadith books that have no Urdu translation get one on demand (owner 22-11-2026). The tap sends the Arabic text to /api/htrans; the answer is saved on the server, so the next reader gets it at once. =====
   const GEM_CATS = new Set([1, 3, 6, 7, 9, 14, 15, 16, 17, 18]);   // hadith collections (not tafsir, fiqh, rijal, hadith sciences)
-  const gemOk = b => ui === 'ur' && b && b.key && !b.prose && !b.parts && !(b.langs || []).includes('ur') && GEM_CATS.has(window.HB_CAT ? window.HB_CAT[b.key] : (typeof HB_CAT !== 'undefined' ? HB_CAT[b.key] : -1)) && !RJ_LIB.includes(b.key) && !RJ_STRUCT.includes(b.key);
-  const GEM_T = {name: 'ترجمہ جیمنائی', busy: 'ترجمہ ہو رہا ہے…', fail: 'ترجمہ نہیں ہو سکا، دوبارہ کوشش کریں۔', lim: 'آج کے لیے ترجمے کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔', note: 'یہ مشینی ترجمہ ہے (جیمنائی)'};
+  const GEM_LANGS = ['ur', 'en', 'bn', 'hi', 'gu', 'fr', 'ne'];       // Arabic UI needs no translation; Al-Jami al-Kamil is not a coll book, so it never gets the button
+  const gemOk = b => GEM_LANGS.includes(ui) && b && b.key && !b.prose && !b.parts && !(b.langs || []).includes(ui) && !(C.idx || []).some(o => o.key === b.key + 'ur' && (o.langs || []).includes(ui)) && GEM_CATS.has(window.HB_CAT ? window.HB_CAT[b.key] : (typeof HB_CAT !== 'undefined' ? HB_CAT[b.key] : -1)) && !RJ_LIB.includes(b.key) && !RJ_STRUCT.includes(b.key);
+  const GEM_TT = {
+    ur: ['AI ترجمہ', 'ترجمہ ہو رہا ہے…', 'ترجمہ نہیں ہو سکا، دوبارہ کوشش کریں۔', 'آج کے لیے ترجمے کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔', 'یہ مشینی ترجمہ ہے (AI ترجمہ)'],
+    en: ['AI Translation', 'Translating…', 'The translation failed. Please try again.', 'Today\'s translation limit is reached. Please try again tomorrow.', 'This is a machine translation (AI Translation)'],
+    bn: ['এআই অনুবাদ', 'অনুবাদ হচ্ছে…', 'অনুবাদ করা যায়নি, আবার চেষ্টা করুন।', 'আজকের অনুবাদের সীমা শেষ। আগামীকাল আবার চেষ্টা করুন।', 'এটি যান্ত্রিক অনুবাদ (এআই অনুবাদ)'],
+    hi: ['एआई अनुवाद', 'अनुवाद हो रहा है…', 'अनुवाद नहीं हो सका, फिर कोशिश करें।', 'आज की अनुवाद सीमा पूरी हो गई। कल फिर कोशिश करें।', 'यह मशीनी अनुवाद है (एआई अनुवाद)'],
+    gu: ['એઆઈ અનુવાદ', 'અનુવાદ થઈ રહ્યો છે…', 'અનુવાદ થઈ શક્યો નથી, ફરી પ્રયત્ન કરો.', 'આજની અનુવાદ મર્યાદા પૂરી થઈ. આવતીકાલે ફરી પ્રયત્ન કરો.', 'આ યાંત્રિક અનુવાદ છે (એઆઈ અનુવાદ)'],
+    fr: ['Traduction IA', 'Traduction en cours…', 'La traduction a échoué. Réessayez.', 'La limite de traduction du jour est atteinte. Réessayez demain.', 'Traduction automatique (Traduction IA)'],
+    ne: ['एआई अनुवाद', 'अनुवाद हुँदैछ…', 'अनुवाद हुन सकेन, फेरि प्रयास गर्नुहोस्।', 'आजको अनुवाद सीमा पुग्यो। भोलि फेरि प्रयास गर्नुहोस्।', 'यो मशीनी अनुवाद हो (एआई अनुवाद)']};
   function gemBox(b, ar) {
-    const box = el('div', {class: 'trbox gembox', lang: 'ur', dir: 'rtl', hidden: ''}), btn = el('button', {class: 'trbtn gembtn', type: 'button', lang: 'ur'}, GEM_T.name);
+    const L = ui, G = GEM_TT[L] || GEM_TT.en, GEM_T = {name: G[0], busy: G[1], fail: G[2], lim: G[3], note: G[4]};
+    const box = el('div', {class: 'trbox gembox', lang: L, dir: DIR(L), hidden: ''}), btn = el('button', {class: 'trbtn gembtn', type: 'button', lang: L}, GEM_T.name);
     let done = false, busy = false;
     const msg = (t, bad) => { box.replaceChildren(el('p', {class: 'gemmsg' + (bad ? ' bad' : '')}, t)); };
     btn.addEventListener('click', async () => {
       if (done) { box.hidden = !box.hidden; btn.classList.toggle('on', !box.hidden); return; }
       if (busy) return; busy = true; box.hidden = false; btn.classList.add('on'); msg(GEM_T.busy);
       try {
-        const r = await fetch('/api/htrans', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ar})});
+        const r = await fetch('/api/htrans', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ar, lang: L})});
         const j = await r.json().catch(() => ({}));
-        if (r.ok && j.ur) { done = true; box.replaceChildren(el('div', {class: 'tr', lang: 'ur', dir: 'rtl'}, ...j.ur.split('\n').filter(t => t.trim()).map(t => paraEl(t, 'ur'))), el('div', {class: 'gemnote'}, GEM_T.note)); }
+        if (r.ok && j.ur) { done = true; box.replaceChildren(el('div', {class: 'tr', lang: L, dir: DIR(L)}, ...j.ur.split('\n').filter(t => t.trim()).map(t => paraEl(t, L))), el('div', {class: 'gemnote'}, GEM_T.note)); }
         else msg(r.status === 429 ? GEM_T.lim : GEM_T.fail, true);
       } catch (e) { msg(GEM_T.fail, true); }
       busy = false;
     });
-    return el('div', {class: 'tbox gem'}, el('div', {class: 'trwrap'}, el('div', {class: 'trrow'}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trtabs', role: 'tablist'}, btn)), box));
+    return el('div', {class: 'tbox gem'}, el('div', {class: 'trwrap'}, el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trtabs', role: 'tablist'}, btn)), box));
   }
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   // English grade lines of the Sunan books (Sahih (Al-Albani); Sahih (Zubair Ali Zai) …) in the words of the Urdu / Arabic interface
