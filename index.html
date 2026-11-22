@@ -148,6 +148,7 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
+.qtr.tf-ur_bhuttavi .arq{color:#9b5de5}   /* owner 22-11-2026: in Tafsir Bhatwi the Arabic inside the Urdu text (with its « ») is light purple */
 .subh,.phead{border-bottom:0;padding-bottom:.5em;background:linear-gradient(90deg,transparent,#c59a35 12%,#ecd180 50%,#c59a35 88%,transparent) 0 100%/100% 2px no-repeat,linear-gradient(90deg,transparent,#d9b862 30%,#d9b862 70%,transparent) 0 calc(100% - 6px)/100% 1px no-repeat}
 
 /* heading ornaments (owner picked 20-11-2026): 1 = tafsir headings, 2 = hadith-book introductions (عرض ناشر، مقدمہ، تقریظ), 3 = sharh / fawaid / other headings of a hadith. CSS-only: never copied. */
@@ -277,6 +278,7 @@ body.withseek #player .ptitle{display:none}
 .abeq{margin-inline-start:auto;color:#c98f00;font-size:.8rem}
 #player .sk{font-size:.74rem;font-weight:700;width:2.3rem;color:#fff;border:1px solid rgba(255,255,255,.35);height:1.9rem;border-radius:1rem;direction:ltr}
 .datebar{margin:0 0 .5rem;padding:0 .7rem;box-sizing:border-box;height:calc(1.9525rem + 2px);overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:.5rem;border:1px solid var(--line,#d9d2c3);border-radius:12px;background:var(--card,#fff);box-shadow:var(--shadow)}.datebar[hidden]{display:none}.datebar .dhj{flex:1 1 auto;min-width:0;font-size:.95rem;font-weight:700;color:var(--accent,#0b5d4b);line-height:1.9525rem;text-align:start;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.datebar .dgr{flex:0 1 auto;min-width:0;font-size:.78rem;opacity:.85;line-height:1.9525rem;text-align:end;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.datebar .dshare{flex:none;width:1.7rem;height:1.7rem;padding:0;display:flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--line,#d9d2c3);background:transparent;color:var(--accent,#0b5d4b);cursor:pointer}.datebar .dshare svg{width:1rem;height:1rem;fill:currentColor}.datebar .dshare:active{transform:scale(.92)}
+@media (min-width:700px){.datebar{display:grid;grid-template-columns:1fr auto 1fr;gap:.9rem}.datebar .dhj{text-align:start}.datebar .dgr{text-align:end}.datebar .dgr{flex:none}}
 #player .sk[hidden],#player .pspd[hidden]{display:none}
 #player .pspd{display:inline-flex;align-items:center;direction:ltr;flex:none;font-size:.78rem}
 #player .pspd b{min-width:2.9rem;text-align:center;font-weight:700}
@@ -3401,7 +3403,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const rng = g ? (g[0] === g[1] ? (NUM(g[0])) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]))) : '';
       tlang = t.lang; tparas = g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, '')) : [];
       body.replaceChildren(el('p', {class: 'cs'}, sName(s) + ' · ' + T('tafsirOf')(rng || (NUM(a)))),
-        ...(g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))) : [el('p', {class: 'note'}, T('noTafsir'))]));
+        ...(g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))) : [el('p', {class: 'note'}, T('noTafsir'))]));
     };
     sheet(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)),
       [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...arParts(s, a)), chips,
@@ -3683,7 +3685,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
       more.before(el('div', {class: 'card'}, el('p', {class: 'cs'}, sName(sn) + ' · ' + T('tafsirOf')(rng)),
         el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...ay),
-        ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: dirOf(t.lang)}, ...rich(x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, ''), t.lang)))));
+        ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: dirOf(t.lang)}, ...rich(x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, ''), t.lang)))));
       }); shown = Math.min(groups.length, shown + 10); if (shown >= groups.length) more.remove(); };
     v.append(more); more.addEventListener('click', add); add();
   }
@@ -4146,7 +4148,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         if (!(a === g[0] || !(pv && pv[0] === s && pv[1] >= g[0]))) { box.remove(); return; }
         const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
         box.append(el('span', {class: 'trname'}, T('tafsir') + ' — ' + tafNm(t) + ' (' + rng + ')'),
-          ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
+          ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
       } catch (e) { box.remove(); }
     })();
     return box;
