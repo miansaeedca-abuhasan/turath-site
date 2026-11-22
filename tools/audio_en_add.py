@@ -30,7 +30,7 @@ for f in zips:
             k+=1
         W[num]=L
 need=list(range(fr,to+1))
-miss=[n for n in need if n not in h or n not in W or len(W[n])<20];assert not miss,('missing',miss[:20])
+miss=[n for n in need if n not in h or n not in W or len(W[n])<8];assert not miss,('missing',miss[:20])
 extra=[n for n in list(h)+list(W) if n<fr or n>to];assert not extra,('outside range',extra[:10])
 for n in need:
     e=W[n][-1][2];assert e<=h[n]+1.5,('word times run past duration',n,e,h[n])

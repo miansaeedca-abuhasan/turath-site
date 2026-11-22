@@ -1,4 +1,4 @@
-// Guard: separate book «Al-Adab al-Ali (English and Bengali)»: same 1275 rows / Arabic, 1236 English + Bengali translations, translator name, takhrij; Adab publisher's note updated
+// Guard: separate book «Al-Adab al-Aali (English and Bengali)»: same 1275 rows / Arabic, 1236 English + Bengali translations, translator name, takhrij; Adab publisher's note updated
 const {chromium}=require('playwright');let bad=[];const fs=require('fs');
 (async()=>{const I=fs.readFileSync(__dirname+'/../coll/index.js','utf8');const L=JSON.parse(I.slice(I.indexOf('(')+1,I.lastIndexOf(')')));
  const a=L.find(x=>x.key==='adabaali'),n=L.find(x=>x.key==='adabaalien');
