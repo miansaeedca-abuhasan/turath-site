@@ -15,7 +15,7 @@ const lat=(all.match(/[A-Za-z]+/g)||[]).join(' ');ck(lat==='Lod council City job
 ck(!/[ﷺﷻﷲ﷿﷾﷜-﷯ؓؒؑ]/.test(all)&&!/[⟦⟧‹›❶-❿]/.test(all),'no honorific glyphs / raw marks');
 ck(!/\(\(/.test(JSON.stringify([ar,e.intro])),'no (( in Arabic rows or intro');
 const urj=JSON.stringify(ur);
-ck(!/یٰ/.test(urj),'no dagger alif after yeh in Urdu rows');
+ck((urj.match(/[یى]ٰ/g)||[]).length>=800,'dagger alif kept after yeh in Urdu rows (owner 21-11-2026)');
 ck(!/صلی اللہ(?! علیہ وسلم)|رضی اللہ(?! عن[ہھ])|رحمہ(?! اللہ| ?م)/.test(urj),'honorifics complete in Urdu');
 const ks=ur.filter(r=>r[3]&&r[3].k);ck(ks.length===1334,'takhrij on every row '+ks.length);
 ck(ks.every(r=>/^\(1\) /.test(r[3].k)&&/ \(1\)$/.test(r[1])),'takhrij typed «(1) …» and the mark ends the translation');

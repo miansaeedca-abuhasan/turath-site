@@ -14,7 +14,7 @@ ck(/عمرو بن دینار رحمہ اللہ/.test(ur[0][1])&&/حدثنا عب
 const txt=[];(function w(x){if(typeof x==='string')txt.push(x);else if(Array.isArray(x))x.forEach(w);else if(x&&typeof x==='object')Object.values(x).forEach(w)})([ar,ur,e.intro,e.sections]);const all=txt.join('\n');
 ck(!/[A-Za-z@#$]/.test(all),'no Latin letters/symbols');
 ck(!/[ﷺﷻﷲ﷿﷾﷜-﷯]/.test(all)&&!/[⟦⟧‹›]/.test(all),'no honorific glyphs / raw marks / single angle quotes');
-ck(!/\(\(/.test(all)&&!/یٰ/.test(JSON.stringify(ur)),'no (( and no dagger alif after yeh in Urdu rows');
+ck(!/\(\(/.test(all)&&(JSON.stringify(ur).match(/[یى]ٰ/g)||[]).length>=300,'no (( ; dagger alif kept after yeh in Urdu rows (owner 21-11-2026)');
 ck(!/صلی اللہ(?! علیہ)|رضی اللہ(?! عن)|رحمہ(?! اللہ)/.test(JSON.stringify(ur)),'honorifics complete in Urdu');
 ck(!/[\u200e\u200f\u0601\u0640]/.test(JSON.stringify(ur).replace(/﴿[^﴾]*﴾/g,'')),'no invisible marks / year sign / tatweel in Urdu (the Quran text itself keeps its own)');
 // verses

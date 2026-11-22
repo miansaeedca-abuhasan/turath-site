@@ -20,7 +20,7 @@ const lat=(all.match(/[A-Za-z]+/g)||[]);ck(lat.length===1&&lat[0]==='Hanger','on
 ck(!/[ﷺﷻﷲ﷿﷾﷜-﷯ؓؒؑ]/.test(all)&&!/[⟦⟧‹›❶-❿]/.test(all),'no honorific glyphs / raw marks');
 ck(!/\(\(/.test(JSON.stringify(ar.map(r=>r[1])))&&!/\(\((?!الف\))/.test(JSON.stringify(ur.map(r=>r[1]))),'no (( in Arabic rows; in Urdu only the printed «((الف)»');
 const urj=JSON.stringify(ur);
-ck(!/یٰ/.test(urj),'no dagger alif after yeh in Urdu rows');
+ck((urj.match(/[یى]ٰ/g)||[]).length>=800,'dagger alif kept after yeh in Urdu rows (owner 21-11-2026)');
 ck(!/صلی اللہ(?! علیہ وسلم)|رضی اللہ(?! عن[ہھ])|رحمہ(?! اللہ| ?م)/.test(urj),'honorifics complete in Urdu');
 // takhrij / fawaid
 const ks=ur.filter(r=>r[3]&&r[3].k);ck(ks.length===3055,'takhrij rows '+ks.length);

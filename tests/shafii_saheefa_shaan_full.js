@@ -16,7 +16,7 @@ const all=flat([ar,ur,e.intro,e.sections]);
 ck(!/[ﷺﷻﷲ﷿﷾ؓؒؑ]/.test(all)&&!/[⟦⟧‹›❶-❿]/.test(all),'shafii no honorific glyphs / raw marks');
 ck(!/\(\(/.test(JSON.stringify(ar))&&!/\(\(/.test(flat(ur)),'shafii no (( ');
 const noAr=t=>t.replace(/«[^»]*»|﴿[^﴾]*﴾/g,'');
-ck(!/یٰ/.test(noAr(flat(ur.map(r=>[r[1],r[3]&&r[3].k,r[3]&&r[3].f])))),'shafii no dagger alif in Urdu text (Arabic phrases/verses keep theirs)');
+ck((noAr(flat(ur.map(r=>[r[1],r[3]&&r[3].k,r[3]&&r[3].f]))).match(/[یى]ٰ/g)||[]).length>=300,'shafii dagger alif kept in Urdu text (owner 21-11-2026)');
 ck(!/صلی اللہ(?! علیہ وسلم)|رضی اللہ(?! عن[ہھ])/.test(JSON.stringify(ur)),'shafii honorifics complete');
 // the only Latin letters are the printed list marks (i) (ii) (iii) … of the translator's fawaid
 ck((all.match(/[A-Za-z]+/g)||[]).every(w=>/^(i|ii|iii|iv|v|vi|vii|viii)$/.test(w)),'shafii only printed (i)(ii) marks as Latin');

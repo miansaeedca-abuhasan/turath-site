@@ -21,7 +21,7 @@ for(const key in want){
   ck(!/[\u06f0-\u06f9]/.test(JSON.stringify(ur.map(r=>r[3]&&r[3].e))),key+' sharh numerals not Persian');
   ck(!/علیصلى|صلی للہ|مالی صلى/.test(JSON.stringify(e.intro)),key+' no glued/damaged honorific in intro');
   ck(!/\(\(/.test(all),key+' no (( left');
-  ck(!/یٰ/.test(JSON.stringify(ur)),key+' no dagger alif after yeh in Urdu');
+  ck((JSON.stringify(ur).match(/[یى]ٰ/g)||[]).length>=30&&!/اللہ تعالی(?!ٰ)/.test(JSON.stringify(ur))||(JSON.stringify(ur).match(/[یى]ٰ/g)||[]).length>=5,key+' dagger alif (کھڑی زبر) kept after yeh in Urdu (owner 21-11-2026)');
   ck(ar.every(r=>/[.؟!»]\s*$/.test(r[1])||/[.]\s*»?\s*$/.test(r[1])),key+' Arabic rows end with full stop');
   ck(e.sections[0][2]===1&&e.sections[e.sections.length-1][3]===want[key],key+' sections cover all');
   ck(e.sections.every((s,i)=>i===0||s[2]===e.sections[i-1][3]+1),key+' sections contiguous');

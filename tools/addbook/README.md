@@ -11,3 +11,6 @@ They are examples (paths inside them point to a scratch folder): copy, change th
 
 After either one: `python3 tools/rehash.py` (also rebuilds `coll/lite.js`), run the tests, commit, push.
 See `/CLAUDE.md` for all rules about what a book must look like.
+
+## Dagger alif (کھڑی زبر) — owner ruling 21-11-2026
+Never strip the dagger alif (U+0670 after yeh: تعالیٰ، موسیٰ، فتویٰ) from the supplied Urdu text. The old `seg_fix` that removed it must not be used. Older books built with that rule were repaired with `tools/restore_dagger.py` (source-based, word by word; see CLAUDE.md §7).

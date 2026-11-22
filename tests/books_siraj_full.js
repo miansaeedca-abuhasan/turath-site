@@ -10,7 +10,7 @@ ck(ar.every((r,i)=>r[0]===i+1)&&ur.every((r,i)=>r[0]===i+1),'ids sequential');
 const txt=[];(function w(x){if(typeof x==='string')txt.push(x);else if(Array.isArray(x))x.forEach(w);else if(x&&typeof x==='object')Object.values(x).forEach(w)})([ar,ur,e.intro]);const all=txt.join('\n');
 ck(!/[A-Za-z@#$]/.test(all),'no Latin letters/symbols');
 ck(!/[ﷺﷻؓؒؑ]/.test(all)&&!/[❶-❿]/.test(all),'no honorific symbols / raw glyph marks');
-ck(!/\(\(/.test(all)&&!/یٰ/.test(JSON.stringify(ur)),'no (( and no dagger alif');
+ck(!/\(\(/.test(all)&&(JSON.stringify(ur).match(/[یى]ٰ/g)||[]).length>=300,'no (( ; dagger alif kept (owner 21-11-2026)');
 ck(!/صلی اللہ(?! علیہ)|رضی اللہ(?! عن)/.test(JSON.stringify(ur)),'honorifics complete in Urdu');
 const ks=ur.filter(r=>r[3]&&r[3].k).map(r=>r[3].k);
 ck(ks.length===N&&ks.every(k=>!/[۰-۹٠-٩]/.test(k)),'takhrij on every hadith, English digits');
