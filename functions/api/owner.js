@@ -30,7 +30,7 @@ export async function onRequest({request, env}) {
       if (s) { r.role = s.role; r.user = s.user.split('@')[0]; if (s.role === 'founder') r.pending = (await db.prepare('SELECT COUNT(*) AS n FROM site_pending').first()).n; }
       return json(r);
     }
-    if (request.method !== 'POST' && a !== 'stats') return json({error: 'method'}, 405);
+    if (request.method !== 'POST' && a !== 'stats' && a !== 'reports') return json({error: 'method'}, 405);
     if (request.method === 'POST') {
       const o = request.headers.get('Origin');
       if (o && new URL(o).host !== url.host) return json({error: 'origin'}, 403);
@@ -83,6 +83,19 @@ export async function onRequest({request, env}) {
       const r = await db.prepare("SELECT n FROM counter WHERE k = 'visits'").first();
       const rs = await db.prepare("SELECT k, n FROM counter WHERE k LIKE 'c:%' ORDER BY n DESC LIMIT 200").all();
       return json({n: r ? r.n : 0, c: (rs.results || []).map(x => [x.k.slice(2), x.n])});
+    }
+    if (a === 'reports' || a === 'rdone') {
+      if (!founder) return json({error: 'forbidden'}, 403);
+      await db.prepare('CREATE TABLE IF NOT EXISTS reports (id INTEGER PRIMARY KEY AUTOINCREMENT, k TEXT, n TEXT, place TEXT, note TEXT NOT NULL, lang TEXT, t INTEGER NOT NULL, done INTEGER NOT NULL DEFAULT 0)').run();
+      if (a === 'rdone') {
+        const b = await request.json().catch(() => ({})), id = parseInt(b.id, 10);
+        if (!(id > 0)) return json({error: 'id'}, 400);
+        if (b.del) await db.prepare('DELETE FROM reports WHERE id = ?').bind(id).run();
+        else await db.prepare('UPDATE reports SET done = ? WHERE id = ?').bind(b.done ? 1 : 0, id).run();
+        return json({ok: true});
+      }
+      const rs = await db.prepare('SELECT id, k, n, place, note, lang, t, done FROM reports ORDER BY done, id DESC LIMIT 300').all();
+      return json({list: rs.results || []});
     }
     return json({error: 'action'}, 400);
   } catch (e) {

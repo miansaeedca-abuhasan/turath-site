@@ -1204,6 +1204,7 @@ const EN_BOOK={bukhari:'al-Bukhari',muslim:'Muslim',abudawud:'Abu Dawud',tirmidh
 const KIND_ORDER=['translation','intro_kitab','intro_majmu','intro','sharh','alfaz','buhuth','duroos','extra'];
 const ICON={
  sahaba:'M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z',
+ flag:'M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z',
  back:'M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z',
  bm0:'M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2zm0 15l-5-2.18L7 18V5h10v13z',
  bm1:'M17 3H7c-1.1 0-1.99.9-1.99 2L5 21l7-3 7 3V5c0-1.1-.9-2-2-2z',
@@ -1467,7 +1468,7 @@ function actions(d,scope,withRead){
   const ls=el('button',{class:'ab',type:'button','aria-label':T('listen'),title:T('listen'),on:{click:()=>LISTEN.playHadiths([{d,node:a.closest('.card')||a.parentNode}])}},icon('listen'));
   if(scope==='jami'&&window.CMP)a.append(CMP.button({k:'jami',n:d.num}));
   {const en=window.ENAUD&&ENAUD.btn(d,()=>a.closest('.card')||a.parentNode);if(en)a.append(en);}
-  a.append(ls,cp,ps,sh,el('span',{class:'sp'}));return a;
+  a.append(ls,cp,ps,sh);if(window.REPORT)a.append(REPORT.button({k:scope,n:d.num,place:(scope==='jami'?'Al-Jami al-Kamil':scope)+' '+d.num}));a.append(el('span',{class:'sp'}));return a;
 }
 function gradeNode(g){
   if(!g)return null;const n=g.replace(/[\u064b-\u0652\u0670]/g,'').replace(/[ىي]/g,'ی').replace(/ه/g,'ہ');
@@ -2438,6 +2439,62 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
   { let n=0;const t=setInterval(()=>{n++;const sp=document.getElementById('splash'),busy=(sp&&!sp.hidden&&!sp.classList.contains('out'))||document.querySelector('.sheetbg');   // wait until the opening video is over, then 2.5 s
     if(busy&&n<120)return;clearInterval(t);setTimeout(window.showInstallPopup,2500);},1000); }
 })();
+/* app share (one tap sends a link of the whole app) and «report a mistake» (a flag under every hadith: the reader writes a note, the founder reads it in the owner panel) */
+(function(){
+  const rtlOf=l=>l==='ur'||l==='ar';
+  const S={
+    ur:{share:'ایپ شیئر کریں',shareSub:'دوسروں کو لنک بھیجیں',msg:'تراث خیرالقرون — مفت حدیث اور قرآن کی ایپ، بغیر اشتہار۔ یہاں سے کھولیں اور انسٹال کریں:',copied:'لنک کاپی ہو گیا',rep:'غلطی کی اطلاع دیں',repT:'تصحیح کے لیے لکھیں',ph:'جو غلطی نظر آئی وہ یہاں لکھیں…',send:'بھیجیں',cancel:'بند کریں',thanks:'شکریہ، آپ کی اطلاع ہمیں مل گئی',fail:'اطلاع نہیں جا سکی، دوبارہ کوشش کریں',short:'پہلے کچھ لکھیں',where:'مقام'},
+    ar:{share:'شارك التطبيق',shareSub:'أرسل الرابط للآخرين',msg:'تراث خير القرون — تطبيق مجاني للحديث والقرآن بلا إعلانات. افتحه وثبّته من هنا:',copied:'تم نسخ الرابط',rep:'الإبلاغ عن خطأ',repT:'اكتب التصحيح',ph:'اكتب الخطأ الذي لاحظته هنا…',send:'إرسال',cancel:'إغلاق',thanks:'شكراً، وصلنا بلاغك',fail:'تعذّر الإرسال، أعد المحاولة',short:'اكتب شيئاً أولاً',where:'الموضع'},
+    en:{share:'Share the app',shareSub:'Send the link to others',msg:'Turath Khair Al-Quroon — a free hadith and Quran app, no ads. Open and install it here:',copied:'Link copied',rep:'Report a mistake',repT:'Write the correction',ph:'Write the mistake you noticed…',send:'Send',cancel:'Close',thanks:'Thank you, your note reached us',fail:'Could not send, please try again',short:'Write something first',where:'Place'},
+    bn:{share:'অ্যাপ শেয়ার করুন',shareSub:'অন্যদের লিংক পাঠান',msg:'তুরাস খাইরুল কুরুন — বিনামূল্যে হাদীস ও কুরআনের অ্যাপ, কোনো বিজ্ঞাপন নেই। এখান থেকে খুলে ইনস্টল করুন:',copied:'লিংক কপি হয়েছে',rep:'ভুলের খবর দিন',repT:'সংশোধন লিখুন',ph:'যে ভুল দেখেছেন তা লিখুন…',send:'পাঠান',cancel:'বন্ধ করুন',thanks:'ধন্যবাদ, আপনার খবর পৌঁছেছে',fail:'পাঠানো যায়নি, আবার চেষ্টা করুন',short:'আগে কিছু লিখুন',where:'স্থান'},
+    hi:{share:'ऐप शेयर करें',shareSub:'दूसरों को लिंक भेजें',msg:'तुरास ख़ैरुल क़ुरून — मुफ़्त हदीस और क़ुरआन ऐप, बिना विज्ञापन। यहाँ से खोलकर इंस्टॉल करें:',copied:'लिंक कॉपी हो गया',rep:'ग़लती बताएँ',repT:'सुधार लिखें',ph:'जो ग़लती दिखी वह यहाँ लिखें…',send:'भेजें',cancel:'बंद करें',thanks:'शुक्रिया, आपकी सूचना हमें मिल गई',fail:'भेजा नहीं जा सका, दोबारा कोशिश करें',short:'पहले कुछ लिखें',where:'स्थान'},
+    fr:{share:'Partager l’application',shareSub:'Envoyer le lien',msg:'Turath Khair Al-Quroon — application gratuite de hadiths et de Coran, sans publicité. Ouvrez et installez-la ici :',copied:'Lien copié',rep:'Signaler une erreur',repT:'Écrivez la correction',ph:'Écrivez l’erreur remarquée…',send:'Envoyer',cancel:'Fermer',thanks:'Merci, votre note nous est parvenue',fail:'Envoi impossible, réessayez',short:'Écrivez d’abord quelque chose',where:'Lieu'}};
+  const L=()=>S[ui]||S.en;
+  const toastX=m=>{try{toast(m)}catch(e){}};
+  async function shareApp(){
+    const u=appLink(''),t=L().msg;
+    if(navigator.share){try{await navigator.share({title:'Turath Khair Al-Quroon',text:t,url:u});return;}catch(e){if(e&&e.name==='AbortError')return;}}
+    let ok=false;try{await navigator.clipboard.writeText(t+'\n'+u);ok=true;}catch(e){}
+    toastX(ok?L().copied:u);
+  }
+  window.shareApp=shareApp;
+  const og=window.getBadges;
+  window.getBadges=function(){
+    let r=og?og():null;
+    if(!r){r=document.createElement('div');r.className='gpbar side '+(rtlOf(ui)?'Lf':'R');}
+    const l=L(),b=document.createElement('button');b.type='button';b.className='gpb gpshare';b.lang=ui;b.dir=rtlOf(ui)?'rtl':'ltr';
+    const ic=icon('share');ic.style.fill='#fff';
+    const t=document.createElement('span');t.innerHTML='<small></small><b></b>';t.querySelector('small').textContent=l.shareSub;t.querySelector('b').textContent=l.share;
+    b.append(ic,t);b.onclick=shareApp;r.append(b);return r;
+  };
+  const st=document.createElement('style');
+  st.textContent='.rpbg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;display:flex;align-items:center;justify-content:center;padding:1rem}.rpbox{background:var(--bg,#fff);color:var(--fg,#222);border-radius:14px;max-width:30rem;width:100%;padding:.9rem;box-shadow:0 8px 30px rgba(0,0,0,.4)}.rpbox h3{margin:.1rem 0 .3rem}.rpbox .rpw{font-size:.82rem;opacity:.75;margin:0 0 .5rem}.rpbox textarea{width:100%;min-height:7rem;box-sizing:border-box;font:inherit;padding:.5rem;border-radius:10px;border:1px solid #9aa;background:inherit;color:inherit}.rpbox .rprow{display:flex;gap:.5rem;margin-top:.6rem;justify-content:flex-end}.rpbox button{font:inherit;padding:.45rem 1rem;border-radius:10px;border:1px solid #0e6b53;background:#0e6b53;color:#fff;cursor:pointer}.rpbox button.rpx{background:transparent;color:inherit;border-color:#9aa}.rpbox .rphp{position:absolute;left:-9999px;opacity:0;height:0;width:0}';
+  document.head.append(st);
+  function open(o){
+    const l=L(),bg=document.createElement('div');bg.className='rpbg';bg.lang=ui;bg.dir=rtlOf(ui)?'rtl':'ltr';
+    const box=document.createElement('div');box.className='rpbox';box.setAttribute('role','dialog');
+    const h=document.createElement('h3');h.textContent=l.repT;
+    const w=document.createElement('p');w.className='rpw';w.dir='ltr';w.textContent=l.where+': '+(o.place||'')+(o.n&&!(o.place||'').includes(o.n)?' '+o.n:'');
+    const ta=document.createElement('textarea');ta.maxLength=1500;ta.placeholder=l.ph;
+    const hp=document.createElement('input');hp.className='rphp';hp.tabIndex=-1;hp.autocomplete='off';hp.name='website';
+    const go=document.createElement('button');go.type='button';go.textContent=l.send;
+    const no=document.createElement('button');no.type='button';no.className='rpx';no.textContent=l.cancel;
+    const row=document.createElement('div');row.className='rprow';row.append(no,go);
+    box.append(h,w,ta,hp,row);bg.append(box);document.body.append(bg);ta.focus();
+    const close=()=>bg.remove();
+    no.onclick=close;bg.addEventListener('click',e=>{if(e.target===bg)close();});
+    go.onclick=async()=>{
+      if(ta.value.trim().length<3){toastX(l.short);return;}
+      go.disabled=true;
+      try{
+        const r=await fetch('api/report',{method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',body:JSON.stringify({k:o.k,n:String(o.n),place:(o.place||'')+' '+location.hash,note:ta.value,lang:ui,hp:hp.value})});
+        if(!r.ok)throw 0;close();toastX(l.thanks);
+      }catch(e){go.disabled=false;toastX(l.fail);}
+    };
+  }
+  window.REPORT={open,button:o=>{const l=L(),b=document.createElement('button');b.type='button';b.className='ab rpt';b.title=l.rep;b.setAttribute('aria-label',l.rep);b.append(icon('flag'));b.addEventListener('click',()=>open(o));return b;}};
+})();
+
 /* iPhone: a button next to the language one explains how to keep the site on the home screen (Safari does not allow a one-tap install) */
 (function(){
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
@@ -5214,6 +5271,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         POSTER.open({kind: 'hadith', ar: strip(d.matn[0]).replace(/ﷺ/g, 'صلى الله عليه وسلم'), tr, lang: lang || ui, grade: gs, ref: jn ? jname + '(' + jn + ') ' + bname(b) : bname(b) + (note ? '' : ' (' + n + ')'), name: b.key + '-' + n}); }}}, icon('poster')),
       el('button', {class: 'ab', type: 'button', title: T('copy'), 'aria-label': T('copy'), on: {click: ev => copyPick(ev.currentTarget, hasMore, async m => toast(T(await copyText(withLink(text(m), '#/s/' + b.key + '/n/' + n)) ? 'copied' : 'copyfail')))}}, icon('copy')),
       el('button', {class: 'ab', type: 'button', title: T('share'), 'aria-label': T('share'), on: {click: ev => copyPick(ev.currentTarget, hasMore, async m => { const t = withLink(text(m), '#/s/' + b.key + '/n/' + n); if (navigator.share) { try { await navigator.share({text: t}); return; } catch (e) { if (e && e.name === 'AbortError') return; } } toast(T(await copyText(t) ? 'shared' : 'copyfail')); })}}, icon('share')),
+      window.REPORT ? REPORT.button({k: b.key, n, place: bname(b) + ' ' + n}) : '',
       el('span', {class: 'sp'}));
     c.append(acts);
     shPanel(b, n, c, acts);
@@ -10319,6 +10377,20 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     return wrap;
   }
 
+  function tabReports() {
+    const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
+    const draw = () => get('reports').then(r => {
+      if (!r || !r.list) { wrap.replaceChildren(el('p', {class: 'note'}, 'اطلاعات نہیں مل سکیں۔')); return; }
+      const d = ts => new Date(ts).toISOString().slice(0, 16).replace('T', ' ');
+      const rows = r.list.map(x => el('div', {class: 'card', style: 'padding:.5rem;margin:.3rem 0;' + (x.done ? 'opacity:.55' : '')},
+        el('b', {dir: 'ltr'}, (x.place || (x.k + ' ' + x.n)) + ' · ' + d(x.t) + ' · ' + (x.lang || '')),
+        el('div', {style: 'white-space:pre-wrap;margin:.3rem 0'}, x.note),
+        el('div', {style: 'display:flex;gap:.4rem'}, btn(x.done ? 'دوبارہ کھولیں' : 'ہو گیا', async () => { await post('rdone', {id: x.id, done: x.done ? 0 : 1}); draw(); }), btn('مٹائیں', async () => { await post('rdone', {id: x.id, del: 1}); draw(); }))));
+      wrap.replaceChildren(el('p', {class: 'note'}, 'قارئین کی بھیجی ہوئی تصحیحات۔ کل: ' + r.list.length + '، باقی: ' + r.list.filter(x => !x.done).length), ...rows);
+    }).catch(() => { wrap.replaceChildren(el('p', {class: 'note'}, 'اطلاعات نہیں مل سکیں۔')); });
+    draw(); return wrap;
+  }
+
   function tabStats() {
     const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
     get('stats').then(r => {
@@ -10418,7 +10490,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     };
     refresh(); return wrap;
   }
-  const TABS_ALL = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  const TABS_ALL = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['تصحیح کی اطلاعات', tabReports], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
   function panel(v, me) {
     me = me || {}; ROLE = me.role === 'editor' ? 'editor' : 'founder';
     const TABS = ROLE === 'editor' ? TABS_ALL.filter(t => ['اعلان', 'خبریں', 'چلتی پٹی', 'متن کی اصلاح', 'ترتیبات'].includes(t[0])) : [['منظوری' + (me.pending ? ' (' + me.pending + ')' : ''), tabPending]].concat(TABS_ALL);
