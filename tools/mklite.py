@@ -9,6 +9,7 @@ out=[]
 for e in j:
     d={k:v for k,v in e.items() if k not in HEAVY}
     if e.get('sections'):d['s0']=e['sections'][0][0]
+    if e.get('nn'):d['nc']=len(e['nn'])   # number of note rows (not hadith): the totals of the home page subtract them
     out.append(d)
 s='COLITE('+json.dumps(out,ensure_ascii=False,separators=(',',':'))+')'
 open('coll/lite.js','w',encoding='utf8').write(s);print('lite',len(s)//1024,'KB of',len(t)//1024,'KB')
