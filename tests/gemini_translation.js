@@ -1,4 +1,4 @@
-// «ترجمہ جیمنائی»: server function (mock database + mock Gemini) and the button in the hadith card
+// «ai ترجمہ»: server function (mock database + mock Gemini) and the button in the hadith card
 const fs=require('fs');const {chromium}=require('playwright');let bad=[];const ck=(c,m)=>{if(!c)bad.push(m)};
 (async()=>{
 // ---- server function with a mock environment
@@ -28,7 +28,7 @@ await p.addInitScript(()=>{try{localStorage.newsSeen='20261122a';localStorage.ne
 let posted=0;await p.route('**/api/htrans',async rt=>{posted++;await rt.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ur:'آزمائشی ترجمہ: اعمال کا دارومدار نیتوں پر ہے۔'})})});
 await p.goto('http://localhost:8765/index.html#/s/zuhd/n/5');await p.waitForSelector('.mt.ar',{timeout:30000});
 const has=await p.$('.gembtn');ck(!!has,'button on an Arabic-only hadith book');
-if(has){ck((await has.textContent()).trim()==='AI ترجمہ','button name');await has.click();await p.waitForSelector('.gembox .tr',{timeout:8000});const t=await p.textContent('.gembox');ck(/آزمائشی ترجمہ/.test(t)&&/مشینی/.test(t)&&!/جیمنائی/.test(t),'translation + machine note shown, no «جیمنائی»');ck(posted===1,'one request');await has.click();ck(await p.$eval('.gembox',e=>e.hidden),'second tap hides it');await has.click();ck(posted===1,'shown again without a new request')}
+if(has){ck((await has.textContent()).trim()==='ai ترجمہ','button name');await has.click();await p.waitForSelector('.gembox .tr',{timeout:8000});const t=await p.textContent('.gembox');ck(/آزمائشی ترجمہ/.test(t)&&/سو فیصد درست نہ سمجھا جائے/.test(t)&&!/جیمنائی/.test(t),'translation + machine note shown, no «جیمنائی»');await p.waitForTimeout(500);ck(!(await p.$('.babbox'))||!!(await p.$('.babtr.gemtr')),'bab title translated too');ck(posted===1+((await p.$('.babtr.gemtr'))?1:0),'requests: hadith + bab title only');await has.click();ck(await p.$eval('.gembox',e=>e.hidden),'second tap hides it');await has.click();ck(posted===1,'shown again without a new request')}
 await p.goto('http://localhost:8765/index.html#/s/humaydi/n/5');await p.reload();await p.waitForSelector('.mt.ar',{timeout:30000});ck(!(await p.$('.gembtn')),'no button where a separate Urdu book exists (humaydi)');
 await p.goto('http://localhost:8765/index.html#/s/muslim/n/5');await p.waitForSelector('.mt.ar',{timeout:30000});ck(!(await p.$('.gembtn')),'no button on a book that already has an Urdu translation');
 await p.goto('http://localhost:8765/index.html#/s/tahdhibkamal/n/5');await p.waitForTimeout(2500);ck(!(await p.$('.gembtn')),'no button on a narrators book');

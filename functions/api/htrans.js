@@ -3,6 +3,7 @@ import {isOwner} from '../_lib/owner_auth.js';
 // The key stays here as a secret (GEMINI_API_KEY, the same one the «تحقیق و تصدیق» page uses). The browser calls POST /api/htrans {ar: "<Arabic text>"}.
 // A saved translation (D1 table htrans, keyed by the hash of the Arabic text itself) is returned to everybody without calling Gemini again.
 // Limits (only for NEW translations): HTRANS_USER per person per day (default 40), HTRANS_DAILY for the whole site (default 3000); the owner is not limited.
+// Daily background job: header X-Cron-Key = secret HTRANS_CRON (no limits for it); POST {op:"cursor",lang,set?} keeps its place in the list.
 const MODELS = ['gemini-flash-latest', 'gemini-flash-lite-latest'];
 const TIMEOUT = 50000;
 const LN = {ur: 'Urdu', en: 'English', bn: 'Bengali', hi: 'Hindi', gu: 'Gujarati', fr: 'French', ne: 'Nepali'};
@@ -33,7 +34,7 @@ export function clean(t, l) {
 export function usable(ar, ur, l) {
   l = l || 'ur';
   const a = (ur.match(SCRIPT[l]) || []).length;
-  if (a < 8 || ur.length > ar.length * 8 + 400) return false;
+  if (a < (ar.length < 40 ? 3 : 8) || ur.length > ar.length * 8 + 400) return false;
   if (l === 'ur') return (ur.match(/[A-Za-z]/g) || []).length <= Math.max(6, a * 0.03);     // an English answer / an apology is not a translation
   const arl = (ur.match(/[؀-ۿ]/g) || []).length;           // an untouched Arabic answer is not a translation
   return arl <= a * 0.3;
@@ -51,9 +52,18 @@ async function handle({request, env}) {
   if (origin && new URL(origin).host !== u.host) return err(403, 'origin');
   let b; try { b = await request.json(); } catch (e) { return err(400, 'body'); }
   const lang = LN[b.lang] ? b.lang : 'ur';
+  // the daily background job (GitHub Actions, tools/htrans_cron.js) shows the secret HTRANS_CRON: no per-person limit, and it keeps its place (cursor) in the list
+  const cron = !!env.HTRANS_CRON && request.headers.get('X-Cron-Key') === env.HTRANS_CRON;
+  if (b.op === 'cursor') {
+    if (!cron || !env.DB) return err(403, 'cron');
+    await env.DB.prepare('CREATE TABLE IF NOT EXISTS htrans_cur (lang TEXT PRIMARY KEY, pos INTEGER NOT NULL)').run();
+    if (Number.isInteger(b.set) && b.set >= 0) await env.DB.prepare('INSERT OR REPLACE INTO htrans_cur (lang, pos) VALUES (?, ?)').bind(lang, b.set).run();
+    const r = await env.DB.prepare('SELECT pos FROM htrans_cur WHERE lang = ?').bind(lang).first();
+    return new Response(JSON.stringify({pos: r ? r.pos : 0}), {headers: J});
+  }
   const ar = String(b.ar || '').replace(/\r/g, '').trim();
   const letters = (ar.match(/[ء-يٱ-ۓ]/g) || []).length;
-  if (ar.length < 12 || ar.length > 9000 || letters < ar.replace(/\s/g, '').length * 0.5) return err(400, 'text');
+  if (ar.length < 4 || ar.length > 9000 || letters < ar.replace(/\s/g, '').length * 0.5) return err(400, 'text');
   if (!env.DB) return err(503, 'no database');
   const key = await sha((lang === 'ur' ? '' : lang + '|') + norm(ar));   // Urdu keeps the old key, so saved Urdu translations stay valid
   await env.DB.prepare('CREATE TABLE IF NOT EXISTS htrans (h TEXT PRIMARY KEY, ur TEXT NOT NULL, model TEXT, ts INTEGER)').run();
@@ -61,7 +71,7 @@ async function handle({request, env}) {
   if (hit) return new Response(JSON.stringify({ur: hit.ur, saved: true}), {headers: J});
   if (!env.GEMINI_API_KEY) return err(503, 'not set up');
   // limits for new translations
-  const owner = await isOwner(request, env), day = new Date().toISOString().slice(0, 10);
+  const owner = cron || await isOwner(request, env), day = new Date().toISOString().slice(0, 10);
   if (!owner) {
     const ipRaw = request.headers.get('CF-Connecting-IP') || 'x', ip = (await sha(day + '|' + ipRaw)).slice(0, 16);
     await env.DB.prepare('CREATE TABLE IF NOT EXISTS htrans_ip (k TEXT PRIMARY KEY, day TEXT NOT NULL, n INTEGER NOT NULL)').run();

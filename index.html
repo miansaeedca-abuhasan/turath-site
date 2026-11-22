@@ -16,7 +16,7 @@ html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
 .trrow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.45rem 0 .3rem;padding-top:.45rem;border-top:1px dashed color-mix(in srgb,var(--tkc) 30%,transparent)}
 .trtabs{display:contents}.trlab{font-size:.85rem;color:var(--muted,#888)}
 .trbtn{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);padding:.1rem .75rem;border-radius:99px;line-height:1.7}
-.gemnote{font-size:.78rem;color:var(--muted,#888);margin-top:.4rem}.gemmsg{margin:.3rem 0;color:var(--muted,#888)}.gemmsg.bad{color:#b3261e}
+.gemnote{font-size:.78rem;color:#b4aea4;margin-top:.4rem}.gemmsg{margin:.3rem 0;color:var(--muted,#888)}.gemmsg.bad{color:#b3261e}
 .trbtn.on{background:var(--accent);color:#fff}.trbtn.static{cursor:default}
 html[lang=ur] .trbtn,html[lang=ur] .trlab{font-family:var(--uhead);font-weight:400;font-size:1.02rem}
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
@@ -4996,13 +4996,13 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const GEM_LANGS = ['ur', 'en', 'bn', 'hi', 'gu', 'fr', 'ne'];       // Arabic UI needs no translation; Al-Jami al-Kamil is not a coll book, so it never gets the button
   const gemOk = b => GEM_LANGS.includes(ui) && b && b.key && !b.prose && !b.parts && !(b.langs || []).includes(ui) && !(C.idx || []).some(o => o.key === b.key + 'ur' && (o.langs || []).includes(ui)) && GEM_CATS.has(window.HB_CAT ? window.HB_CAT[b.key] : (typeof HB_CAT !== 'undefined' ? HB_CAT[b.key] : -1)) && !RJ_LIB.includes(b.key) && !RJ_STRUCT.includes(b.key);
   const GEM_TT = {
-    ur: ['AI ترجمہ', 'ترجمہ ہو رہا ہے…', 'ترجمہ نہیں ہو سکا، دوبارہ کوشش کریں۔', 'آج کے لیے ترجمے کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔', 'یہ مشینی ترجمہ ہے (AI ترجمہ)'],
-    en: ['AI Translation', 'Translating…', 'The translation failed. Please try again.', 'Today\'s translation limit is reached. Please try again tomorrow.', 'This is a machine translation (AI Translation)'],
-    bn: ['এআই অনুবাদ', 'অনুবাদ হচ্ছে…', 'অনুবাদ করা যায়নি, আবার চেষ্টা করুন।', 'আজকের অনুবাদের সীমা শেষ। আগামীকাল আবার চেষ্টা করুন।', 'এটি যান্ত্রিক অনুবাদ (এআই অনুবাদ)'],
-    hi: ['एआई अनुवाद', 'अनुवाद हो रहा है…', 'अनुवाद नहीं हो सका, फिर कोशिश करें।', 'आज की अनुवाद सीमा पूरी हो गई। कल फिर कोशिश करें।', 'यह मशीनी अनुवाद है (एआई अनुवाद)'],
-    gu: ['એઆઈ અનુવાદ', 'અનુવાદ થઈ રહ્યો છે…', 'અનુવાદ થઈ શક્યો નથી, ફરી પ્રયત્ન કરો.', 'આજની અનુવાદ મર્યાદા પૂરી થઈ. આવતીકાલે ફરી પ્રયત્ન કરો.', 'આ યાંત્રિક અનુવાદ છે (એઆઈ અનુવાદ)'],
-    fr: ['Traduction IA', 'Traduction en cours…', 'La traduction a échoué. Réessayez.', 'La limite de traduction du jour est atteinte. Réessayez demain.', 'Traduction automatique (Traduction IA)'],
-    ne: ['एआई अनुवाद', 'अनुवाद हुँदैछ…', 'अनुवाद हुन सकेन, फेरि प्रयास गर्नुहोस्।', 'आजको अनुवाद सीमा पुग्यो। भोलि फेरि प्रयास गर्नुहोस्।', 'यो मशीनी अनुवाद हो (एआई अनुवाद)']};
+    ur: ['ai ترجمہ', 'ترجمہ ہو رہا ہے…', 'ترجمہ نہیں ہو سکا، دوبارہ کوشش کریں۔', 'آج کے لیے ترجمے کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔', 'نوٹ: یہ «ai ترجمہ» ہے لہٰذا اسے سو فیصد درست نہ سمجھا جائے'],
+    en: ['AI Translation', 'Translating…', 'The translation failed. Please try again.', 'Today\'s translation limit is reached. Please try again tomorrow.', 'Note: this is an «AI Translation», so do not treat it as 100% accurate'],
+    bn: ['এআই অনুবাদ', 'অনুবাদ হচ্ছে…', 'অনুবাদ করা যায়নি, আবার চেষ্টা করুন।', 'আজকের অনুবাদের সীমা শেষ। আগামীকাল আবার চেষ্টা করুন।', 'নোট: এটি «এআই অনুবাদ», তাই একে শতভাগ নির্ভুল মনে করবেন না'],
+    hi: ['एआई अनुवाद', 'अनुवाद हो रहा है…', 'अनुवाद नहीं हो सका, फिर कोशिश करें।', 'आज की अनुवाद सीमा पूरी हो गई। कल फिर कोशिश करें।', 'नोट: यह «एआई अनुवाद» है, इसलिए इसे सौ प्रतिशत सही न समझें'],
+    gu: ['એઆઈ અનુવાદ', 'અનુવાદ થઈ રહ્યો છે…', 'અનુવાદ થઈ શક્યો નથી, ફરી પ્રયત્ન કરો.', 'આજની અનુવાદ મર્યાદા પૂરી થઈ. આવતીકાલે ફરી પ્રયત્ન કરો.', 'નોંધ: આ «એઆઈ અનુવાદ» છે, તેથી તેને સો ટકા સાચો ન સમજવો'],
+    fr: ['Traduction IA', 'Traduction en cours…', 'La traduction a échoué. Réessayez.', 'La limite de traduction du jour est atteinte. Réessayez demain.', 'Remarque : c’est une «Traduction IA», ne la considérez donc pas comme exacte à 100 %'],
+    ne: ['एआई अनुवाद', 'अनुवाद हुँदैछ…', 'अनुवाद हुन सकेन, फेरि प्रयास गर्नुहोस्।', 'आजको अनुवाद सीमा पुग्यो। भोलि फेरि प्रयास गर्नुहोस्।', 'नोट: यो «एआई अनुवाद» हो, त्यसैले यसलाई सय प्रतिशत सही नमान्नुहोस्']};
   function gemBox(b, ar) {
     const L = ui, G = GEM_TT[L] || GEM_TT.en, GEM_T = {name: G[0], busy: G[1], fail: G[2], lim: G[3], note: G[4]};
     const box = el('div', {class: 'trbox gembox', lang: L, dir: DIR(L), hidden: ''}), btn = el('button', {class: 'trbtn gembtn', type: 'button', lang: L}, GEM_T.name);
@@ -5014,12 +5014,15 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       try {
         const r = await fetch('/api/htrans', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ar, lang: L})});
         const j = await r.json().catch(() => ({}));
-        if (r.ok && j.ur) { done = true; box.replaceChildren(el('div', {class: 'tr', lang: L, dir: DIR(L)}, ...j.ur.split('\n').filter(t => t.trim()).map(t => paraEl(t, L))), el('div', {class: 'gemnote'}, GEM_T.note)); }
+        if (r.ok && j.ur) { done = true;
+          // the bab title too (when the card shows an Arabic bab and no translated one): its own small request, saved the same way
+          try { const card = wrap.parentNode, bb = card && card.querySelector('.babbox'); if (bb && !card.querySelector('.babtr')) { fetch('/api/htrans', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ar: bb.textContent, lang: L})}).then(x => x.ok ? x.json() : null).then(t => { if (t && t.ur && !card.querySelector('.babtr')) bb.after(el('div', {class: 'babtr gemtr', lang: L, dir: DIR(L)}, t.ur.replace(/\n+/g, ' '))); }).catch(() => {}); } } catch (e) {} box.replaceChildren(el('div', {class: 'tr', lang: L, dir: DIR(L)}, ...j.ur.split('\n').filter(t => t.trim()).map(t => paraEl(t, L))), el('div', {class: 'gemnote'}, GEM_T.note)); }
         else msg(r.status === 429 ? GEM_T.lim : GEM_T.fail, true);
       } catch (e) { msg(GEM_T.fail, true); }
       busy = false;
     });
-    return el('div', {class: 'tbox gem'}, el('div', {class: 'trwrap'}, el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trtabs', role: 'tablist'}, btn)), box));
+    const wrap = el('div', {class: 'tbox gem'}, el('div', {class: 'trwrap'}, el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trtabs', role: 'tablist'}, btn)), box));
+    return wrap;
   }
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   // English grade lines of the Sunan books (Sahih (Al-Albani); Sahih (Zubair Ali Zai) …) in the words of the Urdu / Arabic interface
