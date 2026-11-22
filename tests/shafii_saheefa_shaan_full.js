@@ -56,6 +56,6 @@ ck(/'fazailnasai','shaansahabaur'\]/.test(html),'Shaan-e-Sahaba is also inside t
 const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0];
 ck(c.id==='20261121a'&&['musnadshafiiur','saheefaaliur','shaansahabaur'].every(k=>{const ix=c.keys.indexOf(k);return ix>=0&&c.l[ix]==='#/s/'+k&&c.i.ur[ix]&&c.i.en[ix]})&&c.i.ur[c.i.ur.length-1].includes('صلاۃ خیرالقرون'),'news lines in the same card as the other new books');
 ck(c.i.ur[c.keys.indexOf('musnadshafiiur')].includes('(1819)'),'news count');
-ck(/"keys":\["khalqafaalur","ibnkhuzaymahur","humaydiur","musnadshafiiur","saheefaaliur","shaansahabaur"\]/.test(html),'news in app list');
+ck(/"keys":\["khalqafaalur","ibnkhuzaymahur","humaydiur","musnadshafiiur","saheefaaliur","shaansahabaur"(,"sahifahamamur")?\]/.test(html),'news in app list');
 const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups;ck(['musnadshafiiur','saheefaaliur','shaansahabaur'].every(k=>off.some(g=>g.id==='c_'+k&&g.f.length>=3)),'offline groups');
 if(bad)process.exit(1);console.log('PASS shafii_saheefa_shaan_full');
