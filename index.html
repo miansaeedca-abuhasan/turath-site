@@ -149,6 +149,7 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .ptitle{font-weight:700;color:var(--accent);margin:.2rem 0 .4rem}.ptitle.ar{font-family:var(--arabic);font-size:1.1rem}.ptitle.ur{font-family:var(--urdu)}
 .pben{padding-inline-start:1.4rem;margin:.2rem 0}.pben li{margin:.25rem 0}
 /* owner 22-11-2026: verse-number circle in tafsirs smaller */
+.tfsearch{margin:.3rem 0 .8rem}.tfsearch .filterbox{display:flex;gap:.4rem;align-items:center}.tfsearch .filterbox .btn{flex:none;padding:.35rem .9rem}.tfhit .qtr{display:block;font-size:calc(var(--qtr)*.9);line-height:1.9}.tfhit mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 .1em}:root[data-theme=dark] .tfhit mark{background:#5b4a14}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tfhit mark{background:#5b4a14}}
 .qtr .ayn,.qayah .ayn{min-width:1.15em;height:1.15em;font-size:.48em;border-width:1px;margin:0 .25em;padding:0 .08em}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
 .qtr.tf-ur_bhuttavi .arq{color:#9b5de5}   /* owner 22-11-2026: in Tafsir Bhatwi the Arabic inside the Urdu text (with its « ») is light purple */
@@ -3385,6 +3386,41 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const part = t.where[s], id = key + '_' + part;
     if (!(Q.taf[key] && Q.taf[key][s])) await (Q.loading[id] || (Q.loading[id] = loadScript('quran/tafsir/' + id + '.js')));
   }
+  // ===== search of words / sentences INSIDE the open tafsir only (owner 22-11-2026). Nothing is loaded until the reader presses «تلاش»; the parts of that one tafsir are then read one by one and the hits show as they are found. =====
+  const TSR = {
+    ur: ['اس تفسیر کے اندر الفاظ یا جملہ تلاش کریں', 'تلاش', n => 'تفسیر کا حصہ پڑھا جا رہا ہے: ' + n, 'اس تفسیر میں کوئی نتیجہ نہیں ملا۔', 'مزید نتائج', n => 'ملنے والے مقامات: ' + n],
+    ar: ['ابحث في هذا التفسير عن كلمات أو جملة', 'بحث', n => 'جارٍ قراءة جزء التفسير: ' + n, 'لا توجد نتائج في هذا التفسير.', 'المزيد', n => 'عدد المواضع: ' + n],
+    en: ['Search words or a sentence inside this tafsir', 'Search', n => 'Reading part of the tafsir: ' + n, 'No result found in this tafsir.', 'More results', n => 'Places found: ' + n]};
+  function tafWordSearch(t) {
+    const X = TSR[ui] || TSR.en, inp = el('input', {type: 'search', class: 'filter', placeholder: X[0], 'aria-label': X[0], inputmode: 'search', enterkeyhint: 'search'}),
+      go = el('button', {class: 'btn', type: 'button'}, X[1]), st = el('p', {class: 'note'}), res = el('div', {class: 'tfres'}); let run = 0;
+    const parts = [...new Set(Object.values(t.where))].sort((a, b) => a - b), clean = x => x.replace(/[-]|[^]*/g, '');
+    const words = q => BQN(q).split(' ').filter(Boolean);
+    const snip = (txt, q) => {
+      const ws = String(q).trim().split(/\s+/).filter(w => w.length > 1), esc = w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), re = ws.length ? new RegExp('(' + ws.map(esc).join('|') + ')', 'g') : null;
+      let i = re ? txt.search(re) : -1; if (i < 0) i = 0;
+      let a = Math.max(0, i - 80), z = Math.min(txt.length, i + 180), part = (a ? '… ' : '') + txt.slice(a, z) + (z < txt.length ? ' …' : '');
+      return re ? part.split(re).map((x, k) => k % 2 ? el('mark', {}, x) : x) : [part];
+    };
+    const start = async () => {
+      const q = inp.value.trim(); if (q.length < 2) return; const me = ++run; res.replaceChildren(); let hits = 0, shown = 0; const all = [];
+      const more = el('button', {class: 'btn more', type: 'button'}, X[4]);
+      const add = () => { all.slice(shown, shown + 25).forEach(h => more.before(h)); shown = Math.min(all.length, shown + 25); more.hidden = shown >= all.length; };
+      more.hidden = true; more.addEventListener('click', add); res.append(more);
+      for (const pt of parts) {
+        if (me !== run) return; st.textContent = X[2](pt + '/' + parts.length);
+        const id = t.key + '_' + pt; try { await (Q.loading[id] || (Q.loading[id] = loadScript('quran/tafsir/' + id + '.js'))); } catch (e) { continue; }
+        const S = Object.keys(t.where).filter(k => t.where[k] === pt).map(Number).sort((a, b) => a - b);
+        for (const sn of S) { for (const g of ((Q.taf[t.key] || {})[sn] || [])) { const tx = clean(g[2]); if (!BQM(q, tx)) continue; hits++;
+          all.push(el('a', {class: 'card srow2 tfhit', href: '#/q/tafsir/' + t.key + '/' + sn}, el('span', {class: 'sinfo'}, el('span', {class: 'ct'}, sName(sn) + ' · ' + (g[0] === g[1] ? NUM(g[0]) : NUM(g[0]) + '–' + NUM(g[1]))), el('span', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: DIR(t.lang)}, ...snip(tx, q))))); }
+          if (me === run && all.length > shown && shown === 0) add(); }
+        if (me === run) { add(); await new Promise(r => setTimeout(r, 0)); }
+      }
+      if (me === run) st.textContent = hits ? X[5](hits) : X[3];
+    };
+    go.addEventListener('click', start); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); start(); } });
+    return el('div', {class: 'tfsearch'}, el('div', {class: 'card pad0 filterbox'}, icon('search'), inp, go), st, res);
+  }
   async function showTafsir(s, a) {
     await need([]);
     if (!Q.tafsirs) await (Q.loading.tafsirs || (Q.loading.tafsirs = loadScript('quran/tafsir/index.js')));
@@ -3675,7 +3711,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         box.replaceChildren(...Q.meta.surahs.map((x, i) => [x, i + 1]).filter(([x, n]) => t.where[n] && (!q || String(n) === q || x[0].toLowerCase().replace(/[-']/g, '').includes(q.replace(/[-' ]/g, '')) || x[1].includes(q) || SU(x[1]).includes(q) || x[2].toLowerCase().includes(q)))
           .map(([x, n]) => el('a', {class: 'card srow2', href: '#/q/tafsir/' + t.key + '/' + n}, el('span', {class: 'snum'}, NUM(n)), el('span', {class: 'sn'}, sName(n))))); };
       f.addEventListener('input', draw); draw();
-      v.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), f), box); return;
+      v.append(el('div', {class: 'card pad0 filterbox'}, icon('search'), f), tafWordSearch(t), box); return;
     }
     bar(nameOf(t) + ' — ' + sName(sn), '', true); v.replaceChildren(el('p', {class: 'note'}, T('loading')));
     try { await needTafsir(t.key, sn); } catch (e) { v.replaceChildren(el('p', {class: 'note'}, T('noTafsir'))); return; }
