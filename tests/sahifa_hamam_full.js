@@ -12,6 +12,7 @@ ck(ur.every(r=>!/"/.test(r[1]+r[3].k+r[3].e)),'no straight quotes left');
 ck(!/(^|[^ء-ي])حضرت\s+[^\s]+\s+رضی اللہ عنہ/.test(ur.map(r=>r[1]+r[3].e).join(' ')),'no «حضرت X رضی اللہ عنہ»');
 ck(/آنحضرت/.test(ur.map(r=>r[3].e).join(' ')),'printed word آنحضرت kept');
 ck(ar.every(r=>/[ً-ْ]/.test(r[1])&&!/\(\(|\)\)/.test(r[1])),'Arabic vocalised, no double brackets');
+ck(ur.every(r=>!/^\./.test(r[1]))&&ar.every(r=>!/^\./.test(r[1])),'no leading dots (printed number/label dots removed)');
 const idx=fs.readFileSync('coll/index.js','utf8');ck(/"key":"sahifahamamur"/.test(idx)&&/"count":139/.test(idx),'registered');
 (async()=>{const b=await chromium.launch();
 for(const [name,o] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
