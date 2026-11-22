@@ -1,5 +1,6 @@
 // owner 22-11-2026: translated books (not the complete Al-Jami al-Kamil): takhrij as «book (number)», no kitab/bab where a hadith number exists
-const fs=require('fs');process.chdir(__dirname+'/..');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
+const fs=require('fs');process.chdir(__dirname+'/..');let bad=0;const ck=(c,m)=>{if(!c){bad++;(()=>{let nm=0;for(const f of fs.readdirSync('coll').filter(f=>/_ur_\d+_/.test(f)&&!/^(silsila|bulughsaada)_/.test(f))){const x=fs.readFileSync('coll/'+f,'utf8');nm+=(x.match(/(?:صحیح\s+)?مسلم\s*[،:]\s*[^0-9۔\n]{0,160}?(?:کتاب|باب)[^0-9۔\n]{0,200}(?:رقم|حدیث|حديث)\s*[:：]\s*\d+\s*\/\s*\d+/g)||[]).length}ck(nm===0,'Muslim N/M long form left '+nm)})();
+console.log('FAIL',m)}};
 const SKIP=/^(silsila|bulughsaada)$/;let long=0,short=0;
 global.window={};global.COLLDATA=(k,l,rows)=>{if(SKIP.test(k))return;for(const r of rows){const m=r[3]&&r[3].k;if(!m)continue;
  for(const line of m.split('\n')){const t=line.replace(/^\(\d+\)\s*/,'');

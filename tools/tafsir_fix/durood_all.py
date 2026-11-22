@@ -4,6 +4,7 @@
 import re,json,glob,sys,collections
 DRY='--dry' in sys.argv
 D='صلی اللہ علیہ وسلم'
+W='صلی اللہ علیہ وآلہ وسلم'   # owner 22-11-2026: «وآلہ» stays as it is (only spacing / spelling of that form is tidied)
 U=r'؀-ۿ'
 pats=[
  r'صل[ىي]\s*[اﷲ]لل?[هہ]\s*علي[هہ]\s*و\s?سلم',          # Arabic spelling (glued or spaced)
@@ -30,7 +31,7 @@ def fix2(t):
         pre=t[a-1] if a>0 else '';post=t[b] if b<len(t) else ''
         l='' if (pre in '([«“‘"\n' or pre=='' or not res or ''.join(res)=='' ) else ' '
         r='' if (post in ')]»”’،۔.؟!:؛,\n"' or post=='') else ' '
-        res.append(l+D+r);pos=b;st['n']+=1
+        res.append(l+(W if re.search(r'آ\s?لہ|والہ',m.group(1)) else D)+r);pos=b;st['n']+=1
     res.append(t[pos:]);return ''.join(res)
 def extra(t):
     # «صلی اللہ علیہ <word without وسلم>»: the printed text dropped «وسلم»
@@ -40,6 +41,8 @@ def extra(t):
     t,n=re.subn(r'صلی اللہ علیہ(?: اللہ علیہ| ؛| ووسلم| وسل| سلم| صلم)(?: وسلم)?(?![\u0600-\u06FF])',D,t);st['t']+=n
     t,n=re.subn(r'(?<![\u0600-\u06FF])صلی اللہ علیہ(?= (?:کی|کا|کے|نے|سے|پر|کو|اپنے|جن|ان|کا)(?![\u0600-\u06FF]))',D,t);st['t2']+=n
     t=re.sub(r'صلی اللہ علیہ(?= والذی)',D,t)
+    t=t.replace('اپنے نبی صلی اللہ علیہ السلام کو تو اپنی طرف چڑھا لیا','اپنے نبی علیہ السلام کو تو اپنی طرف چڑھا لیا')   # about Isa (owner 22-11-2026: «علیہ السلام»)
+    t=t.replace('پھر حضور صلی اللہ علیہ السلام اس کنوئیں','پھر حضور صلی اللہ علیہ وسلم اس کنوئیں')
     t=t.replace('ابوبکر صل اللہ علیہ یا','ابوبکر صلی اللہ علیہ یا')
     return t
 for f in sorted(glob.glob('quran/tafsir/ur_*.js')):
