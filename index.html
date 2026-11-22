@@ -16,6 +16,7 @@ html[lang=ur] .tklab{font-family:var(--uhead);font-weight:400;font-size:1rem}
 .trrow{display:flex;flex-wrap:wrap;align-items:center;gap:.4rem;margin:.45rem 0 .3rem;padding-top:.45rem;border-top:1px dashed color-mix(in srgb,var(--tkc) 30%,transparent)}
 .trtabs{display:contents}.trlab{font-size:.85rem;color:var(--muted,#888)}
 .trbtn{font:inherit;font-size:.85rem;cursor:pointer;border:1px solid color-mix(in srgb,var(--accent) 45%,transparent);background:transparent;color:var(--accent);padding:.1rem .75rem;border-radius:99px;line-height:1.7}
+.gemnote{font-size:.78rem;color:var(--muted,#888);margin-top:.4rem}.gemmsg{margin:.3rem 0;color:var(--muted,#888)}.gemmsg.bad{color:#b3261e}
 .trbtn.on{background:var(--accent);color:#fff}.trbtn.static{cursor:default}
 html[lang=ur] .trbtn,html[lang=ur] .trlab{font-family:var(--uhead);font-weight:400;font-size:1.02rem}
 .ftab::after{content:'▾';font-size:.8em;transition:transform .2s}
@@ -4954,6 +4955,27 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...tkJoin(kl)));
   const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
+  // ===== «ترجمہ جیمنائی»: the hadith books that have no Urdu translation get one on demand (owner 22-11-2026). The tap sends the Arabic text to /api/htrans; the answer is saved on the server, so the next reader gets it at once. =====
+  const GEM_CATS = new Set([1, 3, 6, 7, 9, 14, 15, 16, 17, 18]);   // hadith collections (not tafsir, fiqh, rijal, hadith sciences)
+  const gemOk = b => ui === 'ur' && b && b.key && !b.prose && !b.parts && !(b.langs || []).includes('ur') && GEM_CATS.has(window.HB_CAT ? window.HB_CAT[b.key] : (typeof HB_CAT !== 'undefined' ? HB_CAT[b.key] : -1)) && !RJ_LIB.includes(b.key) && !RJ_STRUCT.includes(b.key);
+  const GEM_T = {name: 'ترجمہ جیمنائی', busy: 'ترجمہ ہو رہا ہے…', fail: 'ترجمہ نہیں ہو سکا، دوبارہ کوشش کریں۔', lim: 'آج کے لیے ترجمے کی حد پوری ہو گئی۔ کل دوبارہ کوشش کریں۔', note: 'یہ مشینی ترجمہ ہے (جیمنائی)'};
+  function gemBox(b, ar) {
+    const box = el('div', {class: 'trbox gembox', lang: 'ur', dir: 'rtl', hidden: ''}), btn = el('button', {class: 'trbtn gembtn', type: 'button', lang: 'ur'}, GEM_T.name);
+    let done = false, busy = false;
+    const msg = (t, bad) => { box.replaceChildren(el('p', {class: 'gemmsg' + (bad ? ' bad' : '')}, t)); };
+    btn.addEventListener('click', async () => {
+      if (done) { box.hidden = !box.hidden; btn.classList.toggle('on', !box.hidden); return; }
+      if (busy) return; busy = true; box.hidden = false; btn.classList.add('on'); msg(GEM_T.busy);
+      try {
+        const r = await fetch('/api/htrans', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ar})});
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.ur) { done = true; box.replaceChildren(el('div', {class: 'tr', lang: 'ur', dir: 'rtl'}, ...j.ur.split('\n').filter(t => t.trim()).map(t => paraEl(t, 'ur'))), el('div', {class: 'gemnote'}, GEM_T.note)); }
+        else msg(r.status === 429 ? GEM_T.lim : GEM_T.fail, true);
+      } catch (e) { msg(GEM_T.fail, true); }
+      busy = false;
+    });
+    return el('div', {class: 'tbox gem'}, el('div', {class: 'trwrap'}, el('div', {class: 'trrow'}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trtabs', role: 'tablist'}, btn)), box));
+  }
   // a hadith object shaped like the app's own, so copy / share / listen / bookmark work the same way
   // English grade lines of the Sunan books (Sahih (Al-Albani); Sahih (Zubair Ali Zai) …) in the words of the Urdu / Arabic interface
   const GRW = [['Muhammad Muhyi Al-Din Abdul Hamid', 'محمد محیی الدین عبد الحمید', 'محمد محيي الدين عبد الحميد'], ['Muhammad Fouad Abd al-Baqi', 'محمد فؤاد عبد الباقی', 'محمد فؤاد عبد الباقي'], ['Ahmad Muhammad Shakir', 'احمد محمد شاکر', 'أحمد محمد شاكر'], ['Bashar Awad Maarouf', 'بشار عواد معروف', 'بشار عواد معروف'], ['Zubair Ali Zai', 'زبیر علی زئی', 'زبير علي زئي'], ['Shuaib Al Arnaut', 'شعیب الارنؤوط', 'شعيب الأرنؤوط'], ['Salim al-Hilali', 'سلیم ہلالی', 'سليم الهلالي'], ['Al-Albani', 'البانی', 'الألباني'], ['Abu Ghuddah', 'ابو غدہ', 'أبو غدة'], ['Darussalam', 'دار السلام', 'دار السلام'],
@@ -5132,6 +5154,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       if (reps && reps.length > 1) reps.forEach((r, k) => c.append(el('div', {class: 'mt ar' + (k ? ' rsub' : ''), lang: 'ar'}, k ? el('span', {class: 'rsubn', lang: 'en', dir: 'ltr'}, String(r.n)) : null, ...r.t.split('\n').filter(t => t.trim()).map(t => paraEl(t, 'ar')))));
       else c.append(el('div', {class: 'mt ar', lang: 'ar'}, ...arParas.map(t => paraEl(t, 'ar')))); }
     // the narrators of the isnad are coloured names inside the text (companions in green); a tap opens the narrator in the encyclopedia
+    if (arParas.length && !rjx && gemOk(b)) c.append(gemBox(b, arParas.join('\n')));
     if (arParas.length && !RJ_LIB.includes(b.key) && b.key !== 'shamail' && b.key !== 'hifzhadith') { c.querySelectorAll('.mt.ar').forEach(mtEl => { try { linkSanadDom(mtEl, {refs: [{key: b.key, n, number: n}]}); } catch (e) {} }); }
     // notes (حواشی) of an Arabic library book: the marks in the text become small blue circles and the notes of the hadith / paragraph run on as one paragraph in one box right under it (the Ar-Raheeq style, the same in every book)
     { const rar = row(b, 'ar', n) || [], fxr = rar[3] && !Array.isArray(rar[3]) && rar[3].fn ? rar : null;

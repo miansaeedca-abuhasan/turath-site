@@ -104,3 +104,7 @@ python3 -m http.server 8765 &          # then: node tests/<name>.js   (playwrigh
 python3 tools/rehash.py                # after data / registry edits
 git add -A && git commit … && git push
 ```
+
+## 10. «ترجمہ جیمنائی» (owner request 22-11-2026)
+Hadith books WITHOUT an Urdu translation (Urdu UI, `HB_CAT` in {1,3,6,7,9,14,15,16,17,18}, not prose/parts, not narrator books) show a button «ترجمہ جیمنائی» in the hadith card (`gemBox` in index.html). Books that already have an Urdu translation are never touched.
+Tap → `POST /api/htrans {ar}` (`functions/api/htrans.js`): saved copy from D1 table `htrans` (key = SHA-256 of the Arabic letters without harakat) is returned to everybody; otherwise Gemini translates and the result is saved. Limits for NEW translations only: `HTRANS_USER` (40/person/day), `HTRANS_DAILY` (3000/site/day); owner unlimited. Key only as Cloudflare secret `GEMINI_API_KEY` (same as «تحقیق و تصدیق»). Shown with the note «یہ مشینی ترجمہ ہے (جیمنائی)». No «اپڈیٹس» entry. Live check: GET `/api/htrans`. Test `tests/gemini_translation.js`.
