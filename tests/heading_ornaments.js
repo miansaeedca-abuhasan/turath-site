@@ -6,7 +6,7 @@ ck(/details\.intro:not\(\.tfq\)>summary::before[^}]*content:"\\2726"/.test(h),'r
 ck(/\.bkitem:not\(\.tfq\)[^}]*content:"\\2741"/.test(h),'rule 5 other prose books');
 ck(/\.fpanel h4\.subh::before[^}]*content:"\\2756"/.test(h),'rule 3 sharh/fawaid');
 (async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:1100,height:900}})).newPage();
-await p.addInitScript(()=>{try{localStorage.newsSeen='20261121a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.newsSeen='20261122a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
 await p.goto('http://localhost:8765/index.html#/s/tafsirnoor/n/2');await p.waitForSelector('h4.subh',{timeout:25000});
 const r=await p.evaluate(()=>{const e=document.querySelector('h4.subh');return{c:getComputedStyle(e,'::before').content,t:e.textContent}});
 ck(/۞/.test(r.c),'tafsir heading ornament '+r.c);ck(!/۞/.test(r.t),'ornament not in the text (copy)');

@@ -46,7 +46,7 @@ ck(e.author[0]==='ibnkhuzayma'&&e.trn.ur==='ابو محمد اجمل بھٹی'&&
 const html=fs.readFileSync(R+'index.html','utf8');
 ck(/"ibnkhuzaymahur":9/.test(html),'category set');
 const old=reg.find(x=>x.key==='ibnkhuzaymah');ck(old&&old.count===3090&&old.langs.join()==='ar,en','older Arabic entry ibnkhuzaymah untouched');
-const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0],ix=c.keys.indexOf(key);
+const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n.find(x=>x.id==='20261121a'),ix=c.keys.indexOf(key);
 ck(c.id==='20261121a'&&ix>=0&&c.i.ur[ix].includes('(3079)')&&c.l[ix]==='#/s/'+key,'news line');
 ck(new RegExp('"id":"20261121a"[^\\n]*'+key).test(html),'news in app list');
 const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length,'offline group');

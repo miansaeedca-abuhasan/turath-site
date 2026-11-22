@@ -52,6 +52,7 @@ Only translations/tafsir by Salafi Ahl-e-Hadith scholars. Nothing by innovators 
 6. `python3 tools/rehash.py` → rebuilds `coll/lite.js` and hashes.
 7. Tests (`tests/<book>_full.js` pattern: counts, ids sequential, no glued/stray glyphs, first row text). Run neighbours too.
 8. «اپڈیٹس» entry (§6); commit; push.
+9. Chapter-level text (khulasa, bab paragraphs, kitab introduction) of a hadith book: `ntx` files + `COLLNT` (see `tools/addbook/README.md`; example `muwattaansar`, test `tests/muwatta_ansar_full.js`).
 Reminders: skip books already on the site (never replace existing ones with new copies); in every category all books of one author stay together; newly added items carry «نئی / New» badge for **1 month**.
 
 ## 5. Book list order (all UI languages — do not let it break again)

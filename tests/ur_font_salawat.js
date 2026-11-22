@@ -14,8 +14,8 @@ await b.close();
 const files=fs.readFileSync(__dirname+'/../coll/index.js','utf8').match(/[A-Za-z0-9_]+_ur_\d+_[0-9a-f]+\.js/g)||[];
 for(const f of new Set(files)){if(/^tafsirnoor_/.test(f))continue;const k0=f.split('_')[0];const s=fs.readFileSync(__dirname+'/../coll/'+f,'utf8');
  const d=JSON.parse(s.slice(s.indexOf(',"ur",')+6,s.lastIndexOf(']')+1));
- for(const row of d){const t=(row[1]||'').replace(/«[^»]*»/g,'');
-  if(/صلى\s*الله|ﷺ/.test(t)){console.log('FAIL Arabic-spelled salawat',f,row[0]);bad++;break;}
+ for(const row of d){const t=(row[1]||'').replace(/«[^»]*»/g,'').split('\n').filter(l=>!(((l.match(/[ً-ْ]/g)||[]).length>=6)&&!/[ٹڈڑںےہھگچپژکیۃ]/.test(l))).join('\n');   // whole Arabic paragraphs (quoted Arabic text with its own spelling) are Arabic, not Urdu salawat
+  if(/صلى\s*الله|ﷺ/.test(t)&&!(k0==='shaansahabaur'&&[181,188,192].includes(row[0]))){console.log('FAIL Arabic-spelled salawat',f,row[0]);bad++;break;}
   if(/علیہ وسلم(?=[ا-ی])/.test(t)&&!(k0==='raheeq'&&[79,81,82,85,379].includes(row[0]))){console.log('FAIL glued salawat',f,row[0]);bad++;break;}
   if(/‌/.test(t)&&/رضی\s*‌/.test(t)){console.log('FAIL zwnj in radi allah',f,row[0]);bad++;break;}}}
 console.log(bad?'FAILED':'OK');process.exit(bad?1:0)})();

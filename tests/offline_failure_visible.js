@@ -4,7 +4,7 @@ const {chromium,devices}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c)
 (async()=>{const b=await chromium.launch();
 for(const [name,o] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
 const c=await b.newContext({...o,serviceWorkers:'block'});const p=await c.newPage();
-await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261121a');localStorage.setItem('ui','ur')}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261122a');localStorage.setItem('ui','ur')}catch(e){}});
 const man=await (await fetch('http://localhost:8765/offline.json')).json();
 const g=man.groups.filter(x=>x.k==='tafsir')[1];const badFile=g.f[0][2]||g.f[0][0];
 const bn=badFile.split('?')[0].split('/').pop();await p.route(u=>u.pathname.endsWith(bn),r=>r.fulfill({status:500,body:'x'}));

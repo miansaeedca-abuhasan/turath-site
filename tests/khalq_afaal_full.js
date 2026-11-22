@@ -39,7 +39,7 @@ ck(e.intro.filter(x=>x[1].includes('§حواشی')).length===2&&e.intro[2][1].so
 ck(e.author[0]==='bukhari'&&e.trn.ur==='محمد زبیر شیخ'&&e.langs.join()==='ar,ur'&&e.pub.ur==='دار ابن بشیر','author/translator/langs/publisher');
 ck(/"khalqafaalur":10/.test(fs.readFileSync(R+'index.html','utf8')),'category set');
 ck(reg.find(x=>x.key==='sh9697').count===239,'older Arabic Khalq (sh9697) untouched');
-const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0],ix=c.keys.indexOf(key);
+const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n.find(x=>x.id==='20261121a'),ix=c.keys.indexOf(key);
 ck(c.id==='20261121a'&&ix>=0&&c.i.ur[ix].includes('(663)')&&c.l[ix]==='#/s/'+key,'news line');
 const last=c.i.ur.length-1;ck(c.l[last]==='https://play.google.com/store/apps/details?id=org.turath.salat'&&/صلاۃ خیرالقرون/.test(c.i.ur[last])&&/org\.turath\.salat/.test(fs.readFileSync(R+'index.html','utf8').split('getBadges')[1]),'Salat app: news line with its Play link + badge');
 ck(/"id":"20261121a"[^\n]*khalqafaalur/.test(fs.readFileSync(R+'index.html','utf8')),'news in app list');

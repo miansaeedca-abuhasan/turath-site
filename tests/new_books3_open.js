@@ -3,7 +3,7 @@ const {chromium,devices}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c)
 (async()=>{const b=await chromium.launch();
 for(const [name,o] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
 const c=await b.newContext({...o,serviceWorkers:'block'});const p=await c.newPage();
-await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261121a');localStorage.setItem('ui','ur')}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261122a');localStorage.setItem('ui','ur')}catch(e){}});
 const open=async(h,re)=>{await p.goto('http://localhost:8765/#'+h);await p.reload();await p.waitForFunction(r=>new RegExp(r).test(document.body.innerText),re,{timeout:40000}).catch(()=>{});return p.evaluate(()=>document.body.innerText)};
 let t=await open('/s/musnadshafiiur/n/1','سمندر کے پانی کا بیان');
 ck(/بَابٌ فِي مَاءِ الْبَحْرِ/.test(t)&&/سمندر کے پانی کا بیان/.test(t),name+' shafii: Arabic and Urdu bab');

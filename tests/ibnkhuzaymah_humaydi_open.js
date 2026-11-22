@@ -2,7 +2,7 @@ const {chromium,devices}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c)
 (async()=>{const b=await chromium.launch();
 for(const [name,ctxo] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
 const c=await b.newContext({...ctxo,serviceWorkers:'block'});const p=await c.newPage();
-await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261121a');localStorage.setItem('ui','ur')}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261122a');localStorage.setItem('ui','ur')}catch(e){}});
 const open=async(h,re)=>{await p.goto('http://localhost:8765/#'+h);await p.reload();await p.waitForFunction(r=>new RegExp(r).test(document.body.innerText),re,{timeout:30000}).catch(()=>{});return p.evaluate(()=>document.body.innerText)};
 let t=await open('/s/ibnkhuzaymahur/n/1','یحییٰ|یحیی بن یعمر');
 ck(/بَابُ ذِكْرِ الْخَيْرِ الثَّابِتِ/.test(t)&&/نبی اکرم صلی اللہ علیہ وسلم سے ثابت حدیث/.test(t),name+' ibn: Arabic and Urdu bab');

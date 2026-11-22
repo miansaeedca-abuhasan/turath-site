@@ -53,7 +53,7 @@ ck(e.sub.ur.startsWith('سیدنا علی رضی اللہ عنہ کا نیامی
 ck(/^§باب ۱\n§قرآن حکیم میں/.test(load('shaansahabaur','ur')[0][1]),'shaan chapter number and title stay in one block');}
 // Sahaba (Fazail) folder + news
 ck(/'fazailnasai','shaansahabaur'\]/.test(html),'Shaan-e-Sahaba is also inside the Fazail as-Sahabah folder');
-const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0];
+const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n.find(x=>x.id==='20261121a');
 ck(c.id==='20261121a'&&['musnadshafiiur','saheefaaliur','shaansahabaur'].every(k=>{const ix=c.keys.indexOf(k);return ix>=0&&c.l[ix]==='#/s/'+k&&c.i.ur[ix]&&c.i.en[ix]})&&c.i.ur[c.i.ur.length-1].includes('صلاۃ خیرالقرون'),'news lines in the same card as the other new books');
 ck(c.i.ur[c.keys.indexOf('musnadshafiiur')].includes('(1819)'),'news count');
 ck(/"keys":\["khalqafaalur","ibnkhuzaymahur","humaydiur","musnadshafiiur","saheefaaliur","shaansahabaur"(,"sahifahamamur")?\]/.test(html),'news in app list');

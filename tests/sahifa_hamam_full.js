@@ -17,7 +17,7 @@ const idx=fs.readFileSync('coll/index.js','utf8');ck(/"key":"sahifahamamur"/.tes
 (async()=>{const b=await chromium.launch();
 for(const [name,o] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
 const c=await b.newContext({...o,serviceWorkers:'block'});const p=await c.newPage();
-await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261121a');localStorage.setItem('ui','ur')}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.setItem('newsSeen','20261122a');localStorage.setItem('ui','ur')}catch(e){}});
 const open=async(h,re)=>{await p.goto('http://localhost:8765/#'+h);await p.reload();await p.waitForFunction(r=>new RegExp(r).test(document.body.innerText),re,{timeout:40000}).catch(()=>{});return p.evaluate(()=>document.body.innerText)};
 let t=await open('/s/sahifahamamur/n/1','امت کے بعد|آگے رہیں گے');
 ck(/نَحْنُ الْآخِرُونَ/.test(t)&&/آگے رہیں گے/.test(t)&&/تحقیق و تخریج/.test(t),name+': hadith 1 Arabic, Urdu, takhrij');

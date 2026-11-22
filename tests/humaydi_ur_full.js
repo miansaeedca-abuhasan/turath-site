@@ -35,7 +35,7 @@ ck(NI.filter(p=>p.startsWith('§')).length===181&&NI.filter(p=>p==='تعارف �
 ck(!/\(\(/.test(NI.join('\n'))&&!/[A-Za-z❶-❿]/.test(NI.join('\n')),'no raw (( or Latin in them');
 ck(/"humaydiur":14/.test(html),'category set');
 const old=reg.find(x=>x.key==='humaydi');ck(old&&old.count===1359&&old.langs.join()==='ar','older Arabic entry humaydi untouched');
-const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n[0],ix=c.keys.indexOf(key);
+const n=JSON.parse(fs.readFileSync(R+'news.json','utf8')),c=n.find(x=>x.id==='20261121a'),ix=c.keys.indexOf(key);
 ck(c.id==='20261121a'&&ix>=0&&c.i.ur[ix].includes('(1334)')&&c.l[ix]==='#/s/'+key,'news line');
 ck(new RegExp('"id":"20261121a"[^\\n]*'+key).test(html),'news in app list');
 const off=JSON.parse(fs.readFileSync(R+'offline.json','utf8')).groups.find(g=>g.id==='c_'+key);ck(off&&off.f.length===e.files.ar.length+e.files.ur.length+1,'offline group (+ narrator introductions)');
