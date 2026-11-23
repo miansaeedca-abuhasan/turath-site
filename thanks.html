@@ -17,7 +17,10 @@ h1{font-size:1.5rem;margin:.2rem 0}h2{font-size:1.1rem;color:var(--accent);margi
 .ar{font-family:"Noto Naskh Arabic","Amiri",serif;line-height:2;direction:rtl;text-align:right}
 .en{direction:ltr;text-align:left}
 a{color:var(--accent)}
-ol{margin:.4rem 0;padding-inline-start:1.6rem}
+ol.bk{list-style:none;counter-reset:n;margin:.4rem 0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:.1rem 1.4rem;align-items:start}
+ol.bk li{counter-increment:n;display:flex;gap:.5rem;align-items:baseline;margin:0;padding:.1rem 0;min-width:0}
+ol.bk li::before{content:counter(n)".";flex:none;min-width:1.6em;color:var(--muted);font-size:.85em;direction:ltr;text-align:end}
+@media(max-width:380px){ol.bk{grid-template-columns:1fr}}
 </style>
 </head>
 <body><main>
@@ -37,12 +40,28 @@ ol{margin:.4rem 0;padding-inline-start:1.6rem}
 <h2>ادارہ انصار السنۃ پبلیکیشنز، لاہور</h2>
 <p><b>ناشر:</b> ادارہ انصار السنة پبلیکیشنز، لاہور، پاکستان۔</p>
 <p>درج ذیل سبھی کتب اس ادارے کی شائع کردہ ہیں اور مزید بھی شامل کی جائیں گی، إن شاء اللہ:</p>
-<ol>
-<li>المعجم لابن الاعرابی</li>
-<li>المعجم الطبرانی للصغیر</li>
-<li>فضل اللہ الاحد (اُردو شرح الادب المفرد)</li>
+<ol class="bk">
+<li>الادب المفرد</li>
+<li>موطا امام مالک (اردو ترجمہ و تخریج)</li>
+<li>السنة للمروزي</li>
+<li>معجم شیوخ ابن الاعرابی</li>
+<li>معجم اوسط للطبرانی</li>
+<li>تفسیر نور الہدیٰ</li>
 <li>عمدۃ الاحکام من کلام خیر الانام</li>
-<li>السنۃ للمروزی</li>
+<li>معجم صغیر للطبرانی</li>
+<li>سلسلہ احادیث صحیحہ</li>
+<li>فہرس اطراف الاحادیث — سلسلہ احادیث صحیحہ</li>
+<li>فضائل الصحابہ (امام نسائی)</li>
+<li>کتاب الزہد (امام وکیع بن الجراح)</li>
+<li>مسند ابراہیم بن ادھم (امام ابن مندہ)</li>
+<li>مسند اسحاق بن راہویہ</li>
+<li>مسند السراج (اردو ترجمہ)</li>
+<li>صحیح ابن خزیمہ (اردو ترجمہ)</li>
+<li>مسند الحمیدی (اردو ترجمہ)</li>
+<li>مسند الشافعی (اردو ترجمہ)</li>
+<li>صحیفہ علی بن ابی طالب رضی اللہ عنہ</li>
+<li>شان صحابہ بزبان مصطفی علیہ السلام</li>
+<li>صحیفہ ہمام بن منبہ (اردو ترجمہ)</li>
 </ol>
 <p>جناب محترم ابو حمزہ عبدالخالق حفظہ اللہ نے بہت محبت دکھائی اور اس کارِ خیر میں حصہ ڈالتے ہوئے شائقینِ علم اُردو دان طبقے کے لیے یہ کتب مہیا کی ہیں جو تراث خيرالقرون پر دستیاب ہیں، الحمدللہ۔</p>
 <p>لہٰذا محترم ابو حمزہ عبدالخالق حفظہ اللہ اور ادارہ انصار السنۃ پبلیکیشنز، لاہور کے خصوصی شکریہ کے ساتھ یہ مترجم کتب تراث خيرالقرون پر پیش کی گئی ہیں۔ اللہ تعالیٰ ان سبھی احباب کی جملہ کاوشوں کو اپنی رضا کے لیے قبول فرمائے، آمین یا رب العالمین۔</p>
@@ -58,12 +77,28 @@ ol{margin:.4rem 0;padding-inline-start:1.6rem}
 <h2>مكتبة أنصار السنة، لاهور</h2>
 <p><b>الناشر:</b> أنصار السنة للنشر، لاهور، باكستان.</p>
 <p>الكتب التالية جميعها من منشورات هذه الجهة، وستُضاف كتب أخرى بإذن الله:</p>
-<ol>
-<li>المعجم لابن الأعرابي</li>
-<li>المعجم الصغير للطبراني</li>
-<li>فضل الله الأحد (شرح الأدب المفرد بالأردية)</li>
-<li>عمدة الأحكام من كلام خير الأنام</li>
+<ol class="bk">
+<li>الأدب المفرد</li>
+<li>موطأ الإمام مالك (الترجمة الأردية)</li>
 <li>السنة للمروزي</li>
+<li>معجم شيوخ ابن الأعرابي</li>
+<li>المعجم الأوسط للطبراني</li>
+<li>تفسير نور الهدى</li>
+<li>عمدة الأحكام من كلام خير الأنام</li>
+<li>المعجم الصغير للطبراني</li>
+<li>سلسلة الأحاديث الصحيحة</li>
+<li>فهرس أطراف الأحاديث — سلسلة الأحاديث الصحيحة</li>
+<li>فضائل الصحابة للنسائي</li>
+<li>كتاب الزهد لوكيع</li>
+<li>مسند إبراهيم بن أدهم لابن منده</li>
+<li>مسند إسحاق بن راهويه</li>
+<li>مسند السراج (الترجمة الأردية)</li>
+<li>صحيح ابن خزيمة (الترجمة الأردية)</li>
+<li>مسند الحميدي (الترجمة الأردية)</li>
+<li>مسند الشافعي (الترجمة الأردية)</li>
+<li>صحيفة علي بن أبي طالب رضي الله عنه</li>
+<li>شأن الصحابة بلسان المصطفى عليه السلام</li>
+<li>صحيفة همام بن منبه (الترجمة الأردية)</li>
 </ol>
 <p>أبدى الأخ الكريم أبو حمزة عبد الخالق حفظه الله كل محبة، وأسهم في هذا العمل الخيّر فهيّأ هذه الكتب للقرّاء الأردو، والحمد لله.</p>
 <p>فنقدّم هذه الكتب المترجمة مع خالص الشكر للأخ أبي حمزة عبد الخالق حفظه الله ولدار أنصار السنة بلاهور، سائلين الله أن يتقبّل جهودهم جميعًا، آمين.</p>
@@ -78,12 +113,28 @@ ol{margin:.4rem 0;padding-inline-start:1.6rem}
 <h2>Ansar al-Sunnah Publications, Lahore</h2>
 <p><b>Publisher:</b> Idarah Ansar al-Sunnah Publications, Lahore, Pakistan.</p>
 <p>All of the following books are published by this institution, and more will be added, God willing:</p>
-<ol>
-<li>Al-Mu'jam by Ibn al-A'rabi</li>
-<li>Al-Mu'jam al-Saghir by al-Tabarani</li>
-<li>Fadl Allah al-Ahad (Urdu commentary on al-Adab al-Mufrad)</li>
-<li>'Umdat al-Ahkam min Kalam Khayr al-Anam</li>
-<li>Al-Sunnah by al-Marwazi</li>
+<ol class="bk">
+<li>Al-Adab Al-Mufrad</li>
+<li>Muwatta Imam Malik (Urdu translation and takhrij)</li>
+<li>As-Sunnah (Al-Marwazi)</li>
+<li>Mu&#x27;jam Shuyukh Ibn al-A&#x27;rabi</li>
+<li>Al-Mu‘jam al-Awsat (at-Tabarani)</li>
+<li>Tafsir Noor al-Huda</li>
+<li>Umdat al-Ahkam min Kalam Khayr al-Anam</li>
+<li>Al-Mu‘jam as-Saghir (at-Tabarani)</li>
+<li>Silsila Ahadith Sahiha (Urdu)</li>
+<li>Index of Hadith Openings (Atraf) — Silsila Ahadith Sahiha</li>
+<li>Fadail as-Sahaba (an-Nasai)</li>
+<li>Kitab az-Zuhd (Waki ibn al-Jarrah)</li>
+<li>Musnad Ibrahim ibn Adham (Ibn Mandah)</li>
+<li>Musnad Ishaq ibn Rahwayh</li>
+<li>Musnad as-Sarraj (Urdu translation)</li>
+<li>Sahih Ibn Khuzaymah (Urdu translation)</li>
+<li>Musnad al-Humaydi (Urdu translation)</li>
+<li>Musnad ash-Shafi&#x27;i (Urdu translation)</li>
+<li>Saheefa of Ali ibn Abi Talib (may Allah be pleased with him)</li>
+<li>Shaan-e-Sahaba: the Companions in the words of the Prophet (peace be upon him)</li>
+<li>Sahifah of Hammam ibn Munabbih (Urdu translation)</li>
 </ol>
 <p>Respected Abu Hamzah Abdul Khaliq (may Allah protect him) showed great kindness and took part in this good work by providing these books for Urdu-speaking seekers of knowledge.</p>
 <p>These translated books are presented with special thanks to Abu Hamzah Abdul Khaliq and to Idarah Ansar al-Sunnah Publications, Lahore. May Allah accept the efforts of all of them for His pleasure. Amin.</p>
