@@ -535,7 +535,7 @@ html[lang=ur] .tbtn{font:600 1.05rem/2 var(--urdu)}
 .qrside .ab{background:none;border:0;color:var(--muted);border-radius:50%;width:2.4rem;height:2.4rem;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
 .qrside .ab:hover{background:var(--wash);color:var(--accent)}
 a.card .ca.snipl{font-family:inherit;font-size:1rem;line-height:1.9;text-align:start}[lang=ur].snipl{font-family:var(--urdu,inherit)}
-mark.qhit{background:#aeeaea;color:inherit;font-weight:inherit;border-radius:4px;padding:0 .12em;-webkit-box-decoration-break:clone;box-decoration-break:clone}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.qhit{background:#1d6a70;color:#fff}}:root[data-theme="dark"] mark.qhit{background:#1d6a70;color:#fff}
+mark.qhit{background:none;color:#c0211a;font-weight:inherit;padding:0}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) mark.qhit{background:none;color:#ff7a70}}:root[data-theme="dark"] mark.qhit{background:none;color:#ff7a70}
 .trname.inl{display:inline;font-weight:400}
 .qwrap{text-align:center;transition:background .3s}
 .qwrap.ok{background:color-mix(in srgb,#2e9b5b 14%,var(--card))}
@@ -5039,12 +5039,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   }
   // search hits in red (like the Quran search): wrap whole words that match a query word (also with ال / و in front)
   function markHits(node, q) {
-    const ok = w => { const x = norm(w); return !!x && q.some(t => x === t || x === 'ال' + t || x === 'و' + t); };
+    const eq = (x, t) => x === t || x === 'ال' + t || x === 'و' + t, ok = w => { const x = norm(w); return !!x && q.some(t => eq(x, t)); };
+    const exact = q.length > 1 && GSMODE() === 'exact';   // «exact phrase»: only the words standing together in the typed order are red, not each typed word on its own
     const tw = document.createTreeWalker(node, NodeFilter.SHOW_TEXT), list = [];
     while (tw.nextNode()) list.push(tw.currentNode);
-    list.forEach(t => { const parts = t.nodeValue.split(/(\s+)/); if (!parts.some(p => p.trim() && ok(p))) return;
+    const split = list.map(t => t.nodeValue.split(/(\s+)/)), on = new Set(), seq = [];
+    split.forEach((parts, ti) => parts.forEach((p, pi) => { const x = p.trim() ? norm(p) : ''; if (x) seq.push({k: ti + ':' + pi, x}); }));
+    if (!exact) seq.forEach(e => { if (q.some(t => eq(e.x, t))) on.add(e.k); });
+    else for (let i = 0; i + q.length <= seq.length; i++) { let g = true; for (let j = 0; j < q.length && g; j++) g = eq(seq[i + j].x, q[j]); if (g) for (let j = 0; j < q.length; j++) on.add(seq[i + j].k); }
+    list.forEach((t, ti) => { const parts = split[ti]; if (!parts.some((p, pi) => on.has(ti + ':' + pi))) return;
       const f = document.createDocumentFragment();
-      parts.forEach(p => f.append(p.trim() && ok(p) ? el('mark', {class: 'qhit'}, p) : p)); t.replaceWith(f); });
+      parts.forEach((p, pi) => f.append(on.has(ti + ':' + pi) ? el('mark', {class: 'qhit'}, p) : p)); t.replaceWith(f); });
   }
   // the compiler's footer; an Arabic line (with harakat) in the Arabic font
   window.footEl = foot => el('div', {class: 'shfoot', lang: 'ur', dir: 'rtl'}, ...foot.split('\n').map(x => /[\u064b-\u0652]/.test(x) ? el('p', {class: 'far', lang: 'ar'}, x) : el('p', {}, x)));
