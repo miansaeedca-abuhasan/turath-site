@@ -1,6 +1,6 @@
 // the book list never shows one work twice: translated edition vs plain Arabic book (Urdu interface: the Urdu one; Arabic interface: the Arabic one)
 const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
-const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi']];
+const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi'],['musnadishaq','sh13159'],['fazailnasai','sh6601'],['khalqafaalur','sh9697'],['silsila','sh9442'],['muwattaansar','sh28107']];
 (async()=>{const b=await chromium.launch();
 for(const ui of ['ur','ar','en','bn']){const p=await b.newPage({viewport:{width:412,height:900}});
 await p.addInitScript(u=>{localStorage.ui=u;localStorage.newsDay=String(new Date().toDateString())},ui);

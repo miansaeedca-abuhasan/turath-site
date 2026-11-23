@@ -1750,9 +1750,9 @@ async function showBookList(cat,aut,authors,topics){
     const drop=ui==='ur'||ui==='ar'?'adabaalien':'adabaali';
     for(let i=rows.length-1;i>=0;i--)if(rows[i].key===drop&&rows.some(x=>x.key!==drop&&/^adabaali/.test(x.key)))rows.splice(i,1);
   }
-  {  // one work = one row: where a book exists both as a translated edition and as the plain Arabic book (same text, same count), only one of them is listed:
+  {  // one work = one row (owner 22-11-2026): where a book exists both as a translated edition and as the plain Arabic book (same author and title), only one of them is listed (the other stays in the library and in search):
      // the one in the reader's language; in the Arabic interface (or when neither has the reader's language) the Arabic book, never the translated edition
-    const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi']];
+    const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi'],['musnadishaq','sh13159'],['fazailnasai','sh6601'],['khalqafaalur','sh9697'],['silsila','sh9442'],['muwattaansar','sh28107']];
     TW.forEach(([t,a])=>{const rt=rows.find(r=>r.key===t),ra=rows.find(r=>r.key===a);if(!rt||!ra)return;
       const has=r=>(r.lg||[]).includes(ui),drop=ui!=='ar'&&has(rt)&&!has(ra)?ra:rt;rows.splice(rows.indexOf(drop),1);});
   }
