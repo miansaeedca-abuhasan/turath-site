@@ -976,8 +976,12 @@ function ENGINE(){
   }
   let EXACT = false;
   const flagsOf = (words, tk) => words.map(w => { const n = stem(norm(w).replace(/ /g, '')); return !!n && tk.some(t => n === t || (!EXACT && t.length >= 3 && n.startsWith(t))); });
-  function snippet(text, tk, width = 20) {
-    const words = text.split(/\s+/).filter(Boolean), fl = flagsOf(words, tk);
+  // «exact phrase»: only the typed words standing together in the typed order are flagged (red), not each of them wherever it occurs
+  const phraseFlags = (words, tk) => { const n = words.map(w => stem(norm(w).replace(/ /g, ''))), fl = words.map(() => false);
+    for (let i = 0; i + tk.length <= n.length; i++) if (tk.every((t, j) => n[i + j] === t)) for (let j = 0; j < tk.length; j++) fl[i + j] = true;
+    return fl; };
+  function snippet(text, tk, width = 20, mode) {
+    const words = text.split(/\s+/).filter(Boolean), fl = mode === 'exact' && tk.length > 1 ? phraseFlags(words, tk) : flagsOf(words, tk);
     let i = fl.indexOf(true); if (i < 0) i = 0;
     const a = Math.max(0, i - 5);
     return words.slice(a, a + width).map((w, j) => [w, fl[a + j]]);
@@ -1036,9 +1040,9 @@ function ENGINE(){
     if (!ext) await ensureMany(ids.slice(0, 100));   // snippets for the rows on screen; later rows show the first line
     const rows = ids.slice(0, 300).map(id => {
       const f = [...hits.get(id).fields].sort();
-      if (ext) { const e = extBy.get(book + '|' + id); return {book, num: id, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: snippet(e.matn, tk)}; }
+      if (ext) { const e = extBy.get(book + '|' + id); return {book, num: id, demo: false, matn: e.matn.slice(0, 160), chapter: '', fields: [], snippet: snippet(e.matn, tk, 20, mode)}; }
       const h = byNum.get(id), t = h._ok ? bestText(lang ? textsLang(h, book, lang) : textsOf(h, book), tk) : h.matn[0];
-      return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk) : [], lang: lang || ''});
+      return rowOf(h, book, {fields: f, snippet: t ? snippet(t, tk, 20, mode) : [], lang: lang || ''});
     });
     rows.total = total; return rows;
   }
