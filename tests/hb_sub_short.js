@@ -7,6 +7,7 @@ const sub=k=>p.evaluate(k=>{const e=document.querySelector('a[data-k='+k+'] .hbs
 ck(await sub('shaansahabaur')===null,'long credit line of Shan-e-Sahaba hidden');
 ck((await sub('sahifahamamur')||'')==='ترجمہ: حافظ عبد اللہ شمیر','Sahifa Hamam: only the translator ('+await sub('sahifahamamur')+')');
 ck((await sub('jamulfawaid')||'').startsWith('ترجمہ: مولانا محمد احمد ولد پیر')&&!(await sub('jamulfawaid')).includes('تخریج'),'Jamul Fowaid: only the translator');
+const txt=await p.evaluate(()=>[...document.querySelectorAll('.hbsub')].map(e=>e.textContent));ck(txt.every(x=>/^(ترجمہ|مترجم)\s*:/.test(x)),'every row sub line is only the translator: '+txt.filter(x=>!/^(ترجمہ|مترجم)\s*:/.test(x)).join(' | '));
 const all=await p.evaluate(()=>[...document.querySelectorAll('.hbsub')].map(e=>e.textContent.length));
 ck(all.length>0&&Math.max(...all)<=60,'no row sub line longer than 60 ('+Math.max(...all)+')');
 console.log(bad?'FAIL':'PASS hb_sub_short');await b.close();process.exit(bad?1:0)})();

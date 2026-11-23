@@ -162,6 +162,7 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .fpanel h4.subh::before,.tr h4.subh::before,.shtx h4.subh::before{content:"\2756";color:#c59a35;margin-inline-end:.5em}
 .bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
+.secend{text-align:center;margin:1.2em 0 1em;line-height:1;user-select:none;-webkit-user-select:none;pointer-events:none}.secend::before{content:"\2756\00a0\00a0\2756\00a0\00a0\2756";color:#a8322b;font-size:1.05em;letter-spacing:.2em}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
 .qnote{color:var(--accent);font-size:1.4rem;line-height:1}
@@ -1347,6 +1348,13 @@ function paraEl(t,lang,tag){
   return lang==='ur'&&/[\u06f0-\u06f9\u0660-\u0669]/.test(x)?udig(nd):nd;
 }
 window.paraEl=paraEl;
+/* section end ornament «❖ ❖ ❖» (owner 23-11-2026): after the text of a heading's section – before the next heading and at the end of the last one; CSS-only content, never copied */
+(function(){const SEL='h4.subh:not(.qe-title),.phead',CON='.shtx,.tr,.fpanel,.bkitem:not(.qe),details.intro',mk=()=>{const d=document.createElement('div');d.className='secend';d.setAttribute('aria-hidden','true');return d};
+let tm=0;function run(){tm=0;const ps=new Set();
+ document.querySelectorAll(SEL).forEach(h=>{const p=h.parentElement;if(!p||!p.closest(CON))return;ps.add(p);if(h.dataset.se)return;h.dataset.se='1';
+  const pv=h.previousElementSibling;if(pv&&!pv.classList.contains('secend')&&!pv.matches(SEL)&&!/^H[1-6]$/.test(pv.tagName))p.insertBefore(mk(),h);});
+ ps.forEach(p=>{const l=p.lastElementChild;if(l&&!l.classList.contains('secend')&&/^(P|DIV)$/.test(l.tagName)&&!l.querySelector('button,a.btn,nav')&&!/btn|bar|nav|share|foot|fn/.test(l.className||''))p.append(mk());});}
+new MutationObserver(()=>{if(!tm)tm=setTimeout(run,120)}).observe(document.documentElement,{childList:true,subtree:true});})();
 
 // Quran Encyclopedia (qenc): printed-book look. Row 1 = title page, row 2 = «جلد اول» divider, rows 3-10 = front matter (each opens like a chapter: centred title, author line, plain paragraphs), the rest = the entries, each one set off by a rule
 // the Arabic doxologies of the front matter are shown in the Urdu font, written with the Urdu letters (ی ک ہ ۃ)
@@ -1707,7 +1715,7 @@ const deathTxt=y=>{if(ui==='ur')return '(ت '+ad(y)+'ھ)';if(ui==='ar')return '(
 const LGN={ur:{ar:'عربی',ur:'اردو',en:'انگریزی',bn:'بنگلہ',hi:'ہندی',gu:'گجراتی',fr:'فرانسیسی',ne:'نیپالی'},ar:{ar:'عربي',ur:'أردو',en:'إنجليزي',bn:'بنغالي',hi:'هندي',gu:'غوجاراتي',fr:'فرنسي',ne:'النيبالية'},en:{ar:'Arabic',ur:'Urdu',en:'English',bn:'Bengali',hi:'Hindi',gu:'Gujarati',fr:'French',ne:'Nepali'},bn:{ar:'আরবি',ur:'উর্দু',en:'ইংরেজি',bn:'বাংলা',hi:'হিন্দি',gu:'গুজরাটি',fr:'ফরাসি',ne:'নেপালি'},hi:{ar:'अरबी',ur:'उर्दू',en:'अंग्रेज़ी',bn:'बांग्ला',hi:'हिन्दी',gu:'गुजराती',fr:'फ़्रेंच',ne:'नेपाली'},gu:{ar:'અરબી',ur:'ઉર્દૂ',en:'અંગ્રેજી',bn:'બંગાળી',hi:'હિન્દી',gu:'ગુજરાતી',fr:'ફ્રેન્ચ',ne:'નેપાળી'},fr:{ar:'arabe',ur:'ourdou',en:'anglais',bn:'bengali',hi:'hindi',gu:'goudjarati',fr:'français',ne:'népalais'},ne:{ar:'अरबी',ur:'उर्दू',en:'अंग्रेजी',bn:'बंगाली',hi:'हिन्दी',gu:'गुजराती',fr:'फ्रेन्च',ne:'नेपाली'}};   // names of the book languages, shown after the name of a translated book: (Arabic+Urdu)
 // book list: show only Arabic + the reader's own language (+ English), never the long list of every language
 /* book-list row: a long credit line (author, takhrij, supervisors, content kinds) is not shown; only the short translator part («ترجمہ: …») stays (owner 23-11-2026, screenshot with blue lines) */
-const hbSubShort=t=>{if(!t||t.length<=60)return t||'';const seg=String(t).split(/\s*[؛;]\s*|\s+[—–]\s+/).find(x=>/^(ترجمہ|ترجمة|Translation|Translator|অনুবাদ)\s*[:：]/.test(x.trim()));return seg?seg.trim():''};
+const hbSubShort=t=>{if(!t)return '';const seg=String(t).split(/\s*[؛;]\s*|\s+[—–]\s+/).find(x=>/^(ترجمہ|مترجم|ترجمة|المترجم|Translation|Translator|অনুবাদ)\s*[:：]/.test(x.trim()));return seg?seg.trim():''};
 const hbLg=lg=>{if(!lg)return[];const L=['ar'];if(ui!=='ar'&&ui!=='en'&&lg.includes(ui))L.push(ui);if(ui==='en'){if(lg.includes('en'))L.push('en')}else if(lg.includes('en'))L.push('en');return L};
 const auNm=a=>ui==='ur'?a[2]:ui==='ar'?a[1]:a[3];
 const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):auNm(a)+(a[4]?' '+deathTxt(a[4]):'');
