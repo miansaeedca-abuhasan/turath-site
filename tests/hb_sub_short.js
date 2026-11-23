@@ -1,13 +1,13 @@
-// Book list rows: long credit lines are not shown; the short translator part stays
-const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
-(async()=>{const b=await chromium.launch();const p=await b.newPage({viewport:{width:1190,height:800}});
-await p.addInitScript(()=>{localStorage.ui='ur'});
-await p.goto('http://localhost:8765/#/hb');await p.waitForTimeout(4000);
+// owner 23-11-2026 (twice): book list shows under the name only تالیف / ترجمہ; never takhrij/tahqiq/nazar-e-sani/taqriz/ishraf; content-kind lines are not shown either
+const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad=1;console.log('FAIL',m)}};
+(async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:420,height:900}})).newPage();
+await p.addInitScript(()=>{try{localStorage.newsSeen='20261122a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+await p.goto('http://localhost:8765/index.html#/hb');await p.waitForTimeout(5000);
 const sub=k=>p.evaluate(k=>{const e=document.querySelector('a[data-k='+k+'] .hbsub');return e?e.textContent:null},k);
-ck(await sub('shaansahabaur')===null,'long credit line of Shan-e-Sahaba hidden');
-ck((await sub('sahifahamamur')||'')==='ترجمہ: حافظ عبد اللہ شمیر','Sahifa Hamam: only the translator ('+await sub('sahifahamamur')+')');
-ck((await sub('jamulfawaid')||'').startsWith('ترجمہ: مولانا محمد احمد ولد پیر')&&!(await sub('jamulfawaid')).includes('تخریج'),'Jamul Fowaid: only the translator');
-const txt=await p.evaluate(()=>[...document.querySelectorAll('.hbsub')].map(e=>e.textContent));ck(txt.every(x=>/^(ترجمہ|مترجم)\s*:/.test(x)),'every row sub line is only the translator: '+txt.filter(x=>!/^(ترجمہ|مترجم)\s*:/.test(x)).join(' | '));
-const all=await p.evaluate(()=>[...document.querySelectorAll('.hbsub')].map(e=>e.textContent.length));
-ck(all.length>0&&Math.max(...all)<=60,'no row sub line longer than 60 ('+Math.max(...all)+')');
-console.log(bad?'FAIL':'PASS hb_sub_short');await b.close();process.exit(bad?1:0)})();
+const s47=await sub('shaansahabaur'),s48=await sub('sahifahamamur'),sj=await sub('jamulfawaid');
+ck(s47&&s47.startsWith('تالیف: ابو حمزہ عبد الخالق صدیقی')&&!/تخریج|اشراف|رحمانی/.test(s47),'Shan-e-Sahaba: only author ('+s47+')');
+ck(s48&&s48.includes('ترجمہ: حافظ عبد اللہ شمیر')&&!/تخریج|شرح|عربی متن/.test(s48),'Sahifa Hamam: only translator ('+s48+')');
+ck(sj&&sj.startsWith('ترجمہ: مولانا محمد احمد ولد پیر')&&!sj.includes('تخریج'),'Jamul: translator');
+const txt=await p.evaluate(()=>[...document.querySelectorAll('.hbsub')].map(e=>e.textContent));
+const off=txt.filter(x=>/تخریج|تحقیق|نظر ثانی|تقریظ|زیر اشراف/.test(x));ck(txt.length>0&&!off.length,'offenders: '+off.join(' || '));
+console.log(bad?'FAIL':'PASS hb_sub_short');await b.close();process.exit(bad)})();
