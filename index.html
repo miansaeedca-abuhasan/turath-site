@@ -152,6 +152,7 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .tfsearch{margin:.3rem 0 .8rem}.tfsearch .filterbox{display:flex;gap:.4rem;align-items:center}.tfsearch .filterbox .btn{flex:none;padding:.35rem .9rem}.tfhit .qtr{display:block;font-size:calc(var(--qtr)*.9);line-height:1.9}.tfhit mark{background:#ffe9a8;color:inherit;border-radius:3px;padding:0 .1em}:root[data-theme=dark] .tfhit mark{background:#5b4a14}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .tfhit mark{background:#5b4a14}}
 .qtr .ayn,.qayah .ayn{min-width:1.15em;height:1.15em;font-size:.48em;border-width:1px;margin:0 .25em;padding:0 .08em}
 .arq{font-family:var(--arabic);direction:rtl;font-size:1.12em}
+#t1 .qayah,#t1 .arq{color:inherit;font-family:var(--arabic)}.ct .qayah,.grp .qayah{font-family:var(--arabic);font-size:1.1em;font-weight:400}
 .qtr.tf-ur_bhuttavi .arq{color:#9b5de5}   /* owner 22-11-2026: in Tafsir Bhatwi the Arabic inside the Urdu text (with its « ») is light purple */
 .subh,.phead{border-bottom:0;padding-bottom:.5em;width:fit-content;max-width:100%;padding-inline-end:1.6em;box-sizing:border-box;background:linear-gradient(90deg,transparent,#c59a35 12%,#ecd180 50%,#c59a35 88%,transparent) 0 100%/100% 2px no-repeat,linear-gradient(90deg,transparent,#d9b862 30%,#d9b862 70%,transparent) 0 calc(100% - 6px)/100% 1px no-repeat}
 
@@ -1268,7 +1269,7 @@ const bookName=b=>LTR()?(b.name_en||b.name):(ui==='ar'&&b.kind!=='lang'&&window.
 const curBookName=()=>{const b=BOOKS.find(x=>x.key===book)||BOOKS.find(x=>x.key===scopeOf());return b?bookName(b):''};
 const fmt=n=>n<0?T('sample'):Number(n).toLocaleString('en-US');
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('on'),1800);}
-function bar(t1,t2,back){if(/^(?:تلخيص |تلخیص )?الجامع (?:الكامل|الکامل)\s+(?:في|فی)\s/.test(t1||''))t1=t1.split(/\s+(?:في|فی)\s+/)[0];const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();$('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();document.title=t1||T('brand');}
+function bar(t1,t2,back){if(/^(?:تلخيص |تلخیص )?الجامع (?:الكامل|الکامل)\s+(?:في|فی)\s/.test(t1||''))t1=t1.split(/\s+(?:في|فی)\s+/)[0];const xt=document.getElementById('xtools');if(xt)xt.replaceChildren();if(ui==='ur'&&/[﴿«]/.test(t1||''))$('#t1').replaceChildren(...rich(t1,'ur'));else $('#t1').textContent=t1||'';$('#t2').textContent=t2||'';$('#back').hidden=isHome();document.title=t1||T('brand');}
 /* ---------- Arabic quotes inside Urdu get Arabic fonts ---------- */
 const TASH=/[\u064b-\u0652\u0670]/;
 // Quran verses ﴿…﴾ in maroon, and Arabic words inside a translation in the Arabic font: in Urdu the vocalized words,
@@ -1338,6 +1339,8 @@ window.fnm=fnm;window.udig=udig;
 document.addEventListener('click',e=>{const s=e.target.closest&&e.target.closest('sup.fnm');if(!s)return;const root=s.closest('article,details.intro,.card')||document,list=x=>!!x.closest('.pfnrun')||(x.parentElement&&x.parentElement.firstChild===x),me=list(s),k=s.textContent.trim();
   const t=[...root.querySelectorAll('sup.fnm')].find(x=>x!==s&&x.textContent.trim()===k&&list(x)!==me);if(!t)return;e.preventDefault();
   try{t.scrollIntoView({block:'center',behavior:'smooth'});}catch(_){t.scrollIntoView();}t.classList.add('fnhi');setTimeout(()=>t.classList.remove('fnhi'),1600);});
+/* a chapter title that holds a verse ﴿…﴾ or Arabic words: they stand in the Arabic font (Urdu UI), not in the title's Urdu font */
+const ttl=t=>ui==='ur'&&/[﴿«]/.test(t||'')?rich(t,'ur'):[t];
 function paraEl(t,lang,tag){
   const h=t[0]==='§',x=h?t.slice(1).trim():t,ar=lang!=='ar'&&isArPara(x),L=ar?'ar':lang;
   const nd=el(h?'h4':(tag||'p'),{class:(h?'subh ':'')+(ar?'arp':L),lang:L,dir:ar?'rtl':DIR(L)},...rich(x,L));
@@ -5388,7 +5391,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
     const iL = b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
-    const intro = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; }))).concat(b.introx ? [(() => { const d = el('details', {class: 'card intro'}, el('summary', {}, 'راویوں کا تعارف')); d.addEventListener('toggle', () => { if (!d.open || d.dataset.ld) return; d.dataset.ld = '1'; const fill = ps => d.append(...ps.map(p => paraEl(p, 'ur'))); const W = window._CI && window._CI[b.key]; if (W) return fill(W); const sc = document.createElement('script'); sc.src = b.introx; sc.onload = () => fill((window._CI && window._CI[b.key]) || []); sc.onerror = () => { d.dataset.ld = ''; d.append(el('p', {class: 'cs'}, 'تعارف ابھی نہیں کھل سکا، دوبارہ کھولیں')); }; document.head.append(sc); }); return d; })()] : []);
+    const introAll = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; }))).concat(b.introx ? [(() => { const d = el('details', {class: 'card intro'}, el('summary', {}, 'راویوں کا تعارف')); d.addEventListener('toggle', () => { if (!d.open || d.dataset.ld) return; d.dataset.ld = '1'; const fill = ps => d.append(...ps.map(p => paraEl(p, 'ur'))); const W = window._CI && window._CI[b.key]; if (W) return fill(W); const sc = document.createElement('script'); sc.src = b.introx; sc.onload = () => fill((window._CI && window._CI[b.key]) || []); sc.onerror = () => { d.dataset.ld = ''; d.append(el('p', {class: 'cs'}, 'تعارف ابھی نہیں کھل سکا، دوبارہ کھولیں')); }; document.head.append(sc); }); return d; })()] : []);
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
     const bookAudio = () => { const rs = BA[b.key]; if (!rs) return [];
@@ -5402,7 +5405,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
           el('p', {class: 'cs'}, src(r.host))]))]; };
     const cover = () => bookAudio().concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
     const row = s => el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
-      el('span', {class: 'snum'}, fmtN(secNo(b, s))), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, secT(b, s)), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, s[2] > s[3] ? '' : [b.prose ? '' : RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
+      el('span', {class: 'snum'}, fmtN(secNo(b, s))), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, ...ttl(secT(b, s))), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, s[2] > s[3] ? '' : [b.prose ? '' : RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
     // books with group headings (فضائل صحابہ): each heading opens only its own babs
     const grouped = () => {
       const hs = b.heads, boxes = [];
@@ -5424,9 +5427,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const L = {ur: ['کل شخصیات', 'پیراگراف'], ar: ['إجمالي الشخصيات', 'الفقرات'], en: ['Total persons', 'paragraphs'], bn: ['মোট ব্যক্তিত্ব', 'অনুচ্ছেদ'], hi: ['कुल व्यक्तित्व', 'अनुच्छेद'], gu: ['કુલ વ્યક્તિઓ', 'પરિચ્છેદ'], fr: ['Total des personnes', 'paragraphes']}[ui] || ['Total persons', 'paragraphs'];
       return [el('p', {class: 'card', style: 'text-align:center;font-weight:700;margin:.4rem 0;padding:.5rem'}, L[0] + ': ' + fmtN(b.sections.length) + '  ·  ' + L[1] + ': ' + fmtN(b.count))];
     };
-    const secs = () => { if (b.heads && b.heads.length) return out.replaceChildren(...cover(), ...totalLine(), ...intro(), ...grouped());
+    // «کتاب کا اختتام» / «اختتامیہ» (the closing words of the book) stand at the END of the list, after the chapters (owner 22-11-2026)
+    const isEnd = d => /^(کتاب کا اختتام|اختتامیہ)$/.test(((d.firstChild && d.firstChild.textContent) || '').trim());
+    const intro = () => introAll().filter(d => !isEnd(d)), introEnd = () => introAll().filter(isEnd);
+    const secs = () => { if (b.heads && b.heads.length) return out.replaceChildren(...cover(), ...totalLine(), ...intro(), ...grouped(), ...introEnd());
       out.replaceChildren(...cover(), ...intro(), ...b.sections.flatMap(s => (HD[s[0]] ? [el('h3', {class: 'grp hbgrp'}, HD[s[0]][1], HD[s[0]][2] ? el('small', {class: 'ca', lang: 'ar', style: 'display:block'}, HD[s[0]][2]) : '')] : []).concat(el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
-      el('span', {class: 'snum'}, fmtN(secNo(b, s))), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, secT(b, s)), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, s[2] > s[3] ? '' : [b.prose ? '' : RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))))))); };
+      el('span', {class: 'snum'}, fmtN(secNo(b, s))), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, ...ttl(secT(b, s))), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, s[2] > s[3] ? '' : [b.prose ? '' : RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  ')))))), ...introEnd()); };
     let tm;
     const run = async () => {
       const v = f.value.trim(), num = toNum(v);
@@ -5971,7 +5977,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const s = b.sections.find(x => !(x[5] && x[5].src) && x[2] <= n && n <= x[3]);
     bar(bname(b), T(b.key === 'shadharat' ? 'cNasNo' : b.key === 'siyar' ? 'cParaNo' : 'hadith')(fmtN(n)), true);
     box.append(langChips(b, () => showOne(b, n)));
-    if (s) box.append(el('a', {class: 'grp', href: '#/s/' + b.key + '/' + s[0], dir: 'auto'}, fmtN(secNo(b, s)) + '. ' + secT(b, s)));
+    if (s) box.append(el('a', {class: 'grp', href: '#/s/' + b.key + '/' + s[0], dir: 'auto'}, ...ttl(fmtN(secNo(b, s)) + '. ' + secT(b, s))));
     const own = b.key === 'shadharat' || b.key === 'siyar';
     const pager = () => { const a = Math.max(1, Math.min(n - 2, b.count - 4)), z = Math.min(b.count, a + 4), r = el('div', {class: 'hpg'});
       for (let k = a; k <= z; k++) r.append(k === n ? el('span', {class: 'on', 'aria-current': 'page'}, ui === 'ar' ? fmtN(k) : String(k)) : el('a', {href: '#/s/' + b.key + '/n/' + k}, ui === 'ar' ? fmtN(k) : String(k)));
