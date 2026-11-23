@@ -34,10 +34,10 @@ for k in sorted(NT):
 flushnt()
 entry={"key":KEY,"ar":"جمع الفوائد من جامع الأصول ومجمع الزوائد","ur":"جمع الفوائد من جامع الأصول ومجمع الزوائد (اردو شرح)","en":"Jam' al-Fawa'id min Jami' al-Usul wa Majma' az-Zawa'id (Urdu commentary)",
 "langs":["ar","ur"],"sections":secs,"heads":heads,"count":len(rows),"an":an,"grp":"ar","parts":True,"nj":True,"ntx":[[a,b,n] for a,b,n,_ in NTF],
-"sub":{"ur":"ترجمہ: مولانا محمد احمد ولد پیر — تخریج و شرح: شیخ الحدیث حافظ محمد عباس نجم گوندلوی","ar":"ترجمة: مولانا محمد احمد ولد پیر — التخريج والشرح: الشيخ محمد عباس نجم گوندلوی","en":"Translation: Maulana Muhammad Ahmad Wald Peer — takhrij and commentary: Shaykh al-Hadith Hafiz Muhammad Abbas Najm Gondalwi"},
+"sub":{"ur":"ترجمہ: مولانا محمد احمد ولد پیر — تخریج و شرح: شیخ الحدیث حافظ محمد عباس انجم گوندلوی","ar":"ترجمة: مولانا محمد احمد ولد پیر — التخريج والشرح: الشيخ محمد عباس انجم گوندلوی","en":"Translation: Maulana Muhammad Ahmad Wald Peer — takhrij and commentary: Shaykh al-Hadith Hafiz Muhammad Abbas Anjum Gondalwi"},
 "author":["maghribi","المغربي","امام محمد بن سلیمان المغربی","Al-Maghribi",1094],
 "trn":{"ur":"مولانا محمد احمد ولد پیر","en":"Maulana Muhammad Ahmad Wald Peer"},
-"shn":{"ur":"شیخ الحدیث حافظ محمد عباس نجم گوندلوی","en":"Shaykh al-Hadith Hafiz Muhammad Abbas Najm Gondalwi"},
+"shn":{"ur":"شیخ الحدیث حافظ محمد عباس انجم گوندلوی","en":"Shaykh al-Hadith Hafiz Muhammad Abbas Anjum Gondalwi"},
 "intro":intro,
 "pub":{"ur":"انصار السنہ پبلیکیشنز، لاہور","ar":"أنصار السنة للنشر، لاهور","en":"Ansar as-Sunnah Publications, Lahore"}}
 f=register(KEY,entry,{'ar':AR,'ur':UR},after='c_sharhsunnaur')

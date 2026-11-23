@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>تربیہ — تراث خيرالقرون</title>
+<title>تربیہ — تراث خیرالقرون</title>
 <style>
 @font-face{font-family:"Jameel Noori Nastaleeq";src:local("Jameel Noori Nastaleeq"),url("fonts/JameelNooriNastaleeq.woff2") format("woff2")}
 @font-face{font-family:"Noto Nastaliq Urdu";src:url("fonts/NotoNastaliqUrdu.woff") format("woff")}
@@ -388,7 +388,7 @@ async function vCert(body){
     E('div',{class:'cert printme'},E('div',{class:'bis'},'بسم اللہ الرحمن الرحیم'),E('h2',{},EN()?'Certificate — '+PER[cpk]+' performance':'سرٹیفکیٹ — '+PER[cpk]+' کارکردگی'),E('div',{},'یہ سرٹیفکیٹ'),E('div',{class:'nm'},k.name),E('div',{class:'stars'},lev[2]),
       E('div',{class:'big'},E('b',{},lev[1][EN()?1:0]),' — '+r.label),E('div',{class:'big'},EN()?t.net+' points, good deeds on '+t.days+' days'+(t.neg?' (minus points: '+t.neg+')':''):fmtN(t.net)+' پوائنٹ، '+UD(t.days)+' دن اچھے کام کیے'+(t.neg?' (منفی پوائنٹ: '+fmtN(t.neg)+')':'')),
       E('p',{class:'big'},imp+lev[3][EN()?1:0][0]),E('p',{class:'big'},lev[3][EN()?1:0][1]),
-      E('div',{class:'sg'},E('span',{},'والدین'),E('span',{},UD(today().getDate())+' '+MONTHS[today().getMonth()]+' '+UD(today().getFullYear()))),E('div',{class:'by'},S.family+(EN()?' — Tarbiyah, Turath Khair Al-Quroon':' — تربیت، تراث خيرالقرون'))),
+      E('div',{class:'sg'},E('span',{},'والدین'),E('span',{},UD(today().getDate())+' '+MONTHS[today().getMonth()]+' '+UD(today().getFullYear()))),E('div',{class:'by'},S.family+(EN()?' — Tarbiyah, Turath Khair Al-Quroon':' — تربیت، تراث خیرالقرون'))),
     E('div',{class:'row noprint'},E('button',{on:{click:()=>window.print()}},'سرٹیفکیٹ چھاپیں یا PDF بنائیں')));
 }
 // ---------- settings (parent) ----------
@@ -416,7 +416,7 @@ async function vSet(body){
       E('button',{class:'bad',on:{click:act(async()=>{if(!confirm(EN()?'The whole family, the children and all records will be erased for ever. Delete for sure?':'پورا خاندان، بچے اور سارا ریکارڈ ہمیشہ کے لیے مٹ جائے گا۔ پکا مٹانا ہے؟'))return;await api('famdel',{sure:'yes'});setTok('');S=null;landing()})}},'پورا چارٹ مٹائیں')));
   async function refresh2(){S={...S,...(await api('state'))}}
 }
-function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیہ');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#cr').textContent=EN()?'(Compiled by: Bint Yusuf, may Allah pardon her)':'(مرتب: بنت یوسف عفی اللہ عنہا)';$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیہ — تراث خيرالقرون'}
+function applyLang(){document.documentElement.lang=LG;document.documentElement.dir=EN()?'ltr':'rtl';$('#ttl').firstChild.nodeValue=tr('تربیہ');$('#sub').textContent=tr('بچوں کی اچھی عادتوں کا چارٹ');$('#cr').textContent=EN()?'(Compiled by: Bint Yusuf, may Allah pardon her)':'(مرتب: بنت یوسف عفی اللہ عنہا)';$('#home').textContent=tr('ہوم');$('#out').textContent=tr('باہر نکلیں');$('#lang').textContent=EN()?'اردو':'English';document.title=EN()?'Tarbiyah — Turath Khair Al-Quroon':'تربیہ — تراث خیرالقرون'}
 $('#lang').addEventListener('click',()=>{LG=EN()?'ur':'en';try{localStorage.tb_lang=LG}catch(e){}applyLang();if(S)dash();else landing()});
 $('#out').addEventListener('click',async()=>{try{await api('logout')}catch(e){}setTok('');S=null;MK.clear();landing()});
 $('#home').addEventListener('click',()=>{location.href='./'});
