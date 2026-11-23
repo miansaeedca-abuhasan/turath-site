@@ -1,20 +1,22 @@
-// Sharh as-Sunnah (al-Baghawi) Urdu, Ansar as-Sunnah Publications, volumes 1-6: counts, order, printed numbers, clean text, opens in the reader
+// Sharh as-Sunnah (al-Baghawi) Urdu, Ansar as-Sunnah Publications, volumes 1-7: counts, order, printed numbers, clean text, opens in the reader
 const fs=require('fs');const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
 const idxS=fs.readFileSync(__dirname+'/../coll/index.js','utf8');const L=JSON.parse(idxS.slice(idxS.indexOf('COLLS(')+6,idxS.lastIndexOf(')')));
 const e=L.find(x=>x.key==='sharhsunnaur');ck(e,'registered');
 ck(L.findIndex(x=>x.key==='sharhsunnaur')===L.findIndex(x=>x.key==='sharhsunna')+1,'stands next to the Arabic Baghawi');
-ck(e.count===3747,'count 3747');ck(e.trn&&e.trn.ur==='ابو ثمامہ محمد عبد اللہ سلیم','translator');ck(e.pub&&e.pub.ur.includes('انصار السنہ'),'publisher');
+ck(e.count===4339,'count 4339');ck(e.trn&&e.trn.ur==='ابو ثمامہ محمد عبد اللہ سلیم','translator');ck(e.pub&&e.pub.ur.includes('انصار السنہ'),'publisher');
 const rows=l=>{let o=[];for(const f of e.files[l]){const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');o=o.concat(JSON.parse(s.slice(s.indexOf('[['),s.lastIndexOf(')'))))}return o};
-const ar=rows('ar'),ur=rows('ur');ck(ar.length===3747&&ur.length===3747,'rows');
+const ar=rows('ar'),ur=rows('ur');ck(ar.length===4339&&ur.length===4339,'rows');
 ar.forEach((r,i)=>{if(r[0]!==i+1||ur[i][0]!==i+1)ck(false,'ids sequential '+i)});
 // sections cover every row once, in order
-let nx=1;e.sections.forEach(s=>{if(s[3]>=s[2]){ck(s[2]===nx,'section '+s[0]+' starts at '+nx+' not '+s[2]);nx=s[3]+1}else ck(s[2]===nx,'empty section position '+s[0])});ck(nx===3748,'sections end');
-ck(e.sections.length===1353&&e.heads.length===40,'1353 babs, 40 kitabs');
+let nx=1;e.sections.forEach(s=>{if(s[3]>=s[2]){ck(s[2]===nx,'section '+s[0]+' starts at '+nx+' not '+s[2]);nx=s[3]+1}else ck(s[2]===nx,'empty section position '+s[0])});ck(nx===4340,'sections end');
+ck(e.sections.length===1472&&e.heads.length===43,'1472 babs, 43 kitabs');
 // printed numbers
 const an={};for(const k in e.an){if(k==='_r')continue;an[k]=e.an[k]}for(const [a,v,c] of (e.an._r||[]))for(let i=0;i<c;i++)an[a+i]=String(v+i);
 const pn=n=>an[n]||String(n);
 ck(pn(1)==='1'&&pn(301)==='301'&&pn(302)==='302/1'&&pn(303)==='302/2'&&pn(304)==='303','printed 302/1 302/2');
-ck(pn(2410)==='2406/م','printed 2406/م');ck(pn(3747)==='3742','last printed 3742');
+ck(pn(2410)==='2406/م','printed 2406/م');ck(pn(3747)==='3742'&&pn(4339)==='4322','last printed 4322');
+const pset=new Set(ar.map((r,i)=>pn(i+1)));ck(!pset.has('4114')&&!pset.has('4116')&&pset.has('4113')&&pset.has('4115')&&pset.has('4117'),'4114 and 4116 are missing in the printed volume 7 (owner JSON: missing_in_print)');
+ck(ar.some(r=>/ح \(\) أَخْبَرَنَا/.test(r[1])),'printed «ح ()» isnad switch kept');
 // row 1: Arabic, translation, takhrij; no stray signs
 ck(ar[0][1].startsWith('أَخْبَرَنَا أَبُو سَعْدٍ')&&/إِلَى مَا هَاجَرَ إِلَيْهِ\.$/.test(ar[0][1]),'hadith 1 Arabic ends with a full stop');
 ck(ur[0][1].startsWith('سیدنا عمر بن خطاب رضی اللہ عنہ')&&ur[0][3].k.includes('البخارى: 1, 54')===false&&ur[0][3].k.startsWith('أخرجه البخارى'),'hadith 1 Urdu + takhrij without the number prefix: '+ur[0][3].k);
@@ -33,7 +35,7 @@ ck(e.ntx&&e.ntx.length>=1&&fs.existsSync(__dirname+'/../coll/'+e.ntx[0][2]),'cha
 await p.addInitScript(()=>{localStorage.ui='ur'});
 await p.goto('http://localhost:8765/#/s/sharhsunnaur/n/301');await p.waitForTimeout(3500);
 ck(await p.evaluate(()=>document.body.innerText.includes('ابراہیم بن عبدالرحمن بن عوف')&&document.body.innerText.includes('أخرجه ابوداود')),'hadith 301 opens with translation and takhrij');
-ck(await p.evaluate(()=>/3747|\u06f3\u06f7\u06f4\u06f7/.test(document.body.textContent)),'3747 in the strip');
+ck(await p.evaluate(()=>/4339|\u06f4\u06f3\u06f3\u06f9/.test(document.body.textContent)),'4339 in the strip');
 await p.goto('http://localhost:8765/#/s/sharhsunnaur?idx');await p.waitForTimeout(3000);
 ck(await p.evaluate(()=>document.body.innerText.includes('ایمان کی کتاب')),'chapter list shows kitab headings');
 // Urdu list: only the translated book, not the Arabic twin

@@ -7,7 +7,7 @@ import common
 common.seg_fix=lambda t:t.replace('؁','').replace('ـ','')   # dagger alif stays
 from common import ar_clean,final_clean,sayy,verse_line
 A='/mnt/user-data/attachments/c78c1915-dfa8-5395-875d-805b90bb4e15/'
-FILES=['d617a1d3-Sharh-As-Sunnah-Vol-1_Corrected6.json','308d7ea4-Sharh-As-Sunnah-Vol-2_Corrected4.json','d9dba4db-Sharh-As-Sunnah-Vol-3_Corrected.json','89593c35-Sharh-As-Sunnah-Vol-4_Corrected2.json','337e8465-Sharh-As-Sunnah-Vol-5.json','aee059b3-Sharh-As-Sunnah-Vol-6.json']
+FILES=['d617a1d3-Sharh-As-Sunnah-Vol-1_Corrected6.json','308d7ea4-Sharh-As-Sunnah-Vol-2_Corrected4.json','d9dba4db-Sharh-As-Sunnah-Vol-3_Corrected.json','89593c35-Sharh-As-Sunnah-Vol-4_Corrected2.json','337e8465-Sharh-As-Sunnah-Vol-5.json','aee059b3-Sharh-As-Sunnah-Vol-6.json','7e261938-Sharh-As-Sunnah-Vol-7.json']
 U2E=str.maketrans('۰۱۲۳۴۵۶۷۸۹','0123456789');E2U=str.maketrans('0123456789','۰۱۲۳۴۵۶۷۸۹');U2A=str.maketrans('۰۱۲۳۴۵۶۷۸۹','٠١٢٣٤٥٦٧٨٩');L2A=str.maketrans('0123456789','٠١٢٣٤٥٦٧٨٩')
 HAR=re.compile('[ً-ْٰ]')
 STOPQ=set('’’')
@@ -94,6 +94,7 @@ def AR(t,stop=True):
     t=t.replace('\xa0',' ')
     t=re.sub(r'﴿([^﴾]*)﴾',lambda m:'﴿'+re.sub(r'\s*-\s*',' ',m.group(1)).strip()+'﴾',t)
     t=t.replace('((','').replace('))','')
+    t=re.sub(r'ح \(\)-(?=\S)','ح () ',t)   # printed «ح ()ـ» isnad switch: the dash is only the separator
     t=re.sub(r'-(?=،)','',t)
     t=re.sub(r'-\.','.',t)
     t=re.sub(r'\s*-(?=\s|$|[)\]»])','.',t)
