@@ -1750,6 +1750,12 @@ async function showBookList(cat,aut,authors,topics){
     const drop=ui==='ur'||ui==='ar'?'adabaalien':'adabaali';
     for(let i=rows.length-1;i>=0;i--)if(rows[i].key===drop&&rows.some(x=>x.key!==drop&&/^adabaali/.test(x.key)))rows.splice(i,1);
   }
+  {  // one work = one row: where a book exists both as a translated edition and as the plain Arabic book (same text, same count), only one of them is listed:
+     // the one in the reader's language; in the Arabic interface (or when neither has the reader's language) the Arabic book, never the translated edition
+    const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi']];
+    TW.forEach(([t,a])=>{const rt=rows.find(r=>r.key===t),ra=rows.find(r=>r.key===a);if(!rt||!ra)return;
+      const has=r=>(r.lg||[]).includes(ui),drop=ui!=='ar'&&has(rt)&&!has(ra)?ra:rt;rows.splice(rows.indexOf(drop),1);});
+  }
   if(ui!=='ar'){   // order: Al-Jami al-Kamil, Talkhis, translated hadith books (Bukhari, Muslim, the Sunan), books taken from Al-Jami in the order of the Jami, then the other translated books and sharhs
     const SUN=['bukhari','muslim','abudawud','tirmidhi','nasai','ibnmajah','malik','darimi'];
     const top=['jamik','jami'].map(k=>rows.find(r=>r.key===k)).filter(Boolean);
