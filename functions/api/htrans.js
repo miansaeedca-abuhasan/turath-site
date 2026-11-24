@@ -11,7 +11,7 @@ const SCRIPT = {ur: /[؀-ۿ]/g, bn: /[ঀ-৿]/g, hi: /[ऀ-ॿ]/g, ne: /[ऀ-�
 const SALAM = {ur: ' صلی اللہ علیہ وسلم', en: ' (peace be upon him)', fr: ' (paix et bénédictions sur lui)', bn: ' সাল্লাল্লাহু আলাইহি ওয়া সাল্লাম', hi: ' सल्लल्लाहु अलैहि वसल्लम', ne: ' सल्लल्लाहु अलैहि वसल्लम', gu: ' સલ્લલ્લાહુ અલયહિ વસલ્લમ'};
 const prompt = l => 'You translate Arabic hadith and athar texts into ' + LN[l] + ' for an Islamic library website. Translate the WHOLE text below (the chain of narrators too) faithfully into simple, fluent, idiomatic ' + LN[l] + ': add nothing, leave nothing out, no explanation, no commentary, no headings. Rules: (1) Write the honorifics for the Prophet, the Companions and the scholars in full words of ' + LN[l] + ', never with symbols such as ﷺ ؓ ؒ ؑ and never abbreviations. ' +
   (l === 'ur' ? '(2) Write «رضی اللہ عنہ» / «رضی اللہ عنہا» / «رضی اللہ عنہما» / «رضی اللہ عنہم», «صلی اللہ علیہ وسلم», «علیہ السلام», «رحمہ اللہ»; say «سیدنا» / «سیدہ» for Companions, not «حضرت»; quoted speech goes in Urdu quotation marks ’’ ‘‘; write in Urdu letters only (ک ی ہ ے), no English or Latin letters. ' : '(2) Do not use Arabic-script words other than inside a Quran verse. ') +
-  '(3) A Quran verse inside the text: write the verse in Arabic with its harakat between ﴿ ﴾ and then its translation. (4) No markdown, no numbering that is not in the source. (5) Keep the paragraphs of the source. Answer with the translation only.\n\nArabic text:\n';
+  '(3) A Quran verse inside the text: write the verse in Arabic with its harakat between ﴿ ﴾ and then its translation. (4) No markdown, no numbering that is not in the source. (5) Keep the paragraphs of the source. (6) If the text is only a book or chapter heading (كتاب …، باب …، أبواب …، فصل …), translate its whole meaning into natural ' + LN[l] + ' (for example «باب فضل الصلاة» = the chapter on the virtue of prayer); never copy the Arabic words of the heading when ' + LN[l] + ' has its own words for them. A translation that is just the Arabic text again is wrong. Answer with the translation only.\n\nArabic text:\n';
 const J = {'Content-Type': 'application/json', 'Cache-Control': 'no-store'};
 const err = (s, m, x) => new Response(JSON.stringify(Object.assign({error: m}, x || {})), {status: s, headers: J});
 const hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
@@ -31,8 +31,18 @@ export function clean(t, l) {
   return String(t || '').replace(/\r/g, '').replace(/^```[a-z]*\n?|```$/g, '').replace(/\*\*|__|^#+\s*/gm, '')
     .replace(/ﷺ/g, SALAM[l || 'ur']).replace(/\s*[ؓؒؑ]/g, '').replace(/[ \t]{2,}/g, ' ').replace(/\n{3,}/g, '\n\n').trim();
 }
+// the letters of a text in one common Arabic shape, so that «كتاب» and «کتاب» compare equal
+const shape = s => norm(s).replace(/[کﮎ]/g, 'ك').replace(/[یيىﯽ]/g, 'ي').replace(/[ۃةہھ]/g, 'ه').replace(/[أإآٱ]/g, 'ا').replace(/[^ء-يٱ-ۓ\s]/g, ' ');
+// an «Urdu» answer that is the Arabic text again (same words) is not a translation
+export function sameAsSource(ar, ur) {
+  const a = new Set(shape(ar).split(/\s+/).filter(Boolean)), u = shape(ur).split(/\s+/).filter(Boolean);
+  if (a.size < 2 || u.length < 2) return false;
+  const same = u.filter(w => a.has(w)).length;
+  return same / u.length >= (u.length > 12 ? 0.6 : 0.5);
+}
 export function usable(ar, ur, l) {
   l = l || 'ur';
+  if (l === 'ur' && sameAsSource(ar, ur)) return false;
   const a = (ur.match(SCRIPT[l]) || []).length;
   if (a < (ar.length < 40 ? 3 : 8) || ur.length > ar.length * 8 + 400) return false;
   if (l === 'ur') return (ur.match(/[A-Za-z]/g) || []).length <= Math.max(6, a * 0.03);     // an English answer / an apology is not a translation
@@ -68,7 +78,8 @@ async function handle({request, env}) {
   const key = await sha((lang === 'ur' ? '' : lang + '|') + norm(ar));   // Urdu keeps the old key, so saved Urdu translations stay valid
   await env.DB.prepare('CREATE TABLE IF NOT EXISTS htrans (h TEXT PRIMARY KEY, ur TEXT NOT NULL, model TEXT, ts INTEGER)').run();
   const hit = await env.DB.prepare('SELECT ur FROM htrans WHERE h = ?').bind(key).first();
-  if (hit) return new Response(JSON.stringify({ur: hit.ur, saved: true}), {headers: J});
+  const bad = hit && !usable(ar, hit.ur, lang);   // an old saved copy that is only the Arabic again is translated anew
+  if (hit && !bad) return new Response(JSON.stringify({ur: hit.ur, saved: true}), {headers: J});
   if (!env.GEMINI_API_KEY) return err(503, 'not set up');
   // limits for new translations
   const owner = cron || await isOwner(request, env), day = new Date().toISOString().slice(0, 10);
@@ -98,6 +109,7 @@ async function handle({request, env}) {
       last = 'unusable answer';
     } catch (e) { last = String(e && e.message || e).slice(0, 60); }
   }
+  if (!ur && bad) return new Response(JSON.stringify({ur: hit.ur, saved: true}), {headers: J});
   if (!ur) return err(502, 'translation failed', {detail: last});
   await env.DB.prepare('INSERT OR REPLACE INTO htrans (h, ur, model, ts) VALUES (?, ?, ?, ?)').bind(key, ur, model, Date.now()).run();
   return new Response(JSON.stringify({ur, saved: false}), {headers: J});

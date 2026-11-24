@@ -19,6 +19,14 @@ r=await post(AR+' اثنان');ck(r.status===429,'person limit after 2 new trans
 r=await post('hello world this is english text only');ck(r.status===400,'English text refused');
 gem=false;r=await post(AR+' ثالث','2.2.2.2');ck(r.status===502,'Gemini failure -> 502');
 ck(m.usable('نص عربي طويل جدا هنا','This is an English reply that is long enough to look like text'+' abc'.repeat(30))===false,'English answer is not usable');
+// untranslated Arabic returned as «Urdu» (owner 24-11-2026): refused, and an old saved copy of that kind is translated anew
+const BAB='كتاب الطهارة - أبواب الفطرة - القول عند دخول الخلاء';
+ck(m.usable(BAB,'كتاب الطهارت-ابواب الفطرة-القول عند دخول الخلاء')===false,'Arabic heading copied is not usable');
+ck(m.usable(BAB,'کتاب الطہارۃ - ابواب الفطرۃ - القول عند دخول الخلاء')===false,'Arabic heading in Urdu letters is not usable');
+ck(m.usable(BAB,'طہارت کا بیان - فطرت کے امور - بیت الخلاء میں داخل ہوتے وقت کیا کہا جائے')===true,'real translation of heading is usable');
+{const AR2='عن أنس بن مالك قال كان النبي صلى الله عليه وسلم إذا دخل الخلاء قال اللهم إني أعوذ بك من الخبث والخبائث';
+const h=[...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(AR2.replace(/[\u064b-\u0652\u0670\u0640]/g,'').replace(/\s+/g,' ').trim())))].map(x=>x.toString(16).padStart(2,'0')).join('');
+tables.htrans.set(h,{ur:AR2});const c0=calls;gem=true;r=await post(AR2,'7.7.7.7');j=await r.json();ck(calls===c0+1&&j.saved===false&&j.ur!==AR2,'old saved copy that is only Arabic is translated anew ('+(calls-c0)+')');}
 // other language
 r=await m.onRequest({request:new Request('https://x.test/api/htrans',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://x.test','CF-Connecting-IP':'9.9.9.9'},body:JSON.stringify({ar:AR,lang:'en'})}),env:{DB,GEMINI_API_KEY:'k'}});ck(r.status===502||r.status===200,'en request handled');
 ck(m.usable(AR,'Narrated by Umar: actions are judged by intentions.','en')===true&&m.usable(AR,AR,'en')===false,'English usable/unusable');
