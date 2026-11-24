@@ -163,6 +163,7 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
 .tpar{font-size:1.25em;line-height:2.2;margin:.2em 0}.tpur{font-family:var(--urdu);line-height:2;margin:.2em 0}.tpref{display:inline-block;margin-top:.2em;color:var(--accent);font-size:.9em}.tpay,.tpw{padding:.7rem .9rem;margin:.5rem 0}.tpnote{margin:.4rem .2rem}.tpwarn{margin:.5rem .2rem;padding:.6rem .8rem;border-inline-start:4px solid #d97706;background:color-mix(in srgb,#d97706 10%,transparent);border-radius:8px;line-height:1.9}.tpweak>summary .gt{color:#d97706}.tpwh{margin-bottom:.3rem;font-size:.95em}.tpwt{border-bottom:0}.tpmore{display:block;margin:.6rem auto}.tpk>summary{cursor:pointer}.tpbab{margin:.3rem 0}
+.tptrs .tptr{margin:.35rem 0;padding-top:.3rem;border-top:1px dashed var(--line,#ccc)}.tpen{font-size:.8em;color:var(--muted,#789);margin:0}.tpbtns{display:flex;gap:.5rem;margin:.5rem 0;flex-wrap:wrap}.tpb{padding:.3rem .9rem;font-size:.9em}.tppanel{margin:.3rem 0;padding:.5rem;border:1px solid var(--line,#ccc);border-radius:10px}.tpchips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0}.tpchip{border:1px solid var(--line,#bbb);background:transparent;color:inherit;border-radius:999px;padding:.25rem .7rem;font:inherit;font-size:.85em;cursor:pointer}.tpchip.on{background:var(--accent,#1d6b4a);color:#fff;border-color:transparent}.tplg{margin:.4rem 0 0;font-weight:700;font-size:.85em;color:var(--accent)}.tptf{margin:.4rem 0;border:1px solid var(--line,#ccc);border-radius:10px;padding:.3rem .6rem}.tptf>summary{cursor:pointer;font-weight:700;font-size:.9em}.tptx{line-height:2;margin:.3rem 0}.tpn{color:#c62828;font-weight:700}.tphd{padding:.7rem .9rem;margin:.5rem 0}.tpm{font-size:1.2em;line-height:2.1;margin:.2em 0}.tptk{margin:.4rem 0;line-height:1.9}.tptk a{color:#1b7a46;font-weight:700}.tpsrc{font-size:.9em;line-height:1.9;margin:.2rem 0;color:var(--muted,#566)}.tpwarn-lie{border-inline-start-color:#c62828;background:color-mix(in srgb,#c62828 10%,transparent);font-weight:700}.tpmawdu>summary .gt{color:#c62828}.tpm-lie{border-inline-start:4px solid #c62828}.tpbabd>summary{cursor:pointer}
 .secend{text-align:center;margin:1.2em 0 1em;line-height:1;user-select:none;-webkit-user-select:none;pointer-events:none}.secend::before{content:"\2756\00a0\00a0\2756\00a0\00a0\2756";color:#a8322b;font-size:1.05em;letter-spacing:.2em}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
@@ -11402,9 +11403,21 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
 (function () {
   'use strict';
   const LB = {
-    ur: {title: 'موضوعات', sub: 'قرآن اور احادیث موضوع وار — نماز، حج، زکوٰۃ، روزہ، جہاد اور دیگر۔ پہلے آیات، پھر احادیث اور آخر میں ضعیف و من گھڑت احادیث', ay: 'آیات', hd: 'احادیث (الجامع الکامل)', hdn: 'صحیح اور حسن کی سبھی اقسام؛ ترتیب الجامع الکامل کے اپنے ابواب کے مطابق', wk: 'ضعیف اور من گھڑت احادیث', wkn: 'تنبیہ: یہ احادیث ضعیف یا من گھڑت ہیں اور صرف آگاہی کے لیے ہیں۔ ان پر عمل نہ کیا جائے اور انہیں رسول اللہ صلی اللہ علیہ وسلم کی طرف منسوب نہ کیا جائے۔ حکم ہر حدیث کے ساتھ کتاب کے مطابق لکھا ہے۔', mw: 'من گھڑت / موضوع', dw: 'ضعیف', more: 'مزید ↓', loading: 'کھل رہا ہے…', none: 'اس موضوع میں کوئی نہیں', cnt: (a, h) => 'آیات ' + a + ' · احادیث ' + h, open: 'پوری حدیث کھولیں', bab: n => n + ' احادیث', fail: 'کھل نہ سکا، دوبارہ کوشش کریں۔', sn: 'نوٹ: آیات اور ابواب کا انتخاب موضوع کے لحاظ سے مرتب کیا گیا ہے؛ ہر آیت کی سورت اور آیت نمبر ساتھ لکھا ہے۔'},
-    ar: {title: 'المواضيع', sub: 'القرآن والحديث حسب الموضوع — الصلاة والحج والزكاة والصيام والجهاد وغيرها. الآيات أولاً ثم الأحاديث وفي الآخر الأحاديث الضعيفة والموضوعة', ay: 'الآيات', hd: 'الأحاديث (الجامع الكامل)', hdn: 'بجميع أنواع الصحيح والحسن؛ على ترتيب أبواب الجامع الكامل نفسها', wk: 'الأحاديث الضعيفة والموضوعة', wkn: 'تنبيه: هذه الأحاديث ضعيفة أو موضوعة وهي للتنبيه فقط، فلا يُعمل بها ولا تُنسب إلى رسول الله صلى الله عليه وسلم. والحكم مذكور مع كل حديث كما في الكتاب.', mw: 'موضوع / مكذوب', dw: 'ضعيف', more: 'المزيد ↓', loading: 'جارٍ التحميل…', none: 'لا شيء في هذا الموضوع', cnt: (a, h) => 'آيات ' + a + ' · أحاديث ' + h, open: 'افتح الحديث كاملاً', bab: n => n + ' حديث', fail: 'تعذّر الفتح، أعد المحاولة.', sn: 'ملاحظة: اختيار الآيات والأبواب مرتَّب بحسب الموضوع، مع ذكر السورة ورقم الآية.'},
-    en: {title: 'Topics', sub: 'The Quran and the hadith by topic — prayer, Hajj, zakat, fasting, jihad and more. Verses first, then hadith, and last the weak and fabricated hadith', ay: 'Verses', hd: 'Hadith (Al-Jami al-Kamil)', hdn: 'All kinds of sahih and hasan; in the order of the chapters of Al-Jami al-Kamil itself', wk: 'Weak and fabricated hadith', wkn: 'Warning: these hadith are weak or fabricated and are given for awareness only. Do not act on them and do not attribute them to the Messenger of Allah, peace be upon him. The ruling is shown with each hadith as the book gives it.', mw: 'Fabricated', dw: 'Weak', more: 'More ↓', loading: 'Loading…', none: 'None in this topic', cnt: (a, h) => a + ' verses · ' + h + ' hadith', open: 'Open the full hadith', bab: n => n + ' hadith', fail: 'Could not open, try again.', sn: 'Note: the verses and chapters are selected by topic; the surah and verse number are written with each verse.'}
+    ur: {title: 'موضوعات', sub: 'قرآن اور احادیث موضوع وار۔ پہلے آیات (ترجموں اور تفاسیر کے بٹنوں کے ساتھ)، پھر الجامع الکامل کی احادیث نمبر وار، اور آخر میں ضعیف اور من گھڑت احادیث۔', ay: 'آیات', hd: 'احادیث (الجامع الکامل)', hdn: 'صحیح اور حسن کی سبھی اقسام؛ ترتیب الجامع الکامل کے اپنے ابواب کے مطابق۔ ہر باب میں صحابہ و تابعین کے آثار بھی اسی ترتیب سے آتے ہیں جیسے کتاب میں ہیں۔',
+      dwt: 'ضعیف احادیث', dwn: 'تنبیہ: یہ احادیث ضعیف ہیں، صرف آگاہی کے لیے لکھی گئی ہیں۔ ان پر عمل نہ کیا جائے اور بغیر وضاحت کے رسول اللہ صلی اللہ علیہ وسلم کی طرف منسوب نہ کیا جائے۔ حکم کتاب کے مطابق ہر حدیث کے ساتھ لکھا ہے۔',
+      mwt: 'من گھڑت (موضوع) احادیث', mwn: 'خبردار: یہ احادیث قابل اعتماد نہیں بلکہ جھوٹ ہیں، رسول اللہ صلی اللہ علیہ وسلم پر گھڑی گئی ہیں۔ انہیں آگے بیان کرنا یا ان پر عمل کرنا جائز نہیں۔ صرف پہچاننے اور بچنے کے لیے لکھی گئی ہیں۔', lie: 'جھوٹ',
+      tr: 'ترجمے', tf: 'تفاسیر', trn: 'جو ترجمے دیکھنے ہوں چنیں', tfn: 'جو تفاسیر دیکھنی ہوں چنیں', notf: 'اس آیت پر اس تفسیر میں عبارت نہیں ملی', more: 'مزید ↓', loading: 'کھل رہا ہے…', cnt: (a, h) => 'آیات ' + a + ' · احادیث ' + h, bab: n => n + ' احادیث', fail: 'کھل نہ سکا، دوبارہ کوشش کریں۔', open: 'پوری حدیث کھولیں', src: 'ماخذ',
+      sn: 'نوٹ: آیات کا انتخاب موضوع کے لحاظ سے مرتب کیا گیا ہے (چھپی ہوئی فہرست سے نہیں)، اس لیے مکمل ہونے کا دعویٰ نہیں؛ ہر آیت کی سورت اور آیت نمبر ساتھ لکھا ہے۔', jami: 'الجامع الکامل', part: 'یہ حصہ آگے بھی ہے'},
+    ar: {title: 'المواضيع', sub: 'القرآن والحديث حسب الموضوع. الآيات أولاً (مع أزرار الترجمات والتفاسير) ثم أحاديث الجامع الكامل مرقمة وفي الآخر الأحاديث الضعيفة والموضوعة.', ay: 'الآيات', hd: 'الأحاديث (الجامع الكامل)', hdn: 'بجميع أنواع الصحيح والحسن؛ على ترتيب أبواب الجامع الكامل، وفيها آثار الصحابة والتابعين كما وردت في الكتاب.',
+      dwt: 'الأحاديث الضعيفة', dwn: 'تنبيه: هذه الأحاديث ضعيفة وذُكرت للتنبيه فقط، فلا يُعمل بها ولا تُنسب إلى رسول الله صلى الله عليه وسلم دون بيان. والحكم مذكور مع كل حديث.',
+      mwt: 'الأحاديث الموضوعة', mwn: 'تحذير: هذه الأحاديث لا يُعتمد عليها بل هي كذب مختلَق على رسول الله صلى الله عليه وسلم، فلا يجوز روايتها ولا العمل بها، وإنما ذُكرت للتحذير.', lie: 'كذب',
+      tr: 'الترجمات', tf: 'التفاسير', trn: 'اختر الترجمات', tfn: 'اختر التفاسير', notf: 'لا يوجد نص في هذا التفسير لهذه الآية', more: 'المزيد ↓', loading: 'جارٍ التحميل…', cnt: (a, h) => 'آيات ' + a + ' · أحاديث ' + h, bab: n => n + ' حديث', fail: 'تعذّر الفتح، أعد المحاولة.', open: 'افتح الحديث كاملاً', src: 'المصدر',
+      sn: 'ملاحظة: اختيار الآيات مرتَّب بحسب الموضوع (وليس من فهرس مطبوع) فلا يُدَّعى استيعابه؛ مع ذكر السورة ورقم الآية.', jami: 'الجامع الكامل', part: ''},
+    en: {title: 'Topics', sub: 'The Quran and the hadith by topic. Verses first (with buttons for translations and tafsirs), then the numbered hadith of Al-Jami al-Kamil, and last the weak and fabricated hadith.', ay: 'Verses', hd: 'Hadith (Al-Jami al-Kamil)', hdn: 'All kinds of sahih and hasan, in the order of the chapters of Al-Jami al-Kamil; the sayings of the Companions and Successors appear as the book gives them.',
+      dwt: 'Weak hadith', dwn: 'Warning: these hadith are weak and are given for awareness only. Do not act on them or attribute them to the Messenger of Allah, peace be upon him, without clarification. The ruling is shown with each hadith.',
+      mwt: 'Fabricated (mawdu) hadith', mwn: 'Beware: these hadith are not reliable, they are lies invented against the Messenger of Allah, peace be upon him. It is not permitted to narrate or act on them; they are given only so that they can be recognised and avoided.', lie: 'a lie',
+      tr: 'Translations', tf: 'Tafsirs', trn: 'Choose translations', tfn: 'Choose tafsirs', notf: 'No text on this verse in this tafsir', more: 'More ↓', loading: 'Loading…', cnt: (a, h) => a + ' verses · ' + h + ' hadith', bab: n => n + ' hadith', fail: 'Could not open, try again.', open: 'Open the full hadith', src: 'Source',
+      sn: 'Note: the verses are selected by topic (not from a printed index), so completeness is not claimed; the surah and verse number are written with each verse.', jami: 'Al-Jami al-Kamil', part: ''}
   };
   const L = () => LB[ui] || LB.en, qv = () => $('#qv');
   const UD = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
@@ -11412,55 +11425,192 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
   const BKN = {abudawud: ['سنن أبي داود', 'سنن ابی داود', 'Sunan Abi Dawud'], tirmidhi: ['جامع الترمذي', 'جامع ترمذی', 'Jami at-Tirmidhi'], ibnmajah: ['سنن ابن ماجه', 'سنن ابن ماجہ', 'Sunan Ibn Majah'], nasai: ['سنن النسائي', 'سنن نسائی', 'Sunan an-Nasai']};
   const bn = k => { const a = BKN[k] || [k, k, k]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
   const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
-  let IDX = null, SN = null; const TD = {}, WD = {};
+  const GLY = /[-]|[^]*/g;
+  let IDX = null, SN = null; const TDT = {}, WD = {};
   async function index() {
     if (IDX) return IDX;
     window.TOPICS = (i, s) => { IDX = i; SN = s; };
-    await loadJs('topics/index_ad07f0fb.js'); return IDX;
+    await loadJs('topics/index_9d8e44cb.js'); return IDX;
   }
   const tname = t => ui === 'ar' ? t[2] : ui === 'ur' ? t[1] : t[3];
   const sname = s => { const a = SN[s - 1]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
-  async function topic(t) { if (TD[t[0]]) return TD[t[0]]; window.TOPIC = (id, d) => { TD[id] = d; }; await loadJs('topics/' + t[7]); return TD[t[0]]; }
+  async function topic(t) { if (TDT[t[0]]) return TDT[t[0]]; window.TOPIC = (id, d) => { TDT[id] = d; }; await loadJs('topics/' + t[7]); return TDT[t[0]]; }
   async function weak(id, w) { const k = id + '|' + w[0]; if (WD[k]) return WD[k]; window.TOPICW = (i, b, d) => { WD[i + '|' + b] = d; }; await loadJs('topics/' + w[3]); return WD[k]; }
+
+  /* ---------- Quran editions and tafsirs (own cache; the app's own loaders are called as well) ---------- */
+  const QM = {meta: null, off: null}, QD = {}, QTX = {}, QTI = {}, QP = {};
+  let hooked = false;
+  function hook() {
+    if (hooked) return; hooked = true;
+    const wrap = (n, fn) => { const old = window[n]; window[n] = (...a) => { try { fn(...a); } catch (e) {} if (old) old(...a); }; };
+    wrap('QMETA', m => { QM.meta = m; let o = 0; QM.off = [0]; m.surahs.forEach((s, i) => { QM.off[i + 1] = o; o += s[4]; }); });
+    wrap('QLOAD', ([k, arr]) => { QD[k] = arr; });
+    wrap('QTAFSIRS', d => { QTI.list = d.list; });
+    wrap('QTAFSIR', (k, o) => { Object.assign(QTX[k] = QTX[k] || {}, o); });
+  }
+  const once = (k, f) => QP[k] || (QP[k] = f().catch(e => { delete QP[k]; throw e; }));
+  async function qmeta() { hook(); if (QM.meta) return; await once('meta', () => loadJs('quran/meta.js')); }
+  async function qtlist() { hook(); if (QTI.list) return; await once('tafsirs', () => loadJs('quran/tafsir/index.js')); }
+  async function loadEd(k) { await qmeta(); if (QD[k]) return; await once('e' + k, () => loadJs('quran/' + k + '.js')); }
+  async function loadTf(k, s) {
+    await qtlist(); const t = QTI.list.find(x => x.key === k); if (!t) return;
+    if (QTX[k] && QTX[k][s]) return;
+    const id = k + '_' + t.where[s]; await once('t' + id, () => loadJs('quran/tafsir/' + id + '.js'));
+  }
+  const EDS = () => (QM.meta ? QM.meta.editions : []).filter(e => e.key !== 'ar_indopak');
+  const rank = l => { const o = ui === 'ur' ? ['ur', 'en'] : ui === 'en' ? ['en', 'ur'] : [ui, 'en', 'ur']; const i = o.indexOf(l); return i < 0 ? 9 : i; };
+  const edName = e => ui === 'ur' ? e.ur : e.en;
+  const tfName = t => ui === 'ur' ? t.ur : (t.en || t.ur);
+  const tfRank = l => { const o = ui === 'ur' ? ['ur', 'ar', 'en'] : ui === 'ar' ? ['ar', 'ur', 'en'] : ['en', 'ur', 'ar']; const i = o.indexOf(l); return i < 0 ? 9 : i; };
+  const LN = {ur: {ur: 'اردو', ar: 'عربی', en: 'انگریزی', bn: 'بنگلہ', hi: 'ہندی', gu: 'گجراتی', fr: 'فرانسیسی', ne: 'نیپالی', pa: 'پنجابی'}, ar: {ur: 'الأردية', ar: 'العربية', en: 'الإنجليزية', bn: 'البنغالية', hi: 'الهندية', gu: 'الغوجاراتية', fr: 'الفرنسية', ne: 'النيبالية', pa: 'البنجابية'}, en: {ur: 'Urdu', ar: 'Arabic', en: 'English', bn: 'Bengali', hi: 'Hindi', gu: 'Gujarati', fr: 'French', ne: 'Nepali', pa: 'Punjabi'}};
+  const lname = l => (LN[ui] || LN.en)[l] || l;
+  const KEY = 'turath_tp_sel';
+  function loadSel() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && Array.isArray(s.tr) && Array.isArray(s.tf)) return s; } catch (e) {} return {tr: ui === 'ur' ? ['ur_junagarhi'] : [], tf: []}; }
+  const SEL = loadSel();
+  function saveSel() { try { localStorage.setItem(KEY, JSON.stringify(SEL)); } catch (e) {} }
+  let CARDS = [];
+
   const ayn = n => el('span', {class: 'ayn'}, ui === 'ur' || ui === 'ar' ? ad(n) : String(n));
+  const dirOf = l => (l === 'ur' || l === 'ar') ? 'rtl' : 'ltr';
   function ayahCard(q) {
     const [s, x, y, ar, ur] = q, many = y > x;
     const arp = el('p', {class: 'arp tpar', lang: 'ar', dir: 'rtl'}, '﴿');
     ar.forEach((v, i) => { arp.append(v); if (i < ar.length - 1) arp.append(' ', ayn(x + i), ' '); });
     arp.append('﴾');
-    const ref = (ui === 'ur' ? '[' + sname(s) + ': ' + UD(many ? x + '-' + y : x) + ']' : ui === 'ar' ? '[' + sname(s) + ': ' + ad(many ? x + '-' + y : x) + ']' : '[' + sname(s) + ' ' + s + ':' + (many ? x + '-' + y : x) + ']');
-    const c = el('div', {class: 'card tpay'}, arp);
-    if (ui === 'ur') c.append(el('p', {class: 'tpur', lang: 'ur', dir: 'rtl'}, ...ur.map((v, i) => (many ? '(' + UD(x + i) + ') ' : '') + v + (i < ur.length - 1 ? ' ' : '')))); 
-    c.append(el('a', {class: 'tpref', href: '#/q/s/' + s + '/' + x, dir: ui === 'ur' || ui === 'ar' ? 'rtl' : 'ltr'}, ref));
+    const rg = many ? x + '-' + y : String(x);
+    const ref = ui === 'ur' ? '[' + sname(s) + ': ' + UD(rg) + ']' : ui === 'ar' ? '[' + sname(s) + ': ' + ad(rg) + ']' : '[' + sname(s) + ' ' + s + ':' + rg + ']';
+    const T = L(), c = el('div', {class: 'card tpay'}, arp), trs = el('div', {class: 'tptrs'}), btns = el('div', {class: 'tpbtns'}), pn = el('div', {class: 'tppanel', hidden: true}), tfs = el('div', {class: 'tptfs'});
+    const bT = el('button', {class: 'btn tpb', type: 'button'}, T.tr + ' ▾'), bF = el('button', {class: 'btn tpb', type: 'button'}, T.tf + ' ▾');
+    let open = null;
+    const panel = kind => {
+      pn.replaceChildren();
+      if (kind === 'tr') {
+        pn.append(el('p', {class: 'cs'}, T.trn));
+        const row = el('div', {class: 'tpchips'});
+        EDS().slice().sort((a, b) => rank(a.lang) - rank(b.lang)).forEach(e => row.append(chip(edName(e), SEL.tr.includes(e.key), on => { toggle(SEL.tr, e.key, on); saveSel(); refreshAll(); })));
+        pn.append(row);
+      } else {
+        pn.append(el('p', {class: 'cs'}, T.tfn));
+        const list = (QTI.list || []).slice().sort((a, b) => tfRank(a.lang) - tfRank(b.lang)); let last = '';
+        list.forEach(t => { if (t.lang !== last) { last = t.lang; pn.append(el('p', {class: 'tplg'}, lname(t.lang))); pn.append(el('div', {class: 'tpchips', 'data-l': t.lang})); }
+          pn.lastChild.append(chip(tfName(t), SEL.tf.includes(t.key), on => { toggle(SEL.tf, t.key, on); saveSel(); refreshAll(); })); });
+      }
+    };
+    const show = async kind => {
+      if (open === kind) { open = null; pn.hidden = true; return; }
+      open = kind; pn.hidden = false; pn.replaceChildren(el('p', {class: 'cs'}, T.loading));
+      try { if (kind === 'tr') await qmeta(); else await qtlist(); panel(kind); } catch (e) { pn.replaceChildren(el('p', {class: 'cs'}, T.fail)); }
+    };
+    bT.addEventListener('click', () => show('tr')); bF.addEventListener('click', () => show('tf'));
+    btns.append(bT, bF);
+    const refresh = async () => {
+      const wantT = SEL.tr.slice(), wantF = SEL.tf.slice(); await Promise.all([qmeta().catch(() => {}), wantF.length ? qtlist().catch(() => {}) : 0]);
+      const edl = EDS().filter(e => wantT.includes(e.key)).sort((a, b) => rank(a.lang) - rank(b.lang));
+      await Promise.all(edl.filter(e => !(e.key === 'ur_junagarhi' && ur) ).map(e => loadEd(e.key).catch(() => { QD[e.key] = QD[e.key] || []; })));
+      const trN = [];
+      edl.forEach(e => {
+        const arr = e.key === 'ur_junagarhi' && ur ? ur : null;
+        const get = i => arr ? arr[i] : (QD[e.key] || [])[QM.off[s] + x - 1 + i];
+        const vs = []; for (let i = 0; i <= y - x; i++) { const t = get(i); if (t) vs.push((many ? '(' + N(x + i) + ') ' : '') + String(t).replace(GLY, '')); }
+        if (!vs.length) return;
+        trN.push(el('div', {class: 'tptr'}, el('p', {class: 'tpen'}, edName(e)), el('p', {class: 'tpur', lang: e.lang, dir: dirOf(e.lang)}, vs.join(' '))));
+      });
+      trs.replaceChildren(...trN);
+      const tfl = (QTI.list || []).filter(t => wantF.includes(t.key)).sort((a, b) => tfRank(a.lang) - tfRank(b.lang)), tfN = [];
+      await Promise.all(tfl.map(t => loadTf(t.key, s).catch(() => {})));
+      tfl.forEach(t => {
+        const gs = ((QTX[t.key] || {})[s] || []).filter(g => g[0] <= y && g[1] >= x).slice(0, 3);
+        const d = el('details', {class: 'tptf', open: true}, el('summary', {}, tfName(t)));
+        if (!gs.length) d.append(el('p', {class: 'cs'}, T.notf));
+        gs.forEach(g => g[2].split(/\n+/).filter(p => p.trim()).forEach(p => d.append(el('p', {class: 'tptx', lang: t.lang, dir: dirOf(t.lang)}, p.replace(GLY, '')))));
+        tfN.push(d);
+      });
+      tfs.replaceChildren(...tfN);
+      if (open) panel(open);
+    };
+    c.append(trs, btns, pn, tfs, el('a', {class: 'tpref', href: '#/q/s/' + s + '/' + x, dir: ui === 'ur' || ui === 'ar' ? 'rtl' : 'ltr'}, ref));
+    CARDS.push(refresh); refresh();
     return c;
   }
-  function babRow(b) { return el('a', {class: 'card srow2 tpbab', href: '#/h/' + b[2]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, b[0]), el('span', {class: 'cs'}, L().bab(N(b[1]))))); }
-  function kitabBox(k) {
-    const T = L(), d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, k[1]), el('span', {class: 'cs'}, N(k[2].reduce((a, b) => a + b[1], 0)))));
-    let done = false; d.addEventListener('toggle', () => { if (!d.open || done) return; done = true; d.append(...k[2].map(babRow)); });
-    return d;
+  function toggle(a, k, on) { const i = a.indexOf(k); if (on && i < 0) a.push(k); if (!on && i >= 0) a.splice(i, 1); }
+  function chip(text, on, fn) { const b = el('button', {class: 'tpchip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': on ? 'true' : 'false'}, text); b.addEventListener('click', () => fn(!b.classList.contains('on'))); return b; }
+  function refreshAll() { CARDS.forEach(f => f()); }
+
+  /* ---------- hadith ---------- */
+  const GR = {'صحيح': 'صحیح', 'متفق عليه': 'متفق علیہ', 'حسن': 'حسن', 'صحيح لغيره': 'صحیح لغیرہ', 'حسن لغيره': 'حسن لغیرہ', 'صحيح الإسناد': 'صحیح الاسناد', 'ضعيف': 'ضعیف', 'موضوع': 'موضوع'};
+  const grn = g => ui === 'ur' ? (GR[g] || g) : g;
+  const gcls = g => /موضوع|كذب|باطل/.test(g) ? 'gc-mawdu' : /ضعيف|ضعیف|منكر/.test(g) ? 'gc-daif' : 'gc-sahih';
+  const nw = n => ui === 'ar' ? ad(n) : String(n);
+  function numEl(n) { return el('span', {class: 'tpn'}, nw(n) + ' - '); }
+  function takhrij(g, name, no, href, cat) {
+    return el('p', {class: 'tptk', lang: ui === 'ar' ? 'ar' : null, dir: ui === 'ar' ? 'rtl' : 'auto'}, el('b', {class: 'gc ' + (cat === 'm' ? 'gc-mawdu' : cat === 'd' ? 'gc-daif' : gcls(g))}, g + ':'), ' ', el('a', {href}, name + ' (' + nw(no) + ')'));
   }
-  function wkItem(bk, r, cat) {
-    const T = L(), g = el('span', {class: 'gc gc-' + (cat === 'm' ? 'mawdu' : 'daif')}, r[3]);
-    return el('div', {class: 'card tpw'}, el('div', {class: 'tpwh'}, el('b', {}, bn(bk) + ' ' + r[1]), ' — ', g), el('p', {class: 'arp', lang: 'ar', dir: 'rtl'}, r[4]), el('a', {class: 'tpref', href: '#/s/' + bk + '/n/' + r[0]}, T.open));
+  function hadithCard(d, id, no) {
+    const c = el('div', {class: 'card tphd'}), mt = (d.matn || []).map(x => String(x).replace(GLY, ''));
+    mt.forEach((p, i) => { const e = el('p', {class: 'arp tpm', lang: 'ar', dir: 'rtl'}); if (i === 0) e.append(numEl(no)); e.append(p); c.append(e); });
+    c.append(takhrij(grn(d.grade || 'صحيح'), L().jami, id, '#/h/' + id));
+    if (d.tks) c.append(el('p', {class: 'tpsrc', lang: 'ar', dir: 'rtl'}, String(d.tks).replace(GLY, '')));
+    if (d.dr && typeof drBlock === 'function') { try { c.append(drBlock({num: id})); } catch (e) {} }
+    return c;
   }
-  function wkBox(id, w) {
-    const T = L(), d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt'}, bn(w[0])), el('span', {class: 'cs'}, N(w[1] + w[2]))));
+  async function pageOf(ids, from, no0, box, more) {
+    const T = L(), part = ids.slice(from, from + 30);
+    const ds = await Promise.all(part.map(i => api('hadith/' + i + '?book=jamik').catch(() => null)));
+    ds.forEach((d, j) => { if (d) box.append(hadithCard(d, part[j], no0 + from + j)); });
+    return from + part.length;
+  }
+  function babBox(b) {
+    const T = L(), [name, ids, start] = b;
+    const d = el('details', {class: 'card grpbox tpbabd'}, el('summary', {}, el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, name), el('span', {class: 'cs'}, T.bab(N(ids.length)) + ' · ' + N(start) + (ids.length > 1 ? '–' + N(start + ids.length - 1) : ''))));
     let done = false; d.addEventListener('toggle', async () => {
       if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
       try {
-        const dd = await weak(id, w); hold.remove();
-        const sect = (title, arr, cat) => { if (!arr.length) return; d.append(el('h4', {class: 'subh tpwt gc-' + (cat === 'm' ? 'mawdu' : 'daif')}, title + ' (' + N(arr.length) + ')'));
-          let i = 0; const box = el('div', {}); const more = el('button', {class: 'btn tpmore', type: 'button'}, T.more);
-          const next = () => { arr.slice(i, i + 30).forEach(r => box.append(wkItem(w[0], r, cat))); i += 30; more.hidden = i >= arr.length; };
-          more.addEventListener('click', next); d.append(box, more); next(); };
-        sect(T.mw, dd.m, 'm'); sect(T.dw, dd.d, 'd');
+        const box = el('div', {class: 'tpbox'}), more = el('button', {class: 'btn tpmore', type: 'button'}, T.more); let i = 0;
+        const next = async () => { more.disabled = true; i = await pageOf(ids, i, start, box); more.disabled = false; more.hidden = i >= ids.length; };
+        more.addEventListener('click', next); await next(); hold.remove(); d.append(box, more);
       } catch (e) { hold.textContent = T.fail; done = false; }
     });
     return d;
   }
+  function kitabBox(k) {
+    const d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, k[1]), el('span', {class: 'cs'}, N(k[2].reduce((a, b) => a + b[1].length, 0)))));
+    let done = false; d.addEventListener('toggle', () => { if (!d.open || done) return; done = true; d.append(...k[2].map(babBox)); });
+    return d;
+  }
+
+  /* ---------- weak and fabricated ---------- */
+  function wkItem(bk, r, cat, no) {
+    const c = el('div', {class: 'card tpw tphd' + (cat === 'm' ? ' tpm-lie' : '')});
+    const p = el('p', {class: 'arp tpm', lang: 'ar', dir: 'rtl'}, numEl(no), r[4]); c.append(p);
+    c.append(takhrij(r[3], bn(bk), r[1], '#/s/' + bk + '/n/' + r[0], cat));
+    return c;
+  }
+  function wkBox(id, w, cat, no0) {
+    const T = L(), n = cat === 'm' ? w[1] : w[2];
+    const d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt'}, bn(w[0])), el('span', {class: 'cs'}, N(n) + ' · ' + N(no0) + (n > 1 ? '–' + N(no0 + n - 1) : ''))));
+    let done = false; d.addEventListener('toggle', async () => {
+      if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
+      try {
+        const dd = await weak(id, w), arr = cat === 'm' ? dd.m : dd.d; hold.remove();
+        let i = 0; const box = el('div', {}), more = el('button', {class: 'btn tpmore', type: 'button'}, T.more);
+        const next = () => { arr.slice(i, i + 30).forEach((r, j) => box.append(wkItem(w[0], r, cat, no0 + i + j))); i += 30; more.hidden = i >= arr.length; };
+        more.addEventListener('click', next); d.append(box, more); next();
+      } catch (e) { hold.textContent = T.fail; done = false; }
+    });
+    return d;
+  }
+  function weakSection(t, cat) {
+    const T = L(), wl = (t[9] || []).filter(w => (cat === 'm' ? w[1] : w[2]) > 0); if (!wl.length) return null;
+    const idx = (t[9] || []); const totD = idx.reduce((a, w) => a + w[2], 0);
+    let no = t[5] + 1 + (cat === 'm' ? totD : 0); const boxes = [];
+    wl.forEach(w => { boxes.push(wkBox(t[0], w, cat, no)); no += cat === 'm' ? w[1] : w[2]; });
+    const tot = wl.reduce((a, w) => a + (cat === 'm' ? w[1] : w[2]), 0);
+    return el('details', {class: 'card grpbox tpsec tpweak' + (cat === 'm' ? ' tpmawdu' : '')},
+      el('summary', {}, el('span', {class: 'gt'}, cat === 'm' ? T.mwt + ' — ' + T.lie : T.dwt), el('span', {class: 'cs'}, N(tot))),
+      el('p', {class: 'tpwarn' + (cat === 'm' ? ' tpwarn-lie' : '')}, cat === 'm' ? T.mwn : T.dwn), ...boxes);
+  }
   async function showTopic(id) {
-    const T = L(), v = qv(); bar(T.title, '', true); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    const T = L(), v = qv(); bar(T.title, '', true); v.replaceChildren(el('p', {class: 'cs'}, T.loading)); CARDS = [];
     try {
       const ix = await index(), t = ix.find(x => x[0] === id); if (!t) { location.replace('#/tp'); return; }
       bar(tname(t), T.title, true);
@@ -11468,8 +11618,7 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
       out.push(el('p', {class: 'cs tpnote'}, T.sn));
       out.push(el('details', {class: 'card grpbox tpsec', open: true}, el('summary', {}, el('span', {class: 'gt'}, T.ay), el('span', {class: 'cs'}, N(t[4]))), ...d.q.map(ayahCard)));
       out.push(el('details', {class: 'card grpbox tpsec', open: true}, el('summary', {}, el('span', {class: 'gt'}, T.hd), el('span', {class: 'cs'}, N(t[5]))), el('p', {class: 'cs tpnote'}, T.hdn), ...d.h.map(kitabBox)));
-      const wl = t[9] || [];
-      if (wl.length) out.push(el('details', {class: 'card grpbox tpsec tpweak'}, el('summary', {}, el('span', {class: 'gt'}, T.wk), el('span', {class: 'cs'}, N(wl.reduce((a, w) => a + w[1] + w[2], 0)))), el('p', {class: 'tpwarn'}, T.wkn), ...wl.map(w => wkBox(id, w))));
+      const dw = weakSection(t, 'd'), mw = weakSection(t, 'm'); if (dw) out.push(dw); if (mw) out.push(mw);
       v.replaceChildren(...out);
     } catch (e) { v.replaceChildren(el('p', {class: 'cs'}, T.fail)); }
   }
@@ -11477,7 +11626,7 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
     const T = L(), v = qv(); bar(T.title, '', false); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
     try {
       const ix = await index();
-      v.replaceChildren(el('p', {class: 'cs'}, T.sub), ...ix.map(t => el('a', {class: 'card srow2 hbrow', href: '#/tp/' + t[0]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, tname(t)), el('span', {class: 'cs'}, T.cnt(N(t[4]), N(t[5]))))))); 
+      v.replaceChildren(el('p', {class: 'cs'}, T.sub), ...ix.map(t => el('a', {class: 'card srow2 hbrow', href: '#/tp/' + t[0]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, tname(t)), el('span', {class: 'cs'}, T.cnt(N(t[4]), N(t[5])))))));
     } catch (e) { v.replaceChildren(el('p', {class: 'cs'}, T.fail)); }
   }
   function route(h) { const m = h.match(/^#\/tp\/([a-z0-9]+)$/); if (m) showTopic(m[1]); else showList(); }
