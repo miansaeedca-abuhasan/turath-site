@@ -13,7 +13,7 @@ TERM=re.compile(r'[۔\.\?؟!:”“’‘\)\]»﴾]\s*$')
 HAR=re.compile('[ً-ْٰ]')
 def vols():
     out=[]
-    for n in range(1,6):
+    for n in range(1,8):
         f=glob.glob(A+'*Jamul-Fowaid-Jild-J-%d.json'%n)[0]
         out.append(json.load(open(f,encoding='utf8')))
     return out

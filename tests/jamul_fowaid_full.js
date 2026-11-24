@@ -1,20 +1,20 @@
-// Jamul Fowaid (al-Maghribi) Urdu commentary, Ansar as-Sunnah Publications, volumes 1-5: counts, order, printed numbers, clean text, opens in the reader
+// Jamul Fowaid (al-Maghribi) Urdu commentary, Ansar as-Sunnah Publications, volumes 1-7: counts, order, printed numbers, clean text, opens in the reader
 const fs=require('fs');const {chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
 const idxS=fs.readFileSync(__dirname+'/../coll/index.js','utf8');const L=JSON.parse(idxS.slice(idxS.indexOf('COLLS(')+6,idxS.lastIndexOf(')')));
 const e=L.find(x=>x.key==='jamulfawaid');ck(e,'registered');
 ck(L.findIndex(x=>x.key==='jamulfawaid')===L.findIndex(x=>x.key==='sharhsunnaur')+1,'stands after Sharh as-Sunnah (Urdu)');
-ck(e.count===7620,'count 7620');ck(e.trn&&e.trn.ur==='مولانا محمد احمد ولد پیر','translator');ck(e.shn&&e.shn.ur.includes('گوندلوی'),'commentator');ck(e.nj&&e.parts,'word-meaning and commentary tabs');
+ck(e.count===10120,'count 10120');ck(e.trn&&e.trn.ur==='مولانا محمد احمد ولد پیر','translator');ck(e.shn&&e.shn.ur.includes('گوندلوی'),'commentator');ck(e.nj&&e.parts,'word-meaning and commentary tabs');
 const rows=l=>{let o=[];for(const f of e.files[l]){const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');o=o.concat(JSON.parse(s.slice(s.indexOf('[['),s.lastIndexOf(')'))))}return o};
-const ar=rows('ar'),ur=rows('ur');ck(ar.length===7620&&ur.length===7620,'rows');
+const ar=rows('ar'),ur=rows('ur');ck(ar.length===10120&&ur.length===10120,'rows');
 ar.forEach((r,i)=>{if(r[0]!==i+1||ur[i][0]!==i+1)ck(false,'ids sequential '+i)});
-let nx=1;e.sections.forEach(s=>{ck(s[3]>=s[2]&&s[2]===nx,'section '+s[0]+' starts at '+nx+' not '+s[2]);nx=s[3]+1});ck(nx===7621,'sections end');
-ck(e.sections.length===236&&e.heads.length===31,'236 babs, 31 kitabs');
-// printed numbers: 1..7628, the 8 numbers missing in the printed book (verified for 966 in the PDF)
+let nx=1;e.sections.forEach(s=>{ck(s[3]>=s[2]&&s[2]===nx,'section '+s[0]+' starts at '+nx+' not '+s[2]);nx=s[3]+1});ck(nx===10121,'sections end');
+ck(e.sections.length===319&&e.heads.length===45,'319 babs, 45 kitabs');
+// printed numbers: 1..10131, the 11 numbers missing in the printed book (verified for 966 in the PDF)
 const an={};for(const k in e.an){if(k==='_r')continue;an[k]=e.an[k]}for(const [a,v,c] of (e.an._r||[]))for(let i=0;i<c;i++)an[a+i]=String(v+i);
 const pn=n=>an[n]||String(n);const printed=new Set(ar.map((r,i)=>pn(i+1)));
-const miss=[];for(let n=1;n<=7628;n++)if(!printed.has(String(n)))miss.push(n);
-ck(miss.join()==='966,2087,2670,3697,4148,4791,5599,6195','missing printed numbers '+miss);
-ck(pn(965)==='965'&&pn(966)==='967'&&pn(7620)==='7628','printed numbers shift after the gap');
+const miss=[];for(let n=1;n<=10131;n++)if(!printed.has(String(n)))miss.push(n);
+ck(miss.join()==='966,2087,2670,3697,4148,4791,5599,6195,8193,8421,9880','missing printed numbers '+miss);
+ck(pn(965)==='965'&&pn(966)==='967'&&pn(10120)==='10131','printed numbers shift after the gap');
 // merged page-split hadith: 748 and 2079 fixed; 1768 got its second part
 const row=n=>ur[ar.findIndex((r,i)=>pn(i+1)===String(n))];
 ck(row(748)[1].includes('اوزاعی')&&row(2079)[1].includes('عمیر'),'748 / 2079 fixed numbers');
