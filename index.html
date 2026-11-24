@@ -163,7 +163,7 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
 .tpar{font-size:1.25em;line-height:2.2;margin:.2em 0}.tpur{font-family:var(--urdu);line-height:2;margin:.2em 0}.tpref{display:inline-block;margin-top:.2em;color:var(--accent);font-size:.9em}.tpay,.tpw{padding:.7rem .9rem;margin:.5rem 0}.tpnote{margin:.4rem .2rem}.tpwarn{margin:.5rem .2rem;padding:.6rem .8rem;border-inline-start:4px solid #d97706;background:color-mix(in srgb,#d97706 10%,transparent);border-radius:8px;line-height:1.9}.tpweak>summary .gt{color:#d97706}.tpwh{margin-bottom:.3rem;font-size:.95em}.tpwt{border-bottom:0}.tpmore{display:block;margin:.6rem auto}.tpk>summary{cursor:pointer}.tpbab{margin:.3rem 0}
-.tptrs .tptr{margin:.35rem 0;padding-top:.3rem;border-top:1px dashed var(--line,#ccc)}.tpen{font-size:.8em;color:var(--muted,#789);margin:0}.tpbtns{display:flex;gap:.5rem;margin:.5rem 0;flex-wrap:wrap}.tpb{padding:.3rem .9rem;font-size:.9em}.tppanel{margin:.3rem 0;padding:.5rem;border:1px solid var(--line,#ccc);border-radius:10px}.tpchips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0}.tpchip{border:1px solid var(--line,#bbb);background:transparent;color:inherit;border-radius:999px;padding:.25rem .7rem;font:inherit;font-size:.85em;cursor:pointer}.tpchip.on{background:var(--accent,#1d6b4a);color:#fff;border-color:transparent}.tplg{margin:.4rem 0 0;font-weight:700;font-size:.85em;color:var(--accent)}.tptf{margin:.4rem 0;border:1px solid var(--line,#ccc);border-radius:10px;padding:.3rem .6rem}.tptf>summary{cursor:pointer;font-weight:700;font-size:.9em}.tptx{line-height:2;margin:.3rem 0}.tpn{color:#c62828;font-weight:700}.tphd{padding:.7rem .9rem;margin:.5rem 0}.tpm{font-size:1.2em;line-height:2.1;margin:.2em 0}.tptk{margin:.4rem 0;line-height:1.9}.tptk a{color:#1b7a46;font-weight:700}.tpsrc{font-size:.9em;line-height:1.9;margin:.2rem 0;color:var(--muted,#566)}.tpwarn-lie{border-inline-start-color:#c62828;background:color-mix(in srgb,#c62828 10%,transparent);font-weight:700}.tpmawdu>summary .gt{color:#c62828}.tpm-lie{border-inline-start:4px solid #c62828}.tpbabd>summary{cursor:pointer}
+.tptrs .tptr{margin:.35rem 0;padding-top:.3rem;border-top:1px dashed var(--line,#ccc)}.tpen{font-size:.8em;color:var(--muted,#789);margin:0}.tpbtns{display:flex;gap:.5rem;margin:.5rem 0;flex-wrap:wrap}.tpb{padding:.3rem .9rem;font-size:.9em}.tppanel{margin:.3rem 0;padding:.5rem;border:1px solid var(--line,#ccc);border-radius:10px}.tpchips{display:flex;flex-wrap:wrap;gap:.35rem;margin:.3rem 0}.tpchip{border:1px solid var(--line,#bbb);background:transparent;color:inherit;border-radius:999px;padding:.25rem .7rem;font:inherit;font-size:.85em;cursor:pointer}.tpchip.on{background:var(--accent,#1d6b4a);color:#fff;border-color:transparent}.tplg{margin:.4rem 0 0;font-weight:700;font-size:.85em;color:var(--accent)}.tptf{margin:.4rem 0;border:1px solid var(--line,#ccc);border-radius:10px;padding:.3rem .6rem}.tptf>summary{cursor:pointer;font-weight:700;font-size:.9em}.tptx{line-height:2;margin:.3rem 0}.tpn{color:#c62828;font-weight:700}.tphd{padding:.7rem .9rem;margin:.5rem 0}.tpm{font-size:1.2em;line-height:2.1;margin:.2em 0}.tptk{margin:.4rem 0;line-height:1.9}.tptk a{color:#1b7a46;font-weight:700}.tpsrc{font-size:.9em;line-height:1.9;margin:.2rem 0;color:var(--muted,#566)}.tpwarn-lie{border-inline-start-color:#c62828;background:color-mix(in srgb,#c62828 10%,transparent);font-weight:700}.tpmawdu>summary .gt{color:#c62828}.tpm-lie{border-inline-start:4px solid #c62828}.tpbabd>summary{cursor:pointer}.tpgrp{display:block;font-size:.8em;color:var(--muted,#789)}.tpdrx{font-size:1.02em}.tpdrt{font-size:1.02em;line-height:2.1;color:inherit}
 .secend{text-align:center;margin:1.2em 0 1em;line-height:1;user-select:none;-webkit-user-select:none;pointer-events:none}.secend::before{content:"\2756\00a0\00a0\2756\00a0\00a0\2756";color:#a8322b;font-size:1.05em;letter-spacing:.2em}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
@@ -3761,17 +3761,17 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const g = el('div', {class: 'tiles'});
     g.append(tile('img:talkhis', T('jami'), null, () => goBook('jami')), tile('img:jami_full', ({ur: 'الجامع الکامل (مکمل، عربی)', ar: 'الجامع الكامل (الكامل)', en: 'Al-Jame Al-Kamil (full, Arabic)', bn: 'আল-জামি আল-কামিল (পূর্ণ, আরবি)', hi: 'अल-जामिउल कामिल (पूर्ण, अरबी)', gu: 'અલ-જામિઉલ કામિલ (સંપૂર્ણ, અરબી)', fr: 'Al-Jami al-Kamil (complet, arabe)'})[ui] || 'Al-Jame Al-Kamil (full, Arabic)', null, () => goBook('jamik')), tile('img:tuhfa_sharh', T('tuhfa'), null, () => goBook('tuhfa')),
       tile('img:quran', T('quran'), '#/q'), tile('img:tafsir', TFS(), '#/q/tafsir'), tile('img:tilawat_audio', T('audio'), '#/q/audio'),
-      tile('img:saved_hadith', T('bmHadith'), '#/bm'), tile('img:saved_ayat', T('bmQuran'), '#/q/bm'),
+      tile('img:topics', window.TPK ? TPK.title() : 'Topics', '#/tp'),
       tile('img:hadith_books', T('hbBooks'), '#/hb'),
       tile('img:seerah', T('seerahT'), '#/sec/seerah'), tile('img:sahaba', T('navFazail'), '#/sec/sahaba'),
       tile('img:siyar_salaf', T('navSalaf'), '#/s/siyar'), tile('img:shadharat', T('navShFull'), '#/s/shadharat'),
       tile('img:rijal_search', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:topics', window.TPK ? TPK.title() : 'Topics', '#/tp'), tile('img:tarbiyat', ({ur: 'تربیہ', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
+      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:tarbiyat', ({ur: 'تربیہ', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('img:audiobooks', ABK.title(), '#/ab')); }
     // fixed order of the home tiles, row by row (4 per row; rows of 3 get an empty slot at the end)
     { const key = c => { const i = c.querySelector('img'); return i ? i.getAttribute('src').replace(/^.*\//, '').replace(/\.png$/, '') : ''; }, by = {}; [...g.children].forEach(c => { by[key(c)] = c; });
       const gap = () => el('span', {class: 'tile', 'aria-hidden': 'true', style: 'visibility:hidden'});
-      const ord = ['quran', 'tilawat_audio', 'tafsir', 'saved_ayat', 'hadith_books', 'jami_full', 'talkhis', 'saved_hadith', 'seerah', 'sahaba', 'tuhfa_sharh', 'audiobooks|', 'siyar_salaf', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify', 'tarbiyat', 'topics'];
+      const ord = ['quran', 'tilawat_audio', 'tafsir', 'seerah', 'hadith_books', 'jami_full', 'talkhis', 'sahaba', 'siyar_salaf', 'topics', 'tuhfa_sharh', 'audiobooks|', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify', 'tarbiyat'];
       const out = []; ord.forEach(k => { const c = by[k.replace('|', '')]; if (c) { out.push(c); delete by[k.replace('|', '')]; } else if (k.includes('|')) out.push(gap()); });
       Object.values(by).forEach(c => out.push(c)); g.replaceChildren(...out); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خیرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
@@ -11403,19 +11403,22 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
 (function () {
   'use strict';
   const LB = {
-    ur: {title: 'موضوعات', sub: 'قرآن اور احادیث موضوع وار۔ پہلے آیات (ترجموں اور تفاسیر کے بٹنوں کے ساتھ)، پھر الجامع الکامل کی احادیث نمبر وار، اور آخر میں ضعیف اور من گھڑت احادیث۔', ay: 'آیات', hd: 'احادیث (الجامع الکامل)', hdn: 'صحیح اور حسن کی سبھی اقسام؛ ترتیب الجامع الکامل کے اپنے ابواب کے مطابق۔ ہر باب میں صحابہ و تابعین کے آثار بھی اسی ترتیب سے آتے ہیں جیسے کتاب میں ہیں۔',
+    ur: {title: 'اسلامی موضوعات', sub: 'قرآن اور احادیث موضوع وار۔ پہلے آیات (ترجموں اور تفاسیر کے بٹنوں کے ساتھ)، پھر الجامع الکامل کی احادیث نمبر وار، اور آخر میں ضعیف اور من گھڑت احادیث۔', ay: 'آیات', hd: 'احادیث (الجامع الکامل)', hdn: 'صحیح اور حسن کی سبھی اقسام؛ ترتیب الجامع الکامل کے اپنے ابواب کے مطابق۔ ہر باب میں صحابہ و تابعین کے آثار بھی اسی ترتیب سے آتے ہیں جیسے کتاب میں ہیں۔',
       dwt: 'ضعیف احادیث', dwn: 'تنبیہ: یہ احادیث ضعیف ہیں، صرف آگاہی کے لیے لکھی گئی ہیں۔ ان پر عمل نہ کیا جائے اور بغیر وضاحت کے رسول اللہ صلی اللہ علیہ وسلم کی طرف منسوب نہ کیا جائے۔ حکم کتاب کے مطابق ہر حدیث کے ساتھ لکھا ہے۔',
       mwt: 'من گھڑت (موضوع) احادیث', mwn: 'خبردار: یہ احادیث قابل اعتماد نہیں بلکہ جھوٹ ہیں، رسول اللہ صلی اللہ علیہ وسلم پر گھڑی گئی ہیں۔ انہیں آگے بیان کرنا یا ان پر عمل کرنا جائز نہیں۔ صرف پہچاننے اور بچنے کے لیے لکھی گئی ہیں۔', lie: 'جھوٹ',
+      drs: 'الجامع الکامل کے مفصل دراسہ سے', drn: 'نوٹ: ہر عبارت جوں کی توں اسی حدیث کے دراسہ سے لی گئی ہے جس کا نمبر ساتھ لکھا ہے۔ حکم وہی ہے جو دراسہ میں مذکور ہے (جس عالم کا قول ہے وہ عبارت ہی میں ہے)۔ یہ عبارتیں اپنے سے متعلق روایت یا اس کی سند پر حکم کی ہیں۔', dwl: 'ضعیف', mwl: 'من گھڑت / باطل', drt: 'الجامع الکامل کی «مفصل دراسۃ الحدیث» میں مذکور', drn: 'یہ عبارتیں الجامع الکامل کی دراسہ سے لی گئی ہیں جہاں محدثین (مثلاً شیخ اعظمی) نے اس سلسلے کی روایت کو ضعیف یا من گھڑت کہا ہے؛ حدیث کا نمبر دبا کر پوری دراسہ دیکھیں۔', dwl: 'ضعیف', mwl: 'من گھڑت',
       tr: 'ترجمے', tf: 'تفاسیر', trn: 'جو ترجمے دیکھنے ہوں چنیں', tfn: 'جو تفاسیر دیکھنی ہوں چنیں', notf: 'اس آیت پر اس تفسیر میں عبارت نہیں ملی', more: 'مزید ↓', loading: 'کھل رہا ہے…', cnt: (a, h) => 'آیات ' + a + ' · احادیث ' + h, bab: n => n + ' احادیث', fail: 'کھل نہ سکا، دوبارہ کوشش کریں۔', open: 'پوری حدیث کھولیں', src: 'ماخذ',
       sn: 'نوٹ: آیات کا انتخاب موضوع کے لحاظ سے مرتب کیا گیا ہے (چھپی ہوئی فہرست سے نہیں)، اس لیے مکمل ہونے کا دعویٰ نہیں؛ ہر آیت کی سورت اور آیت نمبر ساتھ لکھا ہے۔', jami: 'الجامع الکامل', part: 'یہ حصہ آگے بھی ہے'},
-    ar: {title: 'المواضيع', sub: 'القرآن والحديث حسب الموضوع. الآيات أولاً (مع أزرار الترجمات والتفاسير) ثم أحاديث الجامع الكامل مرقمة وفي الآخر الأحاديث الضعيفة والموضوعة.', ay: 'الآيات', hd: 'الأحاديث (الجامع الكامل)', hdn: 'بجميع أنواع الصحيح والحسن؛ على ترتيب أبواب الجامع الكامل، وفيها آثار الصحابة والتابعين كما وردت في الكتاب.',
+    ar: {title: 'المواضيع الإسلامية', sub: 'القرآن والحديث حسب الموضوع. الآيات أولاً (مع أزرار الترجمات والتفاسير) ثم أحاديث الجامع الكامل مرقمة وفي الآخر الأحاديث الضعيفة والموضوعة.', ay: 'الآيات', hd: 'الأحاديث (الجامع الكامل)', hdn: 'بجميع أنواع الصحيح والحسن؛ على ترتيب أبواب الجامع الكامل، وفيها آثار الصحابة والتابعين كما وردت في الكتاب.',
       dwt: 'الأحاديث الضعيفة', dwn: 'تنبيه: هذه الأحاديث ضعيفة وذُكرت للتنبيه فقط، فلا يُعمل بها ولا تُنسب إلى رسول الله صلى الله عليه وسلم دون بيان. والحكم مذكور مع كل حديث.',
       mwt: 'الأحاديث الموضوعة', mwn: 'تحذير: هذه الأحاديث لا يُعتمد عليها بل هي كذب مختلَق على رسول الله صلى الله عليه وسلم، فلا يجوز روايتها ولا العمل بها، وإنما ذُكرت للتحذير.', lie: 'كذب',
+      drs: 'من دراسة الجامع الكامل المفصلة', drn: 'ملاحظة: كل عبارة منقولة بنصها من دراسة الحديث الذي رقمه بجانبها، والحكم هو المذكور في الدراسة (وقائله مذكور في العبارة).', dwl: 'ضعيف', mwl: 'موضوع / باطل', drt: 'المذكور في «مفصل دراسة الحديث» للجامع الكامل', drn: 'هذه النصوص من دراسة الجامع الكامل حيث حكم المحدثون (كالشيخ الأعظمي) بضعف الرواية أو وضعها؛ افتح رقم الحديث لرؤية الدراسة كاملة.', dwl: 'ضعيف', mwl: 'موضوع',
       tr: 'الترجمات', tf: 'التفاسير', trn: 'اختر الترجمات', tfn: 'اختر التفاسير', notf: 'لا يوجد نص في هذا التفسير لهذه الآية', more: 'المزيد ↓', loading: 'جارٍ التحميل…', cnt: (a, h) => 'آيات ' + a + ' · أحاديث ' + h, bab: n => n + ' حديث', fail: 'تعذّر الفتح، أعد المحاولة.', open: 'افتح الحديث كاملاً', src: 'المصدر',
       sn: 'ملاحظة: اختيار الآيات مرتَّب بحسب الموضوع (وليس من فهرس مطبوع) فلا يُدَّعى استيعابه؛ مع ذكر السورة ورقم الآية.', jami: 'الجامع الكامل', part: ''},
-    en: {title: 'Topics', sub: 'The Quran and the hadith by topic. Verses first (with buttons for translations and tafsirs), then the numbered hadith of Al-Jami al-Kamil, and last the weak and fabricated hadith.', ay: 'Verses', hd: 'Hadith (Al-Jami al-Kamil)', hdn: 'All kinds of sahih and hasan, in the order of the chapters of Al-Jami al-Kamil; the sayings of the Companions and Successors appear as the book gives them.',
+    en: {title: 'Islamic Topics', sub: 'The Quran and the hadith by topic. Verses first (with buttons for translations and tafsirs), then the numbered hadith of Al-Jami al-Kamil, and last the weak and fabricated hadith.', ay: 'Verses', hd: 'Hadith (Al-Jami al-Kamil)', hdn: 'All kinds of sahih and hasan, in the order of the chapters of Al-Jami al-Kamil; the sayings of the Companions and Successors appear as the book gives them.',
       dwt: 'Weak hadith', dwn: 'Warning: these hadith are weak and are given for awareness only. Do not act on them or attribute them to the Messenger of Allah, peace be upon him, without clarification. The ruling is shown with each hadith.',
       mwt: 'Fabricated (mawdu) hadith', mwn: 'Beware: these hadith are not reliable, they are lies invented against the Messenger of Allah, peace be upon him. It is not permitted to narrate or act on them; they are given only so that they can be recognised and avoided.', lie: 'a lie',
+      drs: 'From the detailed study of Al-Jami al-Kamil', drn: 'Note: each passage is copied as it stands from the study of the hadith whose number is shown; the ruling is the one stated there (the scholar quoted is named in the passage).', dwl: 'Weak', mwl: 'Fabricated / baseless', drt: 'Mentioned in the «detailed study» of Al-Jami al-Kamil', drn: 'These passages come from the study in Al-Jami al-Kamil where scholars (such as Shaykh al-Azami) judged a narration weak or fabricated; open the hadith number to see the full study.', dwl: 'Weak', mwl: 'Fabricated',
       tr: 'Translations', tf: 'Tafsirs', trn: 'Choose translations', tfn: 'Choose tafsirs', notf: 'No text on this verse in this tafsir', more: 'More ↓', loading: 'Loading…', cnt: (a, h) => a + ' verses · ' + h + ' hadith', bab: n => n + ' hadith', fail: 'Could not open, try again.', open: 'Open the full hadith', src: 'Source',
       sn: 'Note: the verses are selected by topic (not from a printed index), so completeness is not claimed; the surah and verse number are written with each verse.', jami: 'Al-Jami al-Kamil', part: ''}
   };
@@ -11426,11 +11429,11 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
   const bn = k => { const a = BKN[k] || [k, k, k]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
   const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
   const GLY = /[-]|[^]*/g;
-  let IDX = null, SN = null; const TDT = {}, WD = {};
+  let IDX = null, SN = null; const TDT = {}, WD = {}, RDX = {};
   async function index() {
     if (IDX) return IDX;
     window.TOPICS = (i, s) => { IDX = i; SN = s; };
-    await loadJs('topics/index_9d8e44cb.js'); return IDX;
+    await loadJs('topics/index_a52053e8.js'); return IDX;
   }
   const tname = t => ui === 'ar' ? t[2] : ui === 'ur' ? t[1] : t[3];
   const sname = s => { const a = SN[s - 1]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
@@ -11470,6 +11473,7 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
   function saveSel() { try { localStorage.setItem(KEY, JSON.stringify(SEL)); } catch (e) {} }
   let CARDS = [];
 
+  async function dras(t) { const k = t[0]; if (RDX[k]) return RDX[k]; window.TOPICR = (i, d) => { RDX[i] = d; }; await loadJs('topics/' + t[10][0]); return RDX[k]; }
   const ayn = n => el('span', {class: 'ayn'}, ui === 'ur' || ui === 'ar' ? ad(n) : String(n));
   const dirOf = l => (l === 'ur' || l === 'ar') ? 'rtl' : 'ltr';
   function ayahCard(q) {
@@ -11560,8 +11564,8 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
     return from + part.length;
   }
   function babBox(b) {
-    const T = L(), [name, ids, start] = b;
-    const d = el('details', {class: 'card grpbox tpbabd'}, el('summary', {}, el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, name), el('span', {class: 'cs'}, T.bab(N(ids.length)) + ' · ' + N(start) + (ids.length > 1 ? '–' + N(start + ids.length - 1) : ''))));
+    const T = L(), [name, ids, start, grp] = b;
+    const d = el('details', {class: 'card grpbox tpbabd'}, el('summary', {}, grp ? el('span', {class: 'tpgrp ar', lang: 'ar', dir: 'rtl'}, grp) : '', el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, name), el('span', {class: 'cs'}, T.bab(N(ids.length)) + ' · ' + N(start) + (ids.length > 1 ? '–' + N(start + ids.length - 1) : ''))));
     let done = false; d.addEventListener('toggle', async () => {
       if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
       try {
@@ -11599,12 +11603,47 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
     });
     return d;
   }
+  const RD = {};
+  async function drased(t) { if (RD[t[0]]) return RD[t[0]]; window.TOPICR = (i, d) => { RD[i] = d; }; await loadJs('topics/' + t[10][0]); return RD[t[0]]; }
+  function drBox(t, cat) {
+    const T = L(), n = cat === 'm' ? t[10][2] : t[10][3];
+    const d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt'}, T.drs), el('span', {class: 'cs'}, N(n))));
+    let done = false; d.addEventListener('toggle', async () => {
+      if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
+      try {
+        const dd = await drased(t), arr = cat === 'm' ? dd.m : dd.d; hold.remove(); d.append(el('p', {class: 'cs tpnote'}, T.drn));
+        let i = 0; const box = el('div', {}), more = el('button', {class: 'btn tpmore', type: 'button'}, T.more);
+        const next = () => { arr.slice(i, i + 30).forEach(r => { const c = el('div', {class: 'card tpw tphd' + (cat === 'm' ? ' tpm-lie' : '')});
+          c.append(el('p', {class: 'tpsrc tpdrt', lang: 'ar', dir: 'rtl'}, r[1].replace(GLY, '')), takhrij(cat === 'm' ? T.mwl : T.dwl, T.jami, r[0], '#/h/' + r[0], cat)); box.append(c); }); i += 30; more.hidden = i >= arr.length; };
+        more.addEventListener('click', next); d.append(box, more); next();
+      } catch (e) { hold.textContent = T.fail; done = false; }
+    });
+    return d;
+  }
+  function drBoxW(t, cat, no0) {
+    const T = L(), n = t[10] ? (cat === 'm' ? t[10][2] : t[10][3]) : 0; if (!n) return null;
+    const d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt'}, T.drt), el('span', {class: 'cs'}, N(n) + ' · ' + N(no0) + (n > 1 ? '–' + N(no0 + n - 1) : ''))));
+    let done = false; d.addEventListener('toggle', async () => {
+      if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
+      try {
+        const dd = await dras(t), arr = cat === 'm' ? dd.m : dd.d; hold.remove(); d.append(el('p', {class: 'cs tpnote'}, T.drn));
+        let i = 0; const box = el('div', {}), more = el('button', {class: 'btn tpmore', type: 'button'}, T.more);
+        const next = () => { arr.slice(i, i + 30).forEach((r, j) => { const c = el('div', {class: 'card tpw tphd' + (cat === 'm' ? ' tpm-lie' : '')});
+          c.append(el('p', {class: 'tpsrc tpdrx', lang: 'ar', dir: 'rtl'}, numEl(no0 + i + j), r[1].replace(GLY, '')));
+          c.append(el('p', {class: 'tptk', dir: ui === 'ar' ? 'rtl' : 'auto'}, el('b', {class: 'gc'}, T.src + ':'), ' ', el('a', {href: '#/h/' + r[0]}, T.jami + ' (' + nw(r[0]) + ')')));
+          box.append(c); }); i += 30; more.hidden = i >= arr.length; };
+        more.addEventListener('click', next); d.append(box, more); next();
+      } catch (e) { hold.textContent = T.fail; done = false; }
+    });
+    return d;
+  }
   function weakSection(t, cat) {
-    const T = L(), wl = (t[9] || []).filter(w => (cat === 'm' ? w[1] : w[2]) > 0); if (!wl.length) return null;
-    const idx = (t[9] || []); const totD = idx.reduce((a, w) => a + w[2], 0);
+    const T = L(), wl = (t[9] || []).filter(w => (cat === 'm' ? w[1] : w[2]) > 0), dn = t[10] ? (cat === 'm' ? t[10][2] : t[10][3]) : 0; if (!wl.length && !dn) return null;
+    const totD = (t[9] || []).reduce((a, w) => a + w[2], 0) + (t[10] ? t[10][3] : 0);
     let no = t[5] + 1 + (cat === 'm' ? totD : 0); const boxes = [];
     wl.forEach(w => { boxes.push(wkBox(t[0], w, cat, no)); no += cat === 'm' ? w[1] : w[2]; });
-    const tot = wl.reduce((a, w) => a + (cat === 'm' ? w[1] : w[2]), 0);
+    const db = drBoxW(t, cat, no); if (db) boxes.push(db);
+    const tot = wl.reduce((a, w) => a + (cat === 'm' ? w[1] : w[2]), 0) + dn;
     return el('details', {class: 'card grpbox tpsec tpweak' + (cat === 'm' ? ' tpmawdu' : '')},
       el('summary', {}, el('span', {class: 'gt'}, cat === 'm' ? T.mwt + ' — ' + T.lie : T.dwt), el('span', {class: 'cs'}, N(tot))),
       el('p', {class: 'tpwarn' + (cat === 'm' ? ' tpwarn-lie' : '')}, cat === 'm' ? T.mwn : T.dwn), ...boxes);

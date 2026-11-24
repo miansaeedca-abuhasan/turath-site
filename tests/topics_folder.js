@@ -9,7 +9,7 @@ const names=await p.evaluate(()=>[...document.querySelectorAll('a[href^="#/tp/"]
 const need=['نماز','وضو','غسل','تیمم','حج و عمرہ','زکوٰۃ','روزہ','جہاد','حیض','پردہ اور حیا','دوستی اور دشمنی','والدین','اولاد','طلب علم','حب دنیا','فکرِ آخرت','جنت الفردوس','فتنے','قیامت کی نشانیاں'];
 ck(need.every(n=>names.some(x=>x.includes(n))),'topics listed, missing: '+need.filter(n=>!names.some(x=>x.includes(n))).join('|'));
 ck(!names.includes('طہارت'),'طہارت is split (no single folder)');
-ck(names.length>=45,'many topics '+names.length);
+ck(names.length>=80,'many topics '+names.length);
 // a topic page
 await p.goto('http://localhost:8765/index.html#/tp/jihad');await p.waitForSelector('.tpay',{timeout:20000});
 const r=await p.evaluate(()=>{const secs=[...document.querySelectorAll('details.tpsec')];return{order:secs.map(s=>s.querySelector('.gt').textContent),ay:document.querySelectorAll('.tpay').length,ar:document.querySelector('.tpar').textContent,tr:document.querySelectorAll('.tptr').length,btn:document.querySelectorAll('.tpbtns .tpb').length}});
@@ -36,6 +36,16 @@ await p.click('details.tpweak:not(.tpmawdu) > summary');ck(await p.evaluate(()=>
 await p.click('details.tpweak:not(.tpmawdu) details.tpk > summary');await p.waitForSelector('.tpw',{timeout:15000});
 const w=await p.evaluate(()=>({n:document.querySelectorAll('.tpw').length,g:[...document.querySelectorAll('.tpw .gc')].map(x=>x.className).slice(0,3)}));
 ck(w.n>0&&w.g.every(x=>/gc-daif|gc-mawdu/.test(x)),'weak hadith carry their ruling');
+// da'if section carries the passages of the Jami study that call a narration weak
+await p.goto('http://localhost:8765/index.html#/tp/salah');await p.waitForSelector('details.tpweak',{timeout:20000});
+await p.click('details.tpweak:not(.tpmawdu) > summary');
+await p.evaluate(()=>{const b=[...document.querySelectorAll('details.tpweak:not(.tpmawdu) details.tpk > summary')].find(x=>/دراسۃ/.test(x.textContent));b&&b.click()});
+await p.waitForSelector('.tpdrx',{timeout:15000});
+ck(await p.evaluate(()=>!!document.querySelector('.tpdrx')&&/#\/h\/\d+/.test(document.querySelector('.tpdrx').parentElement.innerHTML)),'study passages with hadith link');
+// every kitab of the full Jami (67) is a heading inside topics: the Jami group heading appears on a bab
+await p.goto('http://localhost:8765/index.html#/tp/qarz');await p.waitForSelector('.tpay',{timeout:20000});
+await p.click('details.tpsec:nth-of-type(2) details.tpk > summary');await p.waitForSelector('details.tpbabd',{timeout:5000});
+ck(await p.evaluate(()=>document.querySelectorAll('details.tpbabd').length>5),'babs listed under the Jami kitab');
 // mawdu' on a topic that has some, with the lie warning
 await p.goto('http://localhost:8765/index.html#/tp/fitan');await p.waitForSelector('details.tpmawdu',{timeout:20000});
 await p.click('details.tpmawdu > summary');ck(await p.evaluate(()=>/جھوٹ/.test(document.querySelector('.tpwarn-lie').textContent)&&/قابل اعتماد نہیں/.test(document.querySelector('.tpwarn-lie').textContent)),'mawdu\' warning says lie');

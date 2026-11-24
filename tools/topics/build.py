@@ -5,6 +5,11 @@ HERE=os.path.dirname(os.path.abspath(__file__));ROOT=os.path.join(HERE,'..','..'
 sys.path.insert(0,HERE)
 from defs import T,W,WX
 J=json.load(open('/tmp/jstruct.json'))
+JK=json.load(open(os.path.join(HERE,'jamik_kitabs.json'),encoding='utf8'))  # the 67 kitabs / 6713 babs of the full Jami (api toc?book=jamik)
+TOCMAP={}
+for _k in JK:
+    for _ci,_c in enumerate(_k[2]):
+        if _c[2]: TOCMAP[_c[2][0]]=(_k[0],_ci)
 def qload(f):
     s=open(f,encoding='utf8').read();return json.loads(s[s.index('(')+1:s.rindex(')')])[1]
 AR=qload('quran/ar_uthmani.js');UR=qload('quran/ur_junagarhi.js')
@@ -44,9 +49,36 @@ def printed(e):
     for a,v,c in an.get('_r',[]):
         for i in range(c): mp[a+i]=str(v+i)
     return mp
+import glob
+DR={}
+for _f in sorted(glob.glob('data/dr*.js')):
+    _s=open(_f,encoding='utf8').read();DR.update(json.loads(_s[_s.index('(')+1:_s.rindex(')')]))
+DRM=re.compile(r'حديث[اً]? (?:موضوع|باطل|مكذوب)|هذا (?:الحديث )?(?:موضوع|باطل|مكذوب)|(?:فهو|وهو) (?:موضوع|باطل)|موضوع(?:ة)? على|حديث[اً]? لا أصل له|فلا أصل له')
+DRD=re.compile(r'حديث[اً]? (?:ضعيف|منكر|واه)|هذا (?:الحديث )?(?:ضعيف|منكر)|(?:إسناده|اسناده|فإسناده) (?:ضعيف|واه)|(?:فهو|وهو) (?:ضعيف|منكر) |ضعيف جد[اً] ')
+DRX=re.compile(r'ليس بضعيف|غير ضعيف|ليس بمنكر|ليس بموضوع|ليس موضوع|ليس بباطل|لا ضعف|لا نكارة|المجروحين|منكر الحديث|رمي بالكذب|الميزان|التقريب|الجرح|تهذيب|الكامل لابن عدي')
+def drcut(p,pos):
+    if len(p)<=900: return p
+    a=max(0,pos-350);z=min(len(p),a+900)
+    if a: a=p.find(' ',a)+1 or a
+    t=p[a:z]
+    if z<len(p): t=t.rsplit(' ',1)[0]+' …'
+    return ('… ' if a else '')+t
+def dirasa(ids):
+    M=[];D=[];seen=set()
+    for i in ids:
+        for p in DR.get(str(i),[]):
+            if p in seen or DRX.search(p): continue
+            m1=DRM.search(p);m2=DRD.search(p)
+            if not (m1 or m2): continue
+            seen.add(p)
+            if m1 and (not m2 or m1.start()<=m2.start()): M.append([i,drcut(p,m1.start())])
+            else: D.append([i,drcut(p,m2.start())])
+    return M,D
 BK={}
 for k in {b for d in W.values() for b in d}: BK[k]=rows_of(k)+(printed(CIX[k]),)
 os.makedirs('topics/w',exist_ok=True)
+if os.path.isdir('topics/r'):
+    for f in os.listdir('topics/r'): os.remove('topics/r/'+f)
 for f in os.listdir('topics/w'): os.remove('topics/w/'+f)
 idx=[];report=[]
 for t in T:
@@ -66,10 +98,20 @@ for t in T:
             if not b[2]: continue
             if whole or (rx and rx.search(b[1]) and not (nx and nx.search(b[1]))): babs.append([b[1],b[2]])
         if babs: H.append([k[0],k[1],babs])
-    H.sort(key=lambda x:(x[0] not in kit, x[0]))
+    # regroup under the 67 kitabs of the full Jami (own bab titles + the Jami group heading «جموع …»); the topic's own kitabs first
+    prim=set();flat=[]
+    for k in H:
+        for b in k[2]:
+            kn,ci=TOCMAP[b[1][0]];flat.append((kn,ci))
+            if k[0] in kit: prim.add(kn)
+    byk={}
+    for kn,ci in flat: byk.setdefault(kn,[]).append(ci)
+    H=[]
+    for kn in sorted(byk,key=lambda x:(x not in prim,x)):
+        K=JK[kn-1];H.append([kn,K[1],[[K[2][ci][0],K[2][ci][2],0,K[2][ci][1]] for ci in sorted(byk[kn])]])
     cur=1
     for k in H:
-        for b in k[2]: b.append(cur);cur+=len(b[1]);nb+=1
+        for b in k[2]: b[2]=cur;cur+=len(b[1]);nb+=1
     nh=cur-1
     body='TOPIC(%s,%s);'%(json.dumps(id),json.dumps({'q':qs,'h':H},ensure_ascii=False,separators=(',',':')))
     fn='%s_%s.js'%(id,hashlib.md5(body.encode()).hexdigest()[:8])
@@ -92,7 +134,11 @@ for t in T:
         if M or D:
             wb='TOPICW(%s,%s,%s);'%(json.dumps(id),json.dumps(bk),json.dumps({'m':M,'d':D},ensure_ascii=False,separators=(',',':')))
             wf='w/%s_%s_%s.js'%(id,bk,hashlib.md5(wb.encode()).hexdigest()[:8]);open('topics/'+wf,'w',encoding='utf8').write(wb);wl.append([bk,len(M),len(D),wf,len(wb.encode())])
-    idx.append([id,ur,ar,en,n,nh,nb,fn,len(body.encode()),wl])
+    ids=[i for k in H for bb in k[2] for i in bb[1]];dm,dd=dirasa(ids);dri=None
+    if dm or dd:
+        rb='TOPICR(%s,%s);'%(json.dumps(id),json.dumps({'m':dm,'d':dd},ensure_ascii=False,separators=(',',':')))
+        rf='r/%s_%s.js'%(id,hashlib.md5(rb.encode()).hexdigest()[:8]);os.makedirs('topics/r',exist_ok=True);open('topics/'+rf,'w',encoding='utf8').write(rb);dri=[rf,len(rb.encode()),len(dm),len(dd)]
+    idx.append([id,ur,ar,en,n,nh,nb,fn,len(body.encode()),wl,dri])
     report.append((id,n,nh,nb,[(w[0],w[1],w[2]) for w in wl],[(k[1][:22],sum(len(b[1]) for b in k[2])) for k in H if k[0] not in kit]))
 for f in os.listdir('topics'):
     if f.endswith('.js') and not any(f==i[7] for i in idx) and not f.startswith('index'): os.remove('topics/'+f)
