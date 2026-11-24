@@ -162,6 +162,7 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .fpanel h4.subh::before,.tr h4.subh::before,.shtx h4.subh::before{content:"\2756";color:#c59a35;margin-inline-end:.5em}
 .bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
+.tpar{font-size:1.25em;line-height:2.2;margin:.2em 0}.tpur{font-family:var(--urdu);line-height:2;margin:.2em 0}.tpref{display:inline-block;margin-top:.2em;color:var(--accent);font-size:.9em}.tpay,.tpw{padding:.7rem .9rem;margin:.5rem 0}.tpnote{margin:.4rem .2rem}.tpwarn{margin:.5rem .2rem;padding:.6rem .8rem;border-inline-start:4px solid #d97706;background:color-mix(in srgb,#d97706 10%,transparent);border-radius:8px;line-height:1.9}.tpweak>summary .gt{color:#d97706}.tpwh{margin-bottom:.3rem;font-size:.95em}.tpwt{border-bottom:0}.tpmore{display:block;margin:.6rem auto}.tpk>summary{cursor:pointer}.tpbab{margin:.3rem 0}
 .secend{text-align:center;margin:1.2em 0 1em;line-height:1;user-select:none;-webkit-user-select:none;pointer-events:none}.secend::before{content:"\2756\00a0\00a0\2756\00a0\00a0\2756";color:#a8322b;font-size:1.05em;letter-spacing:.2em}
 .subh{color:var(--accent);font-size:1.02em;margin:.7em 0 .2em}
 .mt h4.subh{font-family:var(--arabic)}
@@ -2070,6 +2071,7 @@ function parentOf(h){
   if(h==='#/quiz')return '#/';
   if(/^#\/rb(\/|$)/.test(h))return RB.parent(h);
   if(/^#\/ab(\/|$)/.test(h))return ABK.parent(h);
+  if(/^#\/tp(\/|$)/.test(h))return TPK.parent(h);
   if(/^#\/n\/\d+/.test(h))return '#/nar';
   if(/^#\/hb\/a\/[a-z0-9]+$/.test(h))return '#/hb/a';
   if(/^#\/hb\/c\/\d+$/.test(h))return '#/hb/t';
@@ -2095,7 +2097,7 @@ $('#back').addEventListener('click',goBack);
 // on hadith search results (#/b with a query) the back arrow clears the search
 $('#q').addEventListener('input',()=>{if(location.hash==='#/b')$('#back').hidden=false;});
 const UL={ur:'رواة الحدیث',en:'Narrators',ar:'رواة الحديث',bn:'হাদীসের রাবী',hi:'हदीस के रावी',gu:'હદીસના રાવીઓ',fr:'Narrateurs'};window.UL=UL;
-function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/'))?'home':/^#\/q(\/|$)/.test(h)?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')||h.startsWith('#/sec/sahaba')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')||h.startsWith('#/sec/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
+function navBar(){const h=location.hash,sec=(h.startsWith('#/quiz')||h.startsWith('#/hifz')||h==='#/verify'||h==='#/owner'||h==='#/nar'||h.startsWith('#/n/')||h==='#/ab'||h.startsWith('#/ab/')||h==='#/tp'||h.startsWith('#/tp/'))?'home':/^#\/q(\/|$)/.test(h)?'q':(h===''||h==='#/'||h==='#/home'||h.startsWith('#/t/'))?'home':h.startsWith('#/s/fazail')||h.startsWith('#/sec/sahaba')?'fz':h.startsWith('#/s/shadharat')?'sh':h.startsWith('#/s/seerah')||h.startsWith('#/sec/seerah')?'se':h.startsWith('#/s/rijal')?'ul':h==='#/k/54'?'dua':'b';
   // right to left: Quran, Hadith, Seerah, Home (middle), Fazail-e-Sahaba, Du'as and adhkar (Kitab al-Adhkar of Talkhis al-Jami al-Kamil), Shadharat adh-Dhahab
   const NX={ur:['سیرت','دعا و اذکار'],en:['Seerah','Duas'],ar:['السيرة','الأذكار'],bn:['সীরাত','দু‘আ'],hi:['सीरत','दुआएँ'],gu:['સીરત','દુઆઓ'],fr:['Sîra','Invocations'],ne:['सीरा','दुआ']}[ui]||['Seerah','Duas'];
   const toJami=()=>{book='jami';try{localStorage.book='jami'}catch(e){}if($('#book'))$('#book').value='jami';};
@@ -2376,7 +2378,7 @@ function route(){
   if(h==='#/madkhal'){$('#searchrow').hidden=true;$('#list').hidden=true;$('#view').hidden=false;$('#qv').hidden=true;showMadkhal();return;}
   if(!/^#\/h\//.test(h))HONE=false;if(/^#\/h\/-?\d+\?one/.test(h))HONE=true;
   const sc=/^#\/s\//.test(h),x=h.match(/^#\/x\/([^/]+)\/(\d+)/),m=h.match(/^#\/h\/(-?\d+)/),k=h.match(/^#\/k\/(\d+)$/),c=h.match(/^#\/c\/(\d+)\/(\d+)/);
-  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab;
+  const td=h.startsWith('#/t/'),qz=h.startsWith('#/quiz'),hz=h.startsWith('#/hifz'),vf=h==='#/verify',ow=h==='#/owner',nr=h==='#/nar'||/^#\/n\/\d+/.test(h),rb=/^#\/rb(\/|$)/.test(h),ab=/^#\/ab(\/|$)/.test(h),tp=/^#\/tp(\/|$)/.test(h),quran=sec==='q'||sec==='home'||td||qz||hz||vf||ow||nr||rb||ab||tp;
   const cm=h.startsWith('#/cmp'),gs=h==='#/search',hs=h==='#/hs',qa=h==='#/qa'&&!!window.SHOW_QA,sx=h.match(/^#\/sec\/(seerah|sahaba)$/),hb=!!sx||h==='#/hb'||/^#\/hb\/(t|c\/\d+|a(\/[a-z0-9]+)?)$/.test(h),home=!quran&&!sc&&!hb&&!gs&&!hs&&!qa&&!cm&&!x&&!m&&!k&&!c&&h!=='#/bm';hbRemember(h);
   $('#searchrow').hidden=!home;$('#list').hidden=quran||!!(x||m);$('#view').hidden=quran||!(x||m);$('#qv').hidden=!quran;
   document.body.classList.toggle('vfpage',vf);
@@ -2385,6 +2387,7 @@ function route(){
   else if(nr)NAR.route(h);
   else if(rb)RB.route(h);
   else if(ab)ABK.route(h);
+  else if(tp)TPK.route(h);
   else if(qz)QUIZ.route(h);
   else if(hz)HIFZ.route(h);
   else if(td)TODAY.route(h);
@@ -3762,12 +3765,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       tile('img:seerah', T('seerahT'), '#/sec/seerah'), tile('img:sahaba', T('navFazail'), '#/sec/sahaba'),
       tile('img:siyar_salaf', T('navSalaf'), '#/s/siyar'), tile('img:shadharat', T('navShFull'), '#/s/shadharat'),
       tile('img:rijal_search', ui === 'en' ? 'Hadith narrators' : (window.UL || {})[ui] || 'Hadith narrators', '#/s/rijal'),
-      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:tarbiyat', ({ur: 'تربیہ', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
+      tile('img:narrators', window.NAR ? NAR.title() : 'Narrators', '#/nar'), tile('img:hifz', window.HIFZ ? HIFZ.title() : 'Hifz', '#/hifz'), tile('img:quiz', T('quizT'), '#/quiz'), tile('img:verify', window.VERIFY ? VERIFY.title() : 'Verify', '#/verify'), tile('img:topics', window.TPK ? TPK.title() : 'Topics', '#/tp'), tile('img:tarbiyat', ({ur: 'تربیہ', ar: 'التربية', en: 'Tarbiyah', bn: 'তারবিয়াত', hi: 'तरबियत'})[ui] || 'Tarbiyah', 'tarbiyat.html'));
     if (window.ABK && ABK.on()) { const ta = [...g.children].find(x => x.getAttribute('href') === '#/q/audio'); if (ta) ta.after(tile('img:audiobooks', ABK.title(), '#/ab')); }
     // fixed order of the home tiles, row by row (4 per row; rows of 3 get an empty slot at the end)
     { const key = c => { const i = c.querySelector('img'); return i ? i.getAttribute('src').replace(/^.*\//, '').replace(/\.png$/, '') : ''; }, by = {}; [...g.children].forEach(c => { by[key(c)] = c; });
       const gap = () => el('span', {class: 'tile', 'aria-hidden': 'true', style: 'visibility:hidden'});
-      const ord = ['quran', 'tilawat_audio', 'tafsir', 'saved_ayat', 'hadith_books', 'jami_full', 'talkhis', 'saved_hadith', 'seerah', 'sahaba', 'tuhfa_sharh', 'audiobooks|', 'siyar_salaf', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify', 'tarbiyat'];
+      const ord = ['quran', 'tilawat_audio', 'tafsir', 'saved_ayat', 'hadith_books', 'jami_full', 'talkhis', 'saved_hadith', 'seerah', 'sahaba', 'tuhfa_sharh', 'audiobooks|', 'siyar_salaf', 'shadharat', 'narrators', 'rijal_search', 'hifz', 'quiz', 'verify', 'tarbiyat', 'topics'];
       const out = []; ord.forEach(k => { const c = by[k.replace('|', '')]; if (c) { out.push(c); delete by[k.replace('|', '')]; } else if (k.includes('|')) out.push(gap()); });
       Object.values(by).forEach(c => out.push(c)); g.replaceChildren(...out); }
     v.append(el('img', {class: 'hbanner', src: 'home-banner.jpg', alt: 'تراث خیرالقرون — Turath Khair Al-Quroon', width: 1024, height: 495}));
@@ -11394,6 +11397,93 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
 .sn-save{background:var(--bar,#1d4f78);color:#fff;border:0;border-radius:8px;padding:.45rem 1.1rem;font-weight:700;cursor:pointer}
 .sn-x,.sn-del{background:transparent;color:inherit;border:0;padding:.45rem .6rem;cursor:pointer}.sn-del{color:#c0392b}
 </style>
-<script>(function(){document.addEventListener('click',function(e){var im=e.target.closest&&e.target.closest('.chintro:not(.txt) img');if(!im)return;var o=document.createElement('div');o.className='lbx';var i2=document.createElement('img');i2.src=im.src;i2.alt='';var b=document.createElement('button');b.type='button';b.textContent='بند کریں';o.append(b,i2);o.addEventListener('click',function(){o.remove();document.documentElement.style.overflow='';});document.documentElement.style.overflow='hidden';document.body.append(o);});})();</script>
+<script>(function(){document.addEventListener('click',function(e){var im=e.target.closest&&e.target.closest('.chintro:not(.txt) img');if(!im)return;var o=document.createElement('div');o.className='lbx';var i2=document.createElement('img');i2.src=im.src;i2.alt='';var b=document.createElement('button');b.type='button';b.textContent='بند کریں';o.append(b,i2);o.addEventListener('click',function(){o.remove();document.documentElement.style.overflow='';});document.documentElement.style.overflow='hidden';document.body.append(o);});})();/* ===== «موضوعات» (topics folder): for each topic the Quran verses, then the hadith of al-Jami al-Kamil by its own kitabs and babs, then (last) the da'if / mawdu' hadith of the same topic, marked as such.
+   Data is made by tools/topics/build.py: topics/index.js, topics/<id>_<h>.js (verses + Jami chapters), topics/w/<id>_<book>_<h>.js (weak hadith, loaded only when that book is opened). Routes: #/tp · #/tp/<id> */
+(function () {
+  'use strict';
+  const LB = {
+    ur: {title: 'موضوعات', sub: 'قرآن اور احادیث موضوع وار — نماز، حج، زکوٰۃ، روزہ، جہاد اور دیگر۔ پہلے آیات، پھر احادیث اور آخر میں ضعیف و من گھڑت احادیث', ay: 'آیات', hd: 'احادیث (الجامع الکامل)', hdn: 'صحیح اور حسن کی سبھی اقسام؛ ترتیب الجامع الکامل کے اپنے ابواب کے مطابق', wk: 'ضعیف اور من گھڑت احادیث', wkn: 'تنبیہ: یہ احادیث ضعیف یا من گھڑت ہیں اور صرف آگاہی کے لیے ہیں۔ ان پر عمل نہ کیا جائے اور انہیں رسول اللہ صلی اللہ علیہ وسلم کی طرف منسوب نہ کیا جائے۔ حکم ہر حدیث کے ساتھ کتاب کے مطابق لکھا ہے۔', mw: 'من گھڑت / موضوع', dw: 'ضعیف', more: 'مزید ↓', loading: 'کھل رہا ہے…', none: 'اس موضوع میں کوئی نہیں', cnt: (a, h) => 'آیات ' + a + ' · احادیث ' + h, open: 'پوری حدیث کھولیں', bab: n => n + ' احادیث', fail: 'کھل نہ سکا، دوبارہ کوشش کریں۔', sn: 'نوٹ: آیات اور ابواب کا انتخاب موضوع کے لحاظ سے مرتب کیا گیا ہے؛ ہر آیت کی سورت اور آیت نمبر ساتھ لکھا ہے۔'},
+    ar: {title: 'المواضيع', sub: 'القرآن والحديث حسب الموضوع — الصلاة والحج والزكاة والصيام والجهاد وغيرها. الآيات أولاً ثم الأحاديث وفي الآخر الأحاديث الضعيفة والموضوعة', ay: 'الآيات', hd: 'الأحاديث (الجامع الكامل)', hdn: 'بجميع أنواع الصحيح والحسن؛ على ترتيب أبواب الجامع الكامل نفسها', wk: 'الأحاديث الضعيفة والموضوعة', wkn: 'تنبيه: هذه الأحاديث ضعيفة أو موضوعة وهي للتنبيه فقط، فلا يُعمل بها ولا تُنسب إلى رسول الله صلى الله عليه وسلم. والحكم مذكور مع كل حديث كما في الكتاب.', mw: 'موضوع / مكذوب', dw: 'ضعيف', more: 'المزيد ↓', loading: 'جارٍ التحميل…', none: 'لا شيء في هذا الموضوع', cnt: (a, h) => 'آيات ' + a + ' · أحاديث ' + h, open: 'افتح الحديث كاملاً', bab: n => n + ' حديث', fail: 'تعذّر الفتح، أعد المحاولة.', sn: 'ملاحظة: اختيار الآيات والأبواب مرتَّب بحسب الموضوع، مع ذكر السورة ورقم الآية.'},
+    en: {title: 'Topics', sub: 'The Quran and the hadith by topic — prayer, Hajj, zakat, fasting, jihad and more. Verses first, then hadith, and last the weak and fabricated hadith', ay: 'Verses', hd: 'Hadith (Al-Jami al-Kamil)', hdn: 'All kinds of sahih and hasan; in the order of the chapters of Al-Jami al-Kamil itself', wk: 'Weak and fabricated hadith', wkn: 'Warning: these hadith are weak or fabricated and are given for awareness only. Do not act on them and do not attribute them to the Messenger of Allah, peace be upon him. The ruling is shown with each hadith as the book gives it.', mw: 'Fabricated', dw: 'Weak', more: 'More ↓', loading: 'Loading…', none: 'None in this topic', cnt: (a, h) => a + ' verses · ' + h + ' hadith', open: 'Open the full hadith', bab: n => n + ' hadith', fail: 'Could not open, try again.', sn: 'Note: the verses and chapters are selected by topic; the surah and verse number are written with each verse.'}
+  };
+  const L = () => LB[ui] || LB.en, qv = () => $('#qv');
+  const UD = n => String(n).replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[d]);
+  const N = n => ui === 'ur' ? UD(n) : ui === 'ar' ? ad(n) : String(n);
+  const BKN = {abudawud: ['سنن أبي داود', 'سنن ابی داود', 'Sunan Abi Dawud'], tirmidhi: ['جامع الترمذي', 'جامع ترمذی', 'Jami at-Tirmidhi'], ibnmajah: ['سنن ابن ماجه', 'سنن ابن ماجہ', 'Sunan Ibn Majah'], nasai: ['سنن النسائي', 'سنن نسائی', 'Sunan an-Nasai']};
+  const bn = k => { const a = BKN[k] || [k, k, k]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
+  const loadJs = src => new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = () => { s.remove(); ok(); }; s.onerror = () => { s.remove(); no(new Error(src)); }; document.head.append(s); });
+  let IDX = null, SN = null; const TD = {}, WD = {};
+  async function index() {
+    if (IDX) return IDX;
+    window.TOPICS = (i, s) => { IDX = i; SN = s; };
+    await loadJs('topics/index_ad07f0fb.js'); return IDX;
+  }
+  const tname = t => ui === 'ar' ? t[2] : ui === 'ur' ? t[1] : t[3];
+  const sname = s => { const a = SN[s - 1]; return ui === 'ar' ? a[0] : ui === 'ur' ? a[1] : a[2]; };
+  async function topic(t) { if (TD[t[0]]) return TD[t[0]]; window.TOPIC = (id, d) => { TD[id] = d; }; await loadJs('topics/' + t[7]); return TD[t[0]]; }
+  async function weak(id, w) { const k = id + '|' + w[0]; if (WD[k]) return WD[k]; window.TOPICW = (i, b, d) => { WD[i + '|' + b] = d; }; await loadJs('topics/' + w[3]); return WD[k]; }
+  const ayn = n => el('span', {class: 'ayn'}, ui === 'ur' || ui === 'ar' ? ad(n) : String(n));
+  function ayahCard(q) {
+    const [s, x, y, ar, ur] = q, many = y > x;
+    const arp = el('p', {class: 'arp tpar', lang: 'ar', dir: 'rtl'}, '﴿');
+    ar.forEach((v, i) => { arp.append(v); if (i < ar.length - 1) arp.append(' ', ayn(x + i), ' '); });
+    arp.append('﴾');
+    const ref = (ui === 'ur' ? '[' + sname(s) + ': ' + UD(many ? x + '-' + y : x) + ']' : ui === 'ar' ? '[' + sname(s) + ': ' + ad(many ? x + '-' + y : x) + ']' : '[' + sname(s) + ' ' + s + ':' + (many ? x + '-' + y : x) + ']');
+    const c = el('div', {class: 'card tpay'}, arp);
+    if (ui === 'ur') c.append(el('p', {class: 'tpur', lang: 'ur', dir: 'rtl'}, ...ur.map((v, i) => (many ? '(' + UD(x + i) + ') ' : '') + v + (i < ur.length - 1 ? ' ' : '')))); 
+    c.append(el('a', {class: 'tpref', href: '#/q/s/' + s + '/' + x, dir: ui === 'ur' || ui === 'ar' ? 'rtl' : 'ltr'}, ref));
+    return c;
+  }
+  function babRow(b) { return el('a', {class: 'card srow2 tpbab', href: '#/h/' + b[2]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct ar', lang: 'ar', dir: 'rtl'}, b[0]), el('span', {class: 'cs'}, L().bab(N(b[1]))))); }
+  function kitabBox(k) {
+    const T = L(), d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt ar', lang: 'ar', dir: 'rtl'}, k[1]), el('span', {class: 'cs'}, N(k[2].reduce((a, b) => a + b[1], 0)))));
+    let done = false; d.addEventListener('toggle', () => { if (!d.open || done) return; done = true; d.append(...k[2].map(babRow)); });
+    return d;
+  }
+  function wkItem(bk, r, cat) {
+    const T = L(), g = el('span', {class: 'gc gc-' + (cat === 'm' ? 'mawdu' : 'daif')}, r[3]);
+    return el('div', {class: 'card tpw'}, el('div', {class: 'tpwh'}, el('b', {}, bn(bk) + ' ' + r[1]), ' — ', g), el('p', {class: 'arp', lang: 'ar', dir: 'rtl'}, r[4]), el('a', {class: 'tpref', href: '#/s/' + bk + '/n/' + r[0]}, T.open));
+  }
+  function wkBox(id, w) {
+    const T = L(), d = el('details', {class: 'card grpbox tpk'}, el('summary', {}, el('span', {class: 'gt'}, bn(w[0])), el('span', {class: 'cs'}, N(w[1] + w[2]))));
+    let done = false; d.addEventListener('toggle', async () => {
+      if (!d.open || done) return; done = true; const hold = el('p', {class: 'cs'}, T.loading); d.append(hold);
+      try {
+        const dd = await weak(id, w); hold.remove();
+        const sect = (title, arr, cat) => { if (!arr.length) return; d.append(el('h4', {class: 'subh tpwt gc-' + (cat === 'm' ? 'mawdu' : 'daif')}, title + ' (' + N(arr.length) + ')'));
+          let i = 0; const box = el('div', {}); const more = el('button', {class: 'btn tpmore', type: 'button'}, T.more);
+          const next = () => { arr.slice(i, i + 30).forEach(r => box.append(wkItem(w[0], r, cat))); i += 30; more.hidden = i >= arr.length; };
+          more.addEventListener('click', next); d.append(box, more); next(); };
+        sect(T.mw, dd.m, 'm'); sect(T.dw, dd.d, 'd');
+      } catch (e) { hold.textContent = T.fail; done = false; }
+    });
+    return d;
+  }
+  async function showTopic(id) {
+    const T = L(), v = qv(); bar(T.title, '', true); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    try {
+      const ix = await index(), t = ix.find(x => x[0] === id); if (!t) { location.replace('#/tp'); return; }
+      bar(tname(t), T.title, true);
+      const d = await topic(t), out = [];
+      out.push(el('p', {class: 'cs tpnote'}, T.sn));
+      out.push(el('details', {class: 'card grpbox tpsec', open: true}, el('summary', {}, el('span', {class: 'gt'}, T.ay), el('span', {class: 'cs'}, N(t[4]))), ...d.q.map(ayahCard)));
+      out.push(el('details', {class: 'card grpbox tpsec', open: true}, el('summary', {}, el('span', {class: 'gt'}, T.hd), el('span', {class: 'cs'}, N(t[5]))), el('p', {class: 'cs tpnote'}, T.hdn), ...d.h.map(kitabBox)));
+      const wl = t[9] || [];
+      if (wl.length) out.push(el('details', {class: 'card grpbox tpsec tpweak'}, el('summary', {}, el('span', {class: 'gt'}, T.wk), el('span', {class: 'cs'}, N(wl.reduce((a, w) => a + w[1] + w[2], 0)))), el('p', {class: 'tpwarn'}, T.wkn), ...wl.map(w => wkBox(id, w))));
+      v.replaceChildren(...out);
+    } catch (e) { v.replaceChildren(el('p', {class: 'cs'}, T.fail)); }
+  }
+  async function showList() {
+    const T = L(), v = qv(); bar(T.title, '', false); v.replaceChildren(el('p', {class: 'cs'}, T.loading));
+    try {
+      const ix = await index();
+      v.replaceChildren(el('p', {class: 'cs'}, T.sub), ...ix.map(t => el('a', {class: 'card srow2 hbrow', href: '#/tp/' + t[0]}, el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, tname(t)), el('span', {class: 'cs'}, T.cnt(N(t[4]), N(t[5]))))))); 
+    } catch (e) { v.replaceChildren(el('p', {class: 'cs'}, T.fail)); }
+  }
+  function route(h) { const m = h.match(/^#\/tp\/([a-z0-9]+)$/); if (m) showTopic(m[1]); else showList(); }
+  window.TPK = {route, title: () => L().title, parent: h => /^#\/tp\/[a-z0-9]+$/.test(h) ? '#/tp' : '#/'};
+})();
+
+</script>
 </body>
 </html>
