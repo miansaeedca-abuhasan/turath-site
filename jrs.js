@@ -21,7 +21,10 @@
     window.TURATH_JRS = d => { DATA = d; ok(d); };
     const s = document.createElement('script'); s.src = 'data/jrs.js?v=' + (window.JRS_V || '2'); s.onerror = () => { P = null; no(); }; document.head.append(s);
   }));
-  const el = (t, a, ...k) => { const e = document.createElement(t); for (const n in a || {}) { if (n === 'on') for (const ev in a.on) e.addEventListener(ev, a.on[ev]); else if (a[n] != null && a[n] !== false) e.setAttribute(n, a[n]); } e.append(...k.filter(x => x != null)); return e; };
+  const el = (t, a, ...k) => { const e = document.createElement(t); for (const n in a || {}) { if (n === 'on') for (const ev in a.on) e.addEventListener(ev, a.on[ev]); else if (a[n] != null && a[n] !== false) e.setAttribute(n, a[n]); } e.append(...k.filter(x => x != null).flatMap(rich)); return e; };
+  // Arabic words (honorifics, ﷺ) inside a non-Arabic text get the Arabic font on their own: no mixed-font jumble, ﷺ never a box glyph (owner 25-11-2026)
+  const ARRX = /[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+(?:[ \u00a0]+[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+)*/g;
+  function rich(x) { if (typeof x !== 'string' || lang() === 'ar' || lang() === 'ur' || !ARRX.test(x)) { ARRX.lastIndex = 0; return [x]; } ARRX.lastIndex = 0; const out = []; let i = 0, m; while ((m = ARRX.exec(x))) { if (m.index > i) out.push(x.slice(i, m.index)); const sp = document.createElement('span'); sp.className = 'arx'; sp.lang = 'ar'; sp.textContent = m[0]; out.push(sp); i = m.index + m[0].length; } if (i < x.length) out.push(x.slice(i)); return out; }
   const RD = {ur: ['رضی اللہ عنہ', 'رضی اللہ عنہا'], ar: ['رضي الله عنه', 'رضي الله عنها'], en: ['رضي الله عنه', 'رضي الله عنها']};
   const nm = (x, kind) => { const l = lang(); if (kind === 'n') return (x.nm[l] || x.nm.en) + ' ' + (x.nm.ar === 'صحابي مبهم (غير مسمّى)' && l === 'ur' ? 'رضی اللہ عنہم' : RD[l][x.g === 'f' ? 1 : 0]); const o = x[l] || x.en; return x.sh && o.title.indexOf('—') < 0 ? o.title + ' — ' + (x.sh[l] || x.sh.en) : o.title; };
   const fmt = n => n.toLocaleString('en');
@@ -49,7 +52,8 @@ html[lang=ur] .jr .nmx,html[lang=ur] .jr .hero h2,html[lang=ur] .jr .tt{font-fam
 .jr .head .tt{font-size:1.35rem;font-weight:700;line-height:1.7;color:var(--ink)}
 .jr .head .by{font-size:.85rem;color:var(--accent)}
 .jr .tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.35rem;margin:0 0 .9rem;overflow:hidden}
-.jr .tabs button{font:inherit;font-size:.86rem;line-height:1.35;padding:.5rem .15rem;border:1px solid var(--line);border-radius:999px;background:none;color:var(--muted);cursor:pointer;text-align:center;min-width:0;overflow-wrap:anywhere}
+.jr .arx{font-family:var(--arabic);font-weight:500;font-size:1.05em;white-space:nowrap}.jr .tabs button{white-space:normal;overflow-wrap:normal;word-break:normal;font:inherit;font-size:.86rem;line-height:1.35;padding:.5rem .15rem;border:1px solid var(--line);border-radius:999px;background:none;color:var(--muted);cursor:pointer;text-align:center;min-width:0;}
+@media(max-width:430px){.jr .tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .jr .tabs button[aria-selected=true]{color:#fff;background:var(--accent);border-color:var(--accent);font-weight:700}
 .jr .pane{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:1rem 1.1rem;box-shadow:var(--shadow)}
 .jr .pane p{margin:.2rem 0 .8rem;line-height:2.1;font-size:1.1rem}

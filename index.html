@@ -278,7 +278,7 @@ body.withplayer{padding-bottom:calc(8rem + env(safe-area-inset-bottom,0px))}
 .xt{display:flex;align-items:center}
 .bnav{position:fixed;left:0;right:0;bottom:0;z-index:6;display:flex;background:var(--card);border-top:1px solid var(--line);box-shadow:0 -1px 8px rgba(20,40,70,.08);padding-bottom:env(safe-area-inset-bottom,0px)}
 .bnav a{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:0;padding:.35rem 0 .25rem;color:var(--muted);text-decoration:none;font-size:.78rem;line-height:1.45;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bnav a svg{width:1.5rem;height:1.5rem}
+.bnav a>span:last-child{max-width:100%;overflow:hidden;text-overflow:ellipsis}.bnav a svg{width:1.5rem;height:1.5rem}
 .bnav a[aria-current=page]{color:var(--accent);font-weight:600}
 .bnav .navgap{flex:1}.bnav .nico{display:flex}
 .bnav a.navhome .nico{background:var(--accent);color:#fff;border-radius:50%;width:2.6rem;height:2.6rem;align-items:center;justify-content:center;margin-top:-1.1rem;box-shadow:0 2px 8px rgba(12,92,110,.35);border:3px solid var(--card)}
