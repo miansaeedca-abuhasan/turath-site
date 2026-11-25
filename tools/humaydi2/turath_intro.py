@@ -16,6 +16,7 @@ def intro(raw,k,maxc=650):
     num=re.match(r'^§\s*([۰-۹]+)',lines[0]).group(1)
     body=re.sub(r'\s+',' ',re.sub(r'\(\d+\)','',' '.join(l.strip() for l in lines[1:] if l.strip()))).strip()
     if k=='i' and re.match(r'^(بن|ابن|ثم|از)\b',body):body=h+' '+body
+    if k=='u' and not re.match(r'^(سیدنا|سیدہ|عمتہ|ابو|ام)',body) and h.split()[0] not in body[:40]:body=h+(' ' if re.match(r'^(بن|ابن)\b',body) else '۔ ')+body
     out=[];n=0
     for s in [x.strip() for x in body.split('۔') if x.strip()]:
         if out and (STOP.search(s) or n+len(s)>maxc):break
