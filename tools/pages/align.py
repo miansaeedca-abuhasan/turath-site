@@ -10,8 +10,17 @@ def epubs():
     for f in sorted(glob.glob('/mnt/user-data/uploads/*.epub')+glob.glob('/mnt/user-data/attachments/*/*.epub')):
         m=re.search(r'(?:^|-)(\d+)\.epub$',os.path.basename(f))
         if m: d.setdefault(m.group(1),[]).append(f)
+    for zf in sorted(glob.glob('/mnt/user-data/uploads/*.zip')+glob.glob('/mnt/user-data/attachments/*/*.zip')):   # epubs delivered inside a zip (e.g. New_folder_5.zip)
+        if 'Readalong' in zf or 'Jami_Kamil' in zf: continue
+        try: z=zipfile.ZipFile(zf)
+        except Exception: continue
+        for n in z.namelist():
+            m=re.search(r'(?:^|/)(\d+)\.epub$',n)
+            if m: d.setdefault(m.group(1),[]).append((zf,n))
     return d
 def pages(f):
+    if isinstance(f,tuple):
+        import io;f=io.BytesIO(zipfile.ZipFile(f[0]).read(f[1]))
     z=zipfile.ZipFile(f);P=[]
     for n in z.namelist():
         if not n.endswith('.xhtml'):continue
