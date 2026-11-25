@@ -14,7 +14,16 @@
   };
   /* chapter (bab) title audio of the English Talkhis: direct archive.org links, counts checked against the site's chapters (owner file 24-11-2026); kitabs 47 48 49 60 66 67 are held back until the owner decides */
   var BAB_BASE = 'https://archive.org/download/book1-67_chapter1-end/', BAB = {"1":13,"2":359,"3":77,"4":52,"5":19,"6":19,"7":45,"8":9,"9":421,"10":48,"11":22,"12":46,"13":216,"14":131,"15":145,"16":248,"17":186,"18":14,"19":10,"20":21,"21":27,"22":17,"23":23,"24":139,"25":29,"26":4,"27":15,"28":4,"29":11,"30":8,"31":44,"32":49,"33":41,"34":6,"35":49,"36":30,"37":13,"38":17,"39":3,"40":50,"41":20,"42":46,"43":149,"44":22,"45":41,"46":32,"50":19,"51":5,"52":52,"53":30,"54":199,"55":23,"56":15,"57":46,"58":15,"59":46,"61":467,"62":55,"63":91,"64":16,"65":113};
-  var babUrl = function (book, ord) { var n = BAB[+book]; return n && ord >= 1 && ord <= n ? BAB_BASE + 'book' + ('0' + book).slice(-2) + '_chapter' + ('000' + ord).slice(-4) + '.mp3' : null; };
+  /* kitabs 60, 66, 67 (owner report 25-11-2026): the archive files are not 1:1 with the site's chapters. 60: the 19 Arabic-only verse headings (pe56/pe57) have no audio and 3 files («Hadiths of the Surah» 100/103/104) have no site chapter; 66/67: three Paradise/Fire chapters sit in book 66's files and Resurrection ch.49 in book 67's last file. 47 48 49 67 (interleaved order) stay held back until the owner's full-book chapter list is checked. */
+  var PE60 = [13, 14, 15, 23, 24, 25, 26, 27, 28, 36, 37, 38, 47, 48, 52, 104, 735, 774, 787], SKIP60 = [1093, 1096, 1097], R67 = {68: [66, 8], 78: [66, 7], 100: [66, 5]};
+  var fileOf = function (book, ord) {
+    book = +book; if (!(ord >= 1)) return null;
+    if (book === 60) { if (ord > 1135 || PE60.indexOf(ord) >= 0) return null; var f = ord; PE60.forEach(function (p) { if (p < ord) f--; }); SKIP60.forEach(function (x) { if (f >= x) f++; }); return f <= 1119 ? [60, f] : null; }
+    if (book === 66) { if (ord > 51) return null; if (ord === 49) return [67, 98]; return [66, ord <= 4 ? ord : ord === 5 ? 6 : ord <= 48 ? ord + 3 : ord + 2]; }
+    if (book === 67) return R67[ord] || null;
+    var n = BAB[book]; return n && ord <= n ? [book, ord] : null;
+  };
+  var babUrl = function (book, ord) { var f = fileOf(book, ord); return f ? BAB_BASE + 'book' + ('0' + f[0]).slice(-2) + '_chapter' + ('000' + f[1]).slice(-4) + '.mp3' : null; };
   var T = function (k) { return (L[UI()] || L.en)[k]; };
   var DG = function (n) { return UI() === 'ur' ? String(n).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }) : String(n); };
   function load(src, cb) { var s = document.createElement('script'); s.src = src; s.onload = cb; s.onerror = function () { cb(); }; document.head.append(s); }
