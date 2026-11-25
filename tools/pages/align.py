@@ -86,7 +86,7 @@ def align2(key,f):
     out=[None]*len(R);lo=0;miss=0;ks=sorted(anc)
     def near(k,a,b):
         if len(k)<6:return None
-        for i in range(a,min(b+1,len(P))):
+        for i in range(a,min(b+1,a+60,len(P))):   # a row lies close to its neighbours: 60 pages are enough (and keep very large books fast)
             if k in P[i][2]:return i
         return None
     pa=0;n=0
