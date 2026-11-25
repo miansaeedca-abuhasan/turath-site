@@ -2,7 +2,7 @@
 import json,hashlib,os
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..'))
 o=json.load(open('offline.json'))
-files=['topics/'+f for f in sorted(os.listdir('topics')) if f.endswith('.js')]+['topics/w/'+f for f in sorted(os.listdir('topics/w'))]
+files=['topics/'+f for f in sorted(os.listdir('topics')) if f.endswith('.js')]+['topics/w/'+f for f in sorted(os.listdir('topics/w'))]+['topics/r/'+f for f in sorted(os.listdir('topics/r'))]+['topics/ju/'+f for f in sorted(os.listdir('topics/ju'))]
 F=[];tot=0
 for f in files:
     b=open(f,'rb').read();F.append([f,hashlib.md5(b).hexdigest()[:10],f,len(b)]);tot+=len(b)

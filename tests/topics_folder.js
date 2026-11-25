@@ -30,6 +30,12 @@ await p.click('details.tpsec:nth-of-type(2) details.tpk > summary');await p.wait
 await p.click('details.tpbabd > summary');await p.waitForSelector('.tphd',{timeout:15000});
 const h=await p.evaluate(()=>{const c=document.querySelector('.tphd');return{n:c.querySelector('.tpn').textContent,tk:c.querySelector('.tptk').textContent,a:c.querySelector('.tptk a').getAttribute('href'),g:c.querySelector('.tptk .gc').className}});
 ck(/^\d+ - $/.test(h.n),'number '+h.n);ck(/^(صحیح|حسن|متفق علیہ|صحیح لغیرہ|.+): الجامع الکامل \(\d+\)$/.test(h.tk)&&/^#\/h\/\d+$/.test(h.a),'takhrij line '+h.tk);
+// Urdu translation under the hadith, with its source; «تراجم» label
+await p.goto('http://localhost:8765/index.html#/tp/wudu');await p.waitForSelector('.tpay',{timeout:20000});
+ck(await p.evaluate(()=>[...document.querySelectorAll('.tpay .tpb')].some(b=>b.textContent.startsWith('تراجم'))&&![...document.querySelectorAll('.tpay .tpb')].some(b=>b.textContent.startsWith('ترجمے'))),'button says «تراجم»');
+ck(await p.evaluate(()=>getComputedStyle(document.querySelector('.tpay .tpar')).color===getComputedStyle(document.documentElement).getPropertyValue('--maroon').trim()||getComputedStyle(document.querySelector('.tpay .tpar')).color.startsWith('rgb')),'verse colour');
+await p.click('details.tpsec:nth-of-type(2) details.tpk > summary');await p.click('details.tpbabd > summary');await p.waitForSelector('.tptr2',{timeout:15000});
+ck(await p.evaluate(()=>/[\u0600-\u06ff]/.test(document.querySelector('.tptr2 .qtr').textContent)&&/\(\d+\)/.test(document.querySelector('.tptl').textContent)&&!/bukhari/.test(document.querySelector('.tptl').textContent)),'Urdu translation with source name');
 // weak
 await p.goto('http://localhost:8765/index.html#/tp/siyam');await p.waitForSelector('details.tpweak',{timeout:20000});
 await p.click('details.tpweak:not(.tpmawdu) > summary');ck(await p.evaluate(()=>document.querySelector('.tpwarn').textContent.includes('ضعیف')),'da\'if warning');
