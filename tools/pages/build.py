@@ -15,7 +15,7 @@ for x in j:
     if x.get('grp')!='ar': continue
     if only and k not in only and eid not in only: continue
     if not eid or eid not in E_: rep.append('%s\tno epub\t%s'%(k,x.get('ar')));continue
-    try: R,P,out,miss=align(k,E_[eid][-1])
+    try: R,P,out,miss=align2(k,E_[eid][-1]) if os.environ.get('ALIGN2') else align(k,E_[eid][-1])   # ALIGN2=1: anchor alignment only (very large books: the greedy pass is slow)
     except Exception as e: rep.append('%s\tERR %s\t%s'%(k,e,x.get('ar')));continue
     oo=[o for o in out if o];back=sum(1 for a,b in zip(oo,oo[1:]) if b<a)
     if miss>len(R)*0.35 or back>len(R)*0.01:   # fallback: anchor-chain alignment (other edition of the same book)
