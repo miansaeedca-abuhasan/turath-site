@@ -49,6 +49,32 @@ def main():
             if rep:
                 o=[x for x in sec if x[0]==rep][0];o[2]=first;o[3]=n
             else: sec.append([sid,P['ur'],first,n,P['ar']])
+    for f in sorted(glob.glob('tools/salaf/bio/*.json')):
+        for P in json.load(open(f,encoding='utf8')):
+            n+=1;rep=P['replace'];first=n
+            fns=[];UD=str.maketrans('0123456789','۰۱۲۳۴۵۶۷۸۹')
+            def conv(m):
+                fns.append(m.group(1).strip());return '\x01%d\x02'%len(fns)
+            lines=[]
+            for part in P['parts']:
+                lines.append('§'+part['h'])
+                for para in part['p']:
+                    s=re.sub(r'\{\{(.+?)\}\}',conv,para,flags=re.S)
+                    s=s.translate(UD)
+                    lines.append(re.sub('\x01(\\d+)\x02',lambda m:'('+m.group(1).translate(str.maketrans('۰۱۲۳۴۵۶۷۸۹','0123456789'))+')',s))
+            fnl=[P['fnlead']] if P.get('fnlead') else []
+            fnl+=['(%d) %s'%(i+1,re.sub(r'(?<=[۰-۹])/(?=[۰-۹])','؍',x.translate(UD))) for i,x in enumerate(fns)]
+            ur2.append([n,'\n'.join(lines),'',{'fn':'\n'.join(fnl)}])
+            A=P['arabic'];S=segs(row(A['row']));PG=locate(S);ps=[];cur=None
+            for i,sg in enumerate(S):
+                c=clean(sg)
+                if not c: continue
+                if cur is not None and PG[i]==cur[0]: cur[1].append(c)
+                else:
+                    cur=[PG[i],[c]];ps.append(cur)
+            ar2.append([n,'\n'.join(' '.join(x[1]) for x in ps),A['label'],['sh10906',A['row']]])
+            kind+='0'
+            o=[x for x in sec if x[0]==rep][0];o[2]=first;o[3]=n
     old=glob.glob('coll/siyar_ar_2_*.js')+glob.glob('coll/siyar_ur_2_*.js')
     for o in old: os.remove(o)
     files={}
