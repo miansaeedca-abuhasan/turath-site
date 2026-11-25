@@ -7,16 +7,17 @@ const rd=(lg)=>{let o=[];for(const f of e.files[lg]){const t=fs.readFileSync('co
 const ar=rd('ar'),ur=rd('ur');
 ck(ar.length===e.count&&ur.length===e.count&&e.kind.length===e.count,'row counts equal');
 ck(ar.every((r,i)=>r[0]===i+1)&&ur.every((r,i)=>r[0]===i+1),'rows contiguous');
-const u=ur[e.count-1],a=ar[e.count-1];
+const secOf=n=>e.sections.find(x=>x[0]===n);const u=ur[secOf(57)[2]-1],a=ar[secOf(57)[2]-1];
 ck(u[1].startsWith('§شخصیت کا خلاصہ')&&(u[1].match(/^§/gm)||[]).length>=10,'Uways row: header card + headed parts');
 ck(u[3]&&u[3].fn&&/^\(1\) /m.test(u[3].fn)&&(u[1].match(/\(\d{1,2}\)/g)||[]).length===(u[3].fn.match(/^\(\d+\) /gm)||[]).length,'footnote marks = notes');
 ck(!/[A-Za-z]{2}/.test(u[1]+u[3].fn),'no Latin letters');
 ck(a[1].split('\n').length>=5&&/^مصدر: سیر/.test(a[2]),'Arabic source paragraphs + label');
 ck(!/\{\{|\}\}|\x01|\x02/.test(u[1]+u[3].fn),'no build placeholders');
-const sec=e.sections.find(x=>x[0]===57);ck(sec[2]===e.count&&sec[3]===e.count&&sec[1].includes('اویس'),'section 57 = the one row');
+const sec=secOf(57);ck(sec[2]===sec[3]&&sec[1].includes('اویس'),'section 57 = the one row');
+{const s=secOf(908),m=ur[s[2]-1];ck(s[2]===s[3]&&s[1].includes('مدینی'),'section 908 = the one row');ck(m[1].startsWith('§شخصیت کا خلاصہ')&&(m[1].match(/^§/gm)||[]).length>=9,'Ibn al-Madini: header card + headed parts');ck(m[3]&&m[3].fn&&(m[1].match(/\(\d{1,2}\)/g)||[]).length===(m[3].fn.match(/^\(\d+\) /gm)||[]).length,'Ibn al-Madini: marks = notes');ck(!/[A-Za-z]{2}|\{\{|\}\}/.test(m[1]+m[3].fn),'Ibn al-Madini: no Latin/placeholders');const am=ar[s[2]-1];ck(/^مصدر: سیر/.test(am[2])&&am[1].length>5000,'Ibn al-Madini Arabic row');}
 (async()=>{const br=await chromium.launch();const pg=await br.newPage({viewport:{width:420,height:900}});
 await pg.addInitScript(()=>{localStorage.ui='ur';localStorage.newsDay=String(new Date().toDateString())});
-for(const no of [57,32,54]){
+for(const no of [57,32,54,908]){
  await pg.goto('http://localhost:8765/index.html#/s/siyar/'+no);await pg.waitForSelector('.sbio',{timeout:30000});await pg.waitForTimeout(800);
  const r=await pg.evaluate(()=>({box:document.querySelectorAll('.sbio').length,cards:document.querySelectorAll('#list .card:not(.sbio)').length,t:document.querySelector('.sbio-t').innerText,sub:document.querySelectorAll('.sbio .subh').length,fn:document.querySelectorAll('.sbio .pfnbox').length}));
  ck(r.box===1&&r.cards===0,no+': one box, no separate cards '+JSON.stringify(r));ck(!/عمر بن خطاب/.test(r.t)||no===0,no+': title is the person ('+r.t+')');
