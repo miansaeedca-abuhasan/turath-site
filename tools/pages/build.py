@@ -21,8 +21,9 @@ for x in j:
     if miss>len(R)*0.35 or back>len(R)*0.01:   # fallback: anchor-chain alignment (other edition of the same book)
         try: R,P,out,miss=align2(k,E_[eid][-1])
         except Exception as e: rep.append('%s\tERR2 %s\t%s'%(k,e,x.get('ar')));continue
-        oo=[o for o in out if o];back=sum(1 for a,b in zip(oo,oo[1:]) if b<a)
-    if miss>len(R)*0.35 or back>len(R)*0.01: rep.append('%s\tpoor miss %d back %d of %d rows\t%s'%(k,miss,back,len(R),x.get('ar')));x.pop('pg',None);continue
+        oo=[o for o in out if o];back=sum(1 for a,b in zip(oo,oo[1:]) if b<a);LIM=0.45   # anchored rows are reliable; the others simply get no label
+    else: LIM=0.35
+    if miss>len(R)*LIM or back>len(R)*0.01: rep.append('%s\tpoor miss %d back %d of %d rows\t%s'%(k,miss,back,len(R),x.get('ar')));x.pop('pg',None);continue
     fn,sz=write(k,R,out);x['pg']=fn
     g=[g for g in o['groups'] if g['id']=='c_'+k]
     if g:
