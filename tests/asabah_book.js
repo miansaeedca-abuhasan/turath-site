@@ -2,8 +2,8 @@
 const {chromium}=require('playwright'),fs=require('fs');let bad=[];
 const reg=fs.readFileSync(__dirname+'/../coll/index.js','utf8'),A=JSON.parse(reg.slice(reg.indexOf('COLLS(')+6,reg.lastIndexOf(')'))),E=A.find(e=>e.key==='asabahur');
 if(!E)bad.push('not registered');else{
- if(E.count!==10909)bad.push('row count '+E.count);
- const tot=E.asc.flat().reduce((a,b)=>a+b,0);if(tot!==10905)bad.push('entries '+tot);
+ if(E.count!==12261)bad.push('row count '+E.count);
+ const tot=E.asc.flat().reduce((a,b)=>a+b,0);if(tot!==12257)bad.push('entries '+tot);
  if(E.asx.length!==28)bad.push('asx');
  if(A.findIndex(e=>e.key==='asabahur')!==A.findIndex(e=>e.key==='sh9767')+1)bad.push('order next to sh9767');
  let prev=0;E.files.ur.forEach(f=>{if(f[0]!==prev+1)bad.push('gap before file '+f[2]);prev=f[1]});if(prev!==E.count)bad.push('files end '+prev);
@@ -17,10 +17,10 @@ if(!E)bad.push('not registered');else{
  const sec=new Set();E.sections.forEach(s=>{const k=s[5].k+'/'+s[5].l;if(sec.has(k))bad.push('split section '+s[1]);sec.add(k)});
 }
 (async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:430,height:900}})).newPage();
-await p.addInitScript(()=>{try{localStorage.newsSeen='20261125a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+await p.addInitScript(()=>{try{localStorage.newsSeen='20261125b';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
 await p.goto('http://localhost:8765/index.html#/s/asabahur');await p.waitForSelector('.asb-c',{timeout:25000});
 let r=await p.evaluate(()=>({c:document.querySelectorAll('.asb-c').length,txt:[...document.querySelectorAll('.asb-c')].map(x=>x.textContent).join(''),srch:!!document.querySelector('#csearch'),off:document.querySelectorAll('.asb-c.off').length,miss:!!document.querySelector('.asb-miss'),w:document.documentElement.scrollWidth}));
-if(r.c!==28||r.txt!=='ابتثجحخدذرزسشصضطظعغفقکلمنہوی')bad.push('letters '+r.txt);if(!r.srch)bad.push('no search');if(!r.miss)bad.push('no vol3 note');if(r.w>440)bad.push('h-scroll '+r.w);
+if(r.c!==28||r.txt!=='ابتثجحخدذرزسشصضطظعغفقکلمنہوی')bad.push('letters '+r.txt);if(!r.srch)bad.push('no search');if(r.miss)bad.push('vol3 note still shown');if(r.w>440)bad.push('h-scroll '+r.w);
 await p.click('.asb-c:nth-child(1)');await p.waitForSelector('.asb-n',{timeout:20000});
 r=await p.evaluate(()=>({n:document.querySelectorAll('.asb-n').length,h:[...document.querySelectorAll('.asb-kh')].map(x=>x.textContent),first:document.querySelector('.asb-n').textContent,href:document.querySelector('.asb-n').getAttribute('href'),cols:getComputedStyle(document.querySelector('.asb-g')).gridTemplateColumns.split(' ').length}));
 if(r.n<100)bad.push('few names '+r.n);if(!r.h.length)bad.push('no kind heading');if(!/آبی اللحم/.test(r.first))bad.push('first name '+r.first);if(r.cols!==2)bad.push('phone columns '+r.cols);
@@ -35,6 +35,6 @@ await p.fill('#csearch','1');await p.waitForTimeout(1500);r=await p.evaluate(()=
 await p.goto('http://localhost:8765/index.html#/s/asabahur/1');await p.waitForSelector('.bkitem',{timeout:20000});
 r=await p.evaluate(()=>({n:document.querySelectorAll('.bkitem').length,h:document.querySelectorAll('.bkitem h4.subh').length}));if(r.n<5||r.h<5)bad.push('book form '+JSON.stringify(r));
 // desktop columns
-const q=await(await b.newContext({viewport:{width:1200,height:900}})).newPage();await q.addInitScript(()=>{try{localStorage.newsSeen='20261125a';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
+const q=await(await b.newContext({viewport:{width:1200,height:900}})).newPage();await q.addInitScript(()=>{try{localStorage.newsSeen='20261125b';localStorage.newsDay=new Date().toDateString();localStorage.lang='ur';localStorage.ui='ur'}catch(e){}});
 await q.goto('http://localhost:8765/index.html#/s/asabahur?l=0');await q.waitForSelector('.asb-n',{timeout:25000});const cl=await q.evaluate(()=>getComputedStyle(document.querySelector('.asb-g')).gridTemplateColumns.split(' ').length);if(cl!==4)bad.push('desktop columns '+cl);
 console.log(bad.length?'FAIL '+bad.slice(0,12).join('|'):'PASS asabah_book');await b.close();process.exit(bad.length?1:0)})();

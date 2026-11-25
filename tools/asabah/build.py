@@ -28,7 +28,7 @@ UD=str.maketrans('0123456789','۰۱۲۳۴۵۶۷۸۹')
 AD=str.maketrans('۰۱۲۳۴۵۶۷۸۹','0123456789')
 rep=[]
 vols={}
-SKIP={int(x) for x in os.environ.get('ASB_SKIP','3').split(',') if x}   # vol 3 is incomplete (34 entries missing): the owner sends it later -> ASB_SKIP= (empty) then
+SKIP={int(x) for x in os.environ.get('ASB_SKIP','').split(',') if x}   # vol 3 is incomplete (34 entries missing): the owner sends it later -> ASB_SKIP= (empty) then
 for f in glob.glob(SRC+'/*Al-Asabah-Urdu-Vol-*.json'):
     v=int(re.search(r'Vol-(\d+)\.json',f).group(1))
     if v not in SKIP: vols[v]=json.load(open(f,encoding='utf-8'))
@@ -105,7 +105,7 @@ for e in ENT:
         text=re.sub(r'\((\d{1,3})\)(?<!\(\d\))',lambda m:m.group(0),text)
         # ASCII digits in parentheses that are not our marks would become circles: use Urdu digits
         okm=set(re.findall(r'\((\d{1,3})\)',name+text))
-        body='§%s ۔ %s'%(e['num'],name)+('\n'+text.strip() if text.strip() else '')
+        body=('§%s ۔ %s'%(e['num'],name) if e['num'] else '§'+name)+('\n'+text.strip() if text.strip() else '')
         if not text.strip(): rep.append(f'متن خالی (صرف نام): جلد {e["vol"]} اندراج {e["num"]} {e["name"]}')
         fn='\n'.join(lines)
         body=body.replace('نوحؑ','نوح علیہ السلام')
