@@ -54,6 +54,67 @@ if __name__=='__main__':
     key='sh'+sys.argv[1];E=epubs()[sys.argv[1]]
     R,P,out,miss=align(key,E[-1]);print(key,len(R),'rows',len(P),'pages','miss',miss,'juz',sorted(set(p[0] for p in P))[:5],'..',max(p[0] for p in P))
 
+def align2(key,f):
+    """fallback for books whose EPUB is another edition (no editor's introduction, headings differ): anchors = rows whose first 30 letters occur in the EPUB
+    (every occurrence is a candidate); the longest non-decreasing chain of pages is kept (one false hit can never carry the cursor away); rows between two
+    anchors are searched only inside the pages of that gap (key of >=6 letters, forward); rows not found get no label."""
+    import bisect
+    P=pages(f);R=list(rows(key));NR=[N(r[1]) for r in R];K=[x[:30] for x in NR]
+    big='|'.join(p[2] for p in P);st=[];o=0
+    for p in P: st.append(o);o+=len(p[2])+1
+    cand=[]
+    OFF=(0,30,60,100)   # a heading/footnote mark in front of the text: try later parts of the row as well
+    for x in NR:
+        c=[]
+        for o_ in OFF:
+            k=x[o_:o_+30]
+            if len(k)<20:break
+            i=big.find(k)
+            while i>=0 and len(c)<8:
+                c.append(bisect.bisect_right(st,i)-1);i=big.find(k,i+1)
+            if c:break
+        cand.append(c)
+    tails=[];tid=[];prev={}   # LIS over (row,page) with non-decreasing pages
+    for n,c in enumerate(cand):
+        for pg in sorted(set(c),reverse=True):
+            j=bisect.bisect_right(tails,pg)
+            prev[(n,pg)]=tid[j-1] if j>0 else None
+            if j==len(tails):tails.append(pg);tid.append((n,pg))
+            else:tails[j]=pg;tid[j]=(n,pg)
+    anc={};cur=tid[-1] if tid else None
+    while cur is not None:anc[cur[0]]=cur[1];cur=prev[cur]
+    out=[None]*len(R);lo=0;miss=0;ks=sorted(anc)
+    def near(k,a,b):
+        if len(k)<6:return None
+        for i in range(a,min(b+1,len(P))):
+            if k in P[i][2]:return i
+        return None
+    pa=0;n=0
+    for ai in range(len(ks)+1):
+        end=ks[ai] if ai<len(ks) else len(R);hi=anc[ks[ai]] if ai<len(ks) else len(P)-1
+        for m in range(n,end):
+            r=near(K[m],pa,hi)
+            if r is None:r=near(K[m][:14],pa,hi)
+            if r is None:
+                for o_ in OFF[1:]:
+                    kk=NR[m][o_:o_+30]
+                    if len(kk)<20:break
+                    r=near(kk,pa,hi)
+                    if r is not None:break
+            if r is not None:out[m]=(P[r][0],P[r][1]);pa=r
+        if ai<len(ks):out[ks[ai]]=(P[hi][0],P[hi][1]);pa=hi;n=ks[ai]+1
+    last=None;i=0   # an unmatched row lying between two rows on the SAME page is certainly on that page
+    while i<len(out):
+        if out[i] is None:
+            j=i
+            while j<len(out) and out[j] is None:j+=1
+            if i>0 and j<len(out) and out[i-1]==out[j]:
+                for m in range(i,j):out[m]=out[j]
+            i=j
+        else:i+=1
+    miss=sum(1 for o_,x in zip(out,NR) if o_ is None and len(x)>=12)   # marker rows («~٨١٦-١», «٢») are not counted
+    return R,P,out,miss
+
 def write(key,R,out):
     """coll/pg/<key>_<md5-6>.js = COLLPG(key,{i:[firstId,count,…],v:'delta,delta,…',m:multivolume})  (v = juz*100000+page, delta-coded base 36, '' = 0)"""
     import hashlib
