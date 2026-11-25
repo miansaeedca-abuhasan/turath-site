@@ -368,7 +368,7 @@ body.withplayer .resume.float{display:none}
 .tick .tk{margin:0;display:inline-block;padding-inline-start:100%;animation:tkmove var(--tkd,60s) linear infinite}
 .tick::before,.tick::after{content:'';position:absolute;top:0;bottom:0;width:.9rem;z-index:1;pointer-events:none}.tick::before{left:0;background:linear-gradient(90deg,var(--card),transparent)}.tick::after{right:0;background:linear-gradient(270deg,var(--card),transparent)}
 .tick:active .tk{animation-play-state:paused}
-.tick .ti{display:inline-block;padding:0 2rem}
+.tick .ti{display:inline-block;padding:0 2rem}.tick.rtl .ti{font-size:.8em;line-height:1.9525rem}
 @keyframes tkmove{from{transform:translateX(0)}to{transform:translateX(-100%)}}
 .tick.rtl .tk{display:inline-flex;flex-direction:row-reverse;direction:ltr;padding-inline-start:0;padding-inline-end:0;padding-left:100%;animation-name:tkright}
 @keyframes tkright{from{transform:translateX(-100%)}to{transform:translateX(0)}}
