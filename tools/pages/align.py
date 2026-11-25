@@ -64,14 +64,20 @@ def align2(key,f):
     for p in P: st.append(o);o+=len(p[2])+1
     cand=[]
     OFF=(0,30,60,100)   # a heading/footnote mark in front of the text: try later parts of the row as well
+    huge=len(big)>20000000   # very large book: search only a window ahead of the last hit (a global find per row would take hours)
+    last=0
     for x in NR:
         c=[]
         for o_ in OFF:
             k=x[o_:o_+30]
             if len(k)<20:break
-            i=big.find(k)
-            while i>=0 and len(c)<8:
-                c.append(bisect.bisect_right(st,i)-1);i=big.find(k,i+1)
+            if huge:
+                i=big.find(k,last,last+4000000)
+                if i>=0:c.append(bisect.bisect_right(st,i)-1);last=i
+            else:
+                i=big.find(k)
+                while i>=0 and len(c)<8:
+                    c.append(bisect.bisect_right(st,i)-1);i=big.find(k,i+1)
             if c:break
         cand.append(c)
     tails=[];tid=[];prev={}   # LIS over (row,page) with non-decreasing pages
