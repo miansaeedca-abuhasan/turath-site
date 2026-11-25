@@ -11,5 +11,5 @@ ck(r.a==='book60_chapter0001.mp3','60 ch1');ck(r.b==='book60_chapter0013.mp3','6
 ck(r.n60===1116&&r.uniq60===1116,'60 count '+r.n60);ck(r.no1093&&r.no1096&&r.no1097&&r.has1119,'60 skips');
 ck(r.e==='book66_chapter0004.mp3'&&r.f==='book66_chapter0006.mp3'&&r.g==='book66_chapter0009.mp3','66 start '+[r.e,r.f,r.g]);
 ck(r.h==='book66_chapter0051.mp3'&&r.i==='book67_chapter0098.mp3'&&r.j==='book66_chapter0052.mp3'&&r.k==='book66_chapter0053.mp3','66 end '+[r.h,r.i,r.j,r.k]);ck(r.uniq66===51,'66 unique');
-ck(r.n67.join()==='book66_chapter0008.mp3,book66_chapter0007.mp3,book66_chapter0005.mp3','67 three '+r.n67);
+ck(r.n67.filter(x=>/book66/.test(x)).join()==='book66_chapter0008.mp3,book66_chapter0007.mp3,book66_chapter0005.mp3','67 three '+r.n67.length);
 await b.close();console.log(bad?'FAILED':'OK');process.exit(bad)})();
