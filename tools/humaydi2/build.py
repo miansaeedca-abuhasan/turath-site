@@ -115,8 +115,11 @@ assert len(set(dm.values()))==len(dm)
 for i,sec in dm.items():
     end=H[i+1] if i+1<AA else len(D);ps=[q for q in D[H[i]+1:end] if q.strip()]
     if ps:NT.setdefault(sec,{})['d']=ps
-LR='مختصر تعارف از: مولانا روشن دین بشیر';LD='مختصر تعارف از: مولانا محمد احمد دلپذیر'
-NT={str(k):{'tabs':([[LR,v['r']]] if 'r' in v else [])+([[LD,v['d']]] if 'd' in v else [])} for k,v in sorted(NT.items())}
+sys.path.insert(0,'tools/humaydi2')
+import turath_intro
+for sec,ps in turath_intro.build().items():NT.setdefault(sec,{})['x']=ps
+LR='مختصر تعارف از: مولانا روشن دین بشیر';LD='مختصر تعارف از: مولانا محمد احمد دلپذیر';LX='مختصر تعارف از: تراث خیرالقرون'
+NT={str(k):{'tabs':([[LR,v['r']]] if 'r' in v else [])+([[LD,v['d']]] if 'd' in v else [])+([[LX,v['x']]] if 'x' in v else [])} for k,v in sorted(NT.items())}
 # rows
 new=[]
 for i,r in enumerate(U['rows']):
@@ -153,4 +156,4 @@ g['f']+= [['coll/'+nm,hh,'coll/'+nm,sz] for a,b,nm,sz,hh in files]
 nb=body.encode();g['f'].append(['coll/'+ntn,hashlib.md5(nb).hexdigest()[:10],'coll/'+ntn,len(nb)])
 g['b']=sum(x[3] for x in g['f'])
 json.dump(o,open('offline.json','w'),ensure_ascii=False,separators=(',',':'))
-print('rows',len(new),'files',len(files),sum(f[3] for f in files)//1024,'KB','intros',len(NT),'both',sum(1 for v in NT.values() if len(v['tabs'])==2),'merged',[(NUM(j),) for j in extra])
+print('rows',len(new),'files',len(files),sum(f[3] for f in files)//1024,'KB','intros',len(NT),'tabs',[sum(1 for v in NT.values() if len(v['tabs'])==n) for n in (1,2,3)],'merged',[(NUM(j),) for j in extra])

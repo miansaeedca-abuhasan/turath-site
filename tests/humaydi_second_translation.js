@@ -7,8 +7,8 @@ t(rows.every(r=>!/[A-Za-z]{2,}/.test(r[3].u2)||true),'');
 t(e.trn2&&e.trn2.ur.includes('روشن دین'),'trn2');
 t(rows[435][3].u2.length>rows[434][3].u2.length*0.5,'436 merged');
 let nt={};for(const [a,b,f] of e.ntx)vm.runInNewContext(fs.readFileSync('coll/'+f,'utf8'),{COLLNT:(k,o)=>Object.assign(nt,o)});
-t(Object.keys(nt).length>=181,'intro sections');t(Object.values(nt).filter(v=>v.tabs.length===2).length===81,'81 with both authors');
-t(Object.values(nt).every(v=>v.tabs.every(([l,p])=>/^مختصر تعارف از: مولانا /.test(l)&&p.length&&p.join('').length>20&&!/^\(\d+\)/.test(p[0]))),'intro shape');t(e.trn.ur==='مولانا محمد احمد دلپذیر'&&e.trn2.ur==='مولانا روشن دین بشیر'&&!e.introx,'both translator names');
+t(Object.keys(nt).length>=181,'intro sections');t(Object.values(nt).filter(v=>v.tabs.length===2).length===173&&Object.values(nt).filter(v=>v.tabs.length===1).length===9,'173 with two tabs, 9 with one');const X=Object.values(nt).filter(v=>v.tabs.some(([l])=>l==='مختصر تعارف از: تراث خیرالقرون'));t(X.length>=90,'third-source tabs '+X.length);t(X.every(v=>{const p=v.tabs.find(([l])=>/تراث/.test(l))[1];return p.length%2===0&&p.filter(s=>/^ماخذ: (اسد الغابہ|الاصابہ)/.test(s)).length===p.length/2&&!/[A-Za-z]|[ؓؒؑﷺ]/.test(p.join(''))}),'each text has its source line, no Latin/symbols');
+t(Object.values(nt).every(v=>v.tabs.every(([l,p])=>/^مختصر تعارف از: (مولانا |تراث خیرالقرون)/.test(l)&&p.length&&p.join('').length>20&&!/^\(\d+\)/.test(p[0]))),'intro shape');t(e.trn.ur==='مولانا محمد احمد دلپذیر'&&e.trn2.ur==='مولانا روشن دین بشیر'&&!e.introx,'both translator names');
 t(rows[0][1]&&rows[0][3].f2!==undefined||true,'');
 t(fs.readFileSync('offline.json','utf8').includes('humaydiur_nt_1_'),'offline nt');
 console.log(ok,'ok',bad,'bad');process.exit(bad?1:0)
