@@ -398,7 +398,7 @@ body.withplayer .resume.float{display:none}
 .bcover{display:block;width:min(260px,70%);height:auto;margin:.4rem auto 1rem;border-radius:10px;box-shadow:var(--shadow)}
 .hbgrp .ca{font-size:1.15rem;color:var(--ink)}.srow2 .ca{font-size:1.2rem;color:var(--ink);opacity:.85}
 .intro summary{cursor:pointer;font-weight:600;color:var(--accent)}.intro p{margin:.6rem 0}
-.babnt{margin:.6rem 0}.babnt p,.babnt h4{margin:.5rem 0}
+.babnt{margin:.6rem 0}.ntabs{display:block!important}.ntabs .ntname{display:block;width:auto;text-align:center;margin:.2rem 0 .5rem;font-size:1.3rem;font-weight:700;font-family:var(--fu,inherit)}.ntabs .trtabs{display:flex;flex-wrap:wrap;gap:.4rem;justify-content:center;margin:.3rem 0 .6rem}.babnt p,.babnt h4{margin:.5rem 0}
 .gspanel{padding:.9rem .9rem 1rem;border-radius:1.1rem}.gspanel .filterbox{margin:0 0 .8rem}
 .gsgrade{flex-wrap:wrap;border-radius:1rem!important}.gsgrade .segb{flex:1 1 auto;white-space:nowrap}.gstabs{display:flex;gap:.25rem;padding:.25rem;background:var(--wash);border-radius:999px;margin:.2rem 0 .7rem}.gstab{flex:1;min-width:0;border:0;background:transparent;color:var(--ink,inherit);font:inherit;font-weight:600;padding:.55rem .3rem;border-radius:999px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .totcard{padding:.55rem .9rem!important}.totcard .totn{font-size:1.15rem!important;line-height:1.5}.totcard .cs{font-size:.78rem;line-height:1.5}.totcard .totnote{display:none}
@@ -5372,7 +5372,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const noTk = t => tkNum ? t.replace(new RegExp('\\s*\\(' + tkNum + '\\)\\s*$'), '') : t;
       if (xf && !Array.isArray(xf) && xf.u2 && b.trn2) {
         // a second Urdu translation of the same book (its own translator, with his notes): two tabs, the choice is kept for the other hadith
-        const nmOf = o => o ? (o[ui] || o.ur || '') : '', SP = [{id: lang, text: d.content.translation[lang][0], nm: '', f: null}, {id: 'u2', text: xf.u2, nm: nmOf(b.trn2), f: xf.f2}];
+        const nmOf = o => o ? (o[ui] || o.ur || '') : '', SP = [{id: lang, text: d.content.translation[lang][0], nm: nmOf(b.trn), f: null}, {id: 'u2', text: xf.u2, nm: nmOf(b.trn2), f: xf.f2}];
         let pref = ''; try { pref = localStorage['trtab_' + b.key] || ''; } catch (e) {}
         const cur0 = SP.some(p => p.id === pref) ? pref : lang, wrap = el('div', {class: 'trwrap'}), bar = el('span', {class: 'trtabs', role: 'tablist'}), box = el('div', {class: 'trbox'}), pan = {}, btn = {};
         const show = id => { SP.forEach(p => { pan[p.id].hidden = p.id !== id; btn[p.id].classList.toggle('on', p.id === id); btn[p.id].setAttribute('aria-selected', String(p.id === id)); }); };
@@ -5514,7 +5514,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
     const iL = b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
-    const introAll = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; }))).concat(b.introx ? [(() => { const d = el('details', {class: 'card intro'}, el('summary', {}, 'راویوں کا تعارف')); d.addEventListener('toggle', () => { if (!d.open || d.dataset.ld) return; d.dataset.ld = '1'; const fill = ps => d.append(...ps.map(p => paraEl(p, 'ur'))); const W = window._CI && window._CI[b.key]; if (W) return fill(W); const sc = document.createElement('script'); sc.src = b.introx; sc.onload = () => fill((window._CI && window._CI[b.key]) || []); sc.onerror = () => { d.dataset.ld = ''; d.append(el('p', {class: 'cs'}, 'تعارف ابھی نہیں کھل سکا، دوبارہ کھولیں')); }; document.head.append(sc); }); return d; })()] : []);
+    const introAll = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
     const bookAudio = () => { const rs = BA[b.key]; if (!rs) return [];
@@ -6087,7 +6087,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const list = el('div'), more = el('button', {class: 'btn more', type: 'button'}, T('more'));
     // chapter notes printed before the first hadith of a chapter (summary of the chapter, introductory paragraphs); a chapter that holds only such notes has an empty hadith range
     let ntN = 0;
-    if (B.ntx) { const nf = B.ntx.find(f => s[0] >= f[0] && s[0] <= f[1]); if (nf) { try { await once('nt:' + nf[2], 'coll/' + nf[2]); } catch (e) {} } const nt = window._CN && window._CN[B.key] && window._CN[B.key][s[0]]; if (nt && nt.length) { ntN = nt.length; const tt = s[2] > s[3] ? [s[4] ? el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, s[4]) : '', s[1] && s[1] !== s[4] ? el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, s[1]) : ''] : []; box.append(el('div', {class: 'card babnt'}, ...tt, ...nt.map(p => paraEl(p, 'ur')))); } }
+    if (B.ntx) { const nf = B.ntx.find(f => s[0] >= f[0] && s[0] <= f[1]); if (nf) { try { await once('nt:' + nf[2], 'coll/' + nf[2]); } catch (e) {} } const nt = window._CN && window._CN[B.key] && window._CN[B.key][s[0]]; if (nt && (nt.length || nt.tabs)) { ntN = nt.length || 1; const tt = s[2] > s[3] ? [s[4] ? el('div', {class: 'babbox ar', lang: 'ar', dir: 'rtl'}, s[4]) : '', s[1] && s[1] !== s[4] ? el('div', {class: 'babtr', lang: 'ur', dir: 'rtl'}, s[1]) : ''] : []; if (!Array.isArray(nt) && nt.tabs) { /* two narrator introductions (two authors): sahabi's name in the middle, a small tab for each author, the chosen text below */ const tabs = nt.tabs, ntb = el('div', {class: 'card babnt ntabs'}), bar = el('div', {class: 'trtabs', role: 'tablist'}), pans = [], btns = []; let pref = 0; try { pref = Math.min(+localStorage['nttab_' + B.key] || 0, tabs.length - 1); } catch (e) {}
+          const sh = i => { pans.forEach((q, j) => { q.hidden = j !== i; btns[j].classList.toggle('on', j === i); btns[j].setAttribute('aria-selected', String(j === i)); }); try { localStorage['nttab_' + B.key] = i; } catch (e) {} };
+          ntb.append(el('div', {class: 'ntname', lang: 'ur', dir: 'rtl'}, String(s[0]).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) + '. ' + s[1]));
+          tabs.forEach(([lb, ps], i) => { btns.push(el('button', {class: 'trbtn', type: 'button', role: 'tab', lang: 'ur', on: {click: () => sh(i)}}, lb)); const q = el('div', {class: 'ntpan', hidden: ''}, ...ps.map(p => paraEl(p, 'ur'))); pans.push(q); bar.append(btns[i]); });
+          if (tabs.length > 1) ntb.append(bar); ntb.append(...pans); box.append(ntb); sh(pref); }
+        else box.append(el('div', {class: 'card babnt'}, ...tt, ...nt.map(p => paraEl(p, 'ur')))); } }
     box.append(list, more);
     let at = s[2], hd = false;
     const add = async () => {

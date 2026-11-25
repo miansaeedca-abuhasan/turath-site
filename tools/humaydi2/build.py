@@ -69,18 +69,54 @@ def u2_of(i):
         h=hs[j][2];ps.append(clean(h['urdu']))
         if h['takhrij'].strip():ps.append('تخریج: '+clean(h['takhrij']))
     return '\n'.join(ps)
-# narrator introductions -> section of the first hadith of the musnad
+# narrator introductions: two tabs per Sahabi (Roshan Deen Bashir + Dilpazir), shown under the Sahabi's name before the hadith
+who='مولانا روشن دین بشیر'
+import difflib
 def sec_of(row):
     return next(s[0] for s in secs if s[2]<=row+1<=s[3])
 first={}
 for j,(mi,hi,h) in enumerate(hs):first.setdefault(mi,j)
-NT={};who='مولانا ابو سعید روشن دین بشیر'
+NT={}
 for mi,x in enumerate(src['musnads']):
     bios=[h['sharh'] for h in x['hadiths'] if h['sharh'].strip()]
     if not bios:continue
     assert len(bios)==1
     s=sec_of(pj[first[mi]]);assert s not in NT,('two introductions in one section',s)
-    NT[str(s)]=['§تعارف راوی حدیث ('+who+')',clean(re.sub(r'^\s*\([۰-۹]+\)\s*','',bios[0]))]
+    NT[s]={'r':clean(re.sub(r'^\s*\([۰-۹]+\)\s*','',bios[0])).split('\n')}
+# Dilpazir's «تعارف راوی حدیث» (tools/humaydi2/dilpazir_intro.js): headings matched to the sections by name (monotone alignment) + checked overrides
+t=open('tools/humaydi2/dilpazir_intro.js',encoding='utf8').read();D=json.loads(t[t.index('[',t.index('(')):t.rindex(')')])
+H=[i for i,x in enumerate(D) if x.startswith('§')]
+STOP=set('سیدنا سیدہ رضی اللہ عنہ عنہا عنہما صلی علیہ وسلم کی کے مرویات احادیث حدیث رسول سے ام المومنین بنت بن روایات'.split())
+def nn(t):return ' '.join(w for w in re.sub(r'[^\u0600-\u06FF ]',' ',t).replace('عبد ','عبد').split() if w not in STOP)
+sn=[nn(x[1]) for x in secs];hn=[nn(D[i][1:]) for i in H]
+RR=lambda a,b:difflib.SequenceMatcher(None,a,b).ratio()
+MM=[[RR(a,b) for b in sn] for a in hn];AA,BB=len(hn),len(sn)
+dp2=np.zeros((AA+1,BB+1));b2=np.zeros((AA+1,BB+1),int)
+for i in range(1,AA+1):
+  for j in range(1,BB+1):
+    v=dp2[i-1][j-1]+(MM[i-1][j-1] if MM[i-1][j-1]>=0.45 else -1);k=0
+    if dp2[i-1][j]>v:v=dp2[i-1][j];k=1
+    if dp2[i][j-1]>v:v=dp2[i][j-1];k=2
+    dp2[i,j]=v;b2[i,j]=k
+i,j=AA,BB;dm={}
+while i>0 and j>0:
+  k=b2[i,j]
+  if k==0:
+    if MM[i-1][j-1]>=0.45:dm[i-1]=j
+    i-=1;j-=1
+  elif k==1:i-=1
+  else:j-=1
+byname={D[H[i]][1:].strip()[:30]:i for i in range(AA)}
+def hidx(prefix):return next(i for i in range(AA) if D[H[i]][1:].strip().startswith(prefix))
+OVR={'ام سلمہ نبی':26,'ام حبیبہ بنت':27,'امیمہ بنت رقیقہ':39,'خولہ بنت قیس':47,'احادیث ابو ہریرہ':189,'سیدنا عبداللہ ابن عباس':77}
+for pre,sec in OVR.items():dm[hidx(pre)]=sec
+assert hidx('انصار کے مردوں') not in dm      # group heading, no sahabi: not placed
+assert len(set(dm.values()))==len(dm)
+for i,sec in dm.items():
+    end=H[i+1] if i+1<AA else len(D);ps=[q for q in D[H[i]+1:end] if q.strip()]
+    if ps:NT.setdefault(sec,{})['d']=ps
+LR='مختصر تعارف از: مولانا روشن دین بشیر';LD='مختصر تعارف از: مولانا محمد احمد دلپذیر'
+NT={str(k):{'tabs':([[LR,v['r']]] if 'r' in v else [])+([[LD,v['d']]] if 'd' in v else [])} for k,v in sorted(NT.items())}
 # rows
 new=[]
 for i,r in enumerate(U['rows']):
@@ -108,13 +144,13 @@ s=open('coll/index.js',encoding='utf8').read()
 reg=json.loads(s[s.index('COLLS(')+6:s.rindex(')')])
 e=[x for x in reg if x['key']==KEY][0]
 e['files']['ur']=[[a,b,nm] for a,b,nm,_,_ in files]
-e['trn2']={'ur':who,'en':'Maulana Abu Saeed Roshan Deen Bashir'}
+e['trn2']={'ur':who,'en':'Maulana Roshan Deen Bashir'};e.pop('introx',None)
 e['ntx']=[[1,len(secs),ntn]]
 open('coll/index.js','w',encoding='utf8').write('COLLS('+json.dumps(reg,ensure_ascii=False,separators=(',',':'))+')')
 o=json.load(open('offline.json'));g=[x for x in o['groups'] if x['id']=='c_'+KEY][0]
-g['f']=[x for x in g['f'] if '_ur_' not in x[0] and '_nt_' not in x[0]]
+g['f']=[x for x in g['f'] if '_ur_' not in x[0] and '_nt_' not in x[0] and '_intro_' not in x[0]]
 g['f']+= [['coll/'+nm,hh,'coll/'+nm,sz] for a,b,nm,sz,hh in files]
 nb=body.encode();g['f'].append(['coll/'+ntn,hashlib.md5(nb).hexdigest()[:10],'coll/'+ntn,len(nb)])
 g['b']=sum(x[3] for x in g['f'])
 json.dump(o,open('offline.json','w'),ensure_ascii=False,separators=(',',':'))
-print('rows',len(new),'files',len(files),sum(f[3] for f in files)//1024,'KB','intros',len(NT),'merged',[(NUM(j),) for j in extra])
+print('rows',len(new),'files',len(files),sum(f[3] for f in files)//1024,'KB','intros',len(NT),'both',sum(1 for v in NT.values() if len(v['tabs'])==2),'merged',[(NUM(j),) for j in extra])
