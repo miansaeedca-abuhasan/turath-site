@@ -12,6 +12,9 @@
     en: {hd: 'English audio', ch: 'Play the whole chapter (English)', stop: 'Stop', nx: 'Next', pv: 'Previous', title: 'Chapter title', had: 'Hadith', min: 'min'},
     bn: {hd: 'অডিও', ch: 'পুরো অধ্যায় শুনুন', stop: 'বন্ধ করুন', nx: 'পরবর্তী', pv: 'আগের', title: 'অধ্যায়ের শিরোনাম', had: 'হাদীস', min: 'মিনিট'}
   };
+  /* chapter (bab) title audio of the English Talkhis: direct archive.org links, counts checked against the site's chapters (owner file 24-11-2026); kitabs 47 48 49 60 66 67 are held back until the owner decides */
+  var BAB_BASE = 'https://archive.org/download/book1-67_chapter1-end/', BAB = {"1":13,"2":359,"3":77,"4":52,"5":19,"6":19,"7":45,"8":9,"9":421,"10":48,"11":22,"12":46,"13":216,"14":131,"15":145,"16":248,"17":186,"18":14,"19":10,"20":21,"21":27,"22":17,"23":23,"24":139,"25":29,"26":4,"27":15,"28":4,"29":11,"30":8,"31":44,"32":49,"33":41,"34":6,"35":49,"36":30,"37":13,"38":17,"39":3,"40":50,"41":20,"42":46,"43":149,"44":22,"45":41,"46":32,"50":19,"51":5,"52":52,"53":30,"54":199,"55":23,"56":15,"57":46,"58":15,"59":46,"61":467,"62":55,"63":91,"64":16,"65":113};
+  var babUrl = function (book, ord) { var n = BAB[+book]; return n && ord >= 1 && ord <= n ? BAB_BASE + 'book' + ('0' + book).slice(-2) + '_chapter' + ('000' + ord).slice(-4) + '.mp3' : null; };
   var T = function (k) { return (L[UI()] || L.en)[k]; };
   var DG = function (n) { return UI() === 'ur' ? String(n).replace(/\d/g, function (d) { return '۰۱۲۳۴۵۶۷۸۹'[d]; }) : String(n); };
   function load(src, cb) { var s = document.createElement('script'); s.src = src; s.onload = cb; s.onerror = function () { cb(); }; document.head.append(s); }
@@ -153,13 +156,15 @@
     chapter: async function (book, ord, nums) {
       await idx(); var lg = chLang(book, ord), c = cfg(lg), b = c.books[book]; stopAll(); mode = 'chapter'; Q = [];
       if (b && b.c && b.c[ord]) Q.push({url: c.cbase + book + '/' + ('0' + ord).slice(-2) + '.mp3', label: T('title')});
+      else if (lg === 'en' && babUrl(book, ord)) Q.push({url: babUrl(book, ord), label: T('title')});
       nums.forEach(function (n) { var pk = pick(n); if (pk) Q.push({url: hurl(pk.lg, n), label: T('had') + ' ' + DG(n), num: n}); });
       if (Q.length) play(0);
     },
     chapterInfo: async function (book, ord, nums) {
-      await idx(); var b = (cfg(chLang(book, ord)).books || {})[String(book)]; if (!b || !b.c || !b.c[ord]) return null;
-      var sec = b.c[ord], k = 0; nums.forEach(function (n) { var s = b.h && b.h[n]; if (s) { sec += s; k++; } });
-      return {minutes: Math.max(1, Math.round(sec / 60)), count: k};
+      await idx(); var b = (cfg(chLang(book, ord)).books || {})[String(book)], own = !!(b && b.c && b.c[ord]);
+      if (!own && !(chLang(book, ord) === 'en' && babUrl(book, ord))) return null;
+      var sec = own ? b.c[ord] : 0, k = 0; nums.forEach(function (n) { var s = b && b.h && b.h[n]; if (s) { sec += s; k++; } });
+      return {minutes: sec ? Math.max(1, Math.round(sec / 60)) : 0, count: k};
     },
     btn: function (d, card) {
       var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'ab'; bt.title = T('hd'); bt.setAttribute('aria-label', T('hd'));
@@ -171,10 +176,11 @@
     chapterBtn: async function (book, ord, nums) {
       await idx(); var info = await window.ENAUD.chapterInfo(book, ord, nums); if (!info) return null;
       var bt = document.createElement('button'); bt.type = 'button'; bt.className = 'btn lbtn';
-      bt.textContent = '🔊 ' + T('ch') + ' — ' + DG(info.minutes) + ' ' + T('min');
+      bt.textContent = '🔊 ' + T('ch') + (info.minutes ? ' — ' + DG(info.minutes) + ' ' + T('min') : '');
       bt.addEventListener('click', function () { window.ENAUD.chapter(String(book), ord, nums); });
       return bt;
     },
+    babUrl: babUrl,
     stop: stopAll
   };
   idx();
