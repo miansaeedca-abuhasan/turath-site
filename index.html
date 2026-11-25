@@ -4981,8 +4981,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const bookOf = k => (C.idx || []).find(b => b.key === k);
   // a phone may still hold an older copy of coll/index.js (file names that no longer exist): when a data file cannot be loaded, the index is fetched fresh once and the new file names are used
   async function freshIndex(b) { try { await load1('coll/index.js?r=' + Date.now()); const nb = bookOf(b.key); if (nb && nb !== b) { b.files = nb.files; b.sections = nb.sections; b.count = nb.count; } } catch (e) {} }
+  async function ensurePg(b) { if (b.pg && !(C.pg && b.key in C.pg)) { (C.pg = C.pg || {})[b.key] = null; try { await once('pg:' + b.key, 'coll/pg/' + b.pg); } catch (e) { delete C.pg[b.key]; } } }   // printed volume / page of every row (Arabic library books): one small file, loaded alone by the jump tab
   async function needRange0(b, lang, from, to) {
-    if (lang === 'ar' && b.pg && !(C.pg && b.key in C.pg)) { (C.pg = C.pg || {})[b.key] = null; try { await once('pg:' + b.key, 'coll/pg/' + b.pg); } catch (e) { delete C.pg[b.key]; } }   // printed volume / page of every row (Arabic library books)
+    if (lang === 'ar') await ensurePg(b);
     const fs = (b.files[lang] || []).filter(f => f[1] >= from && f[0] <= to);
     const rs = await Promise.allSettled(fs.map(f => once(f[2], 'coll/' + f[2])));
     if (rs.some(r => r.status === 'rejected') && !b._fresh) {
@@ -6553,7 +6554,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (b.pg && b.grp === 'ar') {
       const U = x => String(x).replace(/\d/g, c => String.fromCharCode(0x660 + +c)), D = t => String(t).replace(/[٠-٩]/g, c => c.charCodeAt(0) - 0x660).replace(/[۰-۹]/g, c => c.charCodeAt(0) - 0x6f0).replace(/\D/g, '');
       let info = null;
-      const load = async () => { if (info) return info; const f0 = b.files.ar[0][0]; await needRange(b, 'ar', f0, f0); const g = C.pg && C.pg[b.key]; if (!g) return null;
+      const load = async () => { if (info) return info; await ensurePg(b); const g = C.pg && C.pg[b.key]; if (!g) return null;
         const ent = [], maxP = {}; g.m.forEach((v, n) => { ent.push([v, n]); const j = Math.floor(v / 100000), p = v % 100000; if (!(maxP[j] >= p)) maxP[j] = p; });
         ent.sort((a, c) => a[0] - c[0] || a[1] - c[1]); info = {multi: g.multi, maxJ: Math.max(...Object.keys(maxP).map(Number)), maxP, ent}; return info; };
       const jIn = el('input', {type: 'text', inputmode: 'numeric', class: 'pgin', 'aria-label': 'الجزء', autocomplete: 'off'}), pIn = el('input', {type: 'text', inputmode: 'numeric', class: 'pgin', 'aria-label': 'الصفحة', autocomplete: 'off'});
