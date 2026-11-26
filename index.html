@@ -2089,7 +2089,7 @@ function appSettings(){
 // Talkhis al-Jami al-Kamil in the interface language: the Bangla interface reads the Bangla layer
 function uiBook(){const nb=ui==='bn'&&book==='jami'?'jami_bn':ui!=='bn'&&book==='jami_bn'?'jami':book;if(nb!==book){book=nb;try{localStorage.book=nb}catch(e){}}}
 uiBook();
-async function loadBooks(){BOOKS=(await api('books')).books;applyUi();}
+async function loadBooks(){try{BOOKS=(await api('books')).books}catch(e){}applyUi();}
 $('#book').addEventListener('change',()=>{book=$('#book').value;try{localStorage.book=book}catch(e){}$('#q').value='';if(location.hash!=='#/b')location.hash='#/b';else showHome();});
 $('#lang').addEventListener('click',()=>appSettings());
 const LANG_EN={ur:'Urdu',ar:'Arabic',en:'English',bn:'Bangla',hi:'Hindi',gu:'Gujarati',fr:'French',ne:'Nepali'};
@@ -2459,6 +2459,7 @@ function route(){
   const hide=d>0&&n>140&&!document.documentElement.classList.contains('sheetopen');document.body.classList.toggle('abhide',hide);});},{passive:true});
   addEventListener('hashchange',()=>document.body.classList.remove('abhide'));})();
 addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
+  try{applyUi()}catch(e){}  // header icons / back button appear at once, even if the book list is slow (old iPhones)
   // pages that do not need Talkhis al-Jami al-Kamil's data open at once; the book list comes when the data is in
   const h=location.hash;
   if(/^(#\/?|#\/home|#\/q(\/.*)?|#\/s\/.*|#\/t\/.*|#\/quiz.*|#\/hifz.*|#\/verify|#\/owner|#\/privacy)?$/.test(h)){route();loadBooks().then(()=>{if(!/^#\/(h|k|c|b)/.test(location.hash))return;route();});}
