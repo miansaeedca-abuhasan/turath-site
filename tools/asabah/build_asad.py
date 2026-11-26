@@ -15,6 +15,15 @@ BOUND=[('۱',0),('۵۶۵۷',1),('۶۳۴۹',2),('۶۳۹۶',3),('۶۶۸۲',4),('۷
 NOLET={3,6}; MUB=28
 UD=str.maketrans('0123456789','۰۱۲۳۴۵۶۷۸۹'); AD=str.maketrans('۰۱۲۳۴۵۶۷۸۹','0123456789')
 d=json.load(open(SRC,encoding='utf-8')); rep=[]
+# corrections read from the printed pages of the owner's PDF (26-11-2026): tools/asabah/asad_fixes.json
+FX=json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'asad_fixes.json'),encoding='utf-8')); _seen=set()
+for x in d:
+    f=FX.get(x['number'])
+    if not f or x['number'] in _seen: continue
+    _seen.add(x['number'])
+    if 'name' in f: x['name']=x['name'].replace(f['name'][0],f['name'][1],1)
+    if 'sub' in f: x['text']=x['text'].replace(f['sub'][0],f['sub'][1],1)
+    if 'pre' in f: x['text']=f['pre']+x['text']
 def strip_name(n):
     n=re.sub(r'\s+',' ',n.strip()); n=re.sub(r'^(سیدنا|سیدہ)\s+','',n); return n
 def core(n,kind):
@@ -84,7 +93,7 @@ for i,x in enumerate(d):
     key=(kind[i],LT[i] if LT[i] is not None else -1)
     if not cur or cur['key']!=key: cur=dict(key=key,start=rid,end=rid,first=i); secs.append(cur)
     cur['end']=rid
-    if i>1: idx.append((rid,(int(x['number'].translate(AD)) if x['number'] else ''),nm,0,kind[i],LT[i]))
+    if i>1: idx.append((rid,(int(re.sub(r'\D','',x['number'].translate(AD)) or 0) if x['number'] else ''),nm,0,kind[i],LT[i]))
 c=collections.Counter(s['key'] for s in secs)
 for kk,n in c.items():
     if n>1: rep.append(f'حصہ بٹا ہوا: {KL[kk[0]] if kk[0]>=0 else kk} {kk[1]} ({n})')

@@ -2,8 +2,8 @@
 const {chromium}=require('playwright'),fs=require('fs');let bad=[];
 const reg=fs.readFileSync(__dirname+'/../coll/index.js','utf8'),A=JSON.parse(reg.slice(reg.indexOf('COLLS(')+6,reg.lastIndexOf(')'))),E=A.find(e=>e.key==='asadghabaur');
 if(!E)bad.push('not registered');else{
- if(E.count!==7706)bad.push('rows '+E.count);
- if(E.asc.flat().reduce((a,b)=>a+b,0)!==7704)bad.push('entries');
+ if(E.count!==7710)bad.push('rows '+E.count);
+ if(E.asc.flat().reduce((a,b)=>a+b,0)!==7708)bad.push('entries');
  if(E.asx.length!==29||!E.asz||E.asz[0]!=='مبہم')bad.push('asx/asz');
  if(A.findIndex(e=>e.key==='asadghabaur')!==A.findIndex(e=>e.key==='asabahur')+1)bad.push('order');
  let prev=0;E.files.ur.forEach(f=>{if(f[0]!==prev+1)bad.push('gap '+f[2]);prev=f[1]});if(prev!==E.count)bad.push('files end');
@@ -13,6 +13,8 @@ if(!E)bad.push('not registered');else{
  if(!/^§مقدمہ/.test(rows[0][1]))bad.push('row1');if(!/^§1? ?/.test(rows[1][1]))bad.push('row2');
  if(!rows[2][1].startsWith('§۱ ۔ آبی اللحم الغفاری'))bad.push('row3 '+rows[2][1].slice(0,30));
  if(rows.some(r=>/^§(سیدنا|سیدہ) /.test(r[1].split('\n').slice(-1)[0])&&0))bad.push('x');
+ const R=n=>rows.find(r=>r[1].startsWith('§'+n+' ۔ '));   // corrections read from the printed pages of the PDF (26-11-2026)
+ [['۱۴۴۹','بن شہاب عبدی۔ قبیلہ عبد القیس سے ہیں'],['۱۴۷۶','اسود کے والد ہیں'],['۱۶۰۲','انصاری ہیں'],['۱۶۲۷','عبید زراح'],['۱۵۰۱','خیبری بن نعمان طائی'],['۱۵۷۲','خزاعی کے صحابی ہیں'],['۳۰۸۳','جمحی'],['۵۰۸۹','منبہ']].forEach(([n,t])=>{const r=R(n);if(!r||!r[1].includes(t))bad.push('fix '+n)});
  const sec=new Set();E.sections.forEach(s=>{if(!s[5]||s[5].k===undefined)return;const k=s[5].k+'/'+s[5].l;if(sec.has(k))bad.push('split '+s[1]);sec.add(k)});
 }
 (async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:430,height:900}})).newPage();

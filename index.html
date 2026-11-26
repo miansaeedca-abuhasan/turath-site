@@ -182,6 +182,12 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .td .tdpg small{font-size:.9em;margin-inline-end:.45em}.td .tdpg b{font-weight:700}.td .tdsur{flex:1;min-width:0;text-align:center;font-weight:700;font-size:1.1em}
 .td .tdlab{display:inline-block;margin:1.1rem 0 .5rem;padding:.1rem 1.2rem;background:var(--tdr);color:#fff;font:700 1.02em/1.9 var(--urduhead);border-radius:.3rem;box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .td-ar .tdlab{font-family:var(--arabic)}.td-en .tdlab{font:700 .95rem/1.9 var(--serif,Georgia,serif);letter-spacing:.02em}
+/* owner 26-11-2026: the other tafsirs get the look of «تدبر و عمل» – gold start accent on the rows, star + gold double line on the group headings, sky-blue accent on the tafsir box under an ayah (tafsir hub / ayah view only; Quran and tafsir text colours untouched) */
+a.card.tfrow{border-inline-start:3px solid #c9a24a;background-image:linear-gradient(to left,rgba(201,162,74,.07),transparent 40%)}
+a.card.tfrow:active,a.card.tfrow:hover{border-inline-start-color:#4fa6e6}
+.grp.tfgrp{display:flex;align-items:center;gap:.5em;margin:1.3rem .2rem .45rem;padding-bottom:.35rem;border-bottom:3px double #c9a24a}
+.grp.tfgrp::before{content:"";flex:none;width:1.05em;height:1.05em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2L14.8 5.3L19.1 4.9L18.7 9.2L22 12L18.7 14.8L19.1 19.1L14.8 18.7L12 22L9.2 18.7L4.9 19.1L5.3 14.8L2 12L5.3 9.2L4.9 4.9L9.2 5.3Z' fill='%23c9a24a'/%3E%3C/svg%3E") center/contain no-repeat}
+.intaf.intaf{border-inline-start-color:#4fa6e6;background:rgba(79,166,230,.07)}
 .td .tdlab::before,.td .tdlab::after{content:"";display:inline-block;width:1.05em;height:1.05em;vertical-align:-.15em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.0 2.0L14.8 5.3L19.1 4.9L18.7 9.2L22.0 12.0L18.7 14.8L19.1 19.1L14.8 18.7L12.0 22.0L9.2 18.7L4.9 19.1L5.3 14.8L2.0 12.0L5.3 9.2L4.9 4.9L9.2 5.3z' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='12' r='2.3' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat}.td .tdlab::before{margin-inline-end:.6em}.td .tdlab::after{margin-inline-start:.6em}
 /* top box of a surah's first page (owner 25-11-2026): banner, basmala, verses, translation tabs */
 .td .tdtop{margin:0 0 1.1rem}.td .tdban{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.25rem .9rem;border:2px solid var(--tdbd);border-radius:.9rem;background:linear-gradient(var(--tdbg1),var(--tdbg2));color:var(--tdb);font-weight:700;font-size:.95em;line-height:1.9}
@@ -3884,7 +3890,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         if (l === 'ar') { shT.forEach(c => rowsL.push([c.author ? c.author[0] : c.key, ROW('#/s/' + c.key, (ui === 'ar' ? c.ar : ui === 'ur' ? (c.ur || c.ar) : (c.en || c.ur || c.ar)) + ARB, c.author ? (ui === 'ar' ? c.author[1] : ui === 'ur' ? (c.author[2] || c.author[1]) : (c.author[3] || c.author[1])) : '', '', false)])); if (RC) rbRows.forEach(r => { const en = ui !== 'ar' && ui !== 'ur' && RBN_EN[r[0]]; rowsL.push([RBG[r[3]] || 'rb' + r[3], en ? ROW('#/rb/b/' + r[0], en[0] + ARB, en[1], '', false) : ROW('#/rb/b/' + r[0], r[1] + ARB, RC.a[r[3]] ? RC.a[r[3]][0] : '', '', false)]); });
           const gs = []; rowsL.forEach(x => { if (!gs.includes(x[0])) gs.push(x[0]); }); rowsL.sort((p, q) => gs.indexOf(p[0]) - gs.indexOf(q[0])); }   // one author's tafsirs stay together (stable order inside the author)
         if (TDR[l]) rowsL.push(['tadabbur', ROW('#/s/' + TDR[l], TDB + ' (' + (((ui === 'ur' ? {en: 'انگریزی'} : {})[l]) || T('langs')[l]) + ')', '', '', nwOn(TDR[l]))]);
-        v.append(el('p', {class: 'grp'}, (({ur: {en: 'انگریزی', bn: 'بنگلہ'}, en: {bn: 'Bangla'}, hi: {en: 'अंग्रेज़ी', bn: 'बंगाली'}, gu: {en: 'અંગ્રેજી', bn: 'બંગાળી'}, fr: {en: 'Anglais', bn: 'Bengali'}}[ui] || {})[l]) || T('langs')[l]), ...extra, ...rowsL.map(x => x[1])); });
+        v.append(el('p', {class: 'grp tfgrp'}, (({ur: {en: 'انگریزی', bn: 'بنگلہ'}, en: {bn: 'Bangla'}, hi: {en: 'अंग्रेज़ी', bn: 'बंगाली'}, gu: {en: 'અંગ્રેજી', bn: 'બંગાળી'}, fr: {en: 'Anglais', bn: 'Bengali'}}[ui] || {})[l]) || T('langs')[l]), ...extra, ...rowsL.map(x => x[1])); });
       return;
     }
     if (!sn) {
