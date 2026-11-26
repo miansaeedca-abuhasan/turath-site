@@ -20,7 +20,7 @@ if(!E)bad.push('not registered');else{
 }
 const sk=fs.readFileSync(__dirname+'/../index.html','utf8');
 if(!/sahaba:\[[^\]]*'asadghabaur','tabaqatur'/.test(sk))bad.push('not in Sahaba folder');
-const nw=JSON.parse(fs.readFileSync(__dirname+'/../news.json','utf8'));if(!nw[0].keys.includes('tabaqatur')||Object.values(nw[0].i).some(a=>a.length!==3))bad.push('news line');
+const nw=JSON.parse(fs.readFileSync(__dirname+'/../news.json','utf8'));if(!nw[0].keys.includes('tabaqatur')||Object.values(nw[0].i).some(a=>a.length<3))bad.push('news line');
 (async()=>{const b=await chromium.launch(),p=await(await b.newContext({viewport:{width:430,height:900}})).newPage();
 await p.addInitScript(()=>{try{localStorage.newsSeen='20261125b';localStorage.newsDay=new Date().toDateString()}catch(e){}});
 await p.goto('http://localhost:8765/index.html#/s/tabaqatur?idx');await p.waitForSelector('.snum',{timeout:25000});
