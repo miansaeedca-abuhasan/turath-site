@@ -34,7 +34,7 @@ for(const [k,ui,lab,qsel] of [['tadabburur','ur','آیات پر عمل','.tdq'],
  if(!/الفاتح|Fatih/.test(r.head||''))bad.push(k+' head '+r.head);
  if(errs.length)bad.push(k+' js error '+errs[0]);
  if(ui==='ur'){const c=await p.evaluate(()=>{const q=document.querySelector('.td .tdq'),l=document.querySelector('.td .tdlab'),n=document.querySelector('.td .tdq2');return [q&&getComputedStyle(q).color,l&&getComputedStyle(l).backgroundColor,n&&getComputedStyle(n).color]});
-  if(c[0]!=='rgb(31, 98, 184)'||c[1]!=='rgb(179, 38, 45)'||c[2]!=='rgb(138, 39, 144)')bad.push('colours '+c.join('|'));}
+  if(c[0]!=='rgb(79, 166, 230)'||c[1]!=='rgb(217, 119, 124)'||c[2]!=='rgb(138, 39, 144)')bad.push('colours '+c.join('|'));}
  await p.goto('http://localhost:8765/index.html#/s/'+k+'?idx');await p.waitForSelector('.snum',{timeout:25000});const n=await p.$$eval('.snum',x=>x.length);if(n!==30)bad.push(k+' index '+n);
  await p.context().close();}
 await b.close();console.log(bad.length?'FAIL '+bad.slice(0,15).join(' | '):'PASS tadabbur_book');process.exit(bad.length?1:0)})();

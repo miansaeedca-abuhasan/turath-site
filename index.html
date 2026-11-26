@@ -174,20 +174,30 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .fpanel h4.subh::before,.tr h4.subh::before,.shtx h4.subh::before{content:"\2756";color:#c59a35;margin-inline-end:.5em}
 .bkitem:not(.tfq):not(.qe) .subh::before,.bkitem:not(.tfq) .phead::before{content:"\2741";color:#c59a35;margin-inline-end:.5em}   /* ornament 5: headings of the other prose books (Seerah, Raheeq, Siyar …) */
 /* «القرآن: تدبر وعمل» — printed-book look (tools/tadabbur, 25-11-2026) */
-.td{--tdb:#1f62b8;--tdr:#b3262d;--tdp:#8a2790;--tdbg1:#eef4fd;--tdbg2:#e0ebfa;--tdbd:#4a86d8;font-size:1.05em;line-height:2.15;padding:.2rem 0 .8rem;margin-bottom:1.4rem;border-bottom:1px solid rgba(128,128,128,.3)}
-:root[data-theme=dark] .td{--tdb:#82b1ff;--tdr:#c23a41;--tdp:#d58ad9;--tdbg1:#16233a;--tdbg2:#101b2e;--tdbd:#4a6fae}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .td{--tdb:#82b1ff;--tdr:#c23a41;--tdp:#d58ad9;--tdbg1:#16233a;--tdbg2:#101b2e;--tdbd:#4a6fae}}
+.td{--tdb:#4fa6e6;--tdc:#5fb2ec;--tdr:#d9777c;--tdrt:#c4545a;--tdp:#8a2790;--tdbg1:#f1f7fd;--tdbg2:#e3effb;--tdbd:#7db4e6;font-size:1.05em;line-height:2.15;padding:.2rem 0 .8rem;margin-bottom:1.4rem;border-bottom:1px solid rgba(128,128,128,.3)}
+:root[data-theme=dark] .td{--tdb:#8cc4f4;--tdc:#6aa6ea;--tdr:#b8484e;--tdrt:#e08a8f;--tdp:#d58ad9;--tdbg1:#16233a;--tdbg2:#101b2e;--tdbd:#4a6fae}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .td{--tdb:#8cc4f4;--tdc:#6aa6ea;--tdr:#b8484e;--tdrt:#e08a8f;--tdp:#d58ad9;--tdbg1:#16233a;--tdbg2:#101b2e;--tdbd:#4a6fae}}
 .td-en{font:1rem/1.75 var(--serif,Georgia,serif)}
 .td .tdhead{display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin:0 0 1rem;padding:.3rem .9rem;border:2px solid var(--tdbd);border-radius:.9rem;background:linear-gradient(var(--tdbg1),var(--tdbg2));color:var(--tdb);box-shadow:inset 0 0 0 3px var(--paper,#fff),inset 0 0 0 4px var(--tdbd)}
 .td .tdpg{flex:none;font-size:.8em;font-weight:700;white-space:nowrap;line-height:1.9;border:1px solid var(--tdbd);border-radius:1em;padding:.1em 1em;background:var(--paper,#fff)}
 .td .tdpg small{font-size:.9em;margin-inline-end:.45em}.td .tdpg b{font-weight:700}.td .tdsur{flex:1;min-width:0;text-align:center;font-weight:700;font-size:1.1em}
 .td .tdlab{display:inline-block;margin:1.1rem 0 .5rem;padding:.1rem 1.2rem;background:var(--tdr);color:#fff;font:700 1.02em/1.9 var(--urduhead);border-radius:.3rem;box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .td-ar .tdlab{font-family:var(--arabic)}.td-en .tdlab{font:700 .95rem/1.9 var(--serif,Georgia,serif);letter-spacing:.02em}
-.td .tdlab::before{content:"\2766";margin-inline-end:.55em;opacity:.85}
+.td .tdlab::before,.td .tdlab::after{content:"";display:inline-block;width:1.05em;height:1.05em;vertical-align:-.15em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12.0 2.0L14.8 5.3L19.1 4.9L18.7 9.2L22.0 12.0L18.7 14.8L19.1 19.1L14.8 18.7L12.0 22.0L9.2 18.7L4.9 19.1L5.3 14.8L2.0 12.0L5.3 9.2L4.9 4.9L9.2 5.3z' fill='none' stroke='%23fff' stroke-width='1.5' stroke-linejoin='round'/%3E%3Ccircle cx='12' cy='12' r='2.3' fill='%23fff'/%3E%3C/svg%3E") center/contain no-repeat}.td .tdlab::before{margin-inline-end:.6em}.td .tdlab::after{margin-inline-start:.6em}
+/* top box of a surah's first page (owner 25-11-2026): banner, basmala, verses, translation tabs */
+.td .tdtop{margin:0 0 1.1rem}.td .tdban{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.25rem .9rem;border:2px solid var(--tdbd);border-radius:.9rem;background:linear-gradient(var(--tdbg1),var(--tdbg2));color:var(--tdb);font-weight:700;font-size:.95em;line-height:1.9}
+.td .tdban b{flex:1;min-width:0;text-align:center;font-size:1.08em}.td .tdban span{flex:none;font-size:.85em}
+.td .tdbox{margin:.5rem 0 0;padding:.6rem .9rem .5rem;border:2px solid var(--tdbd);border-radius:.5rem;background:#fbf8e3;box-shadow:inset 0 0 0 3px #fbf8e3,inset 0 0 0 4px var(--tdbd);color:#222;text-align:center}
+:root[data-theme=dark] .td .tdbox{background:#1d2431;box-shadow:inset 0 0 0 3px #1d2431,inset 0 0 0 4px var(--tdbd);color:#e6e6e6}@media (prefers-color-scheme:dark){:root:not([data-theme=light]) .td .tdbox{background:#1d2431;box-shadow:inset 0 0 0 3px #1d2431,inset 0 0 0 4px var(--tdbd);color:#e6e6e6}}
+.td .tdbox .tdbsm{font-family:var(--arabic);color:var(--tdrt);font-size:1.15em;line-height:2.2;margin:0}.td .tdbox .tdbtr{font-size:.82em;line-height:1.9;margin:0 0 .2rem}
+.td .tdbox .tdarv{font-family:var(--arabic);color:var(--tdrt);font-size:1.2em;line-height:2.5;margin:.1rem 0}.td .tdbox .tdtrv{font-size:.88em;line-height:2.1;margin:.1rem 0 .3rem;text-align:justify}
+.td .tdbox .ayn{display:inline-flex;align-items:center;justify-content:center;min-width:1.5em;height:1.5em;border:1px solid currentColor;border-radius:50%;font:700 .58em/1 var(--urdu);margin:0 .35em;vertical-align:.15em;color:var(--tdb)}
+.td .tdtabs{display:flex;flex-wrap:wrap;gap:.35rem;justify-content:center;margin:.35rem 0 .1rem;font-size:.85em}.td .tdtabs i{font-style:normal;color:var(--muted,#666);align-self:center}
+.td .tdtabs button{font:inherit;padding:.1rem .8rem;border:1px solid var(--tdbd);border-radius:1em;background:transparent;color:var(--tdb);cursor:pointer}.td .tdtabs button[aria-selected=true]{background:var(--tdb);color:#fff;border-color:var(--tdb)}
 .td .tdi{display:flex;gap:.65rem;align-items:flex-start;margin:.5rem 0}
-.td .tdn{flex:none;width:1.6em;height:1.6em;border-radius:50%;background:var(--tdb);color:#fff;display:inline-flex;align-items:center;justify-content:center;font:700 .72em/1 var(--urdu);margin-top:.75em}
+.td .tdn{flex:none;width:1.6em;height:1.6em;border-radius:50%;background:var(--tdc);color:#fff;display:inline-flex;align-items:center;justify-content:center;font:700 .72em/1 var(--urdu);margin-top:.75em}
 .td-en .tdn{font-family:system-ui,sans-serif;margin-top:.5em}
 .td .tdb{flex:1;min-width:0}.td .tdb p{margin:.1rem 0}
-.td .tdq,.td .tdv,.td .qayah{color:var(--tdb)}.td .tdq{font-family:var(--arabic);font-size:1.1em}
+.td .tdq,.td .tdv,.td .qayah{color:var(--tdb)}.td .tdq{font-family:var(--arabic);font-size:1.1em}.td .tdq{margin:0 .35em}.td .tdban b{word-spacing:.15em}
 .td .tdv{font-family:var(--arabic);font-size:1.2em;line-height:2.4;margin:.1rem 0}.td .tdv .ayn{color:var(--tdb)}
 .td .tdq2{color:var(--tdp);margin-top:.35rem!important}.td .tdql{font-weight:700}
 .td .tdans{border-bottom:2px dotted rgba(110,110,110,.6);margin:.15rem 0 .9rem;min-height:2.3em}.td .tdal{font-size:.85em;color:var(--muted,#666)}
@@ -1465,18 +1475,31 @@ function tdFmt(t,L){
   if(L==='ar')return rich0(t,'ar');
   const out=[];   // Urdu: a bracket / quote holding only Arabic words is a Quranic phrase: blue, Arabic font, as in the printed book (no brackets)
   t.split(/(\([^()]*\)|‘‘[^’]*’’|“[^”]*”)/).forEach(seg=>{if(!seg)return;const m=seg.match(/^(?:\(|‘‘|“)([^()’”]*)(?:\)|’’|”)$/);
-    if(m&&tdArOnly(m[1])){out.push(el('span',{class:'tdq',lang:'ar'},m[1].trim()));return;}out.push(...rich0(seg,'ur'));});
+    if(m&&tdArOnly(m[1])){out.push(el('span',{class:'tdq',lang:'ar'},'\ufd3f'+m[1].trim()+'\ufd3e'));return;}out.push(...rich0(seg,'ur'));});
   return out;}
+const TD_SP={"1":[[1,1,7]],"2":[[2,1,5]],"50":[[3,1,9]],"77":[[4,1,6]],"106":[[5,1,2]],"128":[[6,1,8]],"151":[[7,1,11]],"177":[[8,1,8]],"187":[[9,1,6]],"208":[[10,1,6]],"221":[[11,1,5]],"235":[[12,1,4]],"249":[[13,1,5]],"255":[[14,1,5]],"262":[[15,1,15]],"267":[[16,1,6]],"282":[[17,1,7]],"293":[[18,1,4]],"305":[[19,1,11]],"312":[[20,1,12]],"322":[[21,1,10]],"332":[[22,1,5]],"342":[[23,1,17]],"350":[[24,1,10]],"359":[[25,1,2]],"367":[[26,1,19]],"377":[[27,1,13]],"385":[[28,1,5]],"396":[[29,1,6]],"404":[[30,1,5]],"411":[[31,1,11]],"415":[[32,1,11]],"418":[[33,1,6]],"428":[[34,1,7]],"434":[[35,1,3]],"440":[[36,1,12]],"446":[[37,1,24]],"453":[[38,1,16]],"458":[[39,1,5]],"467":[[40,1,7]],"477":[[41,1,11]],"483":[[42,1,10]],"489":[[43,1,10]],"496":[[44,1,18]],"499":[[45,1,13]],"502":[[46,1,5]],"507":[[47,1,11]],"511":[[48,1,9]],"515":[[49,1,4]],"518":[[50,1,15]],"520":[[51,1,6]],"523":[[52,1,14]],"526":[[53,1,26]],"528":[[54,1,6]],"531":[[55,1,16]],"534":[[56,1,16]],"537":[[57,1,3]],"542":[[58,1,6]],"545":[[59,1,3]],"549":[[60,1,5]],"551":[[61,1,5]],"553":[[62,1,8]],"554":[[63,1,4]],"556":[[64,1,9]],"558":[[65,1,5]],"560":[[66,1,7]],"562":[[67,1,12]],"564":[[68,1,15]],"566":[[69,1,8]],"568":[[70,1,10]],"570":[[71,1,10]],"572":[[72,1,13]],"574":[[73,1,19]],"575":[[74,1,17]],"577":[[75,1,19]],"578":[[76,1,5]],"580":[[77,1,19]],"582":[[78,1,30]],"583":[[79,1,15]],"585":[[80,1,42]],"586":[[81,1,29]],"587":[[82,1,19],[83,1,6]],"589":[[84,1,25]],"590":[[85,1,22]],"591":[[86,1,17],[87,1,15]],"592":[[88,1,26]],"593":[[89,1,23]],"594":[[90,1,20]],"595":[[91,1,15],[92,1,14]],"596":[[93,1,11],[94,1,8]],"597":[[95,1,8],[96,1,19]],"598":[[97,1,5],[98,1,7]],"599":[[99,1,8],[100,1,9]],"600":[[101,1,11],[102,1,8]],"601":[[103,1,3],[104,1,9],[105,1,5]],"602":[[106,1,4],[107,1,7],[108,1,3]],"603":[[109,1,6],[110,1,3],[111,1,5]],"604":[[112,1,4],[113,1,5],[114,1,6]]};
+const TD_ED=[['ur_junagarhi','مولانا محمد جوناگڑھی'],['ur_kilani','مولانا عبد الرحمٰن کیلانی']];
+function tdTop(n){const sp=TD_SP[n];if(!sp||!window.QURAN||!QURAN.tdBox)return null;const w=el('div',{class:'tdtop'}),DG='۰۱۲۳۴۵۶۷۸۹',fm=x=>String(x).replace(/\d/g,d=>DG[d]);
+  let key='ur_junagarhi';try{const k=localStorage.getItem('turath_td_tr');if(TD_ED.some(e=>e[0]===k))key=k;}catch(e){}
+  const draw=async()=>{const parts=[];
+    for(const [s,x,y] of sp){let d;try{d=await QURAN.tdBox(s,x,y,key);}catch(e){return;}
+      const vs=d.vs.filter(v=>!(s===1&&v.a===1)),ar=el('p',{class:'tdarv',lang:'ar',dir:'rtl'}),tr=el('p',{class:'tdtrv',lang:'ur',dir:'rtl'}),tabs=el('div',{class:'tdtabs',role:'tablist'},el('i',{},'ترجمہ:'));
+      vs.forEach((v,i)=>{if(i){ar.append(' ');}ar.append(v.ar+' ',el('span',{class:'ayn'},fm(v.a)));tr.append(v.tr+' ',el('span',{class:'ayn'},fm(v.a)),i<vs.length-1?' ':'');});
+      TD_ED.forEach(([k,nm])=>tabs.append(el('button',{type:'button',role:'tab','aria-selected':String(k===key),on:{click:()=>{if(k===key)return;key=k;try{localStorage.setItem('turath_td_tr',k);}catch(e){}draw();}}},nm)));
+      parts.push(el('div',{},el('div',{class:'tdban'},el('span',{},'آیاتھا '+fm(d.ayat)),el('b',{},'('+fm(s)+') '+'سورۃ '+d.name+(d.makki?' مکیۃ':' مدنیۃ')),el('span',{},'رکوعاتھا '+fm(d.ruku))),
+        el('div',{class:'tdbox'},s===9?'':el('p',{class:'tdbsm',lang:'ar',dir:'rtl'},d.bar),s===9?'':el('p',{class:'tdbtr'},d.btr),ar,tr,tabs)));}
+    w.replaceChildren(...parts);};
+  draw();return w;}
 function tadItem(r,n,L){
   const T=TD_L[L]||TD_L.en,rtl=L!=='en',DG={ur:'۰۱۲۳۴۵۶۷۸۹',ar:'٠١٢٣٤٥٦٧٨٩'}[L],fm=x=>DG?String(x).replace(/\d/g,d=>DG[d]):String(x);
   const box=el('div',{class:'bkitem td td-'+L,lang:L,dir:rtl?'rtl':'ltr'}),lines=(r&&r[1]||'').split('\n').filter(Boolean);
   let k=0,cur=null,tb=null;
-  const circ=()=>el('span',{class:'tdn'},fm(k)),verses=v=>{const d=el('div',{class:'tdv',lang:'ar',dir:'rtl'});v.split(/([٠-٩]+)/).forEach((x,i)=>{if(!x)return;if(i%2){const nn=parseInt(x.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660),10);d.append(el('span',{class:'ayn ud'},fm(nn)));}else d.append(x);});return d;};
+  const circ=()=>el('span',{class:'tdn'},fm(k)),verses=(v,L2)=>{const d=el('div',{class:'tdv',lang:'ar',dir:'rtl'});v.split(/([٠-٩]+)/).forEach((x,i)=>{if(!x)return;if(i%2){const nn=parseInt(x.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660),10);d.append(el('span',{class:'ayn ud'},fm(nn)));}else d.append(x);});if(L2==='ur'){d.prepend('\ufd3f');d.append('\ufd3e');}return d;};
   lines.forEach(x=>{const c=x[0],b=x.slice(1);
-    if(c==='§'){box.append(el('div',{class:'tdhead'},el('span',{class:'tdpg'},el('small',{},T.pg),el('b',{},fm(n))),el('span',{class:'tdsur'},b.trim())));return;}
+    if(c==='§'){box.append(el('div',{class:'tdhead'},el('span',{class:'tdpg'},el('small',{},T.pg),el('b',{},fm(n))),el('span',{class:'tdsur'},b.trim())));if(L==='ur'){const tp=tdTop(n);if(tp)box.append(tp);}return;}
     if(c===''){k=0;cur=null;box.append(el('h4',{class:'tdlab'},T[b]||b));if(b==='words'){tb=el('tbody');box.append(el('div',{class:'tdwrap'},el('table',{class:'tdw'},el('thead',{},el('tr',{},el('th',{},T.w),el('th',{},T.m))),tb)));}return;}
     if(c===''){k++;box.append(el('div',{class:'tdi'},circ(),el('div',{class:'tdb'},el('p',{},...tdFmt(b,L)))));return;}
-    if(c===''){k++;const bd=el('div',{class:'tdb'});if(b.trim())bd.append(verses(b));cur=bd;box.append(el('div',{class:'tdi'},circ(),bd));return;}
+    if(c===''){k++;const bd=el('div',{class:'tdb'});if(b.trim())bd.append(verses(b,L));cur=bd;box.append(el('div',{class:'tdi'},circ(),bd));return;}
     if(c===''){(cur||box).append(el('p',{},...tdFmt(b,L)));return;}
     if(c===''){(cur||box).append(el('p',{class:'tdq2'},el('span',{class:'tdql'},T.q+' '),...tdFmt(b,L)),el('div',{class:'tdans'},el('span',{class:'tdal'},T.a)));return;}
     if(c===''){const i=b.indexOf('');tb.append(el('tr',{},el('td',{class:'tdwd',lang:'ar',dir:'rtl'},b.slice(0,i)),el('td',{class:'tdmn',lang:L},...tdFmt(b.slice(i+1),L))));return;}
@@ -4963,6 +4986,10 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     setHzReciter: k => { QS.hzRec = k; qsave(); },
     ayahUrlBy: (k, s, a) => ayahUrl(RECITERS.find(r => r.k === k) || RECITERS[0], s, a),
     ayahText: (s, a) => verse('ar_uthmani', s, a),
+    // the top box of a surah's first page in «القرآن: تدبر وعمل»: surah data, the basmala and verses x..y with the translation `key`
+    tdBox: async (s, x, y, key) => { await need(['ar_uthmani', key]); const m = Q.meta.surahs[s - 1], CL = t => String(t || '').replace(/[\ue000-\uf8ff]/g, ''), vs = [];
+      for (let a = x; a <= y; a++) vs.push({a, ar: verse('ar_uthmani', s, a), tr: CL(verse(key, s, a))});
+      return {name: sName(s), ayat: m[4], makki: m[3] === 'M', ruku: Q.meta.ruku.filter(r => r[0] === s).length, bar: verse('ar_uthmani', 1, 1), btr: CL(verse(key, 1, 1)), vs}; },
     // the translation shown under an ayah on the «تکرار» screen: the interface language (Urdu when the interface is Arabic); ready() first, then text(s, a)
     repTr: async () => { const k = trForUi() || (QS.tr || [])[0] || 'ur_junagarhi'; await need([k]); const e = Q.meta.editions.find(x => x.key === k), l = e ? e.lang : 'ur';
       return {text: (s, a) => verse(k, s, a), lang: l, dir: l === 'ur' || l === 'ar' ? 'rtl' : 'ltr'}; },
