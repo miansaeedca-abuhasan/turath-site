@@ -17,6 +17,39 @@ EN_GL={'':'(peace be upon him)','':'(may Allah be pleased with him)',''
 cnt={}
 def bump(k,n=1): cnt[k]=cnt.get(k,0)+n
 def ws(t): return re.sub(r'[ \t]{2,}',' ',re.sub(r'\s*\n\s*',' ',t)).strip()
+
+# ---- owner 26-11-2026 (images): Urdu words typed with Arabic letters, Arabic in brackets/quotes, translations never in verse brackets ----
+_HK=re.compile('[\u064b-\u065f\u0670]'); _ULET=re.compile('[ٹڈڑںےۓہھگچپژکیۃ]')
+_AM=str.maketrans({'ك':'ک','ي':'ی','ى':'ی','ه':'ہ'})
+def _tashn(w): return len(_HK.findall(w))
+def _strong(w):   # same test as rich0 in index.html: really vocalized Arabic word
+    if _ULET.search(w): return False
+    t=_tashn(w); n=len(re.findall('[\u0621-\u064a\u0671-\u06d3]',w))
+    return (t>=2 and t>=n*.4) or (t>=1 and re.search('[يكةىأإٱ]',w) is not None)
+def fix_letters(t):
+    """tokens WITHOUT harakat that use Arabic letter shapes (ك ي ى ه) get the Urdu shapes (ک ی ی ہ)"""
+    def f(m):
+        w=m.group(0)
+        if _HK.search(w) or not re.search('[كيىه]',w): return w
+        bump('ur_letters'); return w.translate(_AM)
+    return re.sub(r'[\u0600-\u06ff]+',f,t)
+def arabic_only(g):
+    ws_=g.split()
+    return bool(ws_) and all(_strong(w) for w in ws_) and not re.search(r'[0-9:؀-؅]|[A-Za-z]',g)
+def quran_hit(g):
+    ws_=g.split(); return _find([_nz(w) for w in ws_]) is not None
+def mark_arabic(t):
+    """a bracket / quote holding only vocalized Arabic: Quranic wording -> ﴿…﴾ (blue), anything else -> «…» (own colour); Urdu quotes get ’’ ‘‘ ."""
+    def sub(m):
+        g=m.group(2).strip()
+        if arabic_only(g):
+            if quran_hit(g):
+                st=_find([_nz(w) for w in g.split()]); bump('ur_quran_mark'); return '﴿'+' '.join(_QW[st:st+len(g.split())])+'﴾'
+            bump('ur_arabic_guillemets'); return '«'+g+'»'
+        if m.group(1) in('“','‘‘','"'): bump('ur_quotes_fixed'); return '’’'+g+'‘‘'
+        return m.group(0)
+    t=re.sub(r'(“|‘‘|"|\()([^()“”"‘’]{1,200}?)(”|’’|"|\))',sub,t)
+    return re.sub(r'‘‘([^()‘’]{1,300}?)’’',lambda m:'’’'+m.group(1)+'‘‘',t)
 def clean_ur(t):
     t=t.replace('‌','').replace('‍','').replace('‏','').replace('­','')
     bump('ur_durood',t.count('ﷺ'))
@@ -32,6 +65,7 @@ def clean_ur(t):
     t=re.sub(r'(علیہ السلام|علیہم السلام) +(?=[ء-ۓ])',r'\1 ',t)
     t=re.sub(r' {2,}',' ',t)
     t=re.sub(r'\( +','(',t)
+    t=fix_letters(t); t=mark_arabic(t)
     return ws(t)
 # Arabic: a bracket holding 2+ words that are found word for word in the Quran (our own quran/ar_uthmani.js) becomes ﴿vocalized Quran text﴾ (blue in the reader);
 # brackets that are not found (other wording, explanations, single words) stay as they are
@@ -130,21 +164,20 @@ for l in ('ur','ar','en'):
         cur.append(r); size+=len(r[1])
         if size>90000: fl()
     fl()
-    SEC=[];a=1
-    while a<=604:
-        b=min(604,a+19)
-        if 604-b<10: b=604
+    SEC=[]
+    JZ=[(j['juz'],j['first_page'],j['last_page']) for j in J['ur']['juz']]   # owner's new files (26-11-2026): the juz of every mushaf page
+    assert JZ[0][1]==1 and JZ[-1][2]==604 and all(JZ[i][2]+1==JZ[i+1][1] for i in range(29))
+    for jn,a,b in JZ:
         nms=[];anm=[]
         for i in range(a-1,b):
             for n in names[i]:
                 if n not in nms: nms.append(n)
             for n in ARNAMES[i]:
                 if n not in anm: anm.append(n)
-        short=lambda x:x
-        if l=='ur': nm=' ، '.join(x.replace('سورۃ ','',1) for x in nms); rng='صفحات %s تا %s'%(str(a).translate(DU),str(b).translate(DU))
-        elif l=='ar': nm=' ، '.join(nms); rng='الصفحات %s–%s'%(str(a).translate(A_DIG),str(b).translate(A_DIG))
-        else: nm=', '.join(nms); rng='Pages %d–%d'%(a,b)
-        SEC.append([len(SEC)+1,rng+' — '+nm,a,b,'الصفحات %s–%s: %s'%(str(a).translate(A_DIG),str(b).translate(A_DIG),' ، '.join(anm))]); a=b+1
+        if l=='ur': nm=' ، '.join(x.replace('سورۃ ','',1) for x in nms); rng='پارہ %s (صفحات %s تا %s)'%(str(jn).translate(DU),str(a).translate(DU),str(b).translate(DU))
+        elif l=='ar': nm=' ، '.join(nms); rng='الجزء %s (الصفحات %s–%s)'%(str(jn).translate(A_DIG),str(a).translate(A_DIG),str(b).translate(A_DIG))
+        else: nm=', '.join(nms); rng='Juz %d (pages %d–%d)'%(jn,a,b)
+        SEC.append([len(SEC)+1,rng+' — '+nm,a,b,'الجزء %s (الصفحات %s–%s): %s'%(str(jn).translate(A_DIG),str(a).translate(A_DIG),str(b).translate(A_DIG),' ، '.join(anm))])
     entry={"key":KEY,"ar":ARN[l],"ur":NAME[l],"en":ENN[l],"sub":SUB[l],"sections":SEC,"prose":True,"langs":[l],"files":{l:[[a,b,n] for a,b,n,_,_ in files]},"count":604}
     A=[e for e in A if e['key']!=KEY]; A.append(entry)
     o['groups']=[g for g in o['groups'] if g['id']!='c_'+KEY]

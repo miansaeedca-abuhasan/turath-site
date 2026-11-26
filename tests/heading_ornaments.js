@@ -11,6 +11,6 @@ await p.goto('http://localhost:8765/index.html#/s/tafsirnoor/n/2');await p.waitF
 const r=await p.evaluate(()=>{const e=document.querySelector('h4.subh');return{c:getComputedStyle(e,'::before').content,t:e.textContent}});
 ck(/۞/.test(r.c),'tafsir heading ornament '+r.c);ck(!/۞/.test(r.t),'ornament not in the text (copy)');
 await p.goto('http://localhost:8765/index.html#/q/tafsir');await p.waitForSelector('a.tfrow',{timeout:25000});await p.waitForTimeout(3000);
-const au=await p.evaluate(()=>{const a=[...document.querySelectorAll('#qv a.tfrow')].map(x=>x.textContent);const ix=a.map((t,i)=>/ابن كثير|ابنِ کثیر/.test(t)&&/عربی/.test(t)?i:-1).filter(i=>i>=0);return ix});
+const au=await p.evaluate(()=>{const a=[...document.querySelectorAll('#qv a.tfrow')].map(x=>x.textContent);const ix=a.map((t,i)=>/ابن كثير|ابنِ? ?کثیر/.test(t)&&/عربی/.test(t)?i:-1).filter(i=>i>=0);return ix});
 ck(au.length>=2&&au[au.length-1]-au[0]===au.length-1,'Ibn Kathir Arabic tafsirs together '+au);
 console.log(bad.length?'FAIL '+bad.join('|'):'PASS heading_ornaments');await b.close();process.exit(bad.length?1:0)})();

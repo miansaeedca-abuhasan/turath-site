@@ -1,1 +1,1 @@
-counts: {"ur_durood":1777,"ur_allah":56,"ur_noq":1,"ar_verse_marked":2966,"ar_noq":3,"en_glyph":234,"en_noq":2}
+counts: {"ur_durood":1777,"ur_allah":56,"ur_letters":50947,"ur_quran_mark":1684,"ur_arabic_guillemets":274,"ur_quotes_fixed":1212,"ur_noq":1,"ar_verse_marked":2966,"ar_noq":3,"en_glyph":234,"en_noq":2}

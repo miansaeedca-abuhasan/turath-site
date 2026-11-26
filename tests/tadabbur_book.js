@@ -25,7 +25,7 @@ for(const [k,l] of Object.entries(KL)){const E=A.find(e=>e.key===k);if(!E){bad.p
 if(new Set(Object.values(refl)).size!==1||refl.tadabburur<4000)bad.push('reflection counts '+JSON.stringify(refl));
 if(/\(\?<[=!]/.test(idx.slice(idx.indexOf('const TD_KEYS'),idx.indexOf('// several numbered reports'))))bad.push('lookbehind in tadItem');
 (async()=>{const b=await chromium.launch();
-for(const [k,ui,lab,qsel] of [['tadabburur','ur','آیات پر عمل','.tdq'],['tadabburar','ar','معاني الكلمات','.qayah'],['tadabburen','en','Acting on the Verses',null]]){
+for(const [k,ui,lab,qsel] of [['tadabburur','ur','آیات پر عمل','.qayah'],['tadabburar','ar','معاني الكلمات','.qayah'],['tadabburen','en','Acting on the Verses',null]]){
  const p=await(await b.newContext({viewport:{width:430,height:900}})).newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.addInitScript((u)=>{try{localStorage.ui=u;localStorage.newsSeen='20261125b';localStorage.newsDay=new Date().toDateString()}catch(e){}},ui);
  await p.goto('http://localhost:8765/index.html#/s/'+k+'/1');await p.waitForSelector('.td',{timeout:30000}).catch(()=>{});await p.waitForTimeout(800);
@@ -33,8 +33,8 @@ for(const [k,ui,lab,qsel] of [['tadabburur','ur','آیات پر عمل','.tdq'],
  if(r.pages<20)bad.push(k+' pages '+r.pages);if(r.lab!==lab)bad.push(k+' first label '+r.lab);if(r.circ<20||r.ans<5||r.tbl<4||!r.blue)bad.push(k+' layout '+JSON.stringify(r));
  if(!/الفاتح|Fatih/.test(r.head||''))bad.push(k+' head '+r.head);
  if(errs.length)bad.push(k+' js error '+errs[0]);
- if(ui==='ur'){const c=await p.evaluate(()=>{const q=document.querySelector('.td .tdq'),l=document.querySelector('.td .tdlab'),n=document.querySelector('.td .tdq2');return [q&&getComputedStyle(q).color,l&&getComputedStyle(l).backgroundColor,n&&getComputedStyle(n).color]});
-  if(c[0]!=='rgb(79, 166, 230)'||c[1]!=='rgb(217, 119, 124)'||c[2]!=='rgb(138, 39, 144)')bad.push('colours '+c.join('|'));}
+ if(ui==='ur'){const c=await p.evaluate(()=>{const q=document.querySelector('.td .qayah'),l=document.querySelector('.td .tdlab'),n=document.querySelector('.td .tdq2');return [q&&getComputedStyle(q).color,l&&getComputedStyle(l).backgroundColor,n&&getComputedStyle(n).color]});
+  if(c[0]!=='rgb(79, 166, 230)'||c[1]!=='rgb(200, 80, 90)'||c[2]!=='rgb(138, 39, 144)')bad.push('colours '+c.join('|'));}
  await p.goto('http://localhost:8765/index.html#/s/'+k+'?idx');await p.waitForSelector('.snum',{timeout:25000});const n=await p.$$eval('.snum',x=>x.length);if(n!==30)bad.push(k+' index '+n);
  await p.context().close();}
 await b.close();console.log(bad.length?'FAIL '+bad.slice(0,15).join(' | '):'PASS tadabbur_book');process.exit(bad.length?1:0)})();
