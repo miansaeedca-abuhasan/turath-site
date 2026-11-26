@@ -200,8 +200,13 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 .td .tdq,.td .tdv,.td .qayah{color:var(--tdb)}.td .tdq{font-family:var(--arabic);font-size:1.1em}.td .tdq{margin:0 .35em}.td .tdban b{word-spacing:.15em}
 .td .tdv{font-family:var(--arabic);font-size:1.2em;line-height:2.4;margin:.1rem 0}.td .tdv .ayn{color:var(--tdb)}
 .td .tdq2{color:var(--tdp);margin-top:.35rem!important}.td .tdql{font-weight:700}
-.td .tdans{border-bottom:2px dotted rgba(110,110,110,.6);margin:.15rem 0 .9rem;min-height:2.3em}.td .tdal{font-size:.85em;color:var(--muted,#666)}
+.td .tdans{border-bottom:2px dotted rgba(90,90,90,.7);margin:.1rem 0 1rem;min-height:1.9em;line-height:1.7}.td .tdal{font-size:.9em;font-weight:700;color:var(--fg,#222)}
 .td .tdwrap{overflow-x:auto;margin:.2rem 0 .8rem}.td .tdw{width:100%;border-collapse:collapse}.td .tdw th{background:var(--tdr);color:#fff;padding:.25rem .8rem;font-weight:700;text-align:start}
+.td .tdans{cursor:pointer}.td .tdans .tdat{white-space:pre-wrap;overflow-wrap:anywhere;font-size:.95em;line-height:1.9;padding:.1rem 0 .2rem}.td .tdans.has{border-bottom-style:solid}
+.tdov{position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px))}
+.tdov .tdbx{width:min(560px,100%);background:var(--paper,#fff);color:var(--fg,#222);border-radius:1rem;padding:1rem 1.1rem;box-shadow:0 10px 40px rgba(0,0,0,.35);max-height:100%;overflow:auto}.tdov h4{margin:0 0 .6rem;font-size:1.1em}
+.tdov .tdta{width:100%;box-sizing:border-box;font:inherit;font-size:1rem;line-height:1.8;padding:.6rem .7rem;border:1.5px solid #4fa6e6;border-radius:.6rem;background:var(--paper,#fff);color:inherit;resize:vertical}
+.tdov .tdmsg{margin:.4rem 0 0;color:#b3261e;font-size:.9em}.tdov .tdhn{margin:.5rem 0;font-size:.82em;color:var(--muted,#666)}.tdov .tdbt{display:flex;gap:.5rem;flex-wrap:wrap}.tdov .tdbt .btn{flex:1;min-width:6rem}
 .td .tdw td{border:1px solid rgba(128,128,128,.4);padding:.3rem .8rem;vertical-align:top}.td .tdwd{font-family:var(--arabic);color:var(--tdb);font-size:1.12em;white-space:nowrap}
 @media (max-width:560px){.td{font-size:1rem}.td .tdhead{padding:.25rem .55rem}.td .tdwd{white-space:normal}}
 .arp{font-family:var(--arabic);direction:rtl;text-align:right;font-size:1.12em;line-height:2.1}
@@ -1492,10 +1497,32 @@ function tdTop(n){const sp=TD_SP[n];if(!sp||!window.QURAN||!QURAN.tdBox)return n
     w.replaceChildren(...parts);};
   const on=()=>{if(!w.isConnected&&w.__seen){window.removeEventListener('tdtr',on);return;}let k2=key;try{k2=localStorage.getItem('turath_td_tr')||key;}catch(e){}if(k2!==key||!w.__seen){key=k2;}draw();};
   window.addEventListener('tdtr',on);setTimeout(()=>{w.__seen=true;},0);draw();return w;}
+/* the reader's own answer under a «سوال» of «القرآن: تدبر وعمل» (owner 26-11-2026): tap «جواب» → a window to write, save → the answer shows in that place. Saved only in this browser (localStorage), can be edited / deleted any time; words not befitting the Qur'an are wiped from the box as they are typed and never shown. */
+const TD_AT={ur:{ttl:'اپنا جواب لکھیں',save:'محفوظ کریں',del:'حذف کریں',close:'بند کریں',hint:'آپ کا جواب صرف اسی فون (براؤزر) میں محفوظ رہے گا اور کسی کو نظر نہیں آئے گا۔',bad:'ایسے الفاظ قرآن کے شایانِ شان نہیں، اس لیے مٹا دیے گئے۔',ph:'یہاں جواب لکھیں…'},
+ ar:{ttl:'اكتب إجابتك',save:'حفظ',del:'حذف',close:'إغلاق',hint:'تبقى إجابتك محفوظة في هذا المتصفح فقط ولا يراها أحد.',bad:'هذه الألفاظ لا تليق بالقرآن الكريم فتم حذفها.',ph:'اكتب إجابتك هنا…'},
+ en:{ttl:'Write your answer',save:'Save',del:'Delete',close:'Close',hint:'Your answer stays only in this browser and nobody else can see it.',bad:'Such words do not befit the Qur’an, so they were removed.',ph:'Write your answer here…'}};
+const TD_BADW=['حرامزادہ','حرامزادے','حرامی','کمینہ','کمینے','بھڑوا','بھڑوے','رنڈی','کنجر','چوتیا','گانڈو','لنڈ','پھدی','مادرچود','بہنچود','عاهره','شرموطه','منيوك','قحبه','ابنالكلب','ابنالزنا','كسامك','harami','haramzada','haramzadi','kamina','kameena','bhenchod','behenchod','madarchod','bhosdi','bhosda','chutiya','chutia','gandu','lund','randi','kanjar','bhadwa','fuck','fucker','fucking','motherfucker','shit','bitch','asshole','bastard','dick','pussy','cunt','slut','whore','nigger','porn','sex'];
+const TD_BADS=TD_BADW.filter(w=>w.length>=6);
+function tdNorm(t){return String(t||'').replace(/[ً-ٰٟۖ-ۭـ​-‏]/g,'').replace(/[أإآٱ]/g,'ا').replace(/[يىئی]/g,'ي').replace(/[كک]/g,'ك').replace(/[هہھةۃ]/g,'ه').replace(/ؤ/g,'و').toLowerCase().replace(/([a-z])\1{2,}/g,'$1$1').replace(/0/g,'o').replace(/1/g,'i').replace(/3/g,'e').replace(/@/g,'a').replace(/\$/g,'s');}
+const TD_BADN=TD_BADW.map(tdNorm);
+function tdBad(t){const n=tdNorm(t);if(!n.trim())return false;const toks=n.split(/[^a-z؀-ۿ]+/).filter(Boolean);
+  if(toks.some(w=>TD_BADN.includes(w)))return true;const j=n.replace(/[^a-z؀-ۿ]+/g,'');return TD_BADN.some(w=>w.length>=6&&j.indexOf(w)>=0);}
+function tdAns(L,n,q,T){const key='tdans:'+L+':'+n+':'+q,A=TD_AT[L]||TD_AT.en;let v='';try{v=localStorage.getItem(key)||'';}catch(e){}
+  const txt=el('div',{class:'tdat'}),box=el('div',{class:'tdans',role:'button',tabindex:'0','data-k':key},el('span',{class:'tdal'},T.a),txt);
+  const show=()=>{txt.textContent=v;box.classList.toggle('has',!!v);};show();
+  const open=()=>{const ov=el('div',{class:'tdov',dir:L==='en'?'ltr':'rtl',lang:L}),ta=el('textarea',{class:'tdta',rows:'6',placeholder:A.ph,maxlength:'2000'}),msg=el('p',{class:'tdmsg',hidden:true}),
+      close=()=>{ov.remove();box.focus();},save=el('button',{type:'button',class:'btn tdsv'},A.save),del=el('button',{type:'button',class:'btn tdde'},A.del),cl=el('button',{type:'button',class:'btn tdcl'},A.close);
+    ta.value=v;let tm=0;const warn=()=>{msg.textContent=A.bad;msg.hidden=false;clearTimeout(tm);tm=setTimeout(()=>{msg.hidden=true;},4000);};
+    ta.addEventListener('input',()=>{if(tdBad(ta.value)){ta.value='';warn();}});
+    save.addEventListener('click',()=>{if(tdBad(ta.value)){ta.value='';warn();return;}v=ta.value.trim();try{if(v)localStorage.setItem(key,v);else localStorage.removeItem(key);}catch(e){}show();close();});
+    del.addEventListener('click',()=>{v='';try{localStorage.removeItem(key);}catch(e){}show();close();});cl.addEventListener('click',close);
+    ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+    ov.append(el('div',{class:'tdbx'},el('h4',{},A.ttl),ta,msg,el('p',{class:'tdhn'},A.hint),el('div',{class:'tdbt'},save,v?del:'',cl)));document.body.append(ov);setTimeout(()=>ta.focus(),0);};
+  box.addEventListener('click',open);box.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});return box;}
 function tadItem(r,n,L){
   const T=TD_L[L]||TD_L.en,rtl=L!=='en',DG={ur:'۰۱۲۳۴۵۶۷۸۹',ar:'٠١٢٣٤٥٦٧٨٩'}[L],fm=x=>DG?String(x).replace(/\d/g,d=>DG[d]):String(x);
   const box=el('div',{class:'bkitem td td-'+L,lang:L,dir:rtl?'rtl':'ltr'}),lines=(r&&r[1]||'').split('\n').filter(Boolean);
-  let k=0,cur=null,tb=null;
+  let k=0,cur=null,tb=null,qn=0;
   const circ=()=>el('span',{class:'tdn'},fm(k)),verses=(v,L2)=>{const d=el('div',{class:'tdv',lang:'ar',dir:'rtl'});v.split(/([٠-٩]+)/).forEach((x,i)=>{if(!x)return;if(i%2){const nn=parseInt(x.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660),10);d.append(el('span',{class:'ayn ud'},fm(nn)));}else d.append(x);});if(L2==='ur'){d.prepend('\ufd3f');d.append('\ufd3e');}return d;};
   lines.forEach(x=>{const c=x[0],b=x.slice(1);
     if(c==='§'){box.append(el('div',{class:'tdhead'},el('span',{class:'tdpg'},el('small',{},T.pg),el('b',{},fm(n))),el('span',{class:'tdsur'},b.trim())));if(L==='ur'){const tp=tdTop(n);if(tp)box.append(tp);}return;}
@@ -1503,7 +1530,7 @@ function tadItem(r,n,L){
     if(c===''){k++;box.append(el('div',{class:'tdi'},circ(),el('div',{class:'tdb'},el('p',{},...tdFmt(b,L)))));return;}
     if(c===''){k++;const bd=el('div',{class:'tdb'});if(b.trim())bd.append(verses(b,L));cur=bd;box.append(el('div',{class:'tdi'},circ(),bd));return;}
     if(c===''){(cur||box).append(el('p',{},...tdFmt(b,L)));return;}
-    if(c===''){(cur||box).append(el('p',{class:'tdq2'},el('span',{class:'tdql'},T.q+' '),...tdFmt(b,L)),el('div',{class:'tdans'},el('span',{class:'tdal'},T.a)));return;}
+    if(c===''){(cur||box).append(el('p',{class:'tdq2'},el('span',{class:'tdql'},T.q+' '),...tdFmt(b,L)),tdAns(L,n,++qn,T));return;}
     if(c===''){const i=b.indexOf('');tb.append(el('tr',{},el('td',{class:'tdwd',lang:'ar',dir:'rtl'},b.slice(0,i)),el('td',{class:'tdmn',lang:L},...tdFmt(b.slice(i+1),L))));return;}
     box.append(el('p',{},b));});
   return L==='ur'?udig(box):box;}
@@ -1934,7 +1961,7 @@ async function showBookList(cat,aut,authors,topics){
   const rowEl=(r,dn)=>{
       const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});if(r.key)a.dataset.k=r.key;
       a.append(el('span',{class:'snum'},N(dn==null?r.no:dn)),
-        el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},EN()?r.en:ui==='ar'?r.ar:hbU(r),hbLg(r.lg).length>1?el('span',{class:'hblg'},' ('+hbLg(r.lg).map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),false&&r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',hbSubShort(r.sub)?el('span',{class:'cs hbsub'},hbSubShort(r.sub)):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),r.pub&&!(r.pub.only&&!r.pub.only.includes(ui))?el('span',{class:'cs hbpub'},({ur:'ناشر',ar:'الناشر',en:'Publisher',bn:'প্রকাশক',hi:'प्रकाशक',gu:'પ્રકાશક',fr:'Éditeur'}[ui]||'Publisher')+': '+(r.pub[ui]||(ui==='ar'?r.pub.ar:r.pub.en||r.pub.ur))):'',el('span',{class:'cs'},(r.key==='raheeq'?(n=>n+' '+({ur:'حصے',ar:'أجزاء',en:'parts'}[ui]||'parts')):T(r.key==='shadharat'?'cNas':'hbCount'))(N(r.n))+(r.ar_only?'، '+T('arOnly'):'')+(r.ext?'، '+T('hbExt'):''))),
+        el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},EN()?r.en:ui==='ar'?r.ar:hbU(r),hbLg(r.lg).length>1?el('span',{class:'hblg'},' ('+hbLg(r.lg).map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),false&&r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',hbSubShort(r.sub)?el('span',{class:'cs hbsub'},hbSubShort(r.sub)):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),r.pub&&!(r.pub.only&&!r.pub.only.includes(ui))?el('span',{class:'cs hbpub'},({ur:'ناشر',ar:'الناشر',en:'Publisher',bn:'প্রকাশক',hi:'प्रकाशक',gu:'પ્રકાશક',fr:'Éditeur'}[ui]||'Publisher')+': '+(r.pub[ui]||(ui==='ar'?r.pub.ar:r.pub.en||r.pub.ur))):'',el('span',{class:'cs'},(r.key==='raheeq'?(n=>n+' '+({ur:'حصے',ar:'أجزاء',en:'parts'}[ui]||'parts')):T(r.key==='shadharat'?'cNas':'hbCount'))(N(r.n))+(r.ar_only?(ui==='ur'||ui==='ar'?'، ':', ')+T('arOnly'):'')+(r.ext?(ui==='ur'||ui==='ar'?'، ':', ')+T('hbExt'):''))),
         ui==='ur'?el('span',{class:'sar',lang:'ar'},r.ar):'',
         el('button',{class:'ab',type:'button',title:T('hbResume'),'aria-label':T('hbResume'),on:{click:e=>{e.preventDefault();e.stopPropagation();r.resume();}}},icon('history')));
       return a;};
@@ -3605,7 +3632,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const edLabel = e => LTR() ? e.en : e.ur;
   // a tafsir's name always says its language in brackets (Urdu / Arabic ...), like «تفسیر ابنِ کثیر (اردو)»
   const TLN = {ur: {ur: 'اردو', ar: 'عربی', en: 'انگریزی', bn: 'بنگلہ', hi: 'ہندی', gu: 'گجراتی', fr: 'فرانسیسی'}, ar: {ur: 'أردو', ar: 'عربي', en: 'إنجليزي', bn: 'بنغالي', hi: 'هندي', gu: 'غوجاراتي', fr: 'فرنسي'}};
-  const tafNm = t => { if (LTR()) return t.en; const n = String(t.ur || ''); return /[)）]\s*$/.test(n) || !(TLN[ui] || TLN.ur)[t.lang] ? n : n + ' (' + (TLN[ui] || TLN.ur)[t.lang] + ')'; };
+  const TAFAR_EN = {en_ibnkathir: 'تفسير ابن كثير (إنجليزي)', en_jalalayn: 'تفسير الجلالين (إنجليزي)'};
+  const TAFUR_EN = {en_ibnkathir: 'تفسیر ابنِ کثیر (انگریزی)', en_jalalayn: 'تفسیر الجلالین (انگریزی)'};
+  const tafNm = t => { if (LTR()) return t.en; if (ui === 'ur' && TAFUR_EN[t.key]) return TAFUR_EN[t.key]; if (ui === 'ar' && TAFAR_EN[t.key]) return TAFAR_EN[t.key]; const n = String(t.ur || ''); return /[)）]\s*$/.test(n) || !(TLN[ui] || TLN.ur)[t.lang] ? n : n + ' (' + (TLN[ui] || TLN.ur)[t.lang] + ')'; };
 
   /* ---------- settings ---------- */
   const SMIN = 10, SMAX = 80;
@@ -3841,19 +3870,21 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       /* «نئی» badge for one month on the tafsirs added on 19/20-11-2026 */
       const NWT = {tadabburur: '2026-12-25', tadabburar: '2026-12-25', tadabburen: '2026-12-25', tafsirnoor: '2026-12-19', ur_makki: '2026-12-20', ur_sanai: '2026-12-20', ur_kilani: '2026-12-20', ur_luqman: '2026-12-20', ur_hanif: '2026-12-20', ur_hawashi: '2026-12-20', ur_azad: '2026-12-20', ur_fahm: '2026-12-20', ur_bhuttavi: '2026-12-20'};
       const nwOn = k => NWT[k] && Date.now() < new Date(NWT[k] + 'T00:00:00').getTime(), nwTxt = {ur: 'نئی', ar: 'جديد'}[ui] || 'New';
-      const ROW = (href, name, au, cnt, nw, cls) => el('a', {class: 'card srow2 hbrow tfrow' + (cls ? ' ' + cls : ''), href}, el('span', {class: 'sinfo'}, el('span', {class: 'ct' + (ui === 'ar' ? ' arname' : ''), dir: 'auto'}, name, nw ? el('span', {class: 'newtag'}, nwTxt) : null), au ? el('span', {class: 'sau'}, au) : '', cnt ? el('span', {class: 'cs'}, cnt) : ''));
+      const ROW = (href, name, au, cnt, nw, cls) => el('a', {class: 'card srow2 hbrow tfrow' + (cls ? ' ' + cls : ''), href}, el('span', {class: 'sinfo'}, el('span', {class: 'ct' + (ui === 'ar' ? ' arname' : ''), dir: 'auto'}, SU(name), nw ? el('span', {class: 'newtag'}, nwTxt) : null), au ? el('span', {class: 'sau'}, SU(au)) : '', cnt ? el('span', {class: 'cs'}, cnt) : ''));
+      const RBN_EN = {2: ['Tafsir Mujahid', 'Mujahid ibn Jabr'], 16: ['Tafsir Sufyan ath-Thawri', 'Sufyan ath-Thawri'], 53: ['Ma\u2019ani al-Qur\u2019an of al-Farra\u2019', 'Abu Zakariyya al-Farra\u2019'], 59: ['Tafsir al-Qur\u2019an of Abd ar-Razzaq as-San\u2019ani', 'Abd ar-Razzaq as-San\u2019ani'], 69: ['At-Tafsir from the Sunan of Sa\u2019id ibn Mansur', 'Sa\u2019id ibn Mansur'], 338: ['Jami\u2019 al-Bayan (Tafsir at-Tabari)', 'Ibn Jarir at-Tabari'], 390: ['Tafsir Ibn Abi Hatim', 'Ibn Abi Hatim ar-Razi'], 585: ['Tafsir al-Qur\u2019an al-\u2019Aziz (Ibn Abi Zamanin)', 'Ibn Abi Zamanin al-Andalusi'], 765: ['Ma\u2019alim at-Tanzil (Tafsir al-Baghawi)', 'Al-Husayn ibn Mas\u2019ud al-Baghawi'], 1069: ['Tafsir al-Qur\u2019an of Ibn al-Mundhir', 'Muhammad ibn Ibrahim ibn al-Mundhir'], 1736: ['Tafsir Muqatil ibn Sulayman', 'Muqatil ibn Sulayman al-Balkhi'], 1829: ['Al-Jami\u2019 fi Tafsir al-Qur\u2019an (Ibn Wahb)', 'Abdullah ibn Wahb'], 1851: ['Al-Wasit fi Tafsir al-Qur\u2019an al-Majid', 'Al-Wahidi'], 4184: ['Tafsir \u2019Ata\u2019 al-Khurasani', 'Muhammad ibn Nasr ar-Ramli'], 4185: ['Tafsir Muslim ibn Khalid az-Zanji', 'Muhammad ibn Nasr ar-Ramli'], 4186: ['Tafsir Nafi\u2019 ibn Abi Nu\u2019aym', 'Muhammad ibn Nasr ar-Ramli'], 4187: ['Tafsir Yahya ibn Sallam', 'Yahya ibn Sallam']};
+      const NOORN = {ur: 'تفسیر نور الہدیٰ (اردو)', ar: 'تفسير نور الهدى (الأردية)'}[ui] || 'Tafsir Noor al-Huda (' + T('langs').ur + ')';
       const AH = n => ({ur: 'احادیث: ', ar: 'الأحاديث: ', en: 'Hadith: '}[ui] || 'Hadith: ') + NUM(n);
       const AUG = {ar_ibnkathir: 'ibnkathir', ar_baghawi: 'baghawi', ar_durr: 'suyuti', ar_wajiz: 'wahidi'}, RBG = {116: 'tabari', 137: 'ibnabihatim', 128: 'baghawi', 235: 'wahidi'};
       const ARB = ui === 'ar' ? '' : ' (' + (({ur: 'عربی', en: 'Arabic', bn: 'আরবি', hi: 'अरबी', gu: 'અરબી', fr: 'arabe'})[ui] || 'Arabic') + ')';
       const split = nm => { const m = nm.match(/^(.*?)\s+[-—]\s+(.*?)\s*(\([^()]*\))?$/); return m ? [m[1] + (m[3] ? ' ' + m[3] : ''), m[2]] : [nm, '']; };
       const TDR = {ur: 'tadabburur', ar: 'tadabburar', en: 'tadabburen'}, TDB = {ur: 'القرآن: تدبر و عمل', ar: 'القرآن تدبر وعمل'}[ui] || 'Al-Qur’an: Tadabbur wa Amal';   // «القرآن: تدبر وعمل» stands at the end of its language group
       LG.forEach(l => { const ts = list.filter(x => x.lang === l); if (!ts.length && !TDR[l]) return;
-        const extra = l === 'ur' ? [ROW('#/s/tafsirnoor', 'تفسیر نور الہدیٰ (اردو)', '', '', nwOn('tafsirnoor'), 'tfbook')] : [];
+        const extra = l === 'ur' ? [ROW('#/s/tafsirnoor', NOORN, '', '', nwOn('tafsirnoor'), 'tfbook')] : [];
         const rowsL = ts.map(x => { const [n, au] = split(nameOf(x)); return [AUG[x.key] || x.key, ROW('#/q/tafsir/' + x.key, n, au, '', nwOn(x.key))]; });
-        if (l === 'ar') { shT.forEach(c => rowsL.push([c.author ? c.author[0] : c.key, ROW('#/s/' + c.key, (ui === 'ar' ? c.ar : (c.ur || c.ar)) + ARB, c.author ? (ui === 'ar' ? c.author[1] : c.author[2] || c.author[1]) : '', c.count ? AH(c.count) : '', false)])); if (RC) rbRows.forEach(r => rowsL.push([RBG[r[3]] || 'rb' + r[3], RB.hubRow(RC, r, ARB)]));
+        if (l === 'ar') { shT.forEach(c => rowsL.push([c.author ? c.author[0] : c.key, ROW('#/s/' + c.key, (ui === 'ar' ? c.ar : ui === 'ur' ? (c.ur || c.ar) : (c.en || c.ur || c.ar)) + ARB, c.author ? (ui === 'ar' ? c.author[1] : ui === 'ur' ? (c.author[2] || c.author[1]) : (c.author[3] || c.author[1])) : '', '', false)])); if (RC) rbRows.forEach(r => { const en = ui !== 'ar' && ui !== 'ur' && RBN_EN[r[0]]; rowsL.push([RBG[r[3]] || 'rb' + r[3], en ? ROW('#/rb/b/' + r[0], en[0] + ARB, en[1], '', false) : ROW('#/rb/b/' + r[0], r[1] + ARB, RC.a[r[3]] ? RC.a[r[3]][0] : '', '', false)]); });
           const gs = []; rowsL.forEach(x => { if (!gs.includes(x[0])) gs.push(x[0]); }); rowsL.sort((p, q) => gs.indexOf(p[0]) - gs.indexOf(q[0])); }   // one author's tafsirs stay together (stable order inside the author)
-        if (TDR[l]) rowsL.push(['tadabbur', ROW('#/s/' + TDR[l], TDB + ' (' + (ui === 'ur' && l === 'en' ? 'انگریزی' : T('langs')[l]) + ')', '', '', nwOn(TDR[l]))]);
-        v.append(el('p', {class: 'grp'}, T('langs')[l]), ...extra, ...rowsL.map(x => x[1])); });
+        if (TDR[l]) rowsL.push(['tadabbur', ROW('#/s/' + TDR[l], TDB + ' (' + (((ui === 'ur' ? {en: 'انگریزی'} : {})[l]) || T('langs')[l]) + ')', '', '', nwOn(TDR[l]))]);
+        v.append(el('p', {class: 'grp'}, (({ur: {en: 'انگریزی', bn: 'بنگلہ'}, en: {bn: 'Bangla'}, hi: {en: 'अंग्रेज़ी', bn: 'बंगाली'}, gu: {en: 'અંગ્રેજી', bn: 'બંગાળી'}, fr: {en: 'Anglais', bn: 'Bengali'}}[ui] || {})[l]) || T('langs')[l]), ...extra, ...rowsL.map(x => x[1])); });
       return;
     }
     if (!sn) {
@@ -4011,7 +4042,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   function surahRow(m, n) {
     const a = el('a', {class: 'card srow2', href: '#/q/s/' + n});
     a.append(el('span', {class: 'snum'}, NUM(n)),
-      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, LTR() ? m[0] : SU(m[1])), el('span', {class: 'cs'}, (m[3] === 'M' ? T('meccan') : T('medinan')) + ' · ' + T('ayahs')(NUM(m[4])) + (LTR() ? '' : ' · ' + m[0]))),
+      el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, LTR() ? m[0] : SU(m[1])), el('span', {class: 'cs'}, (m[3] === 'M' ? T('meccan') : T('medinan')) + ' · ' + T('ayahs')(NUM(m[4])) + '')),
       el('span', {class: 'sar', lang: 'ar'}, m[1]),
       el('button', {class: 'ab', type: 'button', title: T('recite'), 'aria-label': T('recite'), on: {click: e => { e.preventDefault(); location.hash = '#/q/s/' + n + '/1/play'; }}}, icon('play')));
     return a;
@@ -5129,7 +5160,12 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const getLang = b => { const v = getSel(b); return v.includes(ui) ? ui : (v[0] || null); };
   const getExtras = b => { const p = getLang(b); return getSel(b).filter(l => l !== p); };
   const setSel = v => { try { localStorage['csel_' + ui] = JSON.stringify(v); } catch (e) {} };
-  const LNAME = {ur: 'اردو', en: 'English', bn: 'বাংলা', hi: 'हिन्दी', gu: 'ગુજરાતી', fr: 'Français', ne: 'नेपाली'};
+  // language names in the words of the reader's own interface language (owner 26-11-2026: no other language / script inside a language's interface)
+  const LNAMES = {ur: {ur: 'اردو', en: 'انگریزی', bn: 'بنگلہ', hi: 'ہندی', gu: 'گجراتی', fr: 'فرانسیسی', ne: 'نیپالی'}, ar: {ur: 'الأردية', en: 'الإنجليزية', bn: 'البنغالية', hi: 'الهندية', gu: 'الغوجاراتية', fr: 'الفرنسية', ne: 'النيبالية'},
+    en: {ur: 'Urdu', en: 'English', bn: 'Bangla', hi: 'Hindi', gu: 'Gujarati', fr: 'French', ne: 'Nepali'}, hi: {ur: 'उर्दू', en: 'अंग्रेज़ी', bn: 'बंगाली', hi: 'हिन्दी', gu: 'गुजराती', fr: 'फ़्रेंच', ne: 'नेपाली'},
+    bn: {ur: 'উর্দু', en: 'ইংরেজি', bn: 'বাংলা', hi: 'হিন্দি', gu: 'গুজরাটি', fr: 'ফরাসি', ne: 'নেপালি'}, gu: {ur: 'ઉર્દૂ', en: 'અંગ્રેજી', bn: 'બંગાળી', hi: 'હિન્દી', gu: 'ગુજરાતી', fr: 'ફ્રેન્ચ', ne: 'નેપાળી'},
+    fr: {ur: 'Ourdou', en: 'Anglais', bn: 'Bengali', hi: 'Hindi', gu: 'Gujarati', fr: 'Français', ne: 'Népalais'}};
+  const LNAME = LNAMES[ui] || LNAMES.en;
 
   function langChips(b, redraw) {
     const box = el('div', {class: 'chips lchips'}), cur = getSel(b);
@@ -6148,7 +6184,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     bar(fmtN(secNo(b, s)) + '. ' + secT(b, s), bname(b), true);
     bookShare(b);
     try { localStorage['rd:' + b.key] = s[0]; } catch (e) {}
-    const TOC = {ur: 'فہرست ابواب', ar: 'الفهرس', en: 'Contents', bn: 'সূচিপত্র', hi: 'विषय-सूची', gu: 'અનુક્રમણિકા', fr: 'Sommaire'}[ui] || 'Contents';
+    const TOC = {ur: HB_CAT[b.key] === 5 ? 'فہرست' : 'فہرست ابواب', ar: 'الفهرس', en: 'Contents', bn: 'সূচিপত্র', hi: 'विषय-सूची', gu: 'અનુક્રમણિકા', fr: 'Sommaire'}[ui] || 'Contents';
     const tocBtn = () => el('a', {class: 'btn lbtn toc', href: '#/s/' + b.key + '?idx'}, TOC);
     box.append(tocBtn());
     // a section may show a range of another book (سیر: the Khulafa' and the ten from Fazail as-Sahaba)
