@@ -5,7 +5,7 @@ const idx=fs.readFileSync(__dirname+'/../index.html','utf8'),off=JSON.parse(fs.r
 const KL={tadabburur:'ur',tadabburar:'ar',tadabburen:'en'},ST='',refl={};
 for(const [k,l] of Object.entries(KL)){const E=A.find(e=>e.key===k);if(!E){bad.push('not registered '+k);continue}
  if(E.count!==604||E.sections.length!==30||!E.prose||E.langs.join()!==l)bad.push('entry '+k);
- if(!new RegExp('"'+k+'":12').test(idx))bad.push('HB_CAT '+k);
+ if(!new RegExp('"'+k+'":5').test(idx))bad.push('HB_CAT '+k);
  if(!off.groups.some(g=>g.id==='c_'+k))bad.push('offline '+k);
  let prev=0;E.files[l].forEach(f=>{if(f[0]!==prev+1)bad.push('gap '+f[2]);prev=f[1]});if(prev!==604)bad.push('files end '+k);
  const rows=[];E.files[l].forEach(f=>{const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');rows.push(...JSON.parse(s.slice(s.indexOf(',',s.indexOf('"'+l+'"'))+1,-1)))});
