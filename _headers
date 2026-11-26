@@ -24,3 +24,12 @@
   Cache-Control: public, max-age=31536000
 /api/*
   Cache-Control: no-store
+
+/coll/*
+  X-Robots-Tag: noindex, noarchive, noai, noimageai
+/quran/*
+  X-Robots-Tag: noindex, noarchive, noai, noimageai
+/data/*
+  X-Robots-Tag: noindex, noarchive, noai, noimageai
+/offline.json
+  X-Robots-Tag: noindex, noarchive, noai, noimageai

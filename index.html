@@ -1574,8 +1574,15 @@ function copyPick(btn,has,go){
 }
 window.copyPick=copyPick;
 function withLink(t,h){t=CLN(AYCP(t));return (t||'').trim()+'\n\n📲 '+T('brand')+': '+appLink(h);}
+// copy / share limit (owner 26-11-2026): one device copies or shares at most 10 pages (about 30,000 characters) a day, so nobody can take the books out in bulk
+const CQ_MAX=30000,CQ_MSG={ur:'آج کی نقل کی حد (10 صفحات) پوری ہو گئی ہے۔ کل دوبارہ نقل کر سکیں گے۔',ar:'بلغتَ الحدّ اليومي للنسخ (10 صفحات). يمكنك النسخ غدًا.',en:'Today’s copy limit (10 pages) is reached. You can copy again tomorrow.'};
+function cqOk(n){try{const k='cq:'+new Date().toISOString().slice(0,10),u=+localStorage[k]||0;
+  if(u+n>CQ_MAX){setTimeout(()=>toast(CQ_MSG[ui]||CQ_MSG.en),80);return false}
+  Object.keys(localStorage).forEach(x=>{if(/^cq:/.test(x)&&x!==k)localStorage.removeItem(x)});localStorage[k]=u+n;}catch(e){}return true;}
+window.cqOk=cqOk;
 async function copyText(s){
   s=CLN(AYCP(s));
+  if(!cqOk(s.length))return false;
   try{await navigator.clipboard.writeText(s);return true}catch(e){}
   const ta=document.createElement('textarea');ta.value=s;ta.style.cssText='position:fixed;opacity:0';document.body.append(ta);ta.select();
   let ok=false;try{ok=document.execCommand('copy')}catch(e){}ta.remove();return ok;
@@ -1618,6 +1625,7 @@ function hadithText(d,scope,arabic){
 async function doCopy(d,scope){toast(T(await copyText(withLink(hadithText(d,scope,await vocalized(d)),'#/h/'+d.num))?'copied':'copyfail'));}
 async function doShare(d,scope){
   const text=withLink(hadithText(d,scope,await vocalized(d)),'#/h/'+d.num);
+  if(!cqOk((text||'').length))return;
   if(navigator.share){try{await navigator.share({title:T('hadith')(d.num),text});return;}catch(e){if(e&&e.name==='AbortError')return;}}
   const ok=await copyText(text);toast(T(ok?'shared':'copyfail'));
   try{window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank','noopener')}catch(e){}
@@ -11621,7 +11629,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   }
   function withRef(t){var r=refText(),link='';try{link=appLink(location.hash)}catch(e){link=location.href}return t+'\n\n'+(r?r+'\n':'')+'📲 '+link}
   async function doCopy(withR){if(!cur)return;var t=cur.t,ok=await copyText(withR?withRef(t):t);toast(ok?lb('ok'):'—');hide()}
-  async function doShare(){if(!cur)return;var text=withRef(cur.t);hide();if(navigator.share){try{await navigator.share({text:text});return}catch(e){if(e&&e.name==='AbortError')return}}var ok=await copyText(text);toast(ok?lb('ok'):'—')}
+  async function doShare(){if(!cur)return;var text=withRef(cur.t);hide();if(!cqOk(text.length))return;if(navigator.share){try{await navigator.share({text:text});return}catch(e){if(e&&e.name==='AbortError')return}}var ok=await copyText(text);toast(ok?lb('ok'):'—')}
 
   /* highlights */
   function wrapRange(r,id,ci){
