@@ -24,6 +24,17 @@ for x in d:
     if 'name' in f: x['name']=x['name'].replace(f['name'][0],f['name'][1],1)
     if 'sub' in f: x['text']=x['text'].replace(f['sub'][0],f['sub'][1],1)
     if 'pre' in f: x['text']=f['pre']+x['text']
+# printed «(مکرر)» entries (owner 26-11-2026, checked on pdf pp. 1476-1478 = printed vol.6 pp. 359-361): the file numbers them as the plain
+# number and puts them in the wrong place; the print has: 3172, 3173, 3174, (مکرر)3172 مرقع/مربع, (مکرر)3173 مزنی, (مکرر)3174 مزین, 3175, 3176
+def _find(num,word):
+    return next(i for i,x in enumerate(d) if x['number']==num and word in x['name'])
+_a=_find('۳۱۷۲','مرقع'); _b=_find('۳۱۷۶','مزنی'); _c=_find('۳۱۷۴','مزین'); _t=next(i for i,x in enumerate(d) if x['number']=='۳۱۷۴' and 'قیطی' in x['name'])
+d[_a]['number']='۳۱۷۲ (مکرر)'; d[_b]['number']='۳۱۷۳ (مکرر)'; d[_c]['number']='۳۱۷۴ (مکرر)'
+_mv=[d[_a],d[_b],d[_c]]; _ids={id(x) for x in _mv}; d=[x for x in d if id(x) not in _ids]
+_p=next(i for i,x in enumerate(d) if x['number']=='۳۱۷۴' and 'قیطی' in x['name']); d[_p+1:_p+1]=_mv
+# 6168: the print has two entries (الف) and (ب)
+for x in d:
+    if x['number']=='۶۱۶۸' and 'والد ابی بکر' in x['name']: x['number']='۶۱۶۸(الف)'
 def strip_name(n):
     n=re.sub(r'\s+',' ',n.strip()); n=re.sub(r'^(سیدنا|سیدہ)\s+','',n); return n
 def core(n,kind):

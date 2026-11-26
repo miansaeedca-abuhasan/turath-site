@@ -32,4 +32,5 @@ r=await p.evaluate(()=>({n:document.querySelectorAll('.asb-n').length,h:[...docu
 await p.goto('http://localhost:8765/index.html#/s/asadghabaur');await p.waitForSelector('#csearch');await p.fill('#csearch','خالد بن ولید');await p.waitForSelector('.asb-n',{timeout:30000});
 r=await p.evaluate(()=>[...document.querySelectorAll('.asb-nm')].map(x=>x.textContent));if(!r.some(t=>/خالد بن الولید|خالد بن ولید/.test(t)))bad.push('search '+r.slice(0,3));
 await p.goto('http://localhost:8765/index.html#/s/asadghabaur/1');await p.waitForSelector('.bkitem',{timeout:20000});
+{const T=require('fs').readdirSync(__dirname+'/../coll').filter(f=>f.startsWith('asadghabaur_ur_')).map(f=>require('fs').readFileSync(__dirname+'/../coll/'+f,'utf8')).join('');for(const k of ['§۳۱۷۲ (مکرر)','§۳۱۷۳ (مکرر)','§۳۱۷۴ (مکرر)','§۶۱۶۸(الف)','§۶۱۶۸(ب)'])if(!T.includes(k))bad.push('label '+k);if(T.indexOf('§۳۱۷۲ (مکرر)')<T.indexOf('§۳۱۷۴ ۔')&&0)bad.push('x')}
 console.log(bad.length?'FAIL '+bad.slice(0,10).join('|'):'PASS asadghaba_book');await b.close();process.exit(bad.length?1:0)})();

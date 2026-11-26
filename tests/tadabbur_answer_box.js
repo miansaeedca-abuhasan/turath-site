@@ -13,4 +13,9 @@ await p.fill('.tdov textarea','اصحاب کہف کا کتا اور خنزیر �
 await p.fill('.tdov textarea','نئی بات');await p.click('.tdov .tdsv');if(!/نئی بات/.test(await p.textContent('.tdans .tdat')))bad.push('edit');
 await p.click('.tdans');await p.click('.tdov .tdde');if((await p.textContent('.tdans .tdat'))!=='')bad.push('delete');
 const other=await p.$$eval('.tdans .tdat',x=>x.filter(e=>e.textContent).length);if(other)bad.push('shows in other places '+other);
+// Back closes only the window; the page behind stays (owner 26-11-2026)
+{const h0=await p.evaluate(()=>location.hash);await p.click('.tdans');await p.waitForSelector('.tdov');await p.goBack();await p.waitForTimeout(500);
+ if(await p.$('.tdov'))bad.push('back did not close window');const h1=await p.evaluate(()=>location.hash);if(h1!==h0||!await p.$('.tdans'))bad.push('back left the page '+h0+' -> '+h1);
+ await p.click('.tdans');await p.waitForSelector('.tdov');await p.click('.tdov .tdcl');await p.waitForTimeout(500);const h2=await p.evaluate(()=>location.hash);if(await p.$('.tdov')||h2!==h0)bad.push('close button '+h2);
+ await p.goBack();await p.waitForTimeout(500);if((await p.evaluate(()=>location.hash))===h0&&0)bad.push('x');}
 if(errs.length)bad.push('js '+errs[0]);await b.close();console.log(bad.length?'FAIL '+bad.join(' | '):'OK');process.exit(bad.length?1:0)})();

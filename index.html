@@ -1516,14 +1516,14 @@ function tdBad(t){const n=tdNorm(t);if(!n.trim())return false;const toks=n.split
 function tdAns(L,n,q,T){const key='tdans:'+L+':'+n+':'+q,A=TD_AT[L]||TD_AT.en;let v='';try{v=localStorage.getItem(key)||'';}catch(e){}
   const txt=el('div',{class:'tdat'}),box=el('div',{class:'tdans',role:'button',tabindex:'0','data-k':key},el('span',{class:'tdal'},T.a),txt);
   const show=()=>{txt.textContent=v;box.classList.toggle('has',!!v);};show();
-  const open=()=>{const ov=el('div',{class:'tdov',dir:L==='en'?'ltr':'rtl',lang:L}),ta=el('textarea',{class:'tdta',rows:'6',placeholder:A.ph,maxlength:'2000'}),msg=el('p',{class:'tdmsg',hidden:true}),
-      close=()=>{ov.remove();box.focus();},save=el('button',{type:'button',class:'btn tdsv'},A.save),del=el('button',{type:'button',class:'btn tdde'},A.del),cl=el('button',{type:'button',class:'btn tdcl'},A.close);
+  const open=()=>{let gone=false,pushed=false;const ov=el('div',{class:'tdov',dir:L==='en'?'ltr':'rtl',lang:L}),ta=el('textarea',{class:'tdta',rows:'6',placeholder:A.ph,maxlength:'2000'}),msg=el('p',{class:'tdmsg',hidden:true}),
+      onpop=()=>{pushed=false;cleanup();},cleanup=()=>{if(gone)return;gone=true;removeEventListener('popstate',onpop);removeEventListener('hashchange',onpop);ov.remove();try{box.focus();}catch(e){}},close=()=>{const was=pushed;pushed=false;cleanup();if(was){try{history.back();}catch(e){}}},save=el('button',{type:'button',class:'btn tdsv'},A.save),del=el('button',{type:'button',class:'btn tdde'},A.del),cl=el('button',{type:'button',class:'btn tdcl'},A.close);
     ta.value=v;let tm=0;const warn=()=>{msg.textContent=A.bad;msg.hidden=false;clearTimeout(tm);tm=setTimeout(()=>{msg.hidden=true;},4000);};
     ta.addEventListener('input',()=>{if(tdBad(ta.value)){ta.value='';warn();}});
     save.addEventListener('click',()=>{if(tdBad(ta.value)){ta.value='';warn();return;}v=ta.value.trim();try{if(v)localStorage.setItem(key,v);else localStorage.removeItem(key);}catch(e){}show();close();});
     del.addEventListener('click',()=>{v='';try{localStorage.removeItem(key);}catch(e){}show();close();});cl.addEventListener('click',close);
     ov.addEventListener('click',e=>{if(e.target===ov)close();});ov.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
-    ov.append(el('div',{class:'tdbx'},el('h4',{},A.ttl),ta,msg,el('p',{class:'tdhn'},A.hint),el('div',{class:'tdbt'},save,v?del:'',cl)));document.body.append(ov);setTimeout(()=>ta.focus(),0);};
+    ov.append(el('div',{class:'tdbx'},el('h4',{},A.ttl),ta,msg,el('p',{class:'tdhn'},A.hint),el('div',{class:'tdbt'},save,v?del:'',cl)));document.body.append(ov);try{history.pushState({tdov:1},'',location.href);pushed=true;}catch(e){}addEventListener('popstate',onpop);addEventListener('hashchange',onpop);setTimeout(()=>ta.focus(),0);};   // owner 26-11-2026: Back closes only this window, the page behind stays
   box.addEventListener('click',open);box.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});return box;}
 function tadItem(r,n,L){
   const T=TD_L[L]||TD_L.en,rtl=L!=='en',DG={ur:'۰۱۲۳۴۵۶۷۸۹',ar:'٠١٢٣٤٥٦٧٨٩'}[L],fm=x=>DG?String(x).replace(/\d/g,d=>DG[d]):String(x);
@@ -2664,7 +2664,7 @@ addEventListener('hashchange',route);addEventListener('DOMContentLoaded',()=>{
     const go=document.createElement('button');go.type='button';go.textContent=l.send;
     const no=document.createElement('button');no.type='button';no.className='rpx';no.textContent=l.cancel;
     const row=document.createElement('div');row.className='rprow';row.append(no,go);
-    box.append(h,w,ta,hp,row);bg.append(box);document.body.append(bg);ta.focus();
+    box.append(h,w,ta,hp,row);bg.append(box);document.body.append(bg);ta.focus();if(window.BKL)window.BKL(bg);
     const close=()=>bg.remove();
     no.onclick=close;bg.addEventListener('click',e=>{if(e.target===bg)close();});
     go.onclick=async()=>{
@@ -11704,7 +11704,12 @@ mark.uhl[data-c="0"]{background:rgba(247,201,72,.55)}mark.uhl[data-c="1"]{backgr
 .sn-save{background:var(--bar,#1d4f78);color:#fff;border:0;border-radius:8px;padding:.45rem 1.1rem;font-weight:700;cursor:pointer}
 .sn-x,.sn-del{background:transparent;color:inherit;border:0;padding:.45rem .6rem;cursor:pointer}.sn-del{color:#c0392b}
 </style>
-<script>(function(){document.addEventListener('click',function(e){var im=e.target.closest&&e.target.closest('.chintro:not(.txt) img');if(!im)return;var o=document.createElement('div');o.className='lbx';var i2=document.createElement('img');i2.src=im.src;i2.alt='';var b=document.createElement('button');b.type='button';b.textContent='بند کریں';o.append(b,i2);o.addEventListener('click',function(){o.remove();document.documentElement.style.overflow='';});document.documentElement.style.overflow='hidden';document.body.append(o);});})();/* ===== «موضوعات» (topics folder): for each topic the Quran verses, then the hadith of al-Jami al-Kamil by its own kitabs and babs, then (last) the da'if / mawdu' hadith of the same topic, marked as such.
+<script>/* owner 26-11-2026: Back closes only the top window (report box, picture view); the page behind stays. node = the overlay element */
+window.BKL=function(node){var pushed=false,gone=false;function end(){if(gone)return;gone=true;removeEventListener('popstate',pop);mo.disconnect();if(pushed){pushed=false;try{history.back();}catch(e){}}}
+function pop(){pushed=false;if(node.parentNode)node.remove();end();}
+var mo=new MutationObserver(function(){if(!document.body.contains(node))end();});
+try{history.pushState({bkl:1},'',location.href);pushed=true;}catch(e){}addEventListener('popstate',pop);mo.observe(document.body,{childList:true});};</script>
+<script>(function(){document.addEventListener('click',function(e){var im=e.target.closest&&e.target.closest('.chintro:not(.txt) img');if(!im)return;var o=document.createElement('div');o.className='lbx';var i2=document.createElement('img');i2.src=im.src;i2.alt='';var b=document.createElement('button');b.type='button';b.textContent='بند کریں';o.append(b,i2);o.addEventListener('click',function(){o.remove();document.documentElement.style.overflow='';});document.documentElement.style.overflow='hidden';document.body.append(o);window.BKL(o);});})();/* ===== «موضوعات» (topics folder): for each topic the Quran verses, then the hadith of al-Jami al-Kamil by its own kitabs and babs, then (last) the da'if / mawdu' hadith of the same topic, marked as such.
    Data is made by tools/topics/build.py: topics/index.js, topics/<id>_<h>.js (verses + Jami chapters), topics/w/<id>_<book>_<h>.js (weak hadith, loaded only when that book is opened). Routes: #/tp · #/tp/<id> */
 (function () {
   'use strict';
