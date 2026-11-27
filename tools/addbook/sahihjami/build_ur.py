@@ -79,8 +79,9 @@ for i,x in enumerate(X,1):
     u=urdu(tr)
     t=tk.strip()
     if t.startswith('«') and t.endswith('»'): t=t[1:-1].strip()
-    if num=='1740':   # the xlsx has the hadith text in this column; the printed takhrij is taken from the epub
-        t=ep['1740'].partition('\n')[2].translate(T);fromep.append(num)
+    hk=hk.strip()
+    if hk not in('','0') and t and re.sub(r'[ً-ْ]','',hk) not in re.sub(r'[ً-ْ]','',t): t=hk+': '+t;fromep.append(num)   # grade only in the hukm column -> put in front (none expected)
+    elif hk not in('','0') and not t: t=hk
     if t in('','0'): t='';notk.append(num)
     t=re.sub(r'\s+',' ',t)
     ar.append([i,a])
@@ -134,8 +135,8 @@ def write(l,rows):
 FA=write('ar',ar);FU=write('ur',ur)
 entry={"key":KEY,"ar":"صحيح الجامع الصغير وزيادته (الترجمة الأردية)","ur":"صحیح الجامع الصغیر و زیادتہ (اردو ترجمہ)","en":"Sahih al-Jami as-Saghir wa Ziyadatuh (Urdu translation)",
  "langs":["ar","ur"],"sections":SECS,"count":len(X),"an":AN2,
- "sub":{"ur":"عربی متن، اردو ترجمہ اور تحقیق و تخریج — علامہ البانی","ar":"النص العربي والترجمة الأردية والتخريج — العلامة الألباني","en":"Arabic text, Urdu translation and takhrij — Al-Albani"},
- "author":["albani","الألباني","علامہ البانی","Al-Albani",1420],
+ "sub":{"ur":"عربی متن، اردو ترجمہ از حافظ طلحہ بابر، تحقیق و تخریج از علامہ البانی","ar":"النص العربي والترجمة الأردية لحافظ طلحة بابر والتخريج للعلامة الألباني","en":"Arabic text, Urdu translation by Hafiz Talha Babar, takhrij by Al-Albani"},
+ "trn":{"ur":"حافظ طلحہ بابر","en":"Hafiz Talha Babar"},"author":["albani","الألباني","علامہ البانی","Al-Albani",1420],
  "files":{"ar":[[a,b,n] for a,b,n,_,_ in FA],"ur":[[a,b,n] for a,b,n,_,_ in FU]}}
 A=[e for e in J if e['key']!=KEY]
 ix=max(i for i,e in enumerate(A) if e['key'] in('silsila',))
@@ -146,4 +147,4 @@ F=FA+FU
 k=[g['id'] for g in o['groups']].index('c_silsila')
 o['groups'].insert(k+1,{"id":"c_"+KEY,"k":"books","n":{"ur":entry['ur'],"en":entry['en'],"ar":entry['ar']},"f":[['coll/'+n,h,'coll/'+n,sz] for a,b,n,sz,h in F],"b":sum(x[3] for x in F)})
 open('offline.json','w',encoding='utf-8').write(jd(o))
-print('rows',len(X),'no takhrij',notk,'takhrij from epub',fromep,'unresolved surah refs',unref)
+print('rows',len(X),'no takhrij',notk,'hukm put in front',fromep,'unresolved surah refs',unref)
