@@ -22,4 +22,6 @@ const ref=await p.evaluate(()=>{const t=document.getElementById('t2');return t&&
 const src=fs.readFileSync(__dirname+'/../index.html','utf8');ok(src.includes("if(/^#\\/s\\//.test(location.hash)){var t2=document.getElementById('t2')"),'refText uses the open book name');
 ok(!/ڈاکٹر صاحب کی/.test(t),'author is «صاحبہ»');
 let hh=0;E.files.ur.forEach(x=>{hh+=(fs.readFileSync(__dirname+'/../coll/'+x[2],'utf8').match(/\\n§|\[\d+,"§/g)||[]).length});ok(hh>=205&&hh<=235,'headings '+hh);
+await p.goto('http://localhost:8765/index.html#/hb');await p.waitForSelector('.hbrow',{timeout:30000});await p.waitForTimeout(5000);
+const inList=await p.evaluate(()=>[...document.querySelectorAll('#list a')].some(a=>/محدثین اندلس/.test(a.textContent)));ok(!inList,'Andalus book is NOT in the main hadith list');
 await b.close();console.log(bad?'FAILED':'OK andulus_book');process.exit(bad?1:0)})();
