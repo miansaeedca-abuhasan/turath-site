@@ -1408,6 +1408,8 @@ const AYR=/([ؕ-ؚۖ-ۜ]*)\s*([۰-۹٠-٩]+)\s*([ؕ-ؚۖ-ۜ]*)/g;
 const AYN=d=>parseInt(d.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-0x660).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-0x6f0),10);
 /* surah names in the Urdu UI are written the Urdu way (التوبۃ، الفاتحۃ، المائدۃ), never with the Arabic ة ي ك ه */
 function SU(n){return ui==='ur'&&n?String(n).replace(/ة/g,'ۃ').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/ه/g,'ہ'):n;}
+/* Tafsir as-Saadi (Urdu): the «(1)» in the first paragraph (the translation) are AYAH numbers and the «[1]» opening a commentary paragraph is the number of the ayah it explains (checked on the data, 27-11-2026) -> small circles like everywhere in the Quran pages; other «(n)» (lists inside the commentary) stay as written */
+function tfSplit(key,s){const a=s.split(/\n+/).filter(x=>x.trim());if(key==='ur_saadi')a.forEach((x,i)=>{a[i]=i===0?x.replace(/\((\d{1,3})\)/g,'\u27e6$1\u27e7'):x.replace(/^\s*\[(\d{1,3})\]\s*/,'\u27e6$1\u27e7 ');});return a;}
 function ayDig(n){const s=String(n);return ui==='ar'?s.replace(/\d/g,c=>String.fromCharCode(0x660+(+c))):s;}
 function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];let i=0,m;AYR.lastIndex=0;
   while((m=AYR.exec(seg))){if(m[3]&&/^[\u0660-\u0669]+$/.test(m[2])){out.push(seg.slice(i,m.index)+m[1]+' '+m[3]);i=AYR.lastIndex;continue;}   /* an Arabic-Indic digit carrying a waqf mark (١ۙ ١ؕ) is the old Quran-font carrier of the mark, not a verse number */
@@ -3682,9 +3684,9 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const t = list.find(x => x.key === key), groups = (Q.taf[key] || {})[s] || [];
       const g = groups.find(x => x[0] <= a && a <= x[1]);
       const rng = g ? (g[0] === g[1] ? (NUM(g[0])) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]))) : '';
-      tlang = t.lang; tparas = g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, '')) : [];
+      tlang = t.lang; tparas = g ? tfSplit(t.key, g[2]).map(x => x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, '')) : [];
       body.replaceChildren(el('p', {class: 'cs'}, sName(s) + ' · ' + T('tafsirOf')(rng || (NUM(a)))),
-        ...(g ? g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))) : [el('p', {class: 'note'}, T('noTafsir'))]));
+        ...(g ? tfSplit(t.key, g[2]).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))) : [el('p', {class: 'note'}, T('noTafsir'))]));
     };
     sheet(T('tafsir') + ' — ' + sName(s) + ' ' + (LTR() ? s + ':' + a : ad(s) + ':' + ad(a)),
       [el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...arParts(s, a)), chips,
@@ -3972,7 +3974,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
       more.before(el('div', {class: 'card tfpass'}, el('p', {class: 'cs tfpl'}, sName(sn) + ' · ' + T('tafsirOf')(rng)),
         el('p', {class: 'qar', lang: 'ar', style: 'font-size:calc(var(--qar)*.8)'}, ...ay),
-        ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: dirOf(t.lang)}, ...rich(x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, ''), t.lang)))));
+        ...tfSplit(t.key, g[2]).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: dirOf(t.lang)}, ...rich(x.replace(/[\ue000\ue001\ue004-\ue009]|\ue010[^\ue011]*\ue011/g, ''), t.lang)))));
       }); shown = Math.min(groups.length, shown + 10); if (shown >= groups.length) more.remove(); };
     v.append(more); more.addEventListener('click', add); add();
   }
@@ -4435,7 +4437,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
         if (!(a === g[0] || !(pv && pv[0] === s && pv[1] >= g[0]))) { box.remove(); return; }
         const rng = g[0] === g[1] ? NUM(g[0]) : (LTR() ? g[0] + '–' + g[1] : ad(g[0]) + '–' + ad(g[1]));
         box.append(el('span', {class: 'trname'}, T('tafsir') + ' — ' + tafNm(t) + ' (' + rng + ')'),
-          ...g[2].split(/\n+/).filter(x => x.trim()).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
+          ...tfSplit(t.key, g[2]).map(x => el('p', {class: 'qtr ' + t.lang + ' tf-' + t.key, lang: t.lang, dir: t.lang === 'ur' || t.lang === 'ar' ? 'rtl' : 'ltr'}, ...rich(x, t.lang))));
       } catch (e) { box.remove(); }
     })();
     return box;
