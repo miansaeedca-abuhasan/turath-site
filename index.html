@@ -1882,7 +1882,7 @@ const auNm=a=>ui==='ur'?a[2]:ui==='ar'?a[1]:a[3];
 const auName=a=>a[0]==='jami'?(AZ[ui]||AZ.en):auNm(a)+(a[4]?' '+deathTxt(a[4]):'');
 
 /* the Seerah and the Fazail-e-Sahaba tiles: a list that starts with our own book (by the method of the muhaddithin) and goes on with the other books on the subject */
-const SEC_KEYS={seerah:['seerah','raheeq','sh23833','sh9862','dalail','sh9241','sh1342','shamail'],sahaba:['fazail','fadailahmad','sh6601','sh8238','sh9434','sh597','sh23100','sh13178','sh10490','sh9767','asabahur','asadghabaur','tabaqatur','sh12288','sh1110','sh21481','sh133','sh30089','sh30046','sh151153','sh20761','sh6347','sh9628','sh5802','sh26595','sh4151','sh608','sh1590','sh30044','sh11291','fazailnasai','shaansahabaur']};
+const SEC_KEYS={seerah:['seerah','raheeq','sh23833','sh9862','dalail','sh9241','sh1342','shamail'],sahaba:['fazail','fadailahmad','sh6601','sh8238','sh9434','sh597','sh23100','sh13178','sh10490','sh9767','sh12288','sh1110','sh21481','sh133','sh30089','sh30046','sh151153','sh20761','sh6347','sh9628','sh5802','sh26595','sh4151','sh608','sh1590','sh30044','sh11291','fazailnasai','shaansahabaur','asabahur','asadghabaur','tabaqatur']};
 async function showSection(kind){
   const box=$('#list');box.replaceChildren();bar(kind==='seerah'?T('seerahT'):T('navFazail'),'',false);
   const colls=await COLL.list().catch(()=>[]),by=new Map(colls.map(c=>[c.key,c]));
@@ -10823,7 +10823,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const wrap = el('div', {}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
     get('stats').then(r => {
       if (r.error) { wrap.replaceChildren(el('p', {class: 'note'}, 'اعداد نہیں مل سکے۔')); return; }
-      let dn = null; try { dn = new Intl.DisplayNames(['ur'], {type: 'region'}); } catch (e) {}
+      let dn = null; try { dn = new Intl.DisplayNames([oUi()], {type: 'region'}); } catch (e) {}
       const known = r.c.reduce((s, x) => s + x[1], 0);
       const rows = r.c.map(([cc, n]) => [cc === 'XX' ? 'نامعلوم ملک' : ((dn && dn.of(cc)) || cc), n]); if (r.n > known) rows.push(['پرانے زائرین (ملک معلوم نہیں)', r.n - known]);
       const use = el('div', {class: 'card', style: 'padding:.5rem;margin:.4rem 0;text-align:center'}, el('p', {class: 'note'}, 'لوڈ ہو رہا ہے…'));
@@ -10872,7 +10872,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const wrap = el('div', {}), fx = Object.assign({}, CFG.fixes || {});
     const bs = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}), ls = el('select', {style: 'width:100%;padding:.4rem;font:inherit'}, ...['ar', 'ur', 'en', 'bn', 'hi', 'gu', 'fr'].map(l => el('option', {value: l}, l)));
     const num = inp('', 'حدیث نمبر', 'number'), area = ta('', 8), info = el('p', {class: 'note'}), listBox = el('div', {});
-    COLL.admin.list().then(L => { L.forEach(b => bs.append(el('option', {value: b.key}, (b.ur || b.ar || b.key)))); });
+    COLL.admin.list().then(L => { L.forEach(b => bs.append(el('option', {value: b.key}, (oUi() === 'ur' ? (b.ur || b.ar || b.key) : (b.en || b.key))))); });
     const renderList = () => { listBox.replaceChildren(...Object.keys(fx).map(k => el('div', {class: 'card', style: 'padding:.4rem;margin:.25rem 0'}, el('b', {dir: 'ltr'}, k.replace(/\|/g, ' · ')), el('div', {dir: 'auto'}, fx[k].slice(0, 120) + (fx[k].length > 120 ? '…' : '')),
       btn('اصلاح ہٹائیں (اصل متن واپس)', async () => { const old = fx[k]; delete fx[k]; if (await save('fixes', fx)) { renderList(); say('اصلاح ہٹا دی گئی؛ صفحہ دوبارہ کھولنے پر اصل متن آئے گا۔'); } else fx[k] = old; }, 'danger'))));
       if (!Object.keys(fx).length) listBox.append(el('p', {class: 'note'}, 'ابھی کوئی اصلاح نہیں۔')); };
@@ -10919,6 +10919,55 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     refresh(); return wrap;
   }
   const TABS_ALL = [['اعلان', tabBanner], ['خبریں', tabNews], ['چلتی پٹی', tabTicker], ['زائرین', tabStats], ['تصحیح کی اطلاعات', tabReports], ['ڈائری اقرار نامے', tabPledges], ['تربیہ پیغامات', tabMsgs], ['متن کی اصلاح', tabFix], ['ترتیبات', tabSettings]];
+  // Founder / editor panel: Urdu when the app is in Urdu, English in every other language (owner 26-11-2026). Test tests/founder_panel_lang.js
+  const OEN = {
+    'منظوری': 'Approvals', 'اعلان': 'Announcement', 'خبریں': 'News', 'چلتی پٹی': 'Ticker', 'زائرین': 'Visitors', 'تصحیح کی اطلاعات': 'Correction reports',
+    'ڈائری اقرار نامے': 'Diary pledges', 'تربیہ پیغامات': 'Tarbiyah messages', 'متن کی اصلاح': 'Text corrections', 'ترتیبات': 'Settings', 'چھپے ہوئے خانے': 'Hidden tiles',
+    'ایڈیٹر پینل': 'Editor panel', 'بانی پینل': 'Founder panel', 'خروج': 'Log out', 'بانی': 'Founder',
+    'تبدیلی بانی کو منظوری کے لیے بھیج دی گئی ✓ (منظوری کے بعد ہی سائٹ پر آئے گی)': 'Change sent to the founder for approval ✓ (it appears on the site only after approval)',
+    'محفوظ ہو گیا ✓ (زائرین کو ایک منٹ کے اندر نظر آئے گا)': 'Saved ✓ (visitors will see it within a minute)',
+    'سیشن ختم ہو گیا، دوبارہ داخل ہوں۔': 'Session expired, please log in again.', 'محفوظ نہیں ہو سکا۔': 'Could not be saved.',
+    'اعلان دکھائیں (ہوم کے اوپر نمایاں پٹی)': 'Show announcement (highlighted strip above Home)', 'محفوظ کریں': 'Save', 'حذف': 'Delete',
+    'جس زبان کا اعلان خالی ہو اس میں انگریزی یا اردو متن دکھے گا۔': 'A language whose announcement is empty will show the English or Urdu text.',
+    'ابھی کوئی خبر نہیں۔': 'No news yet.', 'عنوان (اردو)': 'Title (Urdu)', 'نئی خبر': 'New news item', 'خبر شائع کریں': 'Publish news', 'اردو عنوان اور متن لکھیں۔': 'Write the Urdu title and text.',
+    'ہر سطر ایک نکتہ بنے گی۔': 'Each line becomes one point.', 'موجودہ خبریں': 'Current news',
+    'ہر سطر ایک پیغام ہے۔ خالی چھوڑیں تو اس زبان کے لیے پرانی اصل پٹی چلتی رہے گی۔': 'Each line is one message. If left empty, the original ticker keeps running for that language.',
+    'لوڈ ہو رہا ہے…': 'Loading…', 'اطلاعات نہیں مل سکیں۔': 'Reports could not be loaded.', 'دوبارہ کھولیں': 'Reopen', 'ہو گیا': 'Done', 'مٹائیں': 'Delete',
+    'اعداد نہیں مل سکے۔': 'Numbers could not be loaded.', 'نامعلوم ملک': 'Unknown country', 'پرانے زائرین (ملک معلوم نہیں)': 'Earlier visitors (country unknown)',
+    'فہرست نہیں مل سکی۔': 'List could not be loaded.', 'تجویز': 'Suggestion', 'شکایت': 'Complaint', 'بہتری / نتیجہ': 'Improvement / result', 'پیغامات نہیں مل سکے۔': 'Messages could not be loaded.',
+    'یہ پیغام مٹا دیں؟': 'Delete this message?', 'حدیث نمبر': 'Hadith number', 'اصلاح ہٹائیں (اصل متن واپس)': 'Remove correction (restore original text)',
+    'اصلاح ہٹا دی گئی؛ صفحہ دوبارہ کھولنے پر اصل متن آئے گا۔': 'Correction removed; the original text returns when the page is reopened.', 'ابھی کوئی اصلاح نہیں۔': 'No corrections yet.',
+    'کتاب، زبان اور حدیث نمبر چنیں، «متن کھولیں» دبائیں، متن درست کریں اور محفوظ کریں۔ (تلخیص الجامع الکامل کے متن کی اصلاح فی الحال شامل نہیں۔)': 'Choose the book, language and hadith number, press “Open text”, correct the text and save. (Correcting the text of Talkhis al-Jami al-Kamil is not included for now.)',
+    'کتاب': 'Book', 'زبان': 'Language', 'نمبر': 'Number', 'متن کھولیں': 'Open text', 'نمبر لکھیں۔': 'Write the number.', 'اس زبان میں یہ نمبر نہیں ملا۔': 'This number was not found in this language.',
+    'اس متن میں پہلے سے آپ کی اصلاح لگی ہوئی ہے۔': 'Your correction is already applied to this text.', 'اصلاح محفوظ کریں': 'Save correction', 'نمبر اور متن لکھیں۔': 'Write the number and the text.',
+    'کی گئی اصلاحات': 'Corrections made', 'جن ٹائلوں پر نشان لگائیں گے وہ ہوم سے چھپ جائیں گی (کتاب خود موجود رہے گی، صرف ٹائل چھپے گی)۔': 'Tiles you tick will be hidden from Home (the book itself stays, only the tile is hidden).',
+    'ایڈیٹروں کی بھیجی ہوئی تبدیلیاں۔ آپ کے «منظور» دبانے سے پہلے ان میں سے کچھ بھی سائٹ پر نہیں آتا۔': 'Changes sent by the editors. None of them reaches the site before you press “Approve”.',
+    'فہرست نہیں کھل سکی۔': 'List could not be opened.', 'کوئی تبدیلی منظوری کی منتظر نہیں۔': 'No change is waiting for approval.', 'نہیں ہو سکا۔': 'Could not be done.', 'منظور': 'Approve',
+    'منظور ہو گیا، سائٹ پر آ گیا ✓': 'Approved, now on the site ✓', 'رد': 'Reject', 'رد کر دیا گیا۔': 'Rejected.',
+    'سیرت': 'Seerah', 'فضائل صحابہ': 'Virtues of the Companions', 'سلف صالحین': 'Righteous predecessors', 'شذرات': 'Gems', 'رواۃ الحدیث': 'Hadith narrators', 'راوی': 'Narrator',
+    'مسابقہ/کوئز': 'Quiz', 'تحقیق و تصدیق': 'Verification', 'کتبِ حدیث': 'Hadith books', 'بُک مارکس (حدیث)': 'Bookmarks (hadith)', 'بُک مارکس (قرآن)': 'Bookmarks (Quran)', 'قرآن آڈیو': 'Quran audio'};
+  const OSUB = [['تربیہ میں خاندان: ', 'Families in Tarbiyah: '], [' (بچے: ', ' (children: '], ['، پچھلے 7 دن میں فعال: ', ', active in the last 7 days: '], ['حفظ ڈائری سے مستفید ادارے: ', 'Institutions using the Hifz diary: '],
+    [' (پچھلے 30 دن میں فعال: ', ' (active in the last 30 days: '], ['، اساتذہ: ', ', teachers: '], ['، والدین: ', ', parents: '], ['، طلبہ: ', ', students: '], ['کل زائرین: ', 'Total visitors: '],
+    ['قارئین کی بھیجی ہوئی تصحیحات۔ کل: ', 'Corrections sent by readers. Total: '], ['، باقی: ', ', remaining: '], ['حفظ ڈائری کے دستخط شدہ اقرار نامے (ثبوت)۔ کل: ', 'Signed Hifz diary pledges (proof). Total: '],
+    ['تربیہ کے والدین کے نجی پیغامات (کسی خاندان سے جڑے نہیں؛ صرف آپ کو دکھائی دیتے ہیں)۔ کل: ', 'Private messages from Tarbiyah parents (not linked to a family; visible only to you). Total: '],
+    [' احادیث', ' hadith']].sort((a, b) => b[0].length - a[0].length);
+  const oTr = s => {
+    const t = s.trim(); if (!t || !/[؀-ۿ]/.test(t)) return s;
+    const lead = s.slice(0, s.indexOf(t)), tail = s.slice(s.indexOf(t) + t.length);
+    if (OEN[t]) return lead + OEN[t] + tail;
+    let m = t.match(/^منظوری \((\d+)\)$/); if (m) return lead + 'Approvals (' + m[1] + ')' + tail;
+    m = t.match(/^(.+) چھپائیں$/); if (m && OEN[m[1].trim()]) return lead + 'Hide ' + OEN[m[1].trim()] + tail;
+    let o = s; OSUB.forEach(([a, b]) => { if (o.indexOf(a) >= 0) o = o.split(a).join(b); }); return o;
+  };
+  const oWalk = root => {
+    const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const r = oTr(n.nodeValue); if (r !== n.nodeValue) n.nodeValue = r; }
+    root.querySelectorAll('[placeholder],[title],[aria-label]').forEach(e => ['placeholder', 'title', 'aria-label'].forEach(a => { const v = e.getAttribute(a); if (v) { const r = oTr(v); if (r !== v) e.setAttribute(a, r); } }));
+  };
+  const oUi = () => { try { return (window.ui || localStorage.ui || 'en') === 'ur' ? 'ur' : 'en'; } catch (e) { return 'en'; } };
+  const oApply = card => {
+    if (oUi() === 'ur') return; card.setAttribute('dir', 'ltr'); card.style.textAlign = 'left'; card.classList.add('fpen'); oWalk(card);
+    let busy = false; new MutationObserver(() => { if (busy) return; busy = true; try { oWalk(card); } finally { busy = false; } }).observe(card, {childList: true, subtree: true, characterData: true});
+  };
   function panel(v, me) {
     me = me || {}; ROLE = me.role === 'editor' ? 'editor' : 'founder';
     const TABS = ROLE === 'editor' ? TABS_ALL.filter(t => ['اعلان', 'خبریں', 'چلتی پٹی', 'متن کی اصلاح', 'ترتیبات'].includes(t[0])) : [['منظوری' + (me.pending ? ' (' + me.pending + ')' : ''), tabPending]].concat(TABS_ALL);
@@ -10926,9 +10975,10 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     const body = el('div', {}), tabs = el('div', {style: 'display:flex;flex-wrap:wrap;gap:.3rem;justify-content:center;margin:.4rem 0'});
     const open = ix => { [...tabs.children].forEach((b, j) => { b.style.fontWeight = j === ix ? '700' : '400'; b.style.outline = j === ix ? '2px solid var(--accent,#2a7)' : 'none'; }); msg.textContent = ''; body.replaceChildren(TABS[ix][1]()); };
     TABS.forEach((t, ix) => tabs.append(btn(t[0], () => open(ix))));
-    v.append(el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
+    const fcard = el('div', {class: 'card', dir: 'rtl', style: 'padding:.8rem;max-width:640px;margin:.6rem auto'},
       el('div', {style: 'display:flex;justify-content:space-between;align-items:center'}, el('h2', {style: 'margin:0'}, ROLE === 'editor' ? 'ایڈیٹر پینل' : 'بانی پینل'), btn('خروج', async () => { await post('logout'); unmark(); show(); })),
-      tabs, body, msg));
+      tabs, body, msg);
+    v.append(fcard); oApply(fcard);
     open(0);
   }
 

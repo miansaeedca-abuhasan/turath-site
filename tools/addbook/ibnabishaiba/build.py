@@ -93,7 +93,7 @@ open('coll/'+ntn,'w',encoding='utf-8').write(ntb)
 s=open('coll/index.js',encoding='utf-8').read(); A=json.loads(s[s.index('COLLS(')+6:s.rindex(')')])
 entry={"key":KEY,"ar":"مسند ابن أبي شيبة (الترجمة الأردية)","ur":"مسند ابن ابی شیبہ (اردو ترجمہ و تخریج)","en":"Musnad Ibn Abi Shaybah (Urdu translation and takhrij)","langs":["ar","ur"],
  "sections":SEC,"heads":HEADS,"count":len(H),"intro":INTRO,"an":AN,
- "sub":{"ur":"ترجمہ، تحقیق، تخریج اور فوائد و مسائل: محمد حسین میمن - تقریظ: شیخ عبد اللہ ناصر رحمانی حفظہ اللہ","ar":"ترجمة وتحقيق وتخريج وفوائد ومسائل: محمد حسين ميمن - تقريظ: الشيخ عبد الله ناصر رحماني حفظه الله","en":"Translation, verification, takhrij and benefits by Muhammad Hussain Memon - foreword by Shaykh Abdullah Nasir Rahmani"},
+ "sub":{"ur":"ترجمہ و تخریج: محمد حسین میمن","ar":"ترجمة وتخريج: محمد حسين ميمن","en":"Translation and takhrij by Muhammad Hussain Memon"},
  "author":["ibnabishayba","ابن أبي شيبة","امام ابن ابی شیبہ","Ibn Abi Shaybah",235],
  "trn":{"ur":"محمد حسین میمن","en":"Muhammad Hussain Memon"},
  "pub":{"ur":"انصار السنہ پبلیکیشنز، لاہور","ar":"أنصار السنة للنشر، لاهور","en":"Ansar as-Sunnah Publications, Lahore"},"showpub":True,

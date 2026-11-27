@@ -12,7 +12,7 @@ ck(ur.every(r=>r[1].length>10),'no empty translation');
 const idx=fs.readFileSync('coll/index.js','utf8');const A=JSON.parse(idx.slice(idx.indexOf('COLLS(')+6,idx.lastIndexOf(')'))),E=A.find(e=>e.key==='ibnabishaibaur');
 ck(E&&E.count===998&&E.sections.length===282&&E.sections[0][2]===1&&E.sections[281][3]===998,'registered, 282 musnads');
 ck(E.showpub&&/میمن/.test(E.trn.ur)&&/انصار/.test(E.pub.ur),'translator, publisher');
-ck(A[A.indexOf(E)-1].key==='sh9944','right after the author\'s Arabic book');
+ck(A.indexOf(E)>=A.length-4,'among the newest books at the end (owner 26-11-2026)');
 ck(/ibnabishaibaur":14/.test(fs.readFileSync('index.html','utf8')),'HB_CAT');
 ck(/ibnabishaibaur/.test(fs.readFileSync('news.json','utf8')),'announced in card 20261126a (owner 26-11-2026)');
 (async()=>{const b=await chromium.launch();
