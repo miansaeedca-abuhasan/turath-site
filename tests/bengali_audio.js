@@ -1,9 +1,9 @@
-// Bengali audio: Books 1-44 (hadith 1-8186) play only when the app is in Bengali; word times load from audio/bn; other UIs keep English audio
+// Bengali audio: Books 1-66 (hadith 1-16546; book 67 is merged into 66 as in the English audio) play only when the app is in Bengali; word times load from audio/bn; other UIs keep English audio
 const {chromium}=require('playwright');const fs=require('fs');
 (async()=>{const b=await chromium.launch();let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
 const idx=fs.readFileSync(__dirname+'/../audio/en/idx.js','utf8');const j=JSON.parse(idx.slice(idx.indexOf('(')+1,idx.lastIndexOf(')')));
-ck(Object.keys(j.bn.books).length===44,"44 Bengali books");let prev=0,n=0;for(let k=1;k<=44;k++){const x=j.bn.books[k];ck(x&&x.from===prev+1,'contiguous book '+k);prev=x.to;n+=Object.keys(x.h).length;ck(fs.existsSync(__dirname+'/../audio/bn/w'+k+'.js'),'word file '+k)}
-ck(prev===8186&&n===8186,"8186 hadith");
+ck(Object.keys(j.bn.books).length===66,"66 Bengali books");let prev=0,n=0;for(let k=1;k<=66;k++){const x=j.bn.books[k];ck(x&&x.from===prev+1,'contiguous book '+k);prev=x.to;n+=Object.keys(x.h).length;ck(fs.existsSync(__dirname+'/../audio/bn/w'+k+'.js'),'word file '+k)}
+ck(prev===16546&&n===16546,"16546 hadith");ck(!fs.existsSync(__dirname+'/../audio/bn/w67.js'),'no separate book 67');
 const mp3=fs.readFileSync(__dirname+'/../audio/en/ch/1/02.mp3');
 for(const ui of ['bn','ur']){const p=await b.newPage({viewport:{width:420,height:860}});await p.addInitScript(u=>{localStorage.ui=u},ui);const errs=[];p.on('pageerror',e=>errs.push(e.message));
 await p.route('https://audio.jami-al-kamil.com/**',r=>r.fulfill({body:mp3,contentType:'audio/mpeg'}));

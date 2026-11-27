@@ -10,7 +10,7 @@ for(const ui of['ur','en','ar']){
  const SAH=['asabahur','asadghabaur','tabaqatur','sh9767','sh146'].filter(k=>ix(k)>=0);
  ck(ix('bukhari')>=0&&hadithLast>=0,ui+': hadith books listed');
  ck(SAH.every(k=>ix(k)>hadithLast),ui+': books on the Companions come after the hadith books '+SAH.map(k=>k+'@'+ix(k))+' last hadith@'+hadithLast);
- if(ui==='ur'){ck(ix('bukhari')<ix('ibnwahbur')&&ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnwahbur')>ix('kubranasai'),'ur: new hadith books at the end of the hadith books, in order added');}
+ if(ui==='ur'){ck(ix('bukhari')<ix('ibnwahbur')&&ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnwahbur')>ix('mujamsaghir')&&ix('ibnabishaibaur')<ix('shuabimanur')&&ix('shuabimanur')<ix('kubranasai'),'ur: new hadith books after Mujam Saghir (end of the translated books), in order added (owner 26-11-2026 night)');}
  for(const sec of['sahaba','seerah']){
   const S=await keys('/sec/'+sec);
   const reg=await p.evaluate(async()=>{const c=await COLL.list();return Object.fromEntries(c.map(x=>[x.key,x.langs||[]]))});
