@@ -5200,7 +5200,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   const HFM = {ur: 'اس حدیث کا یہ ترجمہ ابھی دستیاب نہیں۔', ar: 'ترجمة هذا الحديث غير متاحة بعد.', en: 'The translation of this hadith is not available yet.', bn: 'এই হাদীসের অনুবাদ এখনও পাওয়া যায়নি।', hi: 'इस हदीस का अनुवाद अभी उपलब्ध नहीं है।', gu: 'આ હદીસનો અનુવાદ હજી ઉપલબ્ધ નથી.', fr: 'La traduction de ce hadith n’est pas encore disponible.'};
   const HFD = {ur: 'یہی فرمان تلخیص الجامع الکامل کی ان احادیث میں بھی ہے', ar: 'وردت هذه الألفاظ نفسها في تلخيص الجامع الكامل برقم', en: 'The same words also occur in Talkhis al-Jami al-Kamil, hadith', bn: 'একই বাক্য তালখীস আল-জামি আল-কামিলের এই হাদীসগুলোতেও আছে', hi: 'यही शब्द तल्ख़ीस अल-जामिउल कामिल की इन हदीसों में भी हैं', gu: 'આ જ શબ્દો તલ્ખીસ અલ-જામિઅ અલ-કામિલની આ હદીસોમાં પણ છે', fr: 'Les mêmes paroles figurent aussi dans Talkhis al-Jami al-Kamil, hadiths'};
   // translation languages: each can be switched on or off (Urdu is on by default in the Urdu interface); none on = Arabic only
-  const getSel = b => { if (b.trtabs) return b.langs.filter(l => l !== 'ar');   // a book with translation tabs (Urdu | English): every translation is always there, the reader taps the tab
+  const oneTr = b => !!(b.jami && (ui === 'en' || ui === 'bn') && b.langs.includes(ui) && b.langs.filter(l => l !== 'ar').length > 1);   // owner 27-11-2026: Jami sub-books in English + Bengali: no translator tabs on top, the reader's language only; the translator's name stands on the hadith
+  const getSel = b => { if (oneTr(b)) return [ui]; if (b.trtabs) return b.langs.filter(l => l !== 'ar');   // a book with translation tabs (Urdu | English): every translation is always there, the reader taps the tab
     let v = null; try { v = JSON.parse(localStorage['csel_' + ui] || 'null'); } catch (e) {}
     if (!Array.isArray(v)) v = ui !== 'ar' && b.langs.includes(ui) ? [ui] : [];
     return v.filter(l => l !== 'ar' && b.langs.includes(l)); };
@@ -5216,7 +5217,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
 
   function langChips(b, redraw) {
     const box = el('div', {class: 'chips lchips'}), cur = getSel(b);
-    if (b.langs.length < 2 || b.trtabs) return box;
+    if (b.langs.length < 2 || b.trtabs || oneTr(b)) return box;
     box.append(el('span', {class: 'cs lchl'}, (TRL[ui] || TRL.en) + ':'));
     b.langs.filter(l => l !== 'ar').forEach(l => { const on = cur.includes(l);
       box.append(el('button', {class: 'chip' + (on ? ' on' : ''), type: 'button', 'aria-pressed': String(on), on: {click: () => { setSel(on ? cur.filter(x => x !== l) : [...cur, l]); redraw(); }}}, (on ? '✓ ' : '') + ((b.trn && (b.trn[l] || (l === 'ur' && b.trn.ur))) || LNAME[l] || l))); });
@@ -5235,7 +5236,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
   // the takhrij runs on as ONE paragraph (the references one after the other), never one line per reference
   const tkJoin = kl => { if (kl.length < 2) return kl; const p = kl[0]; kl.slice(1).forEach(q => { p.append(' ', ...[...q.childNodes]); }); return [p]; };
   const tkRow = (kl, L, b) => el('div', {class: 'tkrow'}, el('span', {class: 'tklab', lang: L, dir: DIR(L)}, T('pTakh') + (b && b.tkby ? ' ' + (b.tkby[L] || b.tkby.ur || '') : ''), el('span', {class: 'vh'}, ': ')), el('div', {class: 'tr ptakh', lang: L, dir: DIR(L)}, ...tkJoin(kl)));
-  const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
+  const trRow = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm && !(!window.__SECV && !oneTr(b) && b.langs && b.langs.length >= 2 && !b.trtabs && !b.parts) ? el('div', {class: 'trrow', lang: L, dir: DIR(L)}, el('span', {class: 'trlab'}, T('pTr') + ' :'), el('span', {class: 'trbtn on static'}, nm)) : ''; };
   const trTab = (b, L) => { const nm = b.trn && (b.trn[L] || b.trn.ur); return nm ? el('div', {class: 'trtab', lang: L, dir: DIR(L)}, el('span', {}, (TRL[L] || TRL.en) + ': ' + nm)) : ''; };
   // ===== «AI ترجمہ»: the hadith books that have no Urdu translation get one on demand (owner 22-11-2026). The tap sends the Arabic text to /api/htrans; the answer is saved on the server, so the next reader gets it at once. =====
   const GEM_CATS = new Set([1, 3, 6, 7, 9, 14, 15, 16, 17, 18]);   // hadith collections (not tafsir, fiqh, rijal, hadith sciences)
@@ -5583,7 +5584,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const jnT = b.jami && b.jami[n], jfN = ({ur: 'الجامع الکامل', ar: 'الجامع الكامل', bn: 'আল-জামি আল-কামিল', hi: 'अल-जामिउल कामिल', gu: 'અલ-જામિઉલ કામિલ'}[ui] || 'Al-Jami al-Kamil'),
       text = more => [jnT ? jnT + '/' + n : bname(b) + (note ? '' : ' — ' + n + (b.an[n] && String(b.an[n]) !== String(n) ? ' (' + b.an[n] + ')' : '')), '', d.matn[0], '', (d.grade ? d.grade : '') + (jnT ? (d.grade ? ' ' : '') + jfN + ' (' + jnT + ').' : ''), xx && xx.k ? '\n' + T('pTakh') + ':\n' + xx.k : '', '', lang && d.content.translation ? d.content.translation[lang][0] : '',
       more && xe ? '\n' + T('pExpl') + ':\n' + xe : '', more && xb ? '\n' + T('pBen') + ':\n' + String(xb).replace(/^§\s*فوائد\s*$/gm, '') : '', more && foot ? '\n' + foot : ''].join('\n').replace(/^§\s*/gm, '').replace(/\n{3,}/g, '\n\n').trim();
-    acts.append(bm, window.CMP ? CMP.button({k: b.key, n}) : '',
+    const enAu = (ui === 'en' || ui === 'bn') && b.jami && b.jami[n] && (b.langs || []).includes(ui) && window.ENAUD ? ENAUD.btn({num: +b.jami[n]}, () => c) : '';   // owner 27-11-2026: English / Bengali Jami sub-books play the recorded audio of THEIR Jami number (hadith taken from many places keep their own number)
+    acts.append(bm, enAu, window.CMP ? CMP.button({k: b.key, n}) : '',
       el('button', {class: 'ab', type: 'button', title: T('listen'), 'aria-label': T('listen'), on: {click: () => LISTEN.playHadiths([{d, node: c}])}}, icon('listen')),
       el('button', {class: 'ab', type: 'button', title: T('poster'), 'aria-label': T('poster'), on: {click: () => {
         const strip = x => (x || '').replace(/[\ue000-\ue009]|\ue010[^\ue011]*\ue011/g, '').replace(/<[^>]*>/g, '').replace(/^§\s*/gm, '').trim();
@@ -5680,7 +5682,8 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     const f = el('input', {type: 'search', class: 'filter', placeholder: sPh, 'aria-label': sPh, id: 'csearch'});
     const out = el('div');
     const HD = {}; (b.heads || []).forEach(h => { HD[h[0]] = h; });
-    const iL = b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
+    const noUrIntro = b.jami && (ui === 'en' || ui === 'bn') && !(b.introL && b.introL[ui]);   // owner 27-11-2026: the Urdu publisher / translator notes never show in the English or Bengali interface
+    const iL = noUrIntro ? [] : b.introL && (b.introL[ui] || (ui === 'ur' && b.intro && b.intro.length ? null : b.introL.en));   /* Urdu UI: the Urdu intro, never the English one */
     const introAll = () => (iL || b.intro || []).map(([t, ps]) => el('details', {class: 'card intro' + (HB_CAT[b.key] === 5 ? ' tfq' : '')}, el('summary', {}, t), ...ps.map(p => { const nd = paraEl(p, iL ? (b.introL[ui] ? ui : 'en') : 'ur'); if (ps.some(q => /^§\s*حواشی/.test(q)) && window.fnm) window.fnm(nd); return nd; })));
     // audio of the whole book, played from its publisher's own link (not copied here); more parts are added to the list
     const BA = {};   // (the old Bukhari audio links were removed: the complete recording is now in Audio Books → Arabic)
