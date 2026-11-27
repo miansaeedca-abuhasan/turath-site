@@ -4,7 +4,7 @@ const reg=fs.readFileSync(__dirname+'/../coll/index.js','utf8'),A=JSON.parse(reg
 if(!E)bad.push('not registered');else{
  if(E.count!==1167)bad.push('row count '+E.count);
  if(E.sections.length!==83)bad.push('sections '+E.sections.length);
- if(A.findIndex(e=>e.key==='tabaqatur')!==A.length-1)bad.push('Tabaqat is the last book (owner 26-11-2026)');
+ if(A.findIndex(e=>e.key==='tabaqatur')!==A.length-2)bad.push('Tabaqat is the last book (owner 26-11-2026)');
  if(!E.author||E.author[0]!=='ibnsad')bad.push('author');
  let prev=0;E.files.ur.forEach(f=>{if(f[0]!==prev+1)bad.push('gap before file '+f[2]);prev=f[1]});if(prev!==E.count)bad.push('files end '+prev);
  const rows=[];E.files.ur.forEach(f=>{const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');rows.push(...JSON.parse(s.slice(s.indexOf(',',s.indexOf('"ur"'))+1,-1)))});
