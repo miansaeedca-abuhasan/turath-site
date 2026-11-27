@@ -1928,7 +1928,7 @@ async function showBookList(cat,aut,authors,topics){
      // the one in the reader's language; in the Arabic interface (or when neither has the reader's language) the Arabic book, never the translated edition
     const TW=[['mujamawsat','sh28171'],['mujamsaghir','sh13068'],['ibnkhuzaymahur','ibnkhuzaymah'],['musnadsarrajur','sarraj'],['humaydiur','humaydi'],['musnadishaq','sh13159'],['fazailnasai','sh6601'],['khalqafaalur','sh9697'],['silsila','sh9442'],['sahihjamiur','sh10757'],['muwattaansar','sh28107'],['sharhsunnaur','sharhsunna']];
     TW.forEach(([t,a])=>{const rt=rows.find(r=>r.key===t),ra=rows.find(r=>r.key===a);if(!rt||!ra)return;
-      const has=r=>(r.lg||[]).includes(ui),drop=ui!=='ar'&&has(rt)&&!has(ra)?ra:rt;rows.splice(rows.indexOf(drop),1);});
+      const has=r=>(r.lg||[]).includes(ui),drop=ui!=='ar'&&has(rt)&&!has(ra)?ra:rt,keep=drop===ra?rt:ra;keep.alt=((keep.alt||'')+' '+drop.ar+' '+drop.ur+' '+drop.en).trim();rows.splice(rows.indexOf(drop),1);});   // the hidden twin's names stay searchable (owner 27-11-2026: «سلسلة الأحاديث الصحيحة للألباني» was not found)
   }
   if(ui!=='ar'){   // order: Al-Jami al-Kamil, Talkhis, translated hadith books (Bukhari, Muslim, the Sunan), books taken from Al-Jami in the order of the Jami, then the other translated books and sharhs
     const SUN=['bukhari','muslim','abudawud','tirmidhi','nasai','ibnmajah','malik','darimi'];
@@ -1970,7 +1970,7 @@ async function showBookList(cat,aut,authors,topics){
           el('span',{class:'catinfo'},el('span',{class:'cattl'+(!EN()&&ui!=='ar'?'':' ar'),dir:'auto',lang:!EN()&&ui==='ar'?'ar':null},hbCatName(id)),
           el('span',{class:'catn'},T('hbNBooks')(N(cnt[id])))));g.append(a);});
       list.replaceChildren(...rows.slice(0,nJ).map(r=>rowEl(r)),g);return;}
-    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut&&(aut!=='jami'||(r.key!=='jamik'&&r.key!=='jami'&&(r.tr||r.key==='tuhfa')))))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar))));const allB0=!q&&!cat&&!aut,mine=mineR.map((r,i)=>rowEl(r,allB0||n!=null?r.no:i+1));   // inside a category / author the numbers run 1,2,3 ... of that list
+    const mineR=(aut?rows.concat(subjRows):rows).filter(r=>(q||((!cat||r.cat==cat)&&(!aut||(Array.isArray(r.au)&&r.au[0]===aut&&(aut!=='jami'||(r.key!=='jamik'&&r.key!=='jami'&&(r.tr||r.key==='tuhfa')))))))&&(!q||(n!=null?r.no===n:BQM(q,r.en+' '+r.ur+' '+r.ar+' '+(r.alt||'')+' '+(Array.isArray(r.au)?r.au.slice(1,4).join(' ')+(r.au[0]==='albani'?' محمد ناصر الدين الألباني':''):'')))));const allB0=!q&&!cat&&!aut,mine=mineR.map((r,i)=>rowEl(r,allB0||n!=null?r.no:i+1));   // inside a category / author the numbers run 1,2,3 ... of that list
     const allB=!q&&!cat&&!aut,rbAll=RC&&n==null?RC.b.filter(r=>q?RB.match(r,q):aut?(RAU.get(aut)||[]).includes(String(r[3])):cat?String(r[2])===String(cat):true).slice(0,q?60:9999):[];
     if(allB&&RC&&n==null){const out=[];for(let k=0;k<=5;k++){out.push(...mine.filter((_,i)=>rk(mineR[i].cat)===k));const g=rbAll.filter(x=>rk(+x[2])===k);if(g.length)out.push(...RB.rows(RC,g));}fillList(list,out);return;}
     const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
