@@ -1418,6 +1418,14 @@ function ayFix(seg,mk){if(seg[seg.length-1]!=='﴾')return [seg];const out=[];le
 function AYCP(t){return t&&t.indexOf('﴿')>=0?t.replace(/﴿[^﴾]*﴾/g,v=>ayFix(v,n=>' ('+n+') ').join('')):t;}
 /* Arabic inside Urdu (and other) text: shown in « » in the Arabic font (the owner's bracket ruling; no highlight band — the highlights he sent were his own selection-bar marks) */
 function ARQC(t){return String(t).replace(/[«»\u2060]/g,'').trim().split(/\s+/).filter(Boolean).length<2?'arq arq1':'arq';}
+/* Urdu text: a stretch of 3+ words made only of Arabic-script letters with NO Urdu-only letter (ٹ ڈ ڑ ں ے ہ ھ گ چ پ ژ ک ی ۃ…) and at least 2 of them showing an Arabic-only letter (ي ك ة ى أ إ ؤ) or a harakah is Arabic quoted without vocalization -> flagged for the Arabic font (measured 27-11-2026 on all Urdu books) */
+const PA_UL=/[ٹڈڑںےۓہھگچپژکیۃ\u06cc\u06a9\u06be\u06c1-\u06c3\u06d5]/,PA_AO=/[يكةىأإؤ\u064b-\u0652\u0670]/,PA_L=/[\u0621-\u064a\u0671-\u06d3]/;
+function plainArRuns(parts){let res=null,i=0;const n=parts.length,sp=w=>w===''||/^\s+$/.test(w),ok=w=>!sp(w)&&PA_L.test(w)&&!PA_UL.test(w)&&!/[0-9\u06f0-\u06f9]/.test(w);
+  while(i<n){if(!ok(parts[i])){i++;continue;}let j=i;const ix=[];while(j<n){const w=parts[j];if(sp(w)){j++;continue;}if(!ok(w))break;ix.push(j);j++;}
+    let f=0,l=ix.length-1;while(f<=l&&!PA_AO.test(parts[ix[f]]))f++;while(l>=f&&!PA_AO.test(parts[ix[l]]))l--;   /* the run starts and ends at a word that really shows an Arabic letter / harakah (neutral Urdu words like «اور» at the edges stay Urdu) */
+    if(l-f+1>=3){let ao=0;for(let k=f;k<=l;k++)if(PA_AO.test(parts[ix[k]]))ao++;if(ao>=2){res=res||[];for(let k=f;k<=l;k++)res[ix[k]]=true;}}
+    i=j>i?j:i+1;}
+  return res;}
 function rich0(text,lang){
   /* the verse number at the end of a translated verse (⟦12⟧): a small circle in the verse colour, as in the printed book */
   if(text&&text.indexOf('\u27e6')>=0){const o=[];text.split(/\u27e6(\d+)\u27e7/).forEach((sg,i)=>{if(i%2)o.push(el('span',{class:'ayn ud','data-n':sg},ayDig(+sg)));else if(sg)o.push(...rich0(sg,lang));});return o;}
@@ -1436,9 +1444,10 @@ function rich0(text,lang){
     let run=[],plain=[];
     const flushRun=()=>{if(run.length){const rt=run.join('');out.push(el('span',{class:ARQC(rt),lang:'ar'},'«'+rt+'»'));run=[];}};   /* owner: Arabic inside Urdu always shows in « » (also where the book data has none) */
     const closeRun=()=>{const trail=[];while(run.length&&/^\s+$/.test(run[run.length-1]))trail.unshift(run.pop());flushRun();plain.push(...trail);};
-    seg.split(/(\s+)/).forEach(w=>{
+    const parts=seg.split(/(\s+)/),pa=lang==='ur'?plainArRuns(parts):null;   /* 3+ consecutive Arabic words typed without harakat (isnad, quotation) also get the Arabic font; Urdu-only letters never join */
+    parts.forEach((w,wi)=>{
       if(w===''||/^\s+$/.test(w)){(run.length?run:plain).push(w);return;}
-      if(isAr(w)||(run.length&&lang==='ur'&&tashN(w)>=2&&!/[\u06be\u0679\u0688\u0691\u06ba\u06d2\u06d3]/.test(w))){if(plain.length){out.push(plain.join(''));plain=[];}run.push(w);}
+      if(isAr(w)||(pa&&pa[wi])||(run.length&&lang==='ur'&&tashN(w)>=2&&!/[\u06be\u0679\u0688\u0691\u06ba\u06d2\u06d3]/.test(w))){if(plain.length){out.push(plain.join(''));plain=[];}run.push(w);}
       else{if(run.length)closeRun();plain.push(w);}
     });
     if(run.length)closeRun();
