@@ -58,9 +58,18 @@ def fix_line(l,rid,i):
     body=re.sub(r'(?<![هھ])ـ+','',body.replace('االلہ','اللہ').replace('\u2060',''))
     body=re.sub(r'([وو])اللہ(?=تعالی)',r'\1 اللہ',body)
     body=re.sub(r'اللہ(?=تعال[یٰی])','اللہ ',body)
-    body=body.lstrip('\ue020\ue021')
+    body=body.lstrip('\ue020\ue021\ue022\ue023')
     front=3<=rid<=10
     if front and i>0:
+        # book-title lines of «مؤلف کی دیگر کتابوں کا تعارف»: one form for all, shown in a bordered box (owner 27-11-2026)
+        mt=re.match(r'^\(\s*([۰-۹0-9]+)\s*\)\s*(.+)$',body.strip())
+        if mt:
+            rest=mt.group(2).replace('«','').replace('»','').strip()
+            ur_=bool(re.search('[ٹڈڑںہھگچپژۃےک]',rest))
+            if len(rest.split())<=(8 if ur_ else 16) and not re.search(r'[۔.،:؛]',rest) and re.search('[\u0600-\u06ff]',rest):
+                st['booktitle']+=1
+                if re.search('[ٹڈڑںہھگچپژۃےک]',rest):return '\ue023('+mt.group(1)+') '+rest   # an Urdu-titled book stays in the Urdu font
+                return '\ue022('+mt.group(1)+') '+to_ar(rest)
         if (rid,i) in POETRY:return ''+body
         if DOX.match(body.strip()) or (arabic_phrase(body) and len(body.split())>=4 and not re.search('[۰-۹0-9]',body)):
             st['dox']+=1;return ''+to_ar(body.strip().rstrip('.')+('.' if body.strip().endswith('.') else ''))
