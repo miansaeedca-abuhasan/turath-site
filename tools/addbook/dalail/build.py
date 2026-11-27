@@ -21,6 +21,28 @@ LIB=[b for b in REG if b['key']=='dalail'][0]
 R=[]
 for f in LIB['files']['ar']:
     t=open('coll/'+f[2],encoding='utf-8').read();R+=json.loads(t[t.index('",[')+2:t.rindex(')')])
+# the library rows are paragraphs, one row sometimes holds the end of a section and the first narration, or two narrations: every row is cut
+# at each new isnad start («… . وأخبرنا …») so that one piece = one narration (the text itself is never changed, only cut)
+def cut_rows(R):
+    out=[]
+    for r in R:
+        t=r[1];idx=[i for i,c in enumerate(t) if not('ً'<=c<='ٰ')];pl=''.join(t[i] for i in idx);pos=[0]
+        for m in re.finditer(r'(?<=[\.؟!»\]\)])\s+(?=(?:و)?(?:أخبرنا|أخبرني|حدثنا|حدثني|أنبأنا|أخبرناه)\b)',pl):
+            if m.end()<len(idx):pos.append(idx[m.end()])
+        for m in re.finditer(r'\*\s+',t):pos.append(m.end())   # «* » = an edition marker between narrations / sections
+        pos=sorted(set(pos));pos.append(len(t))
+        buf='';r0=len(out)
+        for x,y in zip(pos,pos[1:]):
+            tx=t[x:y].strip()
+            if tx.endswith('*'):tx=tx[:-1].strip()
+            if not tx:continue
+            buf=(buf+' '+tx).strip() if buf else tx
+            if len(re.sub(r'[ً-ٰ\s]','',buf))>=150:out.append([len(out)+1,buf]);buf=''   # a piece shorter than 150 letters (a bare «(ح)» isnad fragment) is joined to the next one
+        if buf:
+            if len(out)>r0:out[-1][1]=(out[-1][1]+' '+buf).strip()
+            else:out.append([len(out)+1,buf])
+    return out
+R=cut_rows(R)
 # ------------------------------------------------------------------ alignment
 MP={'ی':'ي','ے':'ي','ى':'ي','ک':'ك','ڪ':'ك','ہ':'ه','ۃ':'ه','ھ':'ه','ة':'ه','إ':'ا','أ':'ا','آ':'ا','ٱ':'ا','ڈ':'د','ڑ':'ر','ٹ':'ت','پ':'ب','چ':'ج','گ':'ك','ژ':'ز','ں':'ن'}
 SW=set('اخبرنا حدثنا قال بن عن ابن ابو عبد الله رسول صلي عليه وسلم وقال انه الذي الذين فقال'.split())
@@ -72,7 +94,7 @@ def gaps(F):
         if a[0]-prev[0]>1:g.append(((prev[0]+1,a[0]),(prev[1]+1,a[1])))
         prev=a
     return g
-for eqthr,dpthr,acc in [(0.10,0.20,0.22),(0.12,0.15,0.20),(0.12,0.12,0.20)]:
+for eqthr,dpthr,acc in [(0.10,0.20,0.22),(0.12,0.15,0.20),(0.12,0.12,0.20),(0.05,0.06,0.07),(0.03,0.04,0.05)]:   # the last two rounds were spot-checked (names of the isnad agree down to a score of 0.05; below that pairs were wrong)
     for (i0,i1),(j0,j1) in gaps(F):
         ni,nj=i1-i0,j1-j0
         if ni==nj:

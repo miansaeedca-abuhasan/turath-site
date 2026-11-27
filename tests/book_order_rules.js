@@ -7,10 +7,11 @@ for(const ui of['ur','en','ar']){
  const keys=async h=>{await p.goto('http://localhost:8765/#'+h);await p.reload();await p.waitForFunction(()=>document.querySelectorAll('a.hbrow[data-k]').length>5,{timeout:60000}).catch(()=>{});await p.waitForTimeout(1500);return p.evaluate(()=>[...document.querySelectorAll('a.hbrow[data-k]')].map(a=>a.dataset.k).filter((k,i,a)=>a.indexOf(k)===i))};
  const L=await keys('/hb'),ix=k=>L.indexOf(k);
  const hadithLast=Math.max(...['bukhari','muslim','abudawud','ibnmajah','ibnwahbur','qiraatkhalfur','ibnabishaibaur'].map(ix));
+ const MV=['shamail','raheeq','dalailur'].map(ix);if(ui==='ur'){ck(MV[0]>=0&&MV[0]<MV[1]&&MV[1]<MV[2],'ur: Shamail, Raheeq, Dalail in a row');ck(MV[2]<Math.min(...['asabahur','asadghabaur','tabaqatur','fadailahmad'].map(ix).filter(x=>x>=0)),'ur: before the Companion books')}
  const SAH=['asabahur','asadghabaur','tabaqatur','sh9767','sh146'].filter(k=>ix(k)>=0);
  ck(ix('bukhari')>=0&&hadithLast>=0,ui+': hadith books listed');
  ck(SAH.every(k=>ix(k)>hadithLast),ui+': books on the Companions come after the hadith books '+SAH.map(k=>k+'@'+ix(k))+' last hadith@'+hadithLast);
- if(ui==='ur'){ck(ix('bukhari')<ix('ibnwahbur')&&ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnwahbur')>ix('mujamsaghir')&&ix('ibnabishaibaur')<ix('shuabimanur')&&ix('shuabimanur')<ix('kubranasai'),'ur: new hadith books after Mujam Saghir (end of the translated books), in order added (owner 26-11-2026 night)');}
+ if(ui==='ur'){ck(ix('bukhari')<ix('ibnwahbur')&&ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnwahbur')>ix('mujamsaghir')&&ix('shuabimanur')===ix('mujamsaghir')+1&&ix('ibnabishaibaur')<ix('kubranasai'),'ur: new hadith books after Mujam Saghir (end of the translated books), in order added (owner 26-11-2026 night)');}
  for(const sec of['sahaba','seerah']){
   const S=await keys('/sec/'+sec);
   const reg=await p.evaluate(async()=>{const c=await COLL.list();return Object.fromEntries(c.map(x=>[x.key,x.langs||[]]))});

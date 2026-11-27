@@ -14,8 +14,8 @@ for(const [ui,path] of [['ur','#/hb'],['ur','#/sec/sahaba']]){const c=await b.ne
  await p.goto('http://localhost:8765/'+path);await p.reload();await p.waitForFunction(()=>document.querySelectorAll('a.hbrow[data-k]').length>5,{timeout:60000}).catch(()=>{});await p.waitForTimeout(1200);
  const K=await p.evaluate(()=>[...document.querySelectorAll('a.hbrow[data-k]')].map(a=>a.dataset.k)),ix=k=>K.indexOf(k);
  if(path==='#/hb'){ck(ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('shuabimanur')<ix('shamail'),'new hadith books before the Companion books');
-  const S=['shamail','raheeq','fadailahmad','fazailnasai','shaansahabaur','asabahur','asadghabaur','tabaqatur'].map(ix);ck(S.every((v,i)=>i===0||v===S[i-1]+1),'Shamail and Al-Raheeq first, then the Companion books, then the newer Companion books - together: '+S);
-  ck(ix('ibnabishaibaur')===ix('ibnwahbur')+2&&ix('shuabimanur')===ix('ibnwahbur')+3&&ix('ibnwahbur')>ix('mujamsaghir')&&ix('ibnwahbur')>ix('sahifahamamur')&&ix('shuabimanur')<ix('kubranasai'),'new translated hadith books (Urdu UI) at the END of the translated books, after Mujam Saghir, before the Arabic ones (owner 26-11-2026)');}
+  const S=['shamail','raheeq','dalailur','fadailahmad','fazailnasai','shaansahabaur','asabahur','asadghabaur','tabaqatur'].map(ix);ck(S.every((v,i)=>i===0||v===S[i-1]+1),'Shamail and Al-Raheeq first, then the Companion books, then the newer Companion books - together: '+S);
+  ck(ix('ibnabishaibaur')===ix('ibnwahbur')+2&&ix('shuabimanur')===ix('mujamsaghir')+1&&ix('ibnwahbur')>ix('mujamsaghir')&&ix('ibnwahbur')>ix('sahifahamamur')&&ix('ibnabishaibaur')<ix('kubranasai'),'new translated hadith books (Urdu UI) at the END of the translated books, after Mujam Saghir, before the Arabic ones (owner 26-11-2026)');}
  else ck(ix('asabahur')>ix('shaansahabaur')&&ix('asadghabaur')>ix('asabahur')&&ix('tabaqatur')>ix('asadghabaur'),'Sahaba folder: new translated books after the older translated ones');
  await c.close()}
 await b.close();if(bad)process.exit(1);console.log('PASS book_order_23nov')})();

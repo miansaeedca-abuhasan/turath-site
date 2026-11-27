@@ -10,9 +10,11 @@ ck(E.sections.length>=666&&E.sections[0][2]===1&&E.sections[E.sections.length-1]
 const stray=ur.filter(r=>/[A-Za-z@#$_¤ﷺؓؒؑ]/.test(r[1]));
 ck(stray.length<=1,'stray latin letters only the one unresolved «r» (entry 433): '+stray.map(r=>r[0]));
 const ub=ur.filter(r=>(r[1].match(/’’/g)||[]).length!==(r[1].match(/‘‘/g)||[]).length);ck(ub.length<=45&&ub.every(r=>Math.abs((r[1].match(/’’/g)||[]).length-(r[1].match(/‘‘/g)||[]).length)<=2),'Urdu quote marks: only the few OCR-stray rows unbalanced (source quotes run over entries): '+ub.length);
-const m=ar.filter(r=>r[1]);ck(m.length>2500,'Arabic attached to >2500 entries: '+m.length);
-const pos=ar.filter(r=>r[1]).map(r=>lib.findIndex(x=>x[1]===r[1]));
-ck(pos.every((p,i)=>p>=0&&(i===0||p>pos[i-1])),'Arabic rows are library rows, in library order, none used twice');
+const m=ar.filter(r=>r[1]);ck(m.length>3000,'Arabic attached to >3000 entries: '+m.length);
+// owner 27-11-2026: the Arabic is taken from the library book: every piece is a cut of a library row (cut at the next isnad / the edition marker «*»), in library order
+const LT=lib.map(x=>x[1]).join('\u0001');let last=-1,okc=true,bp=0;
+for(const r of m){const key=r[1].slice(0,80),p=LT.indexOf(key,last+1);if(p<0||p<=last){okc=false;bp=r[0];break}last=p}
+ck(okc,'Arabic pieces are the library text, in library order, none used twice (first bad entry '+bp+')');
 ck(ur[1][1].includes('ہمیں خبر دی')&&/ابو بکر محمد بن حسن بن فورک/.test(ur[0][1]),'first entries');
 ck(E.trn&&E.author&&E.author[0]==='bayhaqi','translator + author');
 if(bad)process.exit(1);console.log('PASS dalail_full');
