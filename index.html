@@ -1421,7 +1421,7 @@ function rich0(text,lang){
     const closeRun=()=>{const trail=[];while(run.length&&/^\s+$/.test(run[run.length-1]))trail.unshift(run.pop());flushRun();plain.push(...trail);};
     seg.split(/(\s+)/).forEach(w=>{
       if(w===''||/^\s+$/.test(w)){(run.length?run:plain).push(w);return;}
-      if(isAr(w)){if(plain.length){out.push(plain.join(''));plain=[];}run.push(w);}
+      if(isAr(w)||(run.length&&lang==='ur'&&tashN(w)>=2&&!/[\u06be\u0679\u0688\u0691\u06ba\u06d2\u06d3]/.test(w))){if(plain.length){out.push(plain.join(''));plain=[];}run.push(w);}
       else{if(run.length)closeRun();plain.push(w);}
     });
     if(run.length)closeRun();
@@ -11765,7 +11765,9 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     cn.addEventListener('click',function(){box.remove()});
     dl.addEventListener('click',function(){store(all.filter(function(x){return x.id!==id}));document.querySelectorAll('mark.uhl[data-id="'+id+'"]').forEach(function(m){var p=m.parentNode;while(m.firstChild)p.insertBefore(m.firstChild,m);m.remove();p.normalize()});box.remove()});
     var h=mk('div','sn-h',lb('nt'));acts.append(sv,cn,cnt,dl);box.append(h,cols,ta,acts);document.body.append(box);ta.focus();
+    setTimeout(function(){if(window.BKL&&document.body.contains(box))window.BKL(box)},80);
   }
+  addEventListener('hashchange',function(){var o=document.querySelector('.selnote');if(o)o.remove()});
   document.addEventListener('click',function(e){var m=e.target.closest&&e.target.closest('mark.uhl');if(m&&!getSelection().toString())openNote(m.dataset.id)});
 
   /* re-apply saved highlights after a page is drawn */
