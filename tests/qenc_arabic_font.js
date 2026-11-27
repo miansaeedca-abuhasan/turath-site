@@ -1,0 +1,22 @@
+// Quran Encyclopedia (owner 27-11-2026): every Arabic phrase is ONE « » in the Arabic font with real Arabic letters (no Urdu ی ک ہ inside), nothing half-bracketed
+const fs=require('fs'),{chromium}=require('playwright');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL',m)}};
+const idx=fs.readFileSync(__dirname+'/../coll/index.js','utf8');
+const files=[...new Set(idx.match(/qenc_ur_\d+_\w+\.js/g))];
+let all='';for(const f of files)all+=fs.readFileSync(__dirname+'/../coll/'+f,'utf8');
+ck(all.includes('«⁠أبو هريرة أحفظ من في دهره»'),'Abu Hurayra quote is one Arabic phrase');
+ck(all.includes('«⁠يا أهل بغداد'),'al-Daraqutni quote is one Arabic phrase');
+const m=[...all.matchAll(/«⁠([^»]*)»/g)].map(x=>x[1]);
+ck(m.length>350,'Arabic phrases marked: '+m.length);
+const badP=m.filter(x=>/[یکہۃ]/.test(x.replace(/\([^)]*\)/g,'')));
+ck(badP.length===0,'Urdu letters inside Arabic phrases: '+badP.slice(0,3).map(x=>x.slice(0,60)));
+ck(/\[15,"حرف ش",348,367\]/.test(idx)&&/\[16,"حرف ص",368,388\]/.test(idx),'«جلد دوم» divider (row 368) opens the section «حرف ص»');
+ck(!/[\ue020\ue021]{2}|\u2060\u2060/.test(all),'no stacked marker characters');
+ck(!/االلہ/.test(all),'no «االلہ»');
+ck(!all.includes('\\n§یعنی خاموشی')&&!/§نوٹ: معذرت/.test(all),'poetry/note lines are no headings');
+(async()=>{const b=await chromium.launch(),p=await b.newPage({viewport:{width:420,height:900}});
+await p.addInitScript(()=>{localStorage.ui='ur';localStorage.nosplash='1'});
+await p.goto('http://localhost:8765/#/s/qenc/1');await p.waitForTimeout(6000);
+await p.evaluate(()=>document.querySelectorAll('.sheetbg,.sheet,#ipop').forEach(x=>x.remove()));
+const r=await p.evaluate(()=>{const a=[...document.querySelectorAll('.qe .arq')].filter(x=>/أحفظ|يا أهل/.test(x.textContent));return a.map(x=>({t:x.textContent.slice(0,40),f:getComputedStyle(x).fontFamily,l:x.lang}))});
+ck(r.length>=2&&r.every(x=>/Amiri|Scheherazade|Naskh/i.test(x.f)&&x.l==='ar'),'quotes show in the Arabic font '+JSON.stringify(r));
+await b.close();console.log(bad?'FAILED':'PASS qenc_arabic_font');process.exit(bad?1:0)})();
