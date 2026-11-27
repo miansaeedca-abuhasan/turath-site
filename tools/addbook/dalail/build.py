@@ -113,6 +113,7 @@ for k,e in enumerate(E):
     prev_sub=sub or prev_sub if sub else prev_sub
     for l in lines(e['arabic']):parts.append(AR(l))
     ul=lines(UR(e['urdu']))
+    if k==433:ul=['«رَحِمَ اللّٰهُ قُسًّا إِنِّي وَلَأَرْجُو أَنْ يَبْعَثَهُ اللّٰهُ أُمَّةً وَحْدَهُ»' if x=='r' else x for x in ul]  # InPage glyph 'r' = this printed Arabic line (vol 2 printed p.351), read from the PDF
     if ul and any(f.startswith('sub-title at head') for f in e['flags']) and len(ul)>1 and len(ul[0])<160:ul[0]='§'+ul[0]
     parts+=ul
     txt='\n'.join(parts)
