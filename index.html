@@ -53,7 +53,6 @@ a.hn,.hn{color:#a4262c;font-weight:700;text-decoration:none;font-family:var(--ar
 .trrow .trbtn,.lchips .chip{font-family:var(--urdu)!important;font-weight:400}
 .bkcirc{display:flex;margin:.1rem 0 .2rem}.bkc{display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;min-width:1.9rem;height:1.9rem;padding:0 .4rem;border:1.5px solid var(--accent);border-radius:50%;font:700 .85rem/1 var(--sans);color:var(--accent);text-decoration:none}
 a.btn.jfull{text-decoration:none;color:var(--accent);font-weight:600;background:var(--wash)}.srefl{text-decoration:none!important}
-.bkitem .tzl{color:#fff;background:#0a6b46;border-radius:6px;padding:1px 9px;margin-inline-end:6px;font-size:.92em;display:inline-block;line-height:1.7}
 .bkitem p.tzli{position:relative;padding-inline-start:1.3em}.bkitem p.tzli::before{content:'✦';position:absolute;inset-inline-start:0;color:#c9a227;font-size:.8em}
 .ntip{position:fixed;z-index:99999;max-width:min(22rem,92vw);min-width:13rem;background:var(--card,#fffdf6);color:var(--fg,#1b2b24);border:1px solid #c9a227;border-radius:12px;padding:.55rem .8rem .5rem;box-shadow:0 10px 28px rgba(5,60,40,.25),inset 0 0 0 3px rgba(201,162,39,.12);opacity:0;pointer-events:none;transform:translateY(4px);transition:opacity .15s,transform .15s;font-size:.9rem;line-height:1.7}
 .ntip.on{opacity:1;transform:none;pointer-events:auto}
@@ -1502,9 +1501,7 @@ new MutationObserver(()=>{if(!tm)tm=setTimeout(run,120)}).observe(document.docum
 // the Arabic doxologies of the front matter are shown in the Urdu font, written with the Urdu letters (ی ک ہ ۃ)
 const qeUr=t=>t.replace(/ة/g,'ۃ').replace(/[يى]/g,'ی').replace(/ك/g,'ک').replace(/ه/g,'ہ');
 // Quran Encyclopedia (English, qencen, 27-11-2026): same banner look as the Urdu book, left-to-right. Lines: «§title», «﴿Arabic﴾» / «\ue030Arabic» verse card, «(Quran, Surah-2 …)» reference pill, «\ue040cell\ue041cell» table row
-function tzkP(p){ try{ var t=p.textContent||''; var m=/^(شیوخ|تلامذہ|علمی مقام|وفات|تالیفات|تصانیف|ولادت|حالات|اقوال)[^:]{0,24}:/.exec(t);
-  if(m && p.firstChild && p.firstChild.nodeType===3 && p.firstChild.data.indexOf(m[0])===0){ var rest=p.firstChild.splitText(m[0].length); var sp=document.createElement('span'); sp.className='tzl'; sp.textContent=m[0]; p.insertBefore(sp,rest); }
-  else if(t.length<70 && /ھ\)?\s*$/.test(t) && t.indexOf('(')>0) p.classList.add('tzli'); }catch(e){} return p; }
+function tzkP(p){ try{ var t=p.textContent||''; if(t.length<70 && /ھ\)?\s*$/.test(t) && t.indexOf('(')>0) p.classList.add('tzli'); }catch(e){} return p; }
 function qencEnItem(r,n){
   const lines=(r[1]||'').split('\n').map(x=>x.trim()).filter(Boolean),b=el('div',{class:'bkitem qe qe-en '+(n<=5?'qe-front':'qe-entry'),lang:'en',dir:'ltr'});
   let tb=null;
@@ -11797,6 +11794,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
   function refText(){
     var h=document.querySelector('#view h1,#view h2,#view .hh,#view .ttl');var t=h?h.textContent.trim():'';
     var bn='';try{bn=curBookName()}catch(e){}
+    if(/^#\/s\//.test(location.hash)){var t2=document.getElementById('t2');if(t2&&t2.textContent.trim())bn=t2.textContent.trim();}   // a library / prose book: its own name (not the default Talkhis)
     var parts=[bn,t].filter(function(x,i,a){return x&&a.indexOf(x)===i});
     return parts.join(' — ');
   }

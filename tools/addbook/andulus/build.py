@@ -3,7 +3,7 @@
 pages 21..532 = printed pages; PDF page = printed - 8).  Page text = body paragraphs + page-foot notes («۱- …» / «(۱) …» lines).  Marks «(۱)» of a page are
 renumbered per row, notes go to ext.fn.  Rows: author intro, front, one row per person (heading detection, see HEAD) or ~3500 chars, century/section headings = `§`.
 Then: python3 tools/order_tail.py ; python3 tools/rehash.py ; bump sw.js ; tests/andulus_book.js"""
-import json,re,sys,os,hashlib,glob
+import os,json,re,sys,os,hashlib,glob
 SRC=sys.argv[1]
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..','..','..'))
 KEY='andulusur'
@@ -69,7 +69,7 @@ WOM=('ابنة فائز','اسماء بنت','ام الحسن بنت ابو لو
 CRANGE=[(67,100,199),(79,200,299),(109,300,399),(189,400,499),(291,500,599),(395,600,699),(477,700,799)]
 def is_head(l,p=0):
     if 507<=p<527: return l.startswith(WOM) and len(l)<140 and not l.endswith('۔')
-    if not (46<=len(l)<=125 and l.endswith(')') and 'ھ' in l[-32:] and l.count('(')==1 and not l.startswith('(')): return False
+    if not ((30 if (69<=p<=85 or 132<=p<=504) else 46)<=len(l)<=125 and l.endswith(')') and 'ھ' in l[-32:] and l.count('(')==1 and not l.startswith('(')): return False
     if re.match(r'^(وفات|شیوخ|تلامذہ|علمی مقام|تصانیف|ولادت|نام)\s*:',l): return False
     if re.search(r'[۔؟]\s',l.split('(')[0]): return False
     ys=re.findall(r'[۰-۹]{3}',l.split('(')[1])
@@ -84,7 +84,68 @@ CENT={67:'دوسری صدی ہجری',79:'تیسری صدی ہجری',109:'چو�
 SECT={21:'دیباچہ',27:'مقدمہ',65:'اختصارات',**CENT}
 inlist=[False]
 LABEL=re.compile(r'^(شیوخ|تلامذہ|اساتذہ|شاگرد|تصانیف|تالیفات|مؤلفات)[^:]{0,25}:')
+CONTENTS="""69 71 72 73 75 76 81 82 85
+132 134 135 136 138 139 141 143 146 148 150 153 155 157 159 162 163 164 167 168 172 174 177
+178 180 182 185 191 192 194 196 197 201 202 204 204 206 207 210 211 212 215 216 217
+220 223 225 226 227 230 232 235 237 239 240 241 245 247 248 250 254 256 259 263 267 269 271
+272 274 276 277 280 282 284 286 288 293 294 296 300 302 304 307 308 310 311 314 316
+318 321 323 327 331 333 336 337 339 340 342 344 346 349 353 355 356 359 362 364 367 369 372
+375 378 380 383 387 389 390 397 399 402 405 408 410 414 418 420 423 425 428 431 433
+437 440 442 444 448 452 455 458 460 462 465 466 469 472 479 484 487 490 492 495 497 500 504"""
+from collections import Counter
+EXP=Counter(int(x) for x in CONTENTS.split())   # printed page -> number of persons whose entry starts there (PDF contents; pp.88-129 not in the PDF contents)
+def cand(l):
+    if not (25<=len(l)<=140) or l.endswith('۔') or l.startswith('('): return False
+    if re.match(r'^(وفات|شیوخ|تلامذہ|علمی مقام|تصانیف|تالیفات|ولادت|نام|حالات)',l): return False
+    return bool(re.search(r'\([^()]*[۰-۹]{3}\s*ھ[^()]*\)\s*(?:\(\s*[۰-۹]{1,2}\s*\)\s*)?$',l)) or bool(re.search(r'\([^()]*[۰-۹]{3}\s*ھ[^()]*\)\s*[^()۔]{0,60}$',l))
 units=[]   # (kind,text,page,notes) kind: h=heading, p=paragraph
+# a heading glued to the first words of its paragraph in the JSON line («name (… ھ) paragraph …») is cut into two lines
+GL=re.compile(r'^(.{40,125}?\([^()]*[۰-۹]{3}\s*ھ[^()]*\))\s+(\S.{20,})$')
+def unglue(p,body):
+    out=[]
+    for l in body:
+        m=GL.match(l)
+        if m and is_head(m.group(1),p) and not LABEL.match(l) and not re.match(r'^(وفات|علمی مقام|تالیفات|شیوخ|تلامذہ)',l):
+            out+= [m.group(1),m.group(2)]
+        else: out.append(l)
+    return out
+pages=[(p,unglue(p,body),notes) for p,body,notes in pages]
+CHOSEN={}
+def covered(p): return 69<=p<=85 or 132<=p<=504
+# 1) every line that looks like a person heading (old rule) and every looser candidate, with a score
+A=[];K=[];_il=False
+for p,body,notes in pages:
+    if not covered(p): continue
+    for j,l in enumerate(body):
+        il=_il
+        if LABEL.match(l): _il=True
+        elif len(l)>130 or l.endswith('۔') or re.match(r'^(علمی مقام|وفات|ولادت|نام|حالات)',l): _il=False
+        if is_head(l,p) and not il: A.append((p,j))
+        if cand(l):
+            prev=body[j-1] if j else ''; nxt=body[j+1] if j+1<len(body) else ''
+            v=(1 if (not prev or prev.endswith(('۔',')','؟',':'))) else 0)+(2 if len(nxt)>60 else 0)+(2 if not il else 0)+(0.5 if len(l)>=38 else 0)
+            K.append((p,j,v))
+# 2) match the printed contents (page of each person) to the detected headings, nearest page within 3 pages, in order
+cont=sorted(int(x) for x in CONTENTS.split() if covered(int(x)))
+used=set();pos=0;free=[];lastp=0
+for c in cont:
+    best=None
+    for q in A:
+        if q in used or q[0]<lastp: continue
+        dd=abs(q[0]-c)
+        if dd<=3 and (best is None or dd<best[0]): best=(dd,q)
+    if best: used.add(best[1]);lastp=best[1][0]
+    else: free.append(c)
+# 3) contents entries with no detected heading: the best looser candidate within 2 pages
+for c in free:
+    cs=[(-v,pj,j) for pj,j,v in K if abs(pj-c)<=2 and (pj,j) not in used]
+    if cs:
+        cs.sort();used.add((cs[0][1],cs[0][2]));rep.append('contents page %d: heading taken by the looser rule on page %d'%(c,cs[0][1]))
+    else: rep.append('contents page %d: no heading found'%c)
+for p,j in used: CHOSEN.setdefault(p,set()).add(j)
+for p,body,notes in pages:
+    CHOSEN.setdefault(p,set())
+rep.append('contents persons (known part) %d, matched %d'%(len(cont),len(used)))
 for p,body,notes in pages:
     mark_i=[0]
     for j,l in enumerate(body):
@@ -101,7 +162,7 @@ for p,body,notes in pages:
             return m.group(0)
         l2=MK.sub(real,l)
         ks=[int(x) for x in re.findall('\ue000(\d+)\ue001',l2)]
-        hd=is_head(l,p)
+        hd=(j in CHOSEN[p]) if covered(p) else is_head(l,p)
         if LABEL.match(l): inlist[0]=True
         elif hd and inlist[0]:
             hd=False;rep.append('DEMOTED p%d %s'%(p,l[:90]))
@@ -115,6 +176,7 @@ for u in units:
         out[-1]=('p',out[-1][1]+' '+u[1],out[-1][2],out[-1][3]+u[3]);continue
     out.append(u)
 units=out
+open(os.path.join(os.path.dirname(os.path.abspath(__file__)),'headings.txt'),'w',encoding='utf-8').write('\n'.join('%d\t%s'%(u[2],u[1]) for u in units if u[0]=='h'))
 # rows
 def finish(cur,rows):
     if not cur: return
@@ -134,11 +196,12 @@ def finish(cur,rows):
     notes=[x for x in notes]
     full='\n'.join(txt)
     if full.count('"')%2: rep.append('odd straight quotes in row %d'%(len(rows)+1))
+    full=re.sub(r'ڈاکٹر صاحب(\s+کی\s+اس\s+گر)',r'ڈاکٹر صاحبہ\1',full)   # owner 27-11-2026: the author is a woman
     full=re.sub(r'"([^"\n]*)"',lambda m:'’’'+m.group(1)+'‘‘',full)
     rows.append([full,'\n'.join('(%d) %s'%(a,b.translate(UD)) for a,b in notes if b)])
 cur=[];size=0;secs=[]
 intro=d[0]['content'].split('\n',1)
-rows.append(['§'+intro[0]+'\n'+intro[1].strip(),''])
+rows.append(['§'+intro[0]+'\n'+re.sub(r'ڈاکٹر صاحب(\s+کی\s+اس\s+گر)',r'ڈاکٹر صاحبہ\1',intro[1].strip()),''])   # the author is a woman (owner 27-11-2026)
 secs.append(['مصنفہ کا تعارف',1])
 for u in units:
     kind=u[0]
