@@ -14,7 +14,7 @@ ck(E&&E.count===998&&E.sections.length===282&&E.sections[0][2]===1&&E.sections[2
 ck(E.showpub&&/میمن/.test(E.trn.ur)&&/انصار/.test(E.pub.ur),'translator, publisher');
 ck(A[A.indexOf(E)-1].key==='sh9944','right after the author\'s Arabic book');
 ck(/ibnabishaibaur":14/.test(fs.readFileSync('index.html','utf8')),'HB_CAT');
-ck(!/ibnabishaibaur/.test(fs.readFileSync('news.json','utf8')),'no news card yet (owner announces later)');
+ck(/ibnabishaibaur/.test(fs.readFileSync('news.json','utf8')),'announced in card 20261126a (owner 26-11-2026)');
 (async()=>{const b=await chromium.launch();
 for(const [name,o] of [['phone',{...devices['Pixel 5']}],['desktop',{viewport:{width:1280,height:900}}]]){
 const c=await b.newContext({...o,serviceWorkers:'block'});const p=await c.newPage();
