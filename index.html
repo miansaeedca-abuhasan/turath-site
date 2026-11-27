@@ -1918,10 +1918,6 @@ async function showBookList(cat,aut,authors,topics){
   const TAILR={11:1,4:2,18:3,5:4,12:5},rk=c=>TAILR[c]||0;   const SAHS=new Set(SEC_KEYS.sahaba),rkr=r=>SAHS.has(r.key)&&!r.jm?0.5:rk(r.cat);   // owner 26-11-2026: after all the hadith books come the books on the Companions (translated ones of the reader's language first, then the others)   // hadith books first; then hadith sciences, biographies, fabricated reports, tafsir, Quranic sciences
   {const h=rows.slice(0,nJ),t=rows.slice(nJ).map((x,i)=>[x,i]).sort((a,b)=>rkr(a[0])-rkr(b[0])||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...h,...t);}
   {const h=rows.slice(0,nJ),t=rows.slice(nJ).map((x,i)=>[x,i]).sort((a,b)=>(a[0].tr?0:1)-(b[0].tr?0:1)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...h,...t);}   // after Al-Jami al-Kamil and its books: all the translated books, then the others
-  {  // owner rule 26-11-2026: inside the translated books the new hadith books come last among the hadith books, and the books on the Companions (virtues / biographies) after them, newest last
-    const NEWH=['ibnwahbur','qiraatkhalfur','ibnabishaibaur'],SAHB=['fadailahmad','fazailnasai','shaansahabaur','asabahur','asadghabaur','tabaqatur'],at=r=>NEWH.includes(r.key)?1:SAHB.includes(r.key)?2:0;
-    const h=rows.slice(0,nJ),t=rows.slice(nJ),tr=t.filter(r=>r.tr),ot=t.filter(r=>!r.tr),m=tr.map((x,i)=>[x,i]).sort((a,b)=>(at(a[0])===0?0:at(a[0]))-(at(b[0])===0?0:at(b[0]))||(at(a[0])===2?SAHB.indexOf(a[0].key)-SAHB.indexOf(b[0].key):at(a[0])===1?NEWH.indexOf(a[0].key)-NEWH.indexOf(b[0].key):a[1]-b[1])).map(x=>x[0]);
-    rows.length=0;rows.push(...h,...m,...ot);}
   {const h=rows.slice(0,nJ),t=rows.slice(nJ),seen=new Set(),out=[],au=r=>Array.isArray(r.au)&&r.au[0];   // inside each category (and translated / not) all the books of one author stand together, at the place of his first book
    t.forEach(r=>{const a=au(r);if(!a){out.push(r);return;}const k=(r.tr?1:0)+'|'+r.cat+'|'+a;if(seen.has(k))return;seen.add(k);out.push(...t.filter(x=>au(x)===a&&!!x.tr===!!r.tr&&x.cat===r.cat));});rows.length=0;rows.push(...h,...out);}
   {  // Al-Adab al-Ali exists as two books (Urdu / English+Bengali): only the one of the reader's language is listed, never both
@@ -1945,6 +1941,12 @@ async function showBookList(cat,aut,authors,topics){
     rows.length=0;rows.push(...top,...sun,...sub,...tr1,...oth);
   }
   {const t=rows.map((x,i)=>[x,i]).sort((a,b)=>rkr(a[0])-rkr(b[0])||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...t);}   // the list is shown grouped by kind (hadith books, then sciences, biographies ...): the numbers follow that very order, with no gaps
+  {  // owner rule 26-11-2026 (final): ... the other hadith books (translated first, then Arabic) -> the NEW hadith books (not famous ones) -> the books on the Companions (translated first, older before newer) with Shamail and Al-Raheeq beside them
+    const NEWH=['ibnwahbur','qiraatkhalfur','ibnabishaibaur'],NEWC=['asabahur','asadghabaur','tabaqatur'],MOVE=ui==='ar'?[]:['shamail','raheeq'];   // Arabic UI keeps the well-known Arabic place of Shamail
+    const h=rows.slice(0,nJ),t=rows.slice(nJ),nh=NEWH.map(k=>t.find(r=>r.key===k)).filter(Boolean),isC=r=>(SAHS.has(r.key)&&!r.jm)||MOVE.includes(r.key),w=r=>NEWC.includes(r.key)?1:MOVE.includes(r.key)?0.5:0;
+    const comp=t.filter(r=>isC(r)&&!nh.includes(r)).map((x,i)=>[x,i]).sort((a,b)=>(a[0].tr?0:1)-(b[0].tr?0:1)||w(a[0])-w(b[0])||a[1]-b[1]).map(x=>x[0]),rest=t.filter(r=>!isC(r)&&!nh.includes(r));
+    let at=-1;rest.forEach((r,i)=>{if(rkr(r)===0)at=i;});
+    rows.length=0;rows.push(...h,...rest.slice(0,at+1),...nh,...comp,...rest.slice(at+1));}
   rows.forEach((r,i)=>{r.no=i+1;});
   const RC=window.RB&&RB.on?await RB.catalog():null;
   const AUS=new Map();rows.concat(subjRows).forEach(r=>{if(Array.isArray(r.au)&&r.au[0]!=='aslaf'){const o=AUS.get(r.au[0])||{a:r.au,n:0};o.n++;AUS.set(r.au[0],o);}});

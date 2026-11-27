@@ -13,9 +13,9 @@ for(const [ui,path] of [['ur','#/hb'],['ur','#/sec/sahaba']]){const c=await b.ne
  await p.addInitScript(u=>{try{localStorage.setItem('ui',u);localStorage.setItem('newsSeen','20261126a')}catch(e){}},ui);
  await p.goto('http://localhost:8765/'+path);await p.reload();await p.waitForFunction(()=>document.querySelectorAll('a.hbrow[data-k]').length>5,{timeout:60000}).catch(()=>{});await p.waitForTimeout(1200);
  const K=await p.evaluate(()=>[...document.querySelectorAll('a.hbrow[data-k]')].map(a=>a.dataset.k)),ix=k=>K.indexOf(k);
- if(path==='#/hb'){ck(ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnabishaibaur')<ix('fadailahmad'),'new hadith books before the Sahaba books');
-  const S=['fadailahmad','fazailnasai','shaansahabaur','asabahur','asadghabaur','tabaqatur'].map(ix);ck(S.every((v,i)=>i===0||v===S[i-1]+1),'Sahaba books stand together, newest last');
-  ck(ix('ibnabishaibaur')===ix('ibnwahbur')+2,'new hadith books together');}
+ if(path==='#/hb'){ck(ix('ibnwahbur')<ix('qiraatkhalfur')&&ix('qiraatkhalfur')<ix('ibnabishaibaur')&&ix('ibnabishaibaur')<ix('fadailahmad'),'new hadith books before the Companion books');
+  const S=['fadailahmad','fazailnasai','shaansahabaur','shamail','raheeq','asabahur','asadghabaur','tabaqatur'].map(ix);ck(S.every((v,i)=>i===0||v===S[i-1]+1),'Companion books, then Shamail and Al-Raheeq, then the newer Companion books - together: '+S);
+  ck(ix('ibnabishaibaur')===ix('ibnwahbur')+2&&ix('ibnwahbur')>ix('sh9944')&&ix('ibnwahbur')>ix('kubranasai'),'new hadith books together at the END of all hadith books (after the Arabic ones)');}
  else ck(ix('asabahur')>ix('shaansahabaur')&&ix('asadghabaur')>ix('asabahur')&&ix('tabaqatur')>ix('asadghabaur'),'Sahaba folder: new translated books after the older translated ones');
  await c.close()}
 await b.close();if(bad)process.exit(1);console.log('PASS book_order_23nov')})();
