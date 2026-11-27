@@ -206,6 +206,10 @@ details.intro:not(.tfq)>summary::before,details.intro:not(.tfq) .subh::before{co
 a.srow2[href^="#/q/tafsir/"]:not(.tfrow){border-inline-start:3px solid #c9a24a;background-image:linear-gradient(to left,rgba(201,162,74,.07),transparent 40%)}
 a.srow2[href^="#/q/tafsir/"]:not(.tfrow) .snum{display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;min-width:2.2rem;border:1.5px solid #4fa6e6;border-radius:50%;color:#2a6db0;font-size:1.05rem;background:#f1f7fd}
 a.srow2[href^="#/q/tafsir/"]:not(.tfrow):active{border-inline-start-color:#4fa6e6}
+/* Jami sub-books list (owner 27-11-2026): gold start accent + blue number circle, like the tafsir rows */
+a.jsubrow{border-inline-start:3px solid #c9a24a;background-image:linear-gradient(to left,rgba(201,162,74,.07),transparent 40%)}
+a.jsubrow:active,a.jsubrow:hover{border-inline-start-color:#4fa6e6}
+a.jsubrow .snum{display:flex;align-items:center;justify-content:center;width:2.2rem;height:2.2rem;min-width:2.2rem;border:1.5px solid #4fa6e6;border-radius:50%;color:#2a6db0;font-size:1.05rem;background:#f1f7fd}
 a.card.tfrow{border-inline-start:3px solid #c9a24a;background-image:linear-gradient(to left,rgba(201,162,74,.07),transparent 40%)}
 a.card.tfrow:active,a.card.tfrow:hover{border-inline-start-color:#4fa6e6}
 .grp.tfgrp{display:flex;align-items:center;gap:.5em;margin:1.3rem .2rem .45rem;padding-bottom:.35rem;border-bottom:3px double #c9a24a}
@@ -699,6 +703,7 @@ html[lang=ur] .sb-info{font:.72rem/1.6 var(--urdu)}
 .numhit{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;color:var(--accent)}
 .numhit .cs{flex:0 0 100%}
 .lbtn{display:inline-flex;align-items:center;gap:.3rem}
+a.btn.lbtn.toc,a.btn.lbtn.toc:visited{text-decoration:none;color:var(--accent,#0b5d4b);border:1.5px solid #c9a24a;background:var(--card,#fff);font-weight:700}a.btn.lbtn.toc:before{content:"❖";font-size:.75em;color:#c9a24a;margin-inline-end:.35rem}
 .lbtn svg{width:1.1rem;height:1.1rem}
 @media (max-width:420px){.tiles{grid-template-columns:repeat(4,1fr)}.tile{font-size:.78rem}.tico{width:2.3rem;height:2.3rem}.tico.im{width:2.8rem;height:2.8rem}.rbtn.wide{min-width:8.5rem}}
 
@@ -1930,7 +1935,7 @@ async function showSection(kind){
   if(ui!=='ar')TWP.forEach(([t,a])=>{const rt=rows.find(r=>r.key===t),ra=rows.find(r=>r.key===a);if(rt&&ra&&(rt.langs||[]).includes(ui)&&!(ra.langs||[]).includes(ui))rows.splice(rows.indexOf(ra),1);});   // owner 27-11-2026: a complete translation in the reader's language: its Arabic twin is not listed
   {const tr=c=>ui==='ar'?(c.langs||[]).length>1:(c.langs||[]).includes(ui);const o=rows.map((c,i)=>[c,i]).sort((a,b)=>(tr(a[0])?0:1)-(tr(b[0])?0:1)||a[1]-b[1]).map(x=>x[0]);rows.length=0;rows.push(...o);}   // books translated into the reader's language first, then the others; inside each part the older books first, newly added ones after them (owner 26-11-2026; Seerah the same)
   rows.forEach((c,i)=>{const lg=hbLg(c.langs),nm=EN()?c.en:ui==='ar'?c.ar:(c.ur||c.en);
-    box.append(el('a',{class:'card srow2 hbrow',href:'#/s/'+c.key,'data-k':c.key},el('span',{class:'snum'},ui==='ar'?ad(i+1):String(i+1)),
+    box.append(el('a',{class:'card srow2 hbrow jsubrow',href:'#/s/'+c.key,'data-k':c.key},el('span',{class:'snum'},ui==='ar'?ad(i+1):String(i+1)),
       el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},nm,lg.length>1?el('span',{class:'hblg'},' ('+lg.map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(c.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),ui==='ur'&&c.ar&&c.ar!==nm?el('span',{class:'sar',lang:'ar'},c.ar):'')));});
 }
 // a long list (1,700 books) is put on the page in parts: the first rows appear at once, the rest follows in the next moments, so the page answers immediately
@@ -2019,7 +2024,7 @@ async function showBookList(cat,aut,authors,topics){
     const extra=RB&&RC&&n==null?RB.rows(RC,rbAll):[];
     fillList(list,[...mine,...extra]);};
   const rowEl=(r,dn)=>{
-      const a=el('a',{class:'card srow2 hbrow',href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});if(r.key)a.dataset.k=r.key;
+      const a=el('a',{class:'card srow2 hbrow'+(aut==='jami'?' jsubrow':''),href:'#/hb',on:{click:e=>{e.preventDefault();r.open();}}});if(r.key)a.dataset.k=r.key;
       a.append(el('span',{class:'snum'},N(dn==null?r.no:dn)),
         el('span',{class:'sinfo'},el('span',{class:'ct'+(ui==='ar'?' arname':''),dir:'auto',lang:ui==='ar'?'ar':null},EN()?r.en:ui==='ar'?r.ar:hbU(r),hbLg(r.lg).length>1?el('span',{class:'hblg'},' ('+hbLg(r.lg).map(l=>(l==='ur'&&ui==='ur'?'اُردو':(LGN[ui]||LGN.en)[l]||l)).join('+')+')'):null,window.NEWS_NEW&&window.NEWS_NEW.has(r.key)?el('span',{class:'newtag'},ui==='ur'?'نئی':ui==='ar'?'جديد':'New'):null),false&&r.full&&!EN()&&hbF(r.full)!==hbF(ui==='ar'?r.ar:r.ur)&&hbF(r.full)!==hbF(r.ar)?el('span',{class:'hbfull',lang:'ar',dir:'rtl'},'('+r.full+')'):'',hbSubShort(r.sub)?el('span',{class:'cs hbsub'},hbSubShort(r.sub)):'',(r.auTxt?el('span',{class:'sau',lang:'ar',dir:'rtl'},r.auTxt):Array.isArray(r.au)&&r.au[0]!=='jami'&&r.au[0]!=='aslaf'?el('span',{class:'sau'},auName(r.au)):''),r.pub&&!(r.pub.only&&!r.pub.only.includes(ui))?el('span',{class:'cs hbpub'},({ur:'ناشر',ar:'الناشر',en:'Publisher',bn:'প্রকাশক',hi:'प्रकाशक',gu:'પ્રકાશક',fr:'Éditeur'}[ui]||'Publisher')+': '+(r.pub[ui]||(ui==='ar'?r.pub.ar:r.pub.en||r.pub.ur))):'',el('span',{class:'cs'},(r.key==='raheeq'?(n=>n+' '+({ur:'حصے',ar:'أجزاء',en:'parts'}[ui]||'parts')):T(r.key==='shadharat'?'cNas':'hbCount'))(N(r.n))+(r.ar_only?(ui==='ur'||ui==='ar'?'، ':', ')+T('arOnly'):'')+(r.ext?(ui==='ur'||ui==='ar'?'، ':', ')+T('hbExt'):''))),
         ui==='ur'?el('span',{class:'sar',lang:'ar'},r.ar):'',
