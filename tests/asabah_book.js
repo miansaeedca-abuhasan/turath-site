@@ -5,7 +5,7 @@ if(!E)bad.push('not registered');else{
  if(E.count!==12261)bad.push('row count '+E.count);
  const tot=E.asc.flat().reduce((a,b)=>a+b,0);if(tot!==12257)bad.push('entries '+tot);
  if(E.asx.length!==28)bad.push('asx');
- if(A.findIndex(e=>e.key==='asabahur')<A.length-5)bad.push('Isaba stands among the last (new) books');
+ if(A.findIndex(e=>e.key==='asabahur')<A.length-6)bad.push('Isaba stands among the last (new) books');
  let prev=0;E.files.ur.forEach(f=>{if(f[0]!==prev+1)bad.push('gap before file '+f[2]);prev=f[1]});if(prev!==E.count)bad.push('files end '+prev);
  const rows=[];E.files.ur.forEach(f=>{const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');rows.push(...JSON.parse(s.slice(s.indexOf(',',s.indexOf('"ur"'))+1,-1)))});
  rows.forEach(r=>{const t=r[1],ms=[...t.matchAll(/\(([0-9]{1,3})\)/g)].map(m=>m[1]),fs_=r[3]?[...r[3].fn.matchAll(/^\(([0-9]{1,3})\)/gm)].map(m=>m[1]):[];

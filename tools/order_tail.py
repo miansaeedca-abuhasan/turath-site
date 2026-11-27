@@ -4,7 +4,7 @@ Every book added after that date stands AT THE END of the registry, in the order
 then the sahaba books (Isaba, Usd al-Ghaba, Tabaqat) last.  Run after any build script that inserts a registry entry: python3 tools/order_tail.py ; then tools/rehash.py"""
 import json,os
 os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..'))
-TAIL=['tadabburur','tadabburar','tadabburen','ibnwahbur','qiraatkhalfur','ibnabishaibaur','shuabimanur','sahihjamiur','dalailur','sh10757','asabahur','asadghabaur','tabaqatur','difaesahabaur','andulusur']
+TAIL=['tadabburur','tadabburar','tadabburen','ibnwahbur','qiraatkhalfur','ibnabishaibaur','shuabimanur','sahihjamiur','dalailur','sh10757','asabahur','asadghabaur','tabaqatur','difaesahabaur','andulusur','muhaddithmadinaur']
 s=open('coll/index.js',encoding='utf-8').read();A=json.loads(s[s.index('COLLS(')+6:s.rindex(')')])
 base=json.load(open('tools/order_23nov.json'))
 by={e['key']:e for e in A}

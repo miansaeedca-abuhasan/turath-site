@@ -1,0 +1,21 @@
+const fs=require('fs'),{chromium}=require('playwright');
+(async()=>{let bad=[];const ok=(c,m)=>{if(!c)bad.push(m)};
+const reg=fs.readFileSync(__dirname+'/../coll/index.js','utf8'),A=JSON.parse(reg.slice(reg.indexOf('COLLS(')+6,reg.lastIndexOf(')'))),E=A.find(e=>e.key==='muhaddithmadinaur');
+ok(E,'registry');ok(E.count===148&&E.sections.length===90,'counts '+E.count+'/'+E.sections.length);
+let all='';E.files.ur.forEach(f=>{all+=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8')});
+ok(!/hry Nk/.test(all),'Kruti glyph text left');ok(all.includes('شیتل چھایا')&&all.includes('शीतल'),'Hindi title decoded');
+ok(!/https\/\/:/.test(all),'broken url');ok(/https:\/\/youtu\.be\//.test(all),'url fixed');
+ok(/موصوف طائف مقیم تھے/.test(all)&&!/شیخ اعظمی ➀/.test(all)&&/شیخ اعظمی کے مدینہ یونیورسٹی/.test(all),'p.23 note re-attached');
+ok(!/[➀➁➂]/.test(all),'dingbat marks left');
+ok(/ابو حسن میاں سعید عفی اللہ عنہ/.test(all),'owner signature');
+ok(/SEC_KEYS=\{[^}]*tazkira:\['muhaddithmadinaur','andulusur'\]/.test(fs.readFileSync(__dirname+'/../index.html','utf8')),'first in Tazkira folder');
+const b=await chromium.launch(),p=await b.newPage({viewport:{width:420,height:900}});await p.addInitScript(()=>{localStorage.ui='ur';localStorage.nosplash='1'});
+await p.goto('http://localhost:8765/index.html#/hb');await p.waitForSelector('.hbrow',{timeout:30000});await p.waitForTimeout(5000);
+ok(!(await p.evaluate(()=>[...document.querySelectorAll('#list a')].some(a=>/ہندو سے محدث مدینہ/.test(a.textContent)))),'in hadith list');
+await p.goto('http://localhost:8765/index.html#/sec/tazkira');await p.waitForTimeout(4000);
+const t=await p.evaluate(()=>[...document.querySelectorAll('#list a.card')].map(a=>a.textContent));ok(/ہندو سے محدث مدینہ/.test(t[0]||''),'first row '+t[0]);
+await p.goto('http://localhost:8765/index.html#/s/muhaddithmadinaur/8');await p.waitForSelector('.fnm,.bkitem',{timeout:25000});await p.waitForTimeout(1500);
+ok(await p.evaluate(()=>document.querySelectorAll('.fnm').length>=1&&/موصوف طائف/.test(document.body.innerText)),'footnote shown');
+for(const k of['seerah/1','fitan/1','fazail/1']){await p.goto('http://localhost:8765/index.html#/s/'+k);await p.waitForSelector('.jauth a',{timeout:25000}).catch(()=>{});
+ ok(await p.evaluate(()=>{const a=document.querySelector('.jauth a');return a&&a.getAttribute('href')==='#/s/muhaddithmadinaur/1'}),'author link on '+k);}
+await b.close();console.log(bad.length?'FAIL '+bad.join(' | '):'OK muhaddith_madina_book');process.exit(bad.length?1:0)})();
