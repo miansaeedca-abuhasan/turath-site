@@ -5,7 +5,7 @@ let rows=[];
 if(!E)bad.push('not registered');else{
  if(E.count!==148)bad.push('row count '+E.count);
  if(E.sections.length!==14)bad.push('sections '+E.sections.length);
- if(A[A.length-1].key!=='difaesahabaur')bad.push('registry end');
+ if(A[A.length-2].key!=='difaesahabaur')bad.push('registry end');
  let prev=0;E.files.ur.forEach(f=>{if(f[0]!==prev+1)bad.push('gap before file '+f[2]);prev=f[1]});if(prev!==E.count)bad.push('files end '+prev);
  E.files.ur.forEach(f=>{const s=fs.readFileSync(__dirname+'/../coll/'+f[2],'utf8');rows.push(...JSON.parse(s.slice(s.indexOf(',',s.indexOf('"ur"'))+1,-1)))});
  rows.forEach((r,i)=>{if(r[0]!==i+1)bad.push('id '+r[0]);const t=r[1],ms=[...t.matchAll(/\((\d{1,3})\)/g)].map(m=>+m[1]),fn=r[3]?[...r[3].fn.matchAll(/^\((\d{1,3})\)/gm)].map(m=>+m[1]):[];
