@@ -9,11 +9,12 @@ ck(ur.every(r=>!/[A-Za-z@#$_¤"“”]|ﷺ|ؓ|ؒ|ؑ/.test(r[1].replace(/ \(1\)$/
 ck(ur.every(r=>(r[1].match(/’’/g)||[]).length===(r[1].match(/‘‘/g)||[]).length),'Urdu quote marks balanced');
 ck(ur.every(r=>!r[3]||!r[3].k||/\(1\)\s*$/.test(r[1])),'takhrij mark (1) present when takhrij exists');
 ck(ur.every(r=>r[3]&&r[3].k),'every hadith has takhrij (corrected xlsx 26-11-2026)');
+ck(ur.every(r=>!/فصل في المحلى|باب المناهي|الشمائل الشريفة$/.test(r[3]&&r[3].k||'')),'no leaked section headings in takhrij (xlsx defect, 27 rows cut)');
 ck(E.trn&&E.trn.ur==='حافظ طلحہ بابر','translator name (owner 27-11-2026)');
 ck(/إن الله تعالى جعلني عبدا كريما/.test(ar[1742][1])&&/سخی بندہ/.test(ur[1742][1]),'hadith 1740 restored in the corrected file');
 ck(/تمہارا ان پر/.test(ur[2070][1]),'stray glyph «ara» turned into تمہارا');
 ck(ur[1124]&&/\[الفاتحة|\[[^\]]+: [۰-۹]+\]/.test(ur.map(r=>r[1]).join('\n')),'verse references with Urdu digits');
-ck(E.sections.length===58&&E.sections[0][2]===1&&E.sections[57][3]===8212&&E.sections.every((s,i)=>i===0||s[2]===E.sections[i-1][3]+1),'58 sections continuous');
+ck(E.sections.length===74&&E.sections[0][2]===1&&E.sections[1][2]===23&&E.sections[16][3]===2755&&E.sections[57]&&E.sections[73][3]===8212&&E.sections.every((s,i)=>i===0||s[2]===E.sections[i-1][3]+1),'74 sections continuous, 16 Alif sub-chapters');
 ck(E.an['331']==='330/1'||Object.values(E.an).filter(v=>typeof v==='string'&&/\//.test(v)).length===11,'11 bracketed extra hadith keep «N/1»');
 ck(E.author[0]==='albani'&&S.author[0]==='albani','author Albani');
 ck(sh.length===S.count&&S.sections.length===58&&S.pg,'Arabic book: rows, 58 sections, printed pages');

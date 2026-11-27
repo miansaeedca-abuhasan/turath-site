@@ -79,6 +79,9 @@ for i,x in enumerate(X,1):
     u=urdu(tr)
     t=tk.strip()
     if t.startswith('«') and t.endswith('»'): t=t[1:-1].strip()
+    k_=t.find('فصل في المحلى')
+    if k_>=0: t=t[:k_].strip()          # the next section's heading (and in 3584 the next hadith) leaked into the xlsx takhrij cell (25 rows)
+    for junk in (' باب كان وهي الشمائل الشريفة',' باب المناهي.'): t=t.replace(junk,'')   # 4615, 6809: heading of the next chapter
     hk=hk.strip()
     if hk not in('','0') and t and re.sub(r'[ً-ْ]','',hk) not in re.sub(r'[ً-ْ]','',t): t=hk+': '+t;fromep.append(num)   # grade only in the hukm column -> put in front (none expected)
     elif hk not in('','0') and not t: t=hk
@@ -117,6 +120,18 @@ for j,(c,ca,cu) in enumerate(H):
     cu=cu.strip().rstrip('۔');ca=ca.strip().rstrip('.')
     if ca.startswith('فصل'): cu=SECS[-1][1].split(' — ')[0]+' — '+cu;ca=SECS[-1][4].split(' — ')[0]+' — '+ca   # the «فصل» of each letter carries the letter's name
     SECS.append([j+1,cu,st[j],b,ca])
+# the 16 sub-chapters of حرف الألف (sheet «Abwab» rows 2-17) – start = first printed hadith number of each range (checked on the owner's screenshots)
+ALIF=[1,23,141,240,866,1012,1139,1233,1255,1313,1407,1446,1697,1925,2036,2295,2521]
+a0=SECS[0];assert a0[2]==1
+sub=[]
+for k,pn in enumerate(ALIF):
+    c,ca,cu=CH[k];assert c==k+1
+    s0=numid[str(pn)];e0=numid[str(ALIF[k+1])]-1 if k+1<len(ALIF) else a0[3]
+    sub.append([0,cu.strip().rstrip('۔'),s0,e0,ca.strip().rstrip('.')])
+assert sub[0][2]==a0[2] and sub[-1][3]==a0[3]
+SECS=sub+SECS[1:]
+for j,x in enumerate(SECS): x[0]=j+1
+assert all(SECS[i][3]+1==SECS[i+1][2] for i in range(len(SECS)-1))
 print('sections',len(SECS),SECS[:3],SECS[-1])
 def jd(x): return json.dumps(x,ensure_ascii=False,separators=(',',':'))
 for f in os.listdir('coll'):
