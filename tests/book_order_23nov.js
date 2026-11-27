@@ -3,7 +3,7 @@ const fs=require('fs');let bad=0;const ck=(c,m)=>{if(!c){bad++;console.log('FAIL
 const s=fs.readFileSync('coll/index.js','utf8'),A=JSON.parse(s.slice(s.indexOf('COLLS(')+6,s.lastIndexOf(')'))).map(e=>e.key),base=JSON.parse(fs.readFileSync('tools/order_23nov.json','utf8'));
 ck(JSON.stringify(A.filter(k=>base.includes(k)))===JSON.stringify(base),'books of 23-11-2026 keep their relative order');
 ck(JSON.stringify(A.slice(base.length))===JSON.stringify(A.slice(base.length)) && A.slice(0,base.length).every(k=>base.includes(k)),'no new book stands among the old ones');
-ck(JSON.stringify(A.slice(-9))===JSON.stringify(['ibnwahbur','qiraatkhalfur','ibnabishaibaur','shuabimanur','sahihjamiur','sh10757','asabahur','asadghabaur','tabaqatur']),'tail = new hadith books, then sahaba books');
+ck(JSON.stringify(A.slice(-10))===JSON.stringify(['ibnwahbur','qiraatkhalfur','ibnabishaibaur','shuabimanur','sahihjamiur','dalailur','sh10757','asabahur','asadghabaur','tabaqatur']),'tail = new hadith books, then sahaba books');
 const h=fs.readFileSync('index.html','utf8'),m=h.match(/sahaba:\[([^\]]*)\]/)[1].split(',').map(x=>x.replace(/'/g,''));
 ck(JSON.stringify(m.slice(-3))===JSON.stringify(['asabahur','asadghabaur','tabaqatur']),'sahaba section list: new books after the old ones');
 const ib=JSON.parse(s.slice(s.indexOf('COLLS(')+6,s.lastIndexOf(')'))).find(e=>e.key==='ibnabishaibaur');
