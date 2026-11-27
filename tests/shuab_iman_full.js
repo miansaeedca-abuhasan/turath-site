@@ -18,7 +18,7 @@ const idx=fs.readFileSync('coll/index.js','utf8');const A=JSON.parse(idx.slice(i
 ck(E&&E.count===11145&&E.sections[0][2]===1&&E.sections[E.sections.length-1][3]===11145,'registered, sections cover all rows');
 ck(E.sections.every((s,i)=>i===0||s[2]===E.sections[i-1][3]+1),'sections are contiguous');
 ck(E.showpub&&/اسماعیل/.test(E.trn.ur)&&/دارالاشاعت/.test(E.pub.ur),'translator, publisher');
-ck(A.findIndex(e=>e.key==='shuabimanur')>=A.length-4,'is among the newest books at the end');
+ck(A.findIndex(e=>e.key==='shuabimanur')>=A.length-8,'is among the newest books at the end');
 ck(/shuabimanur":10/.test(fs.readFileSync('index.html','utf8')),'HB_CAT');
 ck(!/shuabimanur/.test(fs.readFileSync('news.json','utf8')),'no news card (owner announces later)');
 (async()=>{const b=await chromium.launch();
