@@ -164,7 +164,11 @@ sup.fnm{cursor:pointer}.hblg{font-size:.8em;color:var(--muted,#888);font-weight:
 .qe-entry .qe-title,.qe-front .qe-title{display:block;width:auto;margin:.1rem 0 .9rem;padding:.25rem .9rem;text-align:center;font:700 1.35rem/1.9 var(--urduhead,var(--urdu));color:var(--qb);border:2px solid var(--qbd);border-radius:.9rem;background:linear-gradient(var(--qbg1),var(--qbg2));box-shadow:inset 0 0 0 3px var(--paper,#fff),inset 0 0 0 4px var(--qbd)}
 .qe-entry .qe-title:before,.qe-front .qe-title:before{content:none}.qe-front .qe-title:after{content:none}
 .qe-entry .qe-title,.qe-front .qe-title{width:fit-content!important;max-width:100%;margin-inline:auto!important;padding-inline:1.8rem!important}.qe-bk{display:flex;align-items:center;justify-content:center;gap:.7rem;width:fit-content;max-width:100%;margin:1.1rem auto .5rem!important;padding:.35rem 1.2rem;text-align:center;border:1.5px solid #c9a24a;border-radius:.9rem;background:linear-gradient(#fffdf6,#fbf4de);box-shadow:inset 0 0 0 3px #fffdf6,inset 0 0 0 4px #e3c97e}.qe-bkt{font:700 1.2rem/1.9 var(--urdu);color:#10306b}.qe-bkar .qe-bkt{font-family:var(--arabic);font-size:1.3rem}.qe-bkn{flex:none;min-width:1.7rem;height:1.7rem;padding:0 .3rem;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:#10306b;color:#fff;font:700 .9rem/1 var(--urdu)}.qe-ed{text-align:center!important}
-.qe-en{line-height:1.8;font-family:var(--latin,Georgia,'Times New Roman',serif)}.qe-en .qe-title{font-family:var(--latin,Georgia,serif)}.qe-en .qe-p{text-align:start;font-size:1.04em;margin:.2rem 0 .7rem}.qe-en .qe-enar{font:1.45rem/2.3 var(--arabic);margin:.8rem 0;text-align:center}.qe-ref{margin:-.3rem 0 .8rem;text-align:center}.qe-ref{display:block;font-size:.88em;color:var(--qb,#2a6db0)}.qe-tw{overflow-x:auto;margin:.6rem 0 1rem}.qe-tbl{border-collapse:collapse;min-width:100%;font-size:.95em}.qe-tbl th{background:var(--qb,#2a6db0);color:#fff;padding:.4rem .6rem;text-align:start}.qe-tbl td{padding:.4rem .6rem;border-bottom:1px solid var(--line,#d9d2c3);vertical-align:top}
+.qe-en{line-height:1.8;font-family:var(--latin,Georgia,'Times New Roman',serif)}.qe-en .qe-title{font-family:var(--latin,Georgia,serif)}.qe-en .qe-p{text-align:start;font-size:1.04em;margin:.2rem 0 .7rem}.qe-en .qe-enar{font:1.3rem/2.3 var(--arabic);margin:.8rem 0;text-align:center}.qe-ref{margin:-.3rem 0 .8rem;text-align:center}
+/* verse numbers inside a verse card: small round circles in the verse colour, same in the Urdu and the English Quran Encyclopedia (owner 27-11-2026) */
+.qe-ayah .ayn,.qe .qayah .ayn{min-width:1.2em;height:1.2em;font-size:.5em;border-width:1px;margin:0 .35em;padding:0 .08em;vertical-align:.25em}
+.qe-ayah{line-height:2.4}
+.qe-ref{display:block;font-size:.88em;color:var(--qb,#2a6db0)}.qe-tw{overflow-x:auto;margin:.6rem 0 1rem}.qe-tbl{border-collapse:collapse;min-width:100%;font-size:.95em}.qe-tbl th{background:var(--qb,#2a6db0);color:#fff;padding:.4rem .6rem;text-align:start}.qe-tbl td{padding:.4rem .6rem;border-bottom:1px solid var(--line,#d9d2c3);vertical-align:top}
 .qe-front .qe-title{font-size:1.6rem}
 .qe-sub{display:block;width:fit-content;margin:1.1rem auto .5rem;padding:.05rem 1.3rem;text-align:center;font:700 1.02rem/1.9 var(--urduhead,var(--urdu));color:#fff;background:var(--qr);border-radius:.3rem;text-shadow:0 1px 1px rgba(0,0,0,.35);box-shadow:0 1px 0 rgba(0,0,0,.25)}
 .qe-poem{margin:.2rem 0;text-align:center;text-indent:0!important;color:var(--qg);font-weight:700;line-height:2.2}
@@ -1512,10 +1516,29 @@ function qencEnItem(r,n){
     if(x[0]!=='\ue040')tb=null;
     if(x[0]==='§'){b.append(el('h4',{class:'subh qe-title'},x.slice(1).trim()));continue;}
     if(x[0]==='\ue040'){if(!tb){tb=el('table',{class:'qe-tbl'});b.append(el('div',{class:'qe-tw'},tb));}const tr=el('tr',{});x.slice(1).split('\ue041').forEach(c=>tr.append(el(tb.rows.length?'td':'th',{},c)));tb.append(tr);continue;}
-    if(x[0]==='\ue030'||x[0]==='﴿'){b.append(el('p',{class:'arp qe-ayah qe-enar',lang:'ar',dir:'rtl'},x[0]==='\ue030'?x.slice(1):x));continue;}
+    if(x[0]==='\ue030'||x[0]==='﴿'){let vt=x[0]==='\ue030'?x.slice(1):x;
+      if(x[0]==='\ue030'){for(let q=i+1;q<lines.length&&q<=i+3;q++){const y=lines[q];if(y[0]==='\ue030'||y[0]==='﴿'||y[0]==='§')break;if(/^\[[^\]]+:\s*[\d\-–, ]+\]/.test(y)||/^\(Quran/.test(y)){vt='﴿'+vt.trim()+'﴾';break;}}}   /* an Arabic line that is followed by a Quran reference is a verse: ornate brackets, verse colour */
+      const fx=ayFix(vt,n=>el('span',{class:'ayn ud'},ayDig(n)));b.append(el('p',{class:'arp qe-ayah qe-enar',lang:'ar',dir:'rtl'},vt[0]==='﴿'?el('span',{class:'qayah',lang:'ar'},...fx):fx));continue;}   /* a Quran verse is in the verse colour (maroon) like the Urdu book; other Arabic lines (\ue030) stay plain */   /* verse numbers = small round circles in the verse colour (owner 27-11-2026), like the Urdu book and Tadabbur */
+    if(/^(\[[^\]]+:\s*[\d\-–, ]+\]\.?\s*)+$/.test(x)){b.append(el('p',{class:'qe-ref'},x));continue;}
     if(/^\((Quran|Sahih|Sunan|Musnad|Tirmidhi|Abu|Ibn|Muslim|Bukhari)[^)]*\)\.?$/.test(x)){b.append(el('p',{class:'qe-ref'},x));continue;}
     b.append(el('p',{class:'qe-p'},x));}
   return b;}
+/* Quran Encyclopedia (Urdu): «lead:﴿verse﴾ [Surah: n] "translation" rest» inside one paragraph is shown as the English book shows it (owner 27-11-2026): lead paragraph, verse card (small round verse-number circles), the translation in ’’ ‘‘, and the reference [Surah: n] at the END; rendering only, the data is unchanged */
+function qeVerseLine(x){
+  const m=/^([\s\S]*?)(﴿[^﴾]*﴾)\s*(\[[^\]]*\])?\s*([\s\S]*)$/.exec(x);
+  const para=t=>{const p=paraEl(t,'ur');p.classList.add('qe-p');return p;};
+  if(!m)return [para(x)];
+  const out=[],pre=m[1].trim(),ref=m[3],rest=m[4]||'';
+  if(pre)out.push(para(pre));
+  const v=paraEl(m[2],'ur');v.classList.add('qe-ayah');out.push(v);
+  let tr='',after=rest;
+  const o=/^(?:"|\u201c|’’)\s*/.exec(rest);
+  if(o){const body=rest.slice(o[0].length),k=body.search(/\s*(?:"|\u201d|‘‘)/);
+    if(k<0){tr=body;after='';}else{tr=body.slice(0,k);after=body.slice(k).replace(/^\s*(?:"|\u201d|‘‘)\s*/,'');}}
+  if(tr.trim()){const p=para('’’'+tr.trim()+'‘‘');p.classList.add('qe-tr');out.push(p);}
+  if(ref){const p=el('p',{class:'qe-ref',lang:'ur',dir:'rtl'},ref);out.push(udig(p));}
+  if(after.trim())out.push(...qeVerseLine(after.trim()));
+  return out;}
 function qencItem(r,n){
   const lines=(r[1]||'').split('\n').map(x=>x.trim()).filter(Boolean),box=(cls)=>el('div',{class:'bkitem qe '+cls,lang:'ur',dir:'rtl'});
   const fnb=()=>typeof proseFnBox==='function'?proseFnBox(r,'ur'):[];
@@ -1542,7 +1565,7 @@ function qencItem(r,n){
       else if(/^(طبع|جلدیں)/.test(y)){b.append(el('p',{class:'qe-ed'},y));continue;}
       else{b.append(el('h5',{class:'qe-sub'},...rich(y,'ur')));continue;}}
     if(front&&x[0]!=='﴿'&&isArPara(x)){b.append(el('p',{class:'arp qe-dox',lang:'ar',dir:'rtl'},x));continue;}
-    const p=paraEl(x,'ur');p.classList.add('qe-p');if(x[0]==='﴿')p.classList.add('qe-ayah');b.append(p);}
+    qeVerseLine(x).forEach(nd=>b.append(nd));}
   b.append(...fnb());return b;}
 // «القرآن: تدبر وعمل» (tadabburur / tadabburar / tadabburen, 25-11-2026): one row per mushaf page, printed-book look (red label bars, blue numbered circles, blue Quranic phrases, purple question with a dotted «answer» line, word-meaning table).
 // Row lines: «§names» page head; kind label; text item; verses + text + question reflection; wordmeaning table row (tools/tadabbur/build.py)
