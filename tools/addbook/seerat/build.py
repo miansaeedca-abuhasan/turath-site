@@ -84,12 +84,18 @@ def head(l,prev,nxt,first):
 files=sorted(glob.glob(SRC+'/*SeeratEncyclopediaVol*_Mukammal*.json'),key=lambda f:int(re.search(r'Vol(\d)',f).group(1)))
 assert len(files)==7
 cnt=0;mk_unplaced=0
-MISS={1:list(range(10,29)),3:[]}   # jild 3: printed 258 259 262 263 266 267 … 286 287 are NOT in the owner's PDF (its pp.260-291 are duplicate scans of 228-259), so no images   # images: v1 = PDF page p, v3 = PDF page p+2 (checked by content)
+MISS={1:list(range(10,29))}   # images: v1 = PDF page p, v3 = PDF page p+2 (checked by content)
+# jild 3 printed 258 259 262 263 266 267 270 271 274 275 278 279 282 283 286 287 and jild 2 printed 468 469 are NOT in the owner's PDFs (jild 3 pp.260-291 of the PDF are duplicate scans);
+# the owner supplied photos of the printed pages (28-11-2026), transcribed by hand from the photos -> owner_pages.json ({v,page,content,images}); the page picture is the photo itself
+OWNER=json.load(open(os.path.join('tools/addbook/seerat','owner_pages.json'),encoding='utf-8'))
 for f in files:
     v=int(re.search(r'Vol(\d)',f).group(1));d=json.load(open(f,encoding='utf-8'))
     chap=0;gloss=False;started=False;cur=None
     # pages the JSON lacks: image-only rows (page scans rendered from the owner's PDF; PDF page = printed + off)
     for pp in MISS.get(v,[]): d.append({'page':pp,'content':'','images':['v%d_p%d.jpg'%(v,pp)],'mp':1})
+    for e in OWNER:
+        if e['v']==v:
+            assert all(x['page']!=e['page'] for x in d),('page exists',v,e['page']);d.append({'page':e['page'],'content':e['content'],'images':e['images']})
     d.sort(key=lambda e:e['page'])
     for e in d:
         p=e['page'];L=[l.strip() for l in e['content'].split('\n') if l.strip()]
@@ -100,7 +106,6 @@ for f in files:
             m=re.match(r'^باب\s*([0-9۰-۹]+)\s*$',l)
             if m and num(m.group(1))==chap+1:
                 chap+=1;t=[x for x in body[i+1:i+3] if x!='سیرت انسائیکلوپیڈیا'];sect='جلد %d — باب %d: %s'%(v,chap,t[0] if t else '');break
-        if v==3 and p==272: chap+=1;sect='جلد 3 — باب 5: صحابہ کرام رضی اللہ عنہم پر مشرکین مکہ کی ستم رانیاں'   # title read from the printed contents (PDF 3, p.12); chapter cover = calligraphy page 272
         if not sect and not gloss and re.match(r'^تفصیل حواشی',body[0] if body else ''): gloss=True;sect='جلد %d — تفصیل حواشی'%v
         if not sect and not started: sect='جلد %d — ابتدائی صفحات'%v;started=True
         if sect and (not secs or secs[-1][1]!=sect): secs.append([None,sect,len(rows)+1,0,''])
