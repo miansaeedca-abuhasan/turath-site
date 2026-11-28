@@ -12,6 +12,9 @@ HINDI="'hry Nk;k dqjvku dh"   # Kruti Dev glyphs printed in the book (PDF p.44):
 def fix(t):
     t=t.replace(HINDI,'शीतल छाया कुरआन की')
     t=t.replace('انہیں جلدوں','انیس جلدوں')   # owner 27-11-2026: «19 volumes», the file had «انہیں» (2 places, section «جس کے پاس pdf فائل»)
+    # owner 27-11-2026 19:25: stray «والے» removed; his name written «ابو حسن میاں سعید» everywhere (not «ابو الحسن» / «ابوحسن، »)
+    t=t.replace('رحمہ اللہ والے کی جس نے','رحمہ اللہ کی جس نے')
+    t=t.replace('ابو الحسن میاں سعید','ابو حسن میاں سعید').replace('ابوحسن، میاں سعید','ابو حسن میاں سعید').replace('ابوحسن میاں سعید','ابو حسن میاں سعید').replace('ابوحسن سعید صاحب','ابو حسن میاں سعید صاحب')
     # url slips of the file (RTL): https//: -> https://, host dots written as _
     def url(m):
         u=m.group(0).replace('//:','://',1) if '//:' in m.group(0) else m.group(0)
@@ -28,7 +31,10 @@ def fix(t):
             for j,x in enumerate(parts[1:]): ln+=('’’' if j%2==0 else '‘‘')+x
         elif n: rep.append('odd straight quotes kept: '+ln[:50])
         out.append(ln)
-    return '\n'.join(out)
+    t='\n'.join(out)
+    # owner's own corrected wording (19:27)
+    t=t.replace('رحمہ اللہ کی جس نے انہیں باسند بخاری کی حدیث سنائی اور پھر ’’المسلسل بالأولية‘‘ کا سماع شیخ سے کیا، الحمد للہ','رحمہ اللہ کی جس نے ’’المسلسل بالأولية‘‘ کا سماع شیخ سے کیا اور پھر انہیں باسند بخاری کی حدیث سنائی، الحمد للہ')
+    return t
 rows=[];secs=[]
 def paras(text): return [p.strip() for p in text.split('\n') if p.strip()]
 def emit(title,heading,text,notes,newsec):

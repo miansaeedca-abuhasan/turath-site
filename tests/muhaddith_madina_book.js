@@ -6,6 +6,8 @@ let all='';E.files.ur.forEach(f=>{all+=fs.readFileSync(__dirname+'/../coll/'+f[2
 ok(!/hry Nk/.test(all),'Kruti glyph text left');ok(all.includes('شیتل چھایا')&&all.includes('शीतल'),'Hindi title decoded');
 ok(!/https\/\/:/.test(all),'broken url');ok(/https:\/\/youtu\.be\//.test(all),'url fixed');
 ok(/موصوف طائف مقیم تھے/.test(all)&&!/شیخ اعظمی ➀/.test(all)&&/شیخ اعظمی کے مدینہ یونیورسٹی/.test(all),'p.23 note re-attached');
+ok(!/اللہ والے کی جس/.test(all)&&/جس نے ’’المسلسل بالأولية‘‘ کا سماع شیخ سے کیا اور پھر انہیں باسند بخاری کی حدیث سنائی، الحمد للہ/.test(all),'owner wording of the Muwalla sentence (no «والے»)');
+ok(!/ابو الحسن میاں سعید|ابوحسن/.test(all),'owner name written «ابو حسن میاں سعید»');
 ok(!/انہیں جلدوں/.test(all)&&(all.match(/انیس جلدوں/g)||[]).length>=7,'«انیس جلدوں» fixed');
 ok(/«\u2060وقد سئلت كثيرا من مختلف الفئات فقالوا إنكم تقولون/.test(all),'Arabic quote typed with Arabic letters, in the Arabic-font mark');
 ok((all.match(/«\u2060/g)||[]).length>=90,'Arabic passages marked');
