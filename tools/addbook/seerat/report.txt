@@ -1,0 +1,408 @@
+v1 p5: no marks -> notes dropped back to body
+v1 p39: no marks -> notes dropped back to body
+notes rejected (10)
+notes rejected (2)
+v1 p42: no marks -> notes dropped back to body
+notes rejected (1)
+notes rejected (2)
+notes rejected (2)
+notes rejected (1)
+notes rejected (4)
+notes rejected (5)
+notes rejected (2)
+v1 p155: marks 4 notes 5
+notes rejected (2)
+notes rejected (2)
+notes rejected (4)
+notes rejected (1)
+v1 p184: marks 3 notes 4
+v1 p216: marks 2 notes 3
+notes rejected (3)
+v1 p230: marks 2 notes 3
+notes rejected (2)
+v1 p243: no marks -> notes dropped back to body
+v1 p250: no marks -> notes dropped back to body
+notes rejected (1)
+notes rejected (1)
+v1 p257: marks 3 notes 5
+v1 p289: marks 2 notes 4
+v1 p302: no marks -> notes dropped back to body
+v1 p336: no marks -> notes dropped back to body
+v1 p367: marks 4 notes 5
+notes rejected (1)
+v1 p375: marks 2 notes 3
+notes rejected (3)
+notes rejected (1)
+v1 p379: no marks -> notes dropped back to body
+notes rejected (1)
+notes rejected (4)
+v1 p383: no marks -> notes dropped back to body
+notes rejected (2)
+notes rejected (2)
+notes rejected (3)
+v1 p409: marks 2 notes 3
+notes rejected (4)
+v1 p427: no marks -> notes dropped back to body
+notes rejected (2)
+notes rejected (12)
+v1 p468: no marks -> notes dropped back to body
+v1 p469: no marks -> notes dropped back to body
+v1 p470: no marks -> notes dropped back to body
+v1 p471: no marks -> notes dropped back to body
+v1 p472: no marks -> notes dropped back to body
+v1 p473: no marks -> notes dropped back to body
+v1 p474: no marks -> notes dropped back to body
+v1 p475: no marks -> notes dropped back to body
+v1 p476: no marks -> notes dropped back to body
+v1 p477: no marks -> notes dropped back to body
+v1 p478: no marks -> notes dropped back to body
+v1 p480: no marks -> notes dropped back to body
+v1 p481: no marks -> notes dropped back to body
+v1 p482: no marks -> notes dropped back to body
+notes rejected (2)
+v2 p42: marks 5 notes 6
+notes rejected (9)
+notes rejected (9)
+notes rejected (10)
+notes rejected (12)
+notes rejected (9)
+notes rejected (18)
+v2 p119: marks 3 notes 4
+v2 p134: no marks -> notes dropped back to body
+v2 p135: no marks -> notes dropped back to body
+v2 p136: no marks -> notes dropped back to body
+v2 p137: no marks -> notes dropped back to body
+v2 p138: no marks -> notes dropped back to body
+v2 p139: no marks -> notes dropped back to body
+v2 p140: no marks -> notes dropped back to body
+v2 p141: no marks -> notes dropped back to body
+v2 p142: no marks -> notes dropped back to body
+v2 p143: no marks -> notes dropped back to body
+v2 p144: no marks -> notes dropped back to body
+v2 p164: no marks -> notes dropped back to body
+v2 p165: no marks -> notes dropped back to body
+v2 p166: no marks -> notes dropped back to body
+v2 p167: no marks -> notes dropped back to body
+v2 p168: no marks -> notes dropped back to body
+v2 p169: no marks -> notes dropped back to body
+v2 p170: no marks -> notes dropped back to body
+v2 p171: no marks -> notes dropped back to body
+v2 p172: no marks -> notes dropped back to body
+v2 p173: no marks -> notes dropped back to body
+v2 p176: no marks -> notes dropped back to body
+v2 p177: no marks -> notes dropped back to body
+v2 p178: no marks -> notes dropped back to body
+v2 p194: marks 1 notes 2
+v2 p207: marks 3 notes 4
+v2 p252: marks 6 notes 8
+notes rejected (9)
+v2 p284: no marks -> notes dropped back to body
+v2 p285: no marks -> notes dropped back to body
+v2 p287: no marks -> notes dropped back to body
+v2 p288: no marks -> notes dropped back to body
+v2 p289: no marks -> notes dropped back to body
+v2 p290: no marks -> notes dropped back to body
+v2 p291: no marks -> notes dropped back to body
+v2 p292: no marks -> notes dropped back to body
+v2 p293: no marks -> notes dropped back to body
+v2 p294: no marks -> notes dropped back to body
+v2 p295: no marks -> notes dropped back to body
+v2 p296: no marks -> notes dropped back to body
+v2 p297: no marks -> notes dropped back to body
+v2 p298: no marks -> notes dropped back to body
+v2 p299: marks 2 notes 3
+notes rejected (1)
+notes rejected (2)
+notes rejected (1)
+notes rejected (1)
+notes rejected (2)
+v2 p396: marks 2 notes 3
+v2 p412: marks 5 notes 7
+notes rejected (2)
+v2 p435: marks 4 notes 5
+v2 p441: marks 3 notes 4
+v2 p449: no marks -> notes dropped back to body
+v2 p457: marks 3 notes 4
+v2 p458: no marks -> notes dropped back to body
+notes rejected (2)
+v2 p556: marks 1 notes 2
+v2 p563: no marks -> notes dropped back to body
+notes rejected (8)
+notes rejected (10)
+notes rejected (1)
+notes rejected (2)
+v3 p29: marks 1 notes 2
+v3 p30: no marks -> notes dropped back to body
+v3 p34: marks 2 notes 3
+v3 p35: marks 3 notes 5
+v3 p36: marks 1 notes 2
+v3 p37: no marks -> notes dropped back to body
+v3 p46: marks 3 notes 4
+v3 p105: marks 4 notes 5
+notes rejected (2)
+v3 p116: marks 5 notes 7
+notes rejected (9)
+v3 p118: marks 3 notes 4
+v3 p159: no marks -> notes dropped back to body
+v3 p160: no marks -> notes dropped back to body
+v3 p161: no marks -> notes dropped back to body
+v3 p162: no marks -> notes dropped back to body
+v3 p164: no marks -> notes dropped back to body
+v3 p165: no marks -> notes dropped back to body
+v3 p166: no marks -> notes dropped back to body
+v3 p168: no marks -> notes dropped back to body
+v3 p169: no marks -> notes dropped back to body
+v3 p170: no marks -> notes dropped back to body
+v3 p171: no marks -> notes dropped back to body
+v3 p172: no marks -> notes dropped back to body
+v3 p203: marks 1 notes 3
+v3 p205: marks 2 notes 3
+v3 p206: marks 1 notes 3
+v3 p207: no marks -> notes dropped back to body
+v3 p210: no marks -> notes dropped back to body
+v3 p211: marks 2 notes 3
+v3 p212: no marks -> notes dropped back to body
+v3 p213: no marks -> notes dropped back to body
+v3 p216: no marks -> notes dropped back to body
+v3 p218: no marks -> notes dropped back to body
+v3 p290: marks 2 notes 3
+v3 p308: no marks -> notes dropped back to body
+v3 p313: no marks -> notes dropped back to body
+v3 p315: no marks -> notes dropped back to body
+v3 p316: no marks -> notes dropped back to body
+v3 p317: no marks -> notes dropped back to body
+v3 p318: no marks -> notes dropped back to body
+v3 p319: no marks -> notes dropped back to body
+v3 p320: no marks -> notes dropped back to body
+v3 p322: no marks -> notes dropped back to body
+notes rejected (13)
+v3 p338: no marks -> notes dropped back to body
+v3 p339: no marks -> notes dropped back to body
+v3 p340: no marks -> notes dropped back to body
+v3 p341: no marks -> notes dropped back to body
+v3 p342: no marks -> notes dropped back to body
+v3 p343: no marks -> notes dropped back to body
+v3 p344: no marks -> notes dropped back to body
+v3 p348: no marks -> notes dropped back to body
+v3 p350: no marks -> notes dropped back to body
+v3 p351: no marks -> notes dropped back to body
+v3 p370: no marks -> notes dropped back to body
+notes rejected (10)
+v3 p409: no marks -> notes dropped back to body
+notes rejected (2)
+notes rejected (10)
+v3 p474: marks 2 notes 3
+v3 p475: marks 1 notes 3
+v3 p476: marks 4 notes 5
+v3 p488: no marks -> notes dropped back to body
+v3 p490: no marks -> notes dropped back to body
+v3 p491: no marks -> notes dropped back to body
+v3 p492: no marks -> notes dropped back to body
+v3 p493: no marks -> notes dropped back to body
+v3 p494: no marks -> notes dropped back to body
+v3 p495: no marks -> notes dropped back to body
+v3 p496: no marks -> notes dropped back to body
+notes rejected (11)
+v4 p76: marks 5 notes 6
+v4 p105: no marks -> notes dropped back to body
+v4 p106: no marks -> notes dropped back to body
+v4 p107: no marks -> notes dropped back to body
+v4 p108: no marks -> notes dropped back to body
+v4 p109: no marks -> notes dropped back to body
+v4 p203: no marks -> notes dropped back to body
+v4 p204: no marks -> notes dropped back to body
+v4 p205: no marks -> notes dropped back to body
+v4 p206: no marks -> notes dropped back to body
+v4 p207: no marks -> notes dropped back to body
+v4 p208: no marks -> notes dropped back to body
+v4 p209: no marks -> notes dropped back to body
+v4 p210: no marks -> notes dropped back to body
+v4 p211: no marks -> notes dropped back to body
+v4 p212: no marks -> notes dropped back to body
+v4 p213: no marks -> notes dropped back to body
+v4 p214: no marks -> notes dropped back to body
+notes rejected (1)
+notes rejected (3)
+v4 p235: marks 1 notes 2
+v4 p239: marks 1 notes 2
+v4 p242: no marks -> notes dropped back to body
+notes rejected (1)
+v4 p355: marks 6 notes 7
+v4 p401: no marks -> notes dropped back to body
+notes rejected (2)
+v4 p467: no marks -> notes dropped back to body
+v4 p468: no marks -> notes dropped back to body
+v4 p496: no marks -> notes dropped back to body
+v4 p498: marks 4 notes 5
+v4 p502: marks 3 notes 4
+notes rejected (2)
+notes rejected (2)
+v5 p51: marks 4 notes 5
+v5 p53: no marks -> notes dropped back to body
+v5 p75: no marks -> notes dropped back to body
+v5 p76: no marks -> notes dropped back to body
+v5 p77: no marks -> notes dropped back to body
+v5 p78: no marks -> notes dropped back to body
+v5 p79: no marks -> notes dropped back to body
+v5 p80: no marks -> notes dropped back to body
+v5 p81: no marks -> notes dropped back to body
+v5 p82: no marks -> notes dropped back to body
+v5 p83: no marks -> notes dropped back to body
+v5 p87: no marks -> notes dropped back to body
+v5 p88: no marks -> notes dropped back to body
+v5 p120: no marks -> notes dropped back to body
+notes rejected (2)
+v5 p164: no marks -> notes dropped back to body
+v5 p190: marks 1 notes 2
+notes rejected (2)
+notes rejected (9)
+notes rejected (2)
+v5 p429: marks 3 notes 4
+v5 p495: no marks -> notes dropped back to body
+v5 p499: no marks -> notes dropped back to body
+v5 p502: no marks -> notes dropped back to body
+v5 p503: no marks -> notes dropped back to body
+v5 p504: no marks -> notes dropped back to body
+v5 p505: no marks -> notes dropped back to body
+v5 p507: no marks -> notes dropped back to body
+v5 p534: marks 1 notes 2
+v6 p38: no marks -> notes dropped back to body
+v6 p44: marks 1 notes 3
+v6 p45: no marks -> notes dropped back to body
+v6 p51: no marks -> notes dropped back to body
+v6 p62: no marks -> notes dropped back to body
+v6 p71: marks 3 notes 4
+v6 p87: no marks -> notes dropped back to body
+v6 p88: no marks -> notes dropped back to body
+v6 p91: no marks -> notes dropped back to body
+v6 p93: no marks -> notes dropped back to body
+v6 p94: no marks -> notes dropped back to body
+v6 p96: no marks -> notes dropped back to body
+v6 p97: no marks -> notes dropped back to body
+v6 p99: no marks -> notes dropped back to body
+v6 p100: no marks -> notes dropped back to body
+v6 p101: no marks -> notes dropped back to body
+notes rejected (1)
+v6 p192: no marks -> notes dropped back to body
+v6 p193: no marks -> notes dropped back to body
+v6 p227: no marks -> notes dropped back to body
+v6 p251: marks 3 notes 4
+v6 p262: marks 2 notes 3
+v6 p314: no marks -> notes dropped back to body
+v6 p318: no marks -> notes dropped back to body
+v6 p319: no marks -> notes dropped back to body
+v6 p322: no marks -> notes dropped back to body
+v6 p325: marks 2 notes 3
+v6 p335: marks 1 notes 2
+notes rejected (10)
+v6 p352: marks 4 notes 5
+notes rejected (10)
+notes rejected (10)
+v6 p387: no marks -> notes dropped back to body
+v6 p388: no marks -> notes dropped back to body
+v6 p390: no marks -> notes dropped back to body
+v6 p391: no marks -> notes dropped back to body
+v6 p392: no marks -> notes dropped back to body
+v6 p393: no marks -> notes dropped back to body
+v6 p394: no marks -> notes dropped back to body
+v6 p395: no marks -> notes dropped back to body
+v6 p396: no marks -> notes dropped back to body
+v6 p397: no marks -> notes dropped back to body
+v6 p398: no marks -> notes dropped back to body
+v6 p399: no marks -> notes dropped back to body
+v6 p400: no marks -> notes dropped back to body
+v6 p401: no marks -> notes dropped back to body
+v6 p403: marks 5 notes 6
+v6 p447: marks 1 notes 2
+notes rejected (18)
+v6 p516: no marks -> notes dropped back to body
+v7 p38: marks 2 notes 3
+v7 p50: no marks -> notes dropped back to body
+v7 p51: no marks -> notes dropped back to body
+v7 p59: no marks -> notes dropped back to body
+v7 p61: no marks -> notes dropped back to body
+v7 p62: no marks -> notes dropped back to body
+v7 p63: no marks -> notes dropped back to body
+v7 p64: no marks -> notes dropped back to body
+v7 p65: no marks -> notes dropped back to body
+v7 p66: no marks -> notes dropped back to body
+v7 p67: no marks -> notes dropped back to body
+v7 p68: no marks -> notes dropped back to body
+v7 p69: no marks -> notes dropped back to body
+v7 p70: no marks -> notes dropped back to body
+v7 p71: no marks -> notes dropped back to body
+v7 p75: no marks -> notes dropped back to body
+v7 p79: marks 3 notes 4
+v7 p93: no marks -> notes dropped back to body
+v7 p114: marks 1 notes 2
+notes rejected (9)
+v7 p179: no marks -> notes dropped back to body
+v7 p180: no marks -> notes dropped back to body
+v7 p181: no marks -> notes dropped back to body
+v7 p182: no marks -> notes dropped back to body
+v7 p183: no marks -> notes dropped back to body
+v7 p184: no marks -> notes dropped back to body
+v7 p186: no marks -> notes dropped back to body
+v7 p187: no marks -> notes dropped back to body
+v7 p188: no marks -> notes dropped back to body
+v7 p189: no marks -> notes dropped back to body
+v7 p190: no marks -> notes dropped back to body
+v7 p191: no marks -> notes dropped back to body
+v7 p192: no marks -> notes dropped back to body
+v7 p193: no marks -> notes dropped back to body
+v7 p199: marks 1 notes 2
+v7 p200: no marks -> notes dropped back to body
+v7 p219: no marks -> notes dropped back to body
+v7 p240: no marks -> notes dropped back to body
+v7 p241: no marks -> notes dropped back to body
+v7 p242: no marks -> notes dropped back to body
+v7 p243: no marks -> notes dropped back to body
+v7 p244: no marks -> notes dropped back to body
+v7 p245: no marks -> notes dropped back to body
+v7 p248: no marks -> notes dropped back to body
+v7 p249: no marks -> notes dropped back to body
+v7 p250: no marks -> notes dropped back to body
+v7 p251: no marks -> notes dropped back to body
+v7 p253: no marks -> notes dropped back to body
+v7 p260: marks 2 notes 3
+v7 p281: no marks -> notes dropped back to body
+v7 p299: no marks -> notes dropped back to body
+v7 p300: no marks -> notes dropped back to body
+v7 p301: no marks -> notes dropped back to body
+v7 p303: no marks -> notes dropped back to body
+v7 p304: no marks -> notes dropped back to body
+v7 p305: no marks -> notes dropped back to body
+v7 p306: no marks -> notes dropped back to body
+v7 p311: no marks -> notes dropped back to body
+v7 p312: no marks -> notes dropped back to body
+v7 p313: no marks -> notes dropped back to body
+v7 p316: no marks -> notes dropped back to body
+v7 p317: no marks -> notes dropped back to body
+v7 p319: no marks -> notes dropped back to body
+v7 p320: no marks -> notes dropped back to body
+notes rejected (5)
+v7 p331: marks 1 notes 2
+v7 p352: no marks -> notes dropped back to body
+notes rejected (1)
+v7 p429: marks 1 notes 2
+v7 p436: no marks -> notes dropped back to body
+v7 p437: no marks -> notes dropped back to body
+v7 p438: no marks -> notes dropped back to body
+v7 p439: no marks -> notes dropped back to body
+v7 p440: marks 1 notes 2
+v7 p441: marks 1 notes 2
+v7 p442: marks 1 notes 3
+v7 p443: marks 2 notes 3
+v7 p480: no marks -> notes dropped back to body
+v7 p481: no marks -> notes dropped back to body
+v7 p483: no marks -> notes dropped back to body
+v7 p484: no marks -> notes dropped back to body
+v7 p485: no marks -> notes dropped back to body
+v7 p486: no marks -> notes dropped back to body
+v7 p489: no marks -> notes dropped back to body
+v7 p490: no marks -> notes dropped back to body
+v7 p491: no marks -> notes dropped back to body
+v7 p492: no marks -> notes dropped back to body
+v7 p493: no marks -> notes dropped back to body
+v7 p522: no marks -> notes dropped back to body
+rows 3598 sections 58 unplaced marks 78

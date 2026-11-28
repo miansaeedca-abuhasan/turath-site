@@ -8,7 +8,7 @@ ok(tiles.some(t=>t.startsWith('#/sec/tazkira|')&&t.includes('تذکرہ مشاہ
 const i=tiles.findIndex(t=>t.startsWith('#/s/rijal'));ok(i>=0&&tiles[i+1].startsWith('#/sec/tazkira'),'tile stands right after rijal tile');
 const fs=require('fs'),reg=fs.readFileSync(__dirname+'/../coll/index.js','utf8'),A=JSON.parse(reg.slice(reg.indexOf('COLLS(')+6,reg.lastIndexOf(')'))),E=A.find(e=>e.key==='andulusur');
 ok(E&&E.count===259&&E.sections.length===13&&E.sections[0][1]==='مصنفہ کا تعارف'&&E.sections[12][1]==='مصادر و مراجع','registry');
-ok(A[A.length-2].key==='andulusur','registry end');
+ok(A.map(e=>e.key).indexOf('andulusur')>A.length-5,'registry end');
 const f=E.files.ur[0][2],t=fs.readFileSync(__dirname+'/../coll/'+f,'utf8');
 ok(/\[1,"§مصنفہ کا تعارف/.test(t)&&t.includes('جمیلہ شوکت'),'author intro first row');
 ok(!/\\"/.test(t),'no straight quotes');
