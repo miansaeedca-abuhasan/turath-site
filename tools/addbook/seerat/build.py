@@ -84,9 +84,13 @@ def head(l,prev,nxt,first):
 files=sorted(glob.glob(SRC+'/*SeeratEncyclopediaVol*_Mukammal*.json'),key=lambda f:int(re.search(r'Vol(\d)',f).group(1)))
 assert len(files)==7
 cnt=0;mk_unplaced=0
+MISS={1:list(range(10,29)),3:[258,259,262,263,266,267,270,271,274,275,278,279,282,283,286,287]}   # images: v1 = PDF page p, v3 = PDF page p+2 (checked by content)
 for f in files:
     v=int(re.search(r'Vol(\d)',f).group(1));d=json.load(open(f,encoding='utf-8'))
     chap=0;gloss=False;started=False;cur=None
+    # pages the JSON lacks: image-only rows (page scans rendered from the owner's PDF; PDF page = printed + off)
+    for pp in MISS.get(v,[]): d.append({'page':pp,'content':'','images':['v%d_p%d.jpg'%(v,pp)],'mp':1})
+    d.sort(key=lambda e:e['page'])
     for e in d:
         p=e['page'];L=[l.strip() for l in e['content'].split('\n') if l.strip()]
         body,notes,tail=split_notes(L)
@@ -96,11 +100,13 @@ for f in files:
             m=re.match(r'^باب\s*([0-9۰-۹]+)\s*$',l)
             if m and num(m.group(1))==chap+1:
                 chap+=1;t=[x for x in body[i+1:i+3] if x!='سیرت انسائیکلوپیڈیا'];sect='جلد %d — باب %d: %s'%(v,chap,t[0] if t else '');break
-        if v==3 and p==273: chap+=1;sect='جلد 3 — باب 5'   # title lost in the JSON
+        if v==3 and p==272: chap+=1;sect='جلد 3 — باب 5: صحابہ کرام رضی اللہ عنہم پر مشرکین مکہ کی ستم رانیاں'   # title read from the printed contents (PDF 3, p.12); chapter cover = calligraphy page 272
         if not sect and not gloss and re.match(r'^تفصیل حواشی',body[0] if body else ''): gloss=True;sect='جلد %d — تفصیل حواشی'%v
         if not sect and not started: sect='جلد %d — ابتدائی صفحات'%v;started=True
         if sect and (not secs or secs[-1][1]!=sect): secs.append([None,sect,len(rows)+1,0,''])
         started=True
+        if e.get('mp'):
+            cnt+=1;rows.append([cnt,'اس صفحے کا متن فائل میں شامل نہیں؛ اصل صفحہ کی تصویر دی گئی ہے۔','',{'v':v*100000+p,'im':e['images'],'mp':1}]);pgv.append(v*100000+p);continue
         # marks / notes
         mk=0
         if notes:
