@@ -5746,7 +5746,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
       return [el('details', {class: 'card intro', open: true}, el('summary', {}, ti + ' — ' + bname(b) + ' (' + only + ')'),
         ...rs.flatMap((r, ri) => [rs.length > 1 ? el('p', {class: 'grp'}, rd(ri + 1)) : '',
           ...r.parts.map((u, i) => el('div', {style: 'margin:.5rem 0'}, el('div', {class: 'cs'}, pt(i + 1)), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%', dir: 'ltr'}))),
-          el('p', {class: 'cs'}, src(r.host))]))]; };
+          '']))]; };
     const cover = () => bookAudio().concat(b.cover ? [el('img', {src: b.cover, class: 'bcover', alt: bname(b)})] : []);
     const row = s => el('a', {class: 'card srow2', href: '#/s/' + b.key + '/' + s[0]},
       el('span', {class: 'snum'}, fmtN(secNo(b, s))), el('span', {class: 'sinfo'}, el('span', {class: 'ct', dir: 'auto'}, ...ttl(secT(b, s))), s[4] ? el('span', {class: 'ca', lang: 'ar'}, s[4]) : '', el('span', {class: 'cs'}, s[2] > s[3] ? '' : [b.prose ? '' : RNG(b)(s[2], s[3]), CNT(b)(fmtN(HN(b, s[2], s[3])))].filter(Boolean).join('  ،  '))));
@@ -5813,7 +5813,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     let totTxt = String(tot); if (b.abno || b.key === 'muslim') { const mx = Math.max(0, ...Object.values(b.an || {}).map(x => parseInt(x, 10) || 0)); if (mx) totTxt = mx + '/' + tot; }
     const ours = OURS;
     const hintEl = (b.prose || b.key === 'siyar' || b.key === 'shadharat') ? '' : el('div', {class: 'fbhint'}, NT[0] + ': ' + (ui === 'ur' ? totTxt : totTxt), ours ? ' · ' + NT[1] : '');
-    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, resumeBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out, b.grp === 'ar' ? '' : el('p', {class: 'note'}, b.key === 'shadharat' ? T('cSourceSh') : b.key === 'siyar' ? T('cSourceSiyar') : b.jami ? T('cSourceJami') : T('cSource')));
+    box.append(langChips(b, () => showBook(b)), el('div', {class: 'bkrow'}, startBtn, resumeBtn), el('div', {class: 'card pad0 filterbox'}, icon('search'), f), hintEl, out);
     secs();
   }
   // all-words search in one book (Arabic text and the chosen translation); q = normalised words
@@ -6304,7 +6304,7 @@ if('serviceWorker' in navigator&&location.protocol.startsWith('http')&&document.
     if (SA_ON && SA && SA.map[s[0]]) { const k = SA.map[s[0]], u = 'https://archive.org/download/saheh-muslim-mp3/' + String(k).padStart(3, '0') + 'sa7e7moslm_' + SA.sufs[k - 1] + '.mp3';
       const ti = {ur: 'آڈیو', ar: 'الصوتيات', en: 'Audio', bn: 'অডিও', hi: 'ऑडियो', gu: 'ઑડિયો', fr: 'Audio'}[ui] || 'Audio', only = {ur: 'صرف عربی', ar: 'عربي فقط', en: 'Arabic only', bn: 'শুধু আরবি', hi: 'केवल अरबी', gu: 'ફક્ત અરબી', fr: 'Arabe seulement'}[ui] || 'Arabic only',
         src = {ur: 'ماخذ: archive.org — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', ar: 'المصدر: archive.org — تُشغَّل المادة من رابط الموقع نفسه.', en: 'Source: archive.org — played from the publisher\'s own link.', bn: 'সূত্র: archive.org — প্রকাশকের নিজস্ব লিংক থেকে চলে।', hi: 'स्रोत: archive.org — प्रकाशक के अपने लिंक से चलती है।', gu: 'સ્ત્રોત: archive.org — પ્રકાશકની પોતાની લિંકથી ચાલે છે.', fr: 'Source : archive.org — lue depuis le lien de l\'éditeur.'}[ui];
-      box.append(el('details', {class: 'card intro'}, el('summary', {}, ti + ' (' + only + ')'), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%;margin:.5rem 0', dir: 'ltr'}), el('p', {class: 'cs'}, src))); }
+      box.append(el('details', {class: 'card intro'}, el('summary', {}, ti + ' (' + only + ')'), el('audio', {controls: true, preload: 'none', src: u, style: 'width:100%;margin:.5rem 0', dir: 'ltr'}))); }
     const list = el('div'), more = el('button', {class: 'btn more', type: 'button'}, T('more'));
     // chapter notes printed before the first hadith of a chapter (summary of the chapter, introductory paragraphs); a chapter that holds only such notes has an empty hadith range
     let ntN = 0;
@@ -11742,7 +11742,7 @@ i.hzw{font-style:normal;letter-spacing:.1em}
     rg.addEventListener('input', () => { UI.drag = true; cur.textContent = fmt(+rg.value); });
     rg.addEventListener('change', () => { UI.drag = false; if (here()) { try { A.currentTime = +rg.value; } catch (e) {} } });
     const rc2 = (LAST.v && LAST.v.bk === bk && LAST.v.no === no && !here()) ? await resumeCard({bk}) : null;
-    v.replaceChildren(...(rc2 ? [rc2] : []), card, ...rows, el('p', {class: 'cs'}, bk === 'bk' || bk === 'rm' ? ({ur: 'ماخذ: archive.org — آڈیو اسی سائٹ کے لنک سے چلتی ہے۔', ar: 'المصدر: archive.org — تُشغَّل المادة من رابط الموقع نفسه.', en: 'Source: archive.org — played from the publisher’s own link.', hi: 'स्रोत: archive.org — प्रकाशक के अपने लिंक से चलता है।', gu: 'સ્ત્રોત: archive.org — પ્રકાશકની પોતાની લિંકથી ચાલે છે.', bn: 'উৎস: archive.org — প্রকাশকের নিজস্ব লিংক থেকে চলে।', fr: 'Source : archive.org — lu depuis le lien de l’éditeur.'}[ui] || 'Source: archive.org') : T.src), el('a', {class: 'btn', href: d.o + p[1] + '/', target: '_blank', rel: 'noopener'}, T.orig));
+    v.replaceChildren(...(rc2 ? [rc2] : []), card, ...rows, el('a', {class: 'btn', href: d.o + p[1] + '/', target: '_blank', rel: 'noopener'}, T.orig));
     UI = {root: card, bk, title, no, name, cur, dur, rg, play, shuf, rep, auto, slp, spd, rows, drag: false}; paintUI();
     if (here()) { rg.max = isFinite(A.duration) ? A.duration : 0; rg.value = A.currentTime || 0; }
   }
