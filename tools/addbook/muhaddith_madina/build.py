@@ -2,6 +2,8 @@
 """Muhaddith-e-Madina (biography of Dr. Muhammad Abdullah al-Azami, author of Al-Jami al-Kamil) -> coll book `muhaddithmadinaur`.
 usage: python3 tools/addbook/muhaddith_madina/build.py <Mohadis_Madina_Mukammal.json>   (run from the repo root, then tools/order_tail.py, tools/rehash.py)"""
 import os,json,re,sys,hashlib,glob
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
+import arabic
 KEY='muhaddithmadinaur'
 d=json.load(open(sys.argv[1],encoding='utf-8'))
 rep=[]
@@ -9,6 +11,7 @@ SEC=[(c['title'],s) for c in d['chapters'] for s in c['sections']]
 HINDI="'hry Nk;k dqjvku dh"   # Kruti Dev glyphs printed in the book (PDF p.44): शीतल छाया कुरआन की
 def fix(t):
     t=t.replace(HINDI,'शीतल छाया कुरआन की')
+    t=t.replace('انہیں جلدوں','انیس جلدوں')   # owner 27-11-2026: «19 volumes», the file had «انہیں» (2 places, section «جس کے پاس pdf فائل»)
     # url slips of the file (RTL): https//: -> https://, host dots written as _
     def url(m):
         u=m.group(0).replace('//:','://',1) if '//:' in m.group(0) else m.group(0)
@@ -72,7 +75,8 @@ for ch,s in SEC:
     st=(ch+' — '+s['heading']) if ch!=last and ch!=s['heading'] else s['heading']
     if ' — ' in st and st.split(' — ')[1].rstrip(':') in st.split(' — ')[0]: st=st.split(' — ')[0]
     sec(st.rstrip(':'));last=ch
-    emit(ch,h,fix(t),[fix(x) for x in nt],False)
+    t,al=arabic.arabize(fix(t));rep+=['Arabic font (sec «%s»): %s'%(s['heading'][:30],x[:60]) for x in al]
+    emit(ch,h,t,[fix(x) for x in nt],False)
 # ---- write
 for i,(t,a) in enumerate(secs): pass
 S=[];for_end=len(rows)

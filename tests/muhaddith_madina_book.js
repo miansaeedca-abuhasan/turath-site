@@ -6,6 +6,9 @@ let all='';E.files.ur.forEach(f=>{all+=fs.readFileSync(__dirname+'/../coll/'+f[2
 ok(!/hry Nk/.test(all),'Kruti glyph text left');ok(all.includes('شیتل چھایا')&&all.includes('शीतल'),'Hindi title decoded');
 ok(!/https\/\/:/.test(all),'broken url');ok(/https:\/\/youtu\.be\//.test(all),'url fixed');
 ok(/موصوف طائف مقیم تھے/.test(all)&&!/شیخ اعظمی ➀/.test(all)&&/شیخ اعظمی کے مدینہ یونیورسٹی/.test(all),'p.23 note re-attached');
+ok(!/انہیں جلدوں/.test(all)&&(all.match(/انیس جلدوں/g)||[]).length>=7,'«انیس جلدوں» fixed');
+ok(/«\u2060وقد سئلت كثيرا من مختلف الفئات فقالوا إنكم تقولون/.test(all),'Arabic quote typed with Arabic letters, in the Arabic-font mark');
+ok((all.match(/«\u2060/g)||[]).length>=90,'Arabic passages marked');
 ok(!/[➀➁➂]/.test(all),'dingbat marks left');
 ok(/ابو حسن میاں سعید عفی اللہ عنہ/.test(all),'owner signature');
 ok(/SEC_KEYS=\{[^}]*tazkira:\['muhaddithmadinaur','andulusur'\]/.test(fs.readFileSync(__dirname+'/../index.html','utf8')),'first in Tazkira folder');
