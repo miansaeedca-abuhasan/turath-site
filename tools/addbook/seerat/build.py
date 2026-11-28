@@ -84,7 +84,7 @@ def head(l,prev,nxt,first):
 files=sorted(glob.glob(SRC+'/*SeeratEncyclopediaVol*_Mukammal*.json'),key=lambda f:int(re.search(r'Vol(\d)',f).group(1)))
 assert len(files)==7
 cnt=0;mk_unplaced=0
-MISS={1:list(range(10,29)),3:[258,259,262,263,266,267,270,271,274,275,278,279,282,283,286,287]}   # images: v1 = PDF page p, v3 = PDF page p+2 (checked by content)
+MISS={1:list(range(10,29)),3:[]}   # jild 3: printed 258 259 262 263 266 267 … 286 287 are NOT in the owner's PDF (its pp.260-291 are duplicate scans of 228-259), so no images   # images: v1 = PDF page p, v3 = PDF page p+2 (checked by content)
 for f in files:
     v=int(re.search(r'Vol(\d)',f).group(1));d=json.load(open(f,encoding='utf-8'))
     chap=0;gloss=False;started=False;cur=None
